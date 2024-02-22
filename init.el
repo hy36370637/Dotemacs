@@ -34,7 +34,7 @@
 ;; (setq use-package-always-ensure nil)
 ;;
 ;; ======================================
-;;; General
+;;; 외양
 ;; --------------------------------------
 ;;; hidden menu Bar
 (menu-bar-mode 1)
@@ -44,17 +44,21 @@
 (setq inhibit-startup-message t
       visible-bell t)
 (setq initial-scratch-message nil)
-;; (setq frame-title-format "| dole's Emacs | %b |")
-(setq-default line-spacing 0.2)    ; 줄 간격 1.5로 설정
-(setq kill-whole-line 1)   ;C-S-<backspace>
-(setq search-highlight t)
 (setq use-dialog-box nil)
+;; (setq frame-title-format "| dole's Emacs | %b |")
+;;
+;; ======================================
+;;; 작은 설정 들
+;; --------------------------------------
 ;; (setq global-auto-revert-non-file-buffers t)
 (setq default-directory "~/Dropbox/eDoc/org/")
 (setq temporary-file-directory "~/Dropbox/eDoc/tmpdir/") ;temp dir
 ;; (setq backup-directory-alist '(("." . "~/.emacs.d/backup")))
 (setq make-backup-files nil) ;backup
 (fset 'yes-or-no-p 'y-or-n-p)
+(setq-default line-spacing 0.2)    ; 줄 간격 1.5
+(setq kill-whole-line 1)           ; C-S-<backspace>
+(setq search-highlight t)
 ;;; for corfu
 (setq completion-cycle-threshold 3)
 (setq tab-always-indent 'complete)
@@ -71,22 +75,17 @@
 (display-time-mode 1)
 ;;
 ;; ======================================
-;;; MacOS Keyboard replace
-;; --------------------------------------
-;; (setq-default
-;;  ns-alternate-modifier 'super         ; Map Super to the Alt key
-;;  ns-command-modifier 'meta            ; Map Meta to the Cmd key
-;;  ns-pop-up-frames nil)               ; Always re-use the same frame
-;;
-;; ======================================
 ;;; modus theme
 ;; --------------------------------------
 (use-package emacs
   :config
   (require-theme 'modus-themes)
   (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs nil)
-  ;; Load the theme of your choice.
+        modus-themes-bold-constructs nil
+	modus-themes-mixed-fonts t
+	modus-themes-variable-pitch-ui nil
+	modus-themes-custom-auto-reload t 
+	modus-themes-mode-line '(borderless))
   (load-theme 'modus-vivendi))
 ;;
 ;; ======================================
@@ -101,7 +100,7 @@
 ;;; prefix key
 ;; --------------------------------------
 (global-unset-key [f11])  ;remove toggle-frame-fullscreen/MacOS
-(global-set-key (kbd "C-x C-m") 'execute-extended-command) ;M-x
+(global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
@@ -132,7 +131,6 @@
     (find-file "~/Dropbox/eDoc/org/dFarmNote.org")
     (message "Opened:  %s" (buffer-name)))
    (t (message "Quit"))))
-;; (keymap-set global-map "C-1" 'my-popmark)
 ;;
 ;; ======================================
 ;;; locale. korean
@@ -144,6 +142,8 @@
 ;; ======================================
 ;;; font
 ;; --------------------------------------
+(set-frame-font "Noto Sans Mono CJK KR" nil t)
+(set-face-font 'fixed-pitch "Noto Sans Mono CJK KR")
 (set-face-attribute 'default nil :family "Hack" :height 150)
 (set-face-attribute 'fixed-pitch nil :family "Hack" :height 150)
 (set-fontset-font t 'hangul (font-spec :family "D2Coding"))
@@ -151,16 +151,16 @@
 ;; ======================================
 ;;; korean calendar
 ;; --------------------------------------
-(use-package calendar
-  :config  
-  (setq calendar-week-start-day 0
-	;; calendar-day-name-array ["일" "월" "화" "수" "목" "금" "토"]
-	;; calendar-day-header-array ["일" "월" "화" "수" "목" "금" "토"]
-        calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월"
-				   "10월" "11월" "12월"])
-  ;; (setq calendar-holidays korean-holidays)   ;; package-install korean-holidays
-  :custom
-  (calendar-mark-holidays-flag nil))
+;; (use-package calendar
+;;   :config  
+;;   (setq calendar-week-start-day 0
+;; 	;; calendar-day-name-array ["일" "월" "화" "수" "목" "금" "토"]
+;; 	;; calendar-day-header-array ["일" "월" "화" "수" "목" "금" "토"]
+;;         calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월"
+;; 				   "10월" "11월" "12월"])
+;;   ;; (setq calendar-holidays korean-holidays)   ;; package-install korean-holidays
+;;   :custom
+;;   (calendar-mark-holidays-flag nil))
 ;;
 ;;; calendar layout 보정. D2coding size
 ;; (defun cal-fixLayout ()
@@ -452,7 +452,7 @@
 ;;; gnus
 ;; --------------------------------------
 (setq user-mail-address "under9@icloud.com"
-      user-full-name "김호영")
+      user-full-name "Young")
 ;; (setq message-send-mail-function 'smtpmail-send-it
 ;;       send-mail-function 'smtpmail-send-it)
 ;; (setq gnus-select-method
@@ -501,12 +501,12 @@
   (corfu-auto t)
   (corfu-auto-delay 0.2)
   (corfu-auto-prefix 0)
-  (corfu-cycle t)           ;; Enable cycling for `corfu-next/previous'
+  (corfu-cycle t)             ;; Enable cycling for `corfu-next/previous'
 ;;  (completion-styles '(basic)) ;consult-line err
-  (corfu-preselect 'prompt) ;; Always preselect the prompt
+  (corfu-preselect 'prompt)   ;; Always preselect the prompt
   (corfu-echo-documentation 0.2)
   (corfu-preview-current 'insert)
-  (corfu-separator ?\s) ;; Necessary for use with orderless
+  (corfu-separator ?\s)       ;; Necessary for use with orderless
   (corfu-quit-no-match 'separator)
 ;; (corfu-quit-at-boundary 'separator)
 ;; Use TAB for cycling, default is `corfu-complete'.
@@ -536,6 +536,7 @@
 ;;
 ;; from https://kristofferbalintona.me/posts/202202211546/
 (use-package all-the-icons-completion
+  :if (display-graphic-p)
   :after (marginalia all-the-icons)
   :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
   :init
@@ -562,19 +563,28 @@
   (set-buffer-modified-p nil))
 (add-hook 'dired-after-readin-hook 'sof/dired-sort)
 ;;
+;; ======================================
+;;; dired-narrow
+;; --------------------------------------
 ;; Dired 모드에서 파일 목록 필터링
 (use-package dired-narrow
-  :ensure t)
-(add-hook 'dired-mode-hook
-          (lambda ()
-            (define-key dired-mode-map (kbd "C-c C-n") 'dired-narrow)))
+  :ensure t
+  ;; :config
+  ;; (bind-key "C-c C-n" 'dired-narrow dired-mode-map))
+  :bind
+  (:map dired-mode-map
+	("C-c C-n". dired-narrow)))
 ;;
+;; ======================================
+;;; dired-subtree
+;; --------------------------------------
 ;; Dired에서 디렉터리 확장, 축소
 (use-package dired-subtree
   :ensure nil
-  :config
-  (bind-key "<tab>" 'dired-subtree-toggle dired-mode-map)
-  (bind-key "<backtab>" 'dired-subtree-cycle dired-mode-map))
+  :bind
+  (:map dired-mode-map
+	([tab] . dired-subtree-toggle)
+	([backtab] . dired-subtree-cycle)))
 ;;
 ;; ======================================
 ;;; eshell
@@ -654,8 +664,9 @@
 ;; ======================================
 ;;; rainbow-delimiters
 ;; --------------------------------------
-;; 괄호, 중괄호 및 각종 쌍을 시각적으로 구분
+;; 괄호, 중괄호, 각종 쌍을 시각적으로 구분
 (use-package rainbow-delimiters
+  :ensure t
   :hook (prog-mode . rainbow-delimiters-mode)
   :config
   (custom-set-faces
