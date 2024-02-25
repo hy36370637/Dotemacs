@@ -86,6 +86,15 @@
 	modus-themes-variable-pitch-ui nil
 	modus-themes-custom-auto-reload t 
 	modus-themes-mode-line '(borderless))
+  ;; (setq modus-themes-common-palette-overrides
+  ;;     '((date-common cyan)   ; default value (for timestamps and more)
+  ;;       (date-deadline red-warmer)
+  ;;       (date-event magenta-warmer)
+  ;;       (date-holiday blue) ; for M-x calendar
+  ;;       (date-now yellow-warmer)
+  ;;       (date-scheduled magenta-cooler)
+  ;;       (date-weekday cyan-cooler)
+  ;;       (date-weekend blue-faint)))
   (load-theme 'modus-vivendi))
 ;;
 ;; ======================================
@@ -114,18 +123,18 @@
 ;;
 (defun my-popmark (choice)
   "Choices for directories and files."
-  (interactive "c[D]ired | [a]genda | [c]Notes | [d]ayNotes | [f]FarmNote")
+  (interactive "[D]ired | [t]Tasks | [c]Notes | [d]Daily | [f]FarmNote")
   (cond
    ((eq choice ?D)
     (dired "~/Dropbox/eDoc/org/denote"))
-   ((eq choice ?a)
-    (find-file "~/Dropbox/eDoc/org/Agenda.org")
+   ((eq choice ?t)
+    (find-file "~/Dropbox/eDoc/org/Tasks.org")
     (message "Opened:  %s" (buffer-name)))
    ((eq choice ?c)
     (find-file "~/Dropbox/eDoc/org/cNotes.org")
     (message "Opened:  %s" (buffer-name)))
    ((eq choice ?d)
-    (find-file "~/Dropbox/eDoc/org/dayNotes.org")
+    (find-file "~/Dropbox/eDoc/org/Daily.org")
     (message "Opened:  %s" (buffer-name)))
    ((eq choice ?f)
     (find-file "~/Dropbox/eDoc/org/dFarmNote.org")
@@ -136,31 +145,38 @@
 ;;; locale. korean
 ;; --------------------------------------
 (setenv "LANG" "ko_KR.UTF-8")
-(setenv "LC_COLLATE" "C")		;Dired 한글 파일명 정렬 macOS
+(setenv "LC_COLLATE" "C")		  ;Dired 한글 파일명 정렬 macOS
 (set-locale-environment "ko_KR.UTF-8")	;kbd 한글 S-SPC
 ;;
 ;; ======================================
 ;;; font
 ;; --------------------------------------
-(set-frame-font "Noto Sans Mono CJK KR" nil t)
-(set-face-font 'fixed-pitch "Noto Sans Mono CJK KR")
-(set-face-attribute 'default nil :family "Hack" :height 150)
-(set-face-attribute 'fixed-pitch nil :family "Hack" :height 150)
-(set-fontset-font t 'hangul (font-spec :family "D2Coding"))
+;; (set-frame-font "Noto Sans CJK KR" nil t)
+;; (set-face-font 'fixed-pitch "Noto Sans Mono CJK KR")
+(set-face-attribute 'default nil
+		    :family "Hack" ;Hack, Menlo
+		    :height 160)
+(set-face-attribute 'fixed-pitch nil
+		    :family "Noto Sans Mono CJK KR"
+		    :height 160)
+(set-face-attribute 'variable-pitch nil
+		    :family "Noto Sans CJK KR"
+		    :height 160)
+;; (set-fontset-font t 'hangul (font-spec :family "Noto Sans Mono CJK KR")) ;D2Coding, Apple SD 산돌고딕 Neo
 ;;
 ;; ======================================
 ;;; korean calendar
 ;; --------------------------------------
-;; (use-package calendar
-;;   :config  
-;;   (setq calendar-week-start-day 0
-;; 	;; calendar-day-name-array ["일" "월" "화" "수" "목" "금" "토"]
-;; 	;; calendar-day-header-array ["일" "월" "화" "수" "목" "금" "토"]
-;;         calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월"
-;; 				   "10월" "11월" "12월"])
-;;   ;; (setq calendar-holidays korean-holidays)   ;; package-install korean-holidays
-;;   :custom
-;;   (calendar-mark-holidays-flag nil))
+(use-package calendar
+  :config  
+  (setq calendar-week-start-day 0
+	;; calendar-day-name-array ["일" "월" "화" "수" "목" "금" "토"]
+	;; calendar-day-header-array ["일" "월" "화" "수" "목" "금" "토"]
+        calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월"
+				   "10월" "11월" "12월"])
+  ;; (setq calendar-holidays korean-holidays)   ;; package-install korean-holidays
+  :custom
+  (calendar-mark-holidays-flag nil))
 ;;
 ;;; calendar layout 보정. D2coding size
 ;; (defun cal-fixLayout ()
@@ -200,16 +216,17 @@
   (org-startup-with-inline-images nil)  ;show inline images.(#+STARTUP: inlineimages)
   (org-adapt-indentation t)		;heading 이하 들여쓰기
   (org-src-preserve-indentation t)	;소스코드 여백 적용 export
+;;  (org-agenda-start-with-log-mode t) ; agenda(ex 예정일과 완료일 구분 표시)
   (org-log-into-drawer t)               ; enable LOGBOOK drawer
   (org-log-done 'time)
   (org-image-actual-width '(100))       ; imagee 미리보기 사이즈
   :config
   (setq org-directory (expand-file-name "~/Dropbox/eDoc/org/"))
-  (setq org-agenda-files '("Agenda.org" "dayNotes.org"))
+  (setq org-agenda-files '("Tasks.org" "Daily.org"))
   (setq org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))   ; shift-F(follow-mode, move key F,B)
 ;; capture
   (setq org-capture-templates
-	'(("n" "dayNote" entry (file+datetree "dayNotes.org") "* %?")
+	'(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
 	  ("f" "dFarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
 ;; export PDF
   (setq org-latex-title-command "\\maketitle \\newpage")
@@ -225,40 +242,6 @@
 (global-set-key (kbd "C-c c") 'org-capture)
 ;;
 ;; ======================================
-;;; org-roam
-;; --------------------------------------
-;; (use-package org-roam
-;;   :ensure t
-;;   :init
-;;   (setq org-roam-v2-ack t)
-;;   :custom
-;;   (org-roam-directory "~/Dropbox/eDoc/org/org-roam")
-;;   (org-roam-completion-everywhere t)
-;;   :bind (("C-c n l" . org-roam-buffer-toggle)
-;; 	 ("C-c n f" . org-roam-node-find)
-;; 	 ("C-c n i" . org-roam-insert)
-;; 	 :map org-mode-map
-;; 	 ("C-M-i" . completion-at-point)
-;;   :config
-;;   (org-roam-setup))
-;;
-;; (use-package org-roam-ui
-;;   :after org-roam
-;;   :config
-;;   (setq org-roam-ui-sync-theme t
-;; 	org-roam-ui-follow t
-;; 	org-roam-ui-update-on-save t
-;; 	org-roam-ui-browser-function #'browse-url-default-browser
-;; 	org-roam-ui-open-on-start nil))
-;;
-;; ======================================
-;;; os-mx
-;; --------------------------------------
-;; (use-package ox-md
-;;   :ensure org
-;;   :after (org))
-;;
-;; ======================================
 ;;; org-bullets
 ;; --------------------------------------
 (use-package org-bullets
@@ -266,15 +249,6 @@
   :config
   (setq org-bullets-bullet-list '("◉" "◎" "●" "○" "●" "○" "●"))
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
-;;
-;; ======================================
-;;; org-download
-;; --------------------------------------
-;; (use-package org-download
-;;   :config
-;;   (setq org-download-method 'directory)
-;;   (setq org-download-image-dir "~/Dropbox/eDoc/org/img/org-dn-img"))
-;;  (setq org-download-image-html-width 600))
 ;;
 ;; ======================================
 ;;; for org edit/custom function
@@ -298,17 +272,6 @@
   (newline-and-indent)
   (next-line)
   (org-cycle))
-;;
-;; ======================================
-;;; yasnippet
-;; --------------------------------------
-(use-package yasnippet
-  :ensure t
-  :config
-  (setq yas-snippet-dir "~/.emacs.d/snippets")
-  (yas-global-mode 1))
-  ;; (yas-reload-all)
-  ;; (add-hook 'org-mode-hook #'yas-minor-mode))
 ;;
 ;; ======================================
 ;;; which-key
@@ -424,7 +387,6 @@
 ;; ======================================
 ;;; embark-consult
 ;; --------------------------------------
-;; Consult users will also want the embark-consult package.
 (use-package embark-consult
   :ensure t
   :hook
@@ -453,16 +415,6 @@
 ;; --------------------------------------
 (setq user-mail-address "under9@icloud.com"
       user-full-name "Young")
-;; (setq message-send-mail-function 'smtpmail-send-it
-;;       send-mail-function 'smtpmail-send-it)
-;; (setq gnus-select-method
-;;       '(nnimap "gmail"
-;; 	       (nnimap-address "imap.gmail.com")  ;; imap.naver.com
-;; 	       (nnimap-server-port "imaps") 
-;; 	       (nnimap-stream ssl)))
-;; (setq smtpmail-smtp-server "smtp.gmail.com"
-;;       smtpmail-smtp-service 587
-;;       gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
 ;;
 (setq gnus-select-method
       '(nnimap "icloud"
@@ -627,39 +579,13 @@
   (with-eval-after-load 'org-capture
     (setq denote-org-capture-specifiers "%l\n%i\n%?")
     (add-to-list 'org-capture-templates
-		 '("d" "New denote" plain
+		 '("n" "New denote" plain
                    (file denote-last-path)
                    #'denote-org-capture
                    :no-save t
                    :immediate-finish nil
                    :kill-buffer t
                    :jump-to-captured t))))
-;;
-;; ======================================
-;;; dashboard
-;; --------------------------------------
-;; (use-package dashboard
-;;   :ensure nil
-;;   :config
-;;   (dashboard-setup-startup-hook)
-;;   (define-key dashboard-mode-map (kbd "n") 'dashboard-next-line)     ;default 'j', TAB
-;;   (define-key dashboard-mode-map (kbd "p") 'dashboard-previous-line) ;default 'k', Shift-TAB
-;;   :init
-;;   (setq dashboard-center-content t)
-;;   (setq dashboard-banner-logo-title "爲學日益 爲道日損 損之又損 以至於無爲 無爲而無不爲")
-;;   ;; (setq dashboard-startup-banner "~/.emacs.d/image/imgDo.png")
-;;   (setq dashboard-icon-type 'nerd-icons) ;; nerd-icons.all-the-icons
-;;   (setq dashboard-set-heading-icons t)
-;;   (setq dashboard-set-file-icons t)
-;;   (setq dashboard-set-footer nil)
-;;   (setq dashboard-set-init-info nil)
-;;   (setq dashboard-items '((recents  . 5)
-;;  			  (bookmarks . 5)
-;; ;;			  (registers . 5)
-;;  			  (agenda . 5)))
-;;   ;; (setq dashboard-show-shortcuts nil)
-;;   ;; (setq dashboard-week-agenda t)
-;;   (setq dashboard-set-navigator t))
 ;;
 ;; ======================================
 ;;; rainbow-delimiters
