@@ -42,9 +42,9 @@
 (toggle-scroll-bar -1)
 ;;; hidden start message
 (setq inhibit-startup-message t
-      visible-bell t)
-(setq initial-scratch-message nil)
-(setq use-dialog-box nil)
+      visible-bell t
+      initial-scratch-message nil
+      use-dialog-box nil)
 ;; (setq frame-title-format "| dole's Emacs | %b |")
 ;;
 ;; ======================================
@@ -54,11 +54,12 @@
 (setq default-directory "~/Dropbox/eDoc/org/")
 (setq temporary-file-directory "~/Dropbox/eDoc/tmpdir/") ;temp dir
 ;; (setq backup-directory-alist '(("." . "~/.emacs.d/backup")))
-(setq make-backup-files nil) ;backup
+(setq make-backup-files nil
+      kill-whole-line 1
+      search-highlight t)
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq-default line-spacing 0.2)    ; 줄 간격 1.5
-(setq kill-whole-line 1)           ; C-S-<backspace>
-(setq search-highlight t)
+
 ;;; for corfu
 (setq completion-cycle-threshold 3)
 (setq tab-always-indent 'complete)
@@ -86,15 +87,6 @@
 	modus-themes-variable-pitch-ui nil
 	modus-themes-custom-auto-reload t 
 	modus-themes-mode-line '(borderless))
-  ;; (setq modus-themes-common-palette-overrides
-  ;;     '((date-common cyan)   ; default value (for timestamps and more)
-  ;;       (date-deadline red-warmer)
-  ;;       (date-event magenta-warmer)
-  ;;       (date-holiday blue) ; for M-x calendar
-  ;;       (date-now yellow-warmer)
-  ;;       (date-scheduled magenta-cooler)
-  ;;       (date-weekday cyan-cooler)
-  ;;       (date-weekend blue-faint)))
   (load-theme 'modus-vivendi))
 ;;
 ;; ======================================
@@ -121,22 +113,26 @@
   "s" 'eradio-stop)
 (keymap-set global-map "C-t" my-prefix-map)
 ;;
-(defun my-popmark (choice)
+(defun my-popmark (c)
+  ;;https://stackoverflow.com/questions/19283368/how-can-i-open-quickly-a-file-in-emacs/19284395#19284395
   "Choices for directories and files."
-  (interactive "[D]ired | [t]Tasks | [c]Notes | [d]Daily | [f]FarmNote")
+  (interactive "c\ [D]ired | [I]init | [t]Tasks | [c]Notes | [d]Daily | [f]FarmNote ")
   (cond
-   ((eq choice ?D)
+   ((eq c ?D)
     (dired "~/Dropbox/eDoc/org/denote"))
-   ((eq choice ?t)
+   ((eq c ?I)
+    (find-file "~/Dropbox/emacs/init.el")
+    (message "Opened:  %s" (buffer-name)))
+   ((eq c ?t)
     (find-file "~/Dropbox/eDoc/org/Tasks.org")
     (message "Opened:  %s" (buffer-name)))
-   ((eq choice ?c)
+   ((eq c ?c)
     (find-file "~/Dropbox/eDoc/org/cNotes.org")
     (message "Opened:  %s" (buffer-name)))
-   ((eq choice ?d)
+   ((eq c ?d)
     (find-file "~/Dropbox/eDoc/org/Daily.org")
     (message "Opened:  %s" (buffer-name)))
-   ((eq choice ?f)
+   ((eq c ?f)
     (find-file "~/Dropbox/eDoc/org/dFarmNote.org")
     (message "Opened:  %s" (buffer-name)))
    (t (message "Quit"))))
@@ -146,7 +142,7 @@
 ;; --------------------------------------
 (setenv "LANG" "ko_KR.UTF-8")
 (setenv "LC_COLLATE" "C")		  ;Dired 한글 파일명 정렬 macOS
-(set-locale-environment "ko_KR.UTF-8")	;kbd 한글 S-SPC
+(set-locale-environment "ko_KR.UTF-8")	  ;kbd 한글 S-SPC
 ;;
 ;; ======================================
 ;;; font
@@ -196,10 +192,10 @@
 ;; ======================================
 ;;; recentF
 ;; --------------------------------------
-(use-package recentf
-  :ensure t
-  :config
-  (recentf-mode 1))
+;; (use-package recentf
+;;   :ensure t
+;;   :config
+;;   (recentf-mode 1))
 ;;
 ;; ======================================
 ;;; org
@@ -334,7 +330,7 @@
 	("C-c r g" . consult-grep)
 	("C-c r o" . consult-outline)
 	("C-c r t" . consult-theme)
-	("C-x C-r" . consult-recent-file)
+;;	("C-x C-r" . consult-recent-file)
 	("C-x b" . consult-buffer)
 	:map minibuffer-local-map
         ("M-s" . consult-history)
@@ -575,17 +571,17 @@
   (setq denote-date-prompt-use-org-read-date t)
   (setq denote-date-format nil) ; read doc string
   (setq denote-backlinks-show-context t)
-;;  
+  ;;
+  (setq denote-org-capture-specifiers "%l\n%i\n%?")
   (with-eval-after-load 'org-capture
-    (setq denote-org-capture-specifiers "%l\n%i\n%?")
-    (add-to-list 'org-capture-templates
-		 '("n" "New denote" plain
-                   (file denote-last-path)
-                   #'denote-org-capture
-                   :no-save t
-                   :immediate-finish nil
-                   :kill-buffer t
-                   :jump-to-captured t))))
+  (add-to-list 'org-capture-templates
+               '("n" "New Denote" plain
+                 (file denote-last-path)
+                 #'denote-org-capture
+                 :no-save t
+                 :immediate-finish nil
+                 :kill-buffer t
+                 :jump-to-captured t))))
 ;;
 ;; ======================================
 ;;; rainbow-delimiters
