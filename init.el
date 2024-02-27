@@ -59,13 +59,12 @@
       search-highlight t)
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq-default line-spacing 0.2)    ; 줄 간격 1.5
-
 ;;; for corfu
-(setq completion-cycle-threshold 3)
-(setq tab-always-indent 'complete)
+(setq completion-cycle-threshold 3
+      tab-always-indent 'complete)
 ;;
 ;; ======================================
-;;; 자잘한 모드
+;;; 자잘한 필요 모드
 ;; --------------------------------------
 (save-place-mode 1)
 (global-font-lock-mode 1)
@@ -105,34 +104,39 @@
 (global-set-key (kbd "M-o") 'other-window)
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
-  "b" 'my-popmark
+  "t" 'my-popmark
   "e" 'eshell
   "m" 'modus-themes-toggle
   "f" 'toggle-frame-fullscreen
+  "g" 'consult-grep
   "p" 'eradio-play
   "s" 'eradio-stop)
 (keymap-set global-map "C-t" my-prefix-map)
 ;;
-(defun my-popmark (c)
+(defun my-popmark (choice)
   ;;https://stackoverflow.com/questions/19283368/how-can-i-open-quickly-a-file-in-emacs/19284395#19284395
   "Choices for directories and files."
-  (interactive "c\ [D]ired | [I]init | [t]Tasks | [c]Notes | [d]Daily | [f]FarmNote ")
+  (interactive "c\[O]rg | [E]macs | [P]df | [i]nit | [t]asks | [c]Notes | [d]aily | [f]arm")
   (cond
-   ((eq c ?D)
-    (dired "~/Dropbox/eDoc/org/denote"))
-   ((eq c ?I)
+   ((eq choice ?O)
+    (dired "~/Dropbox/eDoc/org"))
+   ((eq choice ?E)
+    (dired "~/Dropbox/emacs"))
+   ((eq choice ?P)
+    (dired "~/Dropbox/eDoc/pdf"))
+   ((eq choice ?i)
     (find-file "~/Dropbox/emacs/init.el")
     (message "Opened:  %s" (buffer-name)))
-   ((eq c ?t)
+   ((eq choice ?t)
     (find-file "~/Dropbox/eDoc/org/Tasks.org")
     (message "Opened:  %s" (buffer-name)))
-   ((eq c ?c)
+   ((eq choice ?c)
     (find-file "~/Dropbox/eDoc/org/cNotes.org")
     (message "Opened:  %s" (buffer-name)))
-   ((eq c ?d)
+   ((eq choice ?d)
     (find-file "~/Dropbox/eDoc/org/Daily.org")
     (message "Opened:  %s" (buffer-name)))
-   ((eq c ?f)
+   ((eq choice ?f)
     (find-file "~/Dropbox/eDoc/org/dFarmNote.org")
     (message "Opened:  %s" (buffer-name)))
    (t (message "Quit"))))
@@ -223,6 +227,7 @@
 ;; capture
   (setq org-capture-templates
 	'(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
+	  ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
 	  ("f" "dFarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
 ;; export PDF
   (setq org-latex-title-command "\\maketitle \\newpage")
@@ -326,7 +331,6 @@
   :ensure t
   :bind(("C-s" . consult-line)
 	("C-c r b" . consult-bookmark)
-;;	("C-c r i" . consult-imenu)
 	("C-c r g" . consult-grep)
 	("C-c r o" . consult-outline)
 	("C-c r t" . consult-theme)
@@ -517,8 +521,6 @@
 ;; Dired 모드에서 파일 목록 필터링
 (use-package dired-narrow
   :ensure t
-  ;; :config
-  ;; (bind-key "C-c C-n" 'dired-narrow dired-mode-map))
   :bind
   (:map dired-mode-map
 	("C-c C-n". dired-narrow)))
