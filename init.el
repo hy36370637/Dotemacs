@@ -102,8 +102,18 @@
 (global-unset-key [f11])  ;remove toggle-frame-fullscreen/MacOS
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
+;;
+(defvar-keymap my-consult-map
+  :doc "my consult map."
+  "b" 'consult-bookmark
+  "d" 'consult-dir
+  "g" 'consult-grep
+  "o" 'consult-outline
+  "t" 'consult-theme)
+;;
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
+  "c" my-consult-map
   "t" 'my-popmark
   "e" 'eshell
   "m" 'modus-themes-toggle
@@ -114,14 +124,13 @@
 (keymap-set global-map "C-t" my-prefix-map)
 ;;
 (defun my-popmark (choice)
-  ;;https://stackoverflow.com/questions/19283368/how-can-i-open-quickly-a-file-in-emacs/19284395#19284395
   "Choices for directories and files."
   (interactive "c\[O]rg | [E]macs | [P]df | [i]nit | [t]asks | [c]Notes | [d]aily | [f]arm")
   (cond
-   ((eq choice ?O)
-    (dired "~/Dropbox/eDoc/org"))
    ((eq choice ?E)
     (dired "~/Dropbox/emacs"))
+   ((eq choice ?O)
+    (dired "~/Dropbox/eDoc/org"))
    ((eq choice ?P)
     (dired "~/Dropbox/eDoc/pdf"))
    ((eq choice ?i)
@@ -162,7 +171,7 @@
 (set-face-attribute 'variable-pitch nil
 		    :family "Noto Sans CJK KR"
 		    :height 160)
-;; (set-fontset-font t 'hangul (font-spec :family "Noto Sans Mono CJK KR")) ;D2Coding, Apple SD 산돌고딕 Neo
+;; (set-fontset-font t 'hangul (font-spec :family "Noto Sans Mono CJK KR"))
 ;;
 ;; ======================================
 ;;; korean calendar
@@ -170,13 +179,10 @@
 (use-package calendar
   :config  
   (setq calendar-week-start-day 0
-	;; calendar-day-name-array ["일" "월" "화" "수" "목" "금" "토"]
-	;; calendar-day-header-array ["일" "월" "화" "수" "목" "금" "토"]
+	calendar-day-name-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
+;;	calendar-day-header-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
         calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월"
-				   "10월" "11월" "12월"])
-  ;; (setq calendar-holidays korean-holidays)   ;; package-install korean-holidays
-  :custom
-  (calendar-mark-holidays-flag nil))
+				   "10월" "11월" "12월"]))
 ;;
 ;;; calendar layout 보정. D2coding size
 ;; (defun cal-fixLayout ()
@@ -330,10 +336,6 @@
 (use-package consult
   :ensure t
   :bind(("C-s" . consult-line)
-	("C-c r b" . consult-bookmark)
-	("C-c r g" . consult-grep)
-	("C-c r o" . consult-outline)
-	("C-c r t" . consult-theme)
 ;;	("C-x C-r" . consult-recent-file)
 	("C-x b" . consult-buffer)
 	:map minibuffer-local-map
