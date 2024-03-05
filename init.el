@@ -51,13 +51,11 @@
 ;;; 작은 설정 들
 ;; --------------------------------------
 ;; (setq global-auto-revert-non-file-buffers t)
-(setq default-directory "~/Dropbox/eDoc/org/")
-(setq temporary-file-directory "~/Dropbox/eDoc/tmpdir/") ;temp dir
-;; (setq backup-directory-alist '(("." . "~/.emacs.d/backup")))
-(setq make-backup-files nil
+(setq default-directory "~/Dropbox/eDoc/org/"
+      temporary-file-directory "~/Dropbox/eDoc/tmpdir/" ;temp dir
+      make-backup-files nil
       kill-whole-line 1
       search-highlight t)
-(fset 'yes-or-no-p 'y-or-n-p)
 (setq-default line-spacing 0.2)    ; 줄 간격 1.5
 ;;; for corfu
 (setq completion-cycle-threshold 3
@@ -68,7 +66,7 @@
 ;; --------------------------------------
 (save-place-mode 1)
 (global-font-lock-mode 1)
-(global-visual-line-mode t)
+(global-visual-line-mode t) ;word wrap
 (global-auto-revert-mode 1)
 (transient-mark-mode t)
 (column-number-mode t)
@@ -109,6 +107,7 @@
   "d" 'consult-dir
   "g" 'consult-grep
   "o" 'consult-outline
+  "r" 'consult-recent-file
   "t" 'consult-theme)
 ;;
 (defvar-keymap my-prefix-map
@@ -117,10 +116,8 @@
   "t" 'my-popmark
   "e" 'eshell
   "m" 'modus-themes-toggle
-  "f" 'toggle-frame-fullscreen
-  "g" 'consult-grep
-  "p" 'eradio-play
-  "s" 'eradio-stop)
+  "f" 'toggle-frame-fullscreen)
+;;
 (keymap-set global-map "C-t" my-prefix-map)
 ;;
 (defun my-popmark (choice)
@@ -181,8 +178,7 @@
   (setq calendar-week-start-day 0
 	calendar-day-name-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
 ;;	calendar-day-header-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
-        calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월"
-				   "10월" "11월" "12월"]))
+        calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월" "10월" "11월" "12월"]))
 ;;
 ;;; calendar layout 보정. D2coding size
 ;; (defun cal-fixLayout ()
@@ -202,10 +198,10 @@
 ;; ======================================
 ;;; recentF
 ;; --------------------------------------
-;; (use-package recentf
-;;   :ensure t
-;;   :config
-;;   (recentf-mode 1))
+(use-package recentf
+  :ensure t
+  :config
+  (recentf-mode 1))
 ;;
 ;; ======================================
 ;;; org
@@ -263,22 +259,25 @@
 (defun inNewline ()
   "new line, below current line"
   (interactive)
-  (end-of-line)
-  (newline-and-indent))
+  (progn
+    (end-of-line)
+    (newline-and-indent)))
 ;;
 (defun org_New_Heading ()
   "new org-insert-heading"
   (interactive)
-  (end-of-line)
-  (org-insert-heading))
+  (progn
+    (end-of-line)
+    (org-insert-heading)))
 ;;
 (defun newOrgcyc ()
   "new paragraph,org-cycle"
   (interactive)
-  (end-of-line)
-  (newline-and-indent)
-  (next-line)
-  (org-cycle))
+  (progn
+    (end-of-line)
+    (newline-and-indent)
+    (next-line)
+    (org-cycle)))
 ;;
 ;; ======================================
 ;;; which-key
@@ -336,24 +335,24 @@
 (use-package consult
   :ensure t
   :bind(("C-s" . consult-line)
-;;	("C-x C-r" . consult-recent-file)
 	("C-x b" . consult-buffer)
+	("C-x C-r" . consult-recent-file)
 	:map minibuffer-local-map
         ("M-s" . consult-history)
         ("M-r" . consult-history))
-  :hook (completion-list-mode . consult-preview-at-point-mode)
-  :config
-  (consult-customize
-   consult-theme :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
-   ;; :preview-key "M-."
-   :preview-key '(:debounce 0.4 any))
-  ;; Optionally configure the narrowing key.
-  ;; Both < and C-+ work reasonably well.
-  (setq consult-narrow-key "<"))
+  :hook (completion-list-mode . consult-preview-at-point-mode))
+  ;; :config
+  ;; (consult-customize
+  ;;  consult-theme :preview-key '(:debounce 0.2 any)
+  ;;  consult-ripgrep consult-git-grep consult-grep
+  ;;  consult-bookmark consult-recent-file consult-xref
+  ;;  consult--source-bookmark consult--source-file-register
+  ;;  consult--source-recent-file consult--source-project-recent-file
+  ;;  ;; :preview-key "M-."
+  ;;  :preview-key '(:debounce 0.4 any))
+  ;; ;; Optionally configure the narrowing key.
+  ;; ;; Both < and C-+ work reasonably well.
+  ;; (setq consult-narrow-key "<"))
 ;;
 ;; ======================================
 ;;; consult-dir
@@ -502,10 +501,8 @@
 ;; directory 우선/한글파일명 순 정렬불가(macOS)
 ;; → 해결(setenv "LC_COLLATE" "C")
 (use-package dired
-  :config
-  (setq dired-auto-revert-buffer t))
-;;
-(defun sof/dired-sort ()
+  :preface
+  (defun sof/dired-sort ()
   "Dired sort, directories first."
   (save-excursion
     (let (buffer-read-only)
@@ -515,6 +512,23 @@
        (fboundp 'dired-insert-set-properties)
        (dired-insert-set-properties (point-min) (point-max)))
   (set-buffer-modified-p nil))
+  ;;
+  (defun my/dired-jump-to-top()
+    "Dired, jump top"
+    (interactive)
+    (goto-char (point-min))
+    (dired-next-line 2))
+  ;;
+  (defun my/dired-jump-to-bottom()
+    "Dired, jump bottom"
+    (interactive)
+    (goto-char (point-max))
+    (dired-next-line -1))
+  :bind (:map dired-mode-map
+	      ("M-<up>" . my/dired-jump-to-top)
+	      ("M-<down>" . my/dired-jump-to-bottom))
+  :config
+  (setq dired-auto-revert-buffer t))
 (add-hook 'dired-after-readin-hook 'sof/dired-sort)
 ;;
 ;; ======================================
@@ -590,7 +604,7 @@
 ;; ======================================
 ;;; rainbow-delimiters
 ;; --------------------------------------
-;; 괄호, 중괄호, 각종 쌍을 시각적으로 구분
+;; 괄호, 중괄호, 각종 쌍을 시각적(무지개색) 구분
 (use-package rainbow-delimiters
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode)
