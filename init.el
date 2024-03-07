@@ -95,6 +95,14 @@
   (exec-path-from-shell-initialize))
 ;;
 ;; ======================================
+;;; Keyboard for Macbook
+;; --------------------------------------
+(if (eq (system-name) "MacBookAir.local")
+;;(when (string= system-name "MacBookAir.local")
+  (setq mac-option-modifier 'super)
+  (setq mac-command-modifier 'meta))
+;;
+;; ======================================
 ;;; prefix key
 ;; --------------------------------------
 (global-unset-key [f11])  ;remove toggle-frame-fullscreen/MacOS
@@ -113,7 +121,7 @@
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
   "c" my-consult-map
-  "t" 'my-popmark
+  "p" 'my-popmark
   "e" 'eshell
   "m" 'modus-themes-toggle
   "f" 'toggle-frame-fullscreen)
@@ -200,8 +208,10 @@
 ;; --------------------------------------
 (use-package recentf
   :ensure t
-  :config
-  (recentf-mode 1))
+  :init
+  (recentf-mode 1)
+  :custom
+  (recentf-max-saved-items 50))
 ;;
 ;; ======================================
 ;;; org
@@ -514,13 +524,13 @@
   (set-buffer-modified-p nil))
   ;;
   (defun my/dired-jump-to-top()
-    "Dired, jump top"
+    "Dired, jump to top"
     (interactive)
     (goto-char (point-min))
     (dired-next-line 2))
   ;;
   (defun my/dired-jump-to-bottom()
-    "Dired, jump bottom"
+    "Dired, jump to bottom"
     (interactive)
     (goto-char (point-max))
     (dired-next-line -1))
