@@ -51,9 +51,14 @@
 ;;; 작은 설정 들
 ;; --------------------------------------
 ;; (setq global-auto-revert-non-file-buffers t)
-(setq default-directory "~/Dropbox/eDoc/org/"
-      temporary-file-directory "~/Dropbox/eDoc/tmpdir/" ;temp dir
-      make-backup-files nil
+(cond
+ ((eq system-type 'darwin)
+  (setq default-directory "~/Dropbox/eDoc/org/"
+	temporary-file-directory "~/Dropbox/eDoc/tmpdir/"))
+ ((eq system-type 'gnu/linux)
+  (setq default-directory "~/eDoc/org/"
+	temporary-file-directory "~/eDoc/tmpdir/")))
+(setq make-backup-files nil
       kill-whole-line 1
       search-highlight t)
 (setq-default line-spacing 0.2)    ; 줄 간격 1.5
@@ -84,13 +89,15 @@
 	modus-themes-variable-pitch-ui nil
 	modus-themes-custom-auto-reload t 
 	modus-themes-mode-line '(borderless))
-  (load-theme 'modus-vivendi))
+  (load-theme 'modus-operandi))
 ;;
 ;; ======================================
 ;;; exec-path-from-shell
 ;; --------------------------------------
+;; MacOS PATH 설정
 (use-package exec-path-from-shell
   :ensure t
+  :if (eq system-type 'darwin)   ; MacOS 
   :init
   (exec-path-from-shell-initialize))
 ;;
@@ -103,7 +110,7 @@
 ;;   (setq mac-command-modifier 'meta))
 ;;
 ;; ======================================
-;;; prefix key
+;;; 단축키 prefix key
 ;; --------------------------------------
 (global-unset-key [f11])  ;remove toggle-frame-fullscreen/MacOS
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
@@ -165,26 +172,26 @@
     (view-mode)))
 ;;
 ;; ======================================
-;;; locale. korean
+;;; 로케일, 한글
 ;; --------------------------------------
 (setenv "LANG" "ko_KR.UTF-8")
 (setenv "LC_COLLATE" "C")		  ;Dired 한글 파일명 정렬 macOS
 (set-locale-environment "ko_KR.UTF-8")	  ;kbd 한글 S-SPC
 ;;
 ;; ======================================
-;;; font
+;;; 글꼴 fonts
 ;; --------------------------------------
 ;; (set-frame-font "Noto Sans CJK KR" nil t)
 ;; (set-face-font 'fixed-pitch "Noto Sans Mono CJK KR")
 (set-face-attribute 'default nil
 		    :family "Hack" ;Hack, Menlo
-		    :height 180)
+		    :height 170)
 (set-face-attribute 'fixed-pitch nil
 		    :family "Noto Sans Mono CJK KR"
-		    :height 180)
+		    :height 170)
 (set-face-attribute 'variable-pitch nil
 		    :family "Noto Sans CJK KR"
-		    :height 180)
+		    :height 170)
 (set-fontset-font t 'hangul (font-spec :family "Noto Sans Mono CJK KR"))
 ;;
 ;; ======================================
@@ -228,9 +235,9 @@
 (use-package org
   :bind(("M-n" . 'outline-next-visible-heading)
 	("M-p" . 'outline-previous-visible-heading)
-	("C-0" . 'inNewline)
-	("C-9" . 'newOrgcyc)
-	("C-8" . 'org_New_Heading))
+	("C-0" . 'org-Newline)
+	("C-9" . 'org-NewCyc)
+	("C-8" . 'org-NewHeading))
   :custom
   (org-startup-indented nil)            ;indent-mode enable
   (org-hide-leading-stars nil)          ;star invisible
@@ -242,7 +249,9 @@
   (org-log-done 'time)
   (org-image-actual-width '(100))       ; imagee 미리보기 사이즈
   :config
-  (setq org-directory (expand-file-name "~/Dropbox/eDoc/org/"))
+  (if (eq system-type 'gnu/linux)
+      (setq org-directory (expand-file-name "~/eDoc/org/"))
+    (setq org-directory (expand-file-name "~/Dropbox/eDoc/org/")))
   (setq org-agenda-files '("Tasks.org" "Daily.org"))
   (setq org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))   ; shift-F(follow-mode, move key F,B)
 ;; capture
@@ -275,21 +284,21 @@
 ;; ======================================
 ;;; for org edit/custom function
 ;; --------------------------------------
-(defun inNewline ()
+(defun org-Newline ()
   "new line, below current line"
   (interactive)
   (progn
     (end-of-line)
     (newline-and-indent)))
 ;;
-(defun org_New_Heading ()
+(defun org-NewHeading ()
   "new org-insert-heading"
   (interactive)
   (progn
     (end-of-line)
     (org-insert-heading)))
 ;;
-(defun newOrgcyc ()
+(defun org-NewCyc ()
   "new paragraph,org-cycle"
   (interactive)
   (progn
@@ -359,19 +368,19 @@
 	:map minibuffer-local-map
         ("M-s" . consult-history)
         ("M-r" . consult-history))
-  :hook (completion-list-mode . consult-preview-at-point-mode))
-  ;; :config
-  ;; (consult-customize
-  ;;  consult-theme :preview-key '(:debounce 0.2 any)
-  ;;  consult-ripgrep consult-git-grep consult-grep
-  ;;  consult-bookmark consult-recent-file consult-xref
-  ;;  consult--source-bookmark consult--source-file-register
-  ;;  consult--source-recent-file consult--source-project-recent-file
-  ;;  ;; :preview-key "M-."
-  ;;  :preview-key '(:debounce 0.4 any))
-  ;; ;; Optionally configure the narrowing key.
-  ;; ;; Both < and C-+ work reasonably well.
-  ;; (setq consult-narrow-key "<"))
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+  :config
+  (consult-customize
+   consult-theme :preview-key '(:debounce 0.2 any)
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
+   ;; :preview-key "M-."
+   :preview-key '(:debounce 0.4 any))
+  ;; Optionally configure the narrowing key.
+  ;; Both < and C-+ work reasonably well.
+  (setq consult-narrow-key "<"))
 ;;
 ;; ======================================
 ;;; consult-dir
@@ -418,7 +427,11 @@
 (use-package eradio
   :ensure t
   :init
-  (setq eradio-player '("/Applications/VLC.app/Contents/MacOS/VLC" "--no-video" "-I" "rc"))
+  (cond
+   ((eq system-type 'darwin)
+    (setq eradio-player '("/Applications/VLC.app/Contents/MacOS/VLC" "--no-video" "-I" "rc")))
+   ((eq system-type 'gnu/linux) ;test 필요
+    (setq eradio-player "vlc")))
   :config
 ;;  (setq eradio-show-nowplaying t)
   (setq eradio-channels '(("1.CBS Music FM" . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8")
@@ -498,16 +511,19 @@
 ;;; all-the-icons
 ;; ---------------------------------------
 (use-package all-the-icons
+  :ensure t
   :if (display-graphic-p))
 ;;
 ;; dired with icons
 (use-package all-the-icons-dired
+  :ensure t
   :if (display-graphic-p)
   :hook
   (dired-mode . all-the-icons-dired-mode))
 ;;
 ;; from https://kristofferbalintona.me/posts/202202211546/
 (use-package all-the-icons-completion
+  :ensure t
   :if (display-graphic-p)
   :after (marginalia all-the-icons)
   :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
@@ -543,22 +559,31 @@
     (interactive)
     (goto-char (point-max))
     (dired-next-line -1))
+  :config
+  (setq dired-auto-revert-buffer t)
   :bind (:map dired-mode-map
 	      ("M-<up>" . my/dired-jump-to-top)
-	      ("M-<down>" . my/dired-jump-to-bottom))
-  :config
-  (setq dired-auto-revert-buffer t))
-(add-hook 'dired-after-readin-hook 'sof/dired-sort)
+	      ("M-<down>" . my/dired-jump-to-bottom)
+	      ("/" . dired-narrow)
+	      ("C-c f" . toggle-frame-fullscreen)
+	      ("<tab>" . dired-subtree-toggle)
+	      ("<backtab>" . dired-subree-cycle)))
+(if (eq system-type 'darwin)
+    (add-hook 'dired-after-readin-hook 'sof/dired-sort))
 ;;
 ;; ======================================
 ;;; dired-narrow
 ;; --------------------------------------
 ;; Dired 모드에서 파일 목록 필터링
-(use-package dired-narrow
-  :ensure t
-  :bind
-  (:map dired-mode-map
-	("C-c C-n". dired-narrow)))
+(use-package dired-narrow :ensure t
+  :after dired)
+;;
+;; ======================================
+;; dired-subtree
+;; --------------------------------------
+;; Tab. sub directory 표시
+(use-package dired-subtree :ensure t
+  :after dired)
 ;;
 ;; ======================================
 ;;; eshell
@@ -576,12 +601,17 @@
   :hook (after-init . doom-modeline-mode)
   :config
   (setq doom-modeline-buffer-file-name-style 'truncate-nil) ;display full path
-  (setq doom-modeline-icon t))
+  (cond
+  ((eq system-type 'darwin)
+   (setq doom-modeline-icon t))
+  ((eq system-type 'gnu/linux)
+   (setq doom-modeline-icon nil))))
 ;;
 ;; ======================================
 ;;; denote
 ;; --------------------------------------
 (use-package denote
+  :ensure t
   :bind(("C-c n n" . denote)
 	("C-c n s" . denote-sort-dired))
   :config
