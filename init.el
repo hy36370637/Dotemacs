@@ -95,12 +95,12 @@
   (exec-path-from-shell-initialize))
 ;;
 ;; ======================================
-;;; Keyboard for Macbook
+;;; Keyboard for MacOS
 ;; --------------------------------------
-(if (eq (system-name) "MacBookAir.local")
-;;(when (string= system-name "MacBookAir.local")
-  (setq mac-option-modifier 'super)
-  (setq mac-command-modifier 'meta))
+;; (when (equal system-type 'darwin)
+;; ;;(when (string= system-name "MacBookAir.local")
+;;   (setq mac-option-modifier 'super)
+;;   (setq mac-command-modifier 'meta))
 ;;
 ;; ======================================
 ;;; prefix key
@@ -125,6 +125,7 @@
   "e" 'eshell
   "m" 'modus-themes-toggle
   "f" 'toggle-frame-fullscreen
+  "r" 'my-reading-mode
   "v" 'view-mode)
 ;;
 (keymap-set global-map "C-t" my-prefix-map)
@@ -156,6 +157,13 @@
     (message "Opened:  %s" (buffer-name)))
    (t (message "Quit"))))
 ;;
+(defun my-reading-mode()
+    "Fullscreen & view-mode"
+  (interactive)
+  (progn
+    (toggle-frame-fullscreen)
+    (view-mode)))
+;;
 ;; ======================================
 ;;; locale. korean
 ;; --------------------------------------
@@ -170,14 +178,14 @@
 ;; (set-face-font 'fixed-pitch "Noto Sans Mono CJK KR")
 (set-face-attribute 'default nil
 		    :family "Hack" ;Hack, Menlo
-		    :height 160)
+		    :height 180)
 (set-face-attribute 'fixed-pitch nil
 		    :family "Noto Sans Mono CJK KR"
-		    :height 160)
+		    :height 180)
 (set-face-attribute 'variable-pitch nil
 		    :family "Noto Sans CJK KR"
-		    :height 160)
-;; (set-fontset-font t 'hangul (font-spec :family "Noto Sans Mono CJK KR"))
+		    :height 180)
+(set-fontset-font t 'hangul (font-spec :family "Noto Sans Mono CJK KR"))
 ;;
 ;; ======================================
 ;;; korean calendar
@@ -627,8 +635,7 @@
   :ensure nil ; built-in
   :init
   (setq view-read-only t)
- ;;  :bind
- ;;  (("C-x C-q" . view-mode))
-  :config
-  (define-key view-mode-map (kbd "n") 'next-line)      ; Move down
-  (define-key view-mode-map (kbd "p") 'previous-line)) ; Move up
+  :bind
+  (:map view-mode-map
+	("n" . next-line) ;move-down
+	("p" . previous-line)))
