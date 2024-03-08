@@ -430,8 +430,8 @@
   (cond
    ((eq system-type 'darwin)
     (setq eradio-player '("/Applications/VLC.app/Contents/MacOS/VLC" "--no-video" "-I" "rc")))
-   ((eq system-type 'gnu/linux) ;test 필요
-    (setq eradio-player "vlc")))
+   ((eq system-type 'gnu/linux)
+    (setq eradio-player '("vlc" "--no-video" "-I" "rc"))))
   :config
 ;;  (setq eradio-show-nowplaying t)
   (setq eradio-channels '(("1.CBS Music FM" . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8")
@@ -568,8 +568,7 @@
 	      ("C-c f" . toggle-frame-fullscreen)
 	      ("<tab>" . dired-subtree-toggle)
 	      ("<backtab>" . dired-subree-cycle)))
-(if (eq system-type 'darwin)
-    (add-hook 'dired-after-readin-hook 'sof/dired-sort))
+(add-hook 'dired-after-readin-hook 'sof/dired-sort)
 ;;
 ;; ======================================
 ;;; dired-narrow
