@@ -124,7 +124,8 @@
   "p" 'my-popmark
   "e" 'eshell
   "m" 'modus-themes-toggle
-  "f" 'toggle-frame-fullscreen)
+  "f" 'toggle-frame-fullscreen
+  "v" 'view-mode)
 ;;
 (keymap-set global-map "C-t" my-prefix-map)
 ;;
@@ -552,17 +553,6 @@
 	("C-c C-n". dired-narrow)))
 ;;
 ;; ======================================
-;;; dired-subtree
-;; --------------------------------------
-;; Dired에서 디렉터리 확장, 축소
-(use-package dired-subtree
-  :ensure nil
-  :bind
-  (:map dired-mode-map
-	([tab] . dired-subtree-toggle)
-	([backtab] . dired-subtree-cycle)))
-;;
-;; ======================================
 ;;; eshell
 ;; --------------------------------------
 (use-package eshell
@@ -628,3 +618,17 @@
 	  '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid"))))
 	  '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
 	  '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1"))))))
+;;
+;; ======================================
+;;; view-mode
+;; --------------------------------------
+;; 읽기 모드, 편집 보호
+(use-package view
+  :ensure nil ; built-in
+  :init
+  (setq view-read-only t)
+ ;;  :bind
+ ;;  (("C-x C-q" . view-mode))
+  :config
+  (define-key view-mode-map (kbd "n") 'next-line)      ; Move down
+  (define-key view-mode-map (kbd "p") 'previous-line)) ; Move up
