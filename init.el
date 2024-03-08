@@ -1,7 +1,7 @@
 ;; ======================================
 ;;; Speed up emacs
 ;; --------------------------------------
-;; Decrease the number of garbage collection invocations
+;; 가비지 수집 호출 횟수 줄이기
 (setq gc-cons-threshold 10000000)
 (add-hook 'emacs-startup-hook 'my/set-gc-threshold)
 (defun my/set-gc-threshold ()
@@ -34,6 +34,12 @@
 ;; (setq use-package-always-ensure nil)
 ;;
 ;; ======================================
+;;; system-info
+;; --------------------------------------
+;; (defvar my-laptop (eq system-type 'gnu/linux))
+;; (defvar my-darwin (eq system-type 'darwin))
+;;
+;; ======================================
 ;;; 외양
 ;; --------------------------------------
 ;;; hidden menu Bar
@@ -51,13 +57,12 @@
 ;;; 작은 설정 들
 ;; --------------------------------------
 ;; (setq global-auto-revert-non-file-buffers t)
-(cond
- ((eq system-type 'darwin)
-  (setq default-directory "~/Dropbox/eDoc/org/"
-	temporary-file-directory "~/Dropbox/eDoc/tmpdir/"))
- ((eq system-type 'gnu/linux)
+(if (eq system-type 'darwin)
+    (setq default-directory "~/Dropbox/eDoc/org/"
+	  temporary-file-directory "~/Dropbox/eDoc/tmpdir/")
   (setq default-directory "~/eDoc/org/"
-	temporary-file-directory "~/eDoc/tmpdir/")))
+	temporary-file-directory "~/eDoc/tmpdir/"))
+;; -------------------------------------
 (setq make-backup-files nil
       kill-whole-line 1
       search-highlight t)
@@ -124,7 +129,7 @@
   "o" 'consult-outline
   "r" 'consult-recent-file
   "t" 'consult-theme)
-;;
+;; -------------------------------------
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
   "c" my-consult-map
@@ -136,7 +141,7 @@
   "v" 'view-mode)
 ;;
 (keymap-set global-map "C-t" my-prefix-map)
-;;
+;; --------------------------------------
 (defun my-popmark (choice)
   "Choices for directories and files."
   (interactive "c\[O]rg | [E]macs | [P]df | [i]nit | [t]asks | [c]Notes | [d]aily | [f]arm")
@@ -163,7 +168,7 @@
     (find-file "~/Dropbox/eDoc/org/dFarmNote.org")
     (message "Opened:  %s" (buffer-name)))
    (t (message "Quit"))))
-;;
+;; -------------------------------------
 (defun my-reading-mode()
     "Fullscreen & view-mode"
   (interactive)
@@ -185,13 +190,13 @@
 ;; (set-face-font 'fixed-pitch "Noto Sans Mono CJK KR")
 (set-face-attribute 'default nil
 		    :family "Hack" ;Hack, Menlo
-		    :height 170)
+		    :height 160)
 (set-face-attribute 'fixed-pitch nil
 		    :family "Noto Sans Mono CJK KR"
-		    :height 170)
+		    :height 160)
 (set-face-attribute 'variable-pitch nil
 		    :family "Noto Sans CJK KR"
-		    :height 170)
+		    :height 160)
 (set-fontset-font t 'hangul (font-spec :family "Noto Sans Mono CJK KR"))
 ;;
 ;; ======================================
@@ -236,7 +241,7 @@
   :bind(("M-n" . 'outline-next-visible-heading)
 	("M-p" . 'outline-previous-visible-heading)
 	("C-0" . 'org-Newline)
-	("C-9" . 'org-NewCyc)
+	("C-9" . 'org-NewCycle)
 	("C-8" . 'org-NewHeading))
   :custom
   (org-startup-indented nil)            ;indent-mode enable
@@ -253,7 +258,7 @@
       (setq org-directory (expand-file-name "~/eDoc/org/"))
     (setq org-directory (expand-file-name "~/Dropbox/eDoc/org/")))
   (setq org-agenda-files '("Tasks.org" "Daily.org"))
-  (setq org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))   ; shift-F(follow-mode, move key F,B)
+  (setq org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
 ;; capture
   (setq org-capture-templates
 	'(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
@@ -290,15 +295,15 @@
   (progn
     (end-of-line)
     (newline-and-indent)))
-;;
+;; -------------------------------------
 (defun org-NewHeading ()
   "new org-insert-heading"
   (interactive)
   (progn
     (end-of-line)
     (org-insert-heading)))
-;;
-(defun org-NewCyc ()
+;; -------------------------------------
+(defun org-NewCycle ()
   "new paragraph,org-cycle"
   (interactive)
   (progn
@@ -378,8 +383,6 @@
    consult--source-recent-file consult--source-project-recent-file
    ;; :preview-key "M-."
    :preview-key '(:debounce 0.4 any))
-  ;; Optionally configure the narrowing key.
-  ;; Both < and C-+ work reasonably well.
   (setq consult-narrow-key "<"))
 ;;
 ;; ======================================
@@ -433,7 +436,6 @@
    ((eq system-type 'gnu/linux)
     (setq eradio-player '("vlc" "--no-video" "-I" "rc"))))
   :config
-;;  (setq eradio-show-nowplaying t)
   (setq eradio-channels '(("1.CBS Music FM" . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8")
 			  ("2.BBS Radio" . "http://bbslive.clouducs.com:1935/bbsradio-live/livestream/playlist.m3u8")
 			  ("3.BTN Woolim FM" . "rtmp://btn.nowcdn.co.kr/btn_ch4st/live.stream")
@@ -547,13 +549,13 @@
        (fboundp 'dired-insert-set-properties)
        (dired-insert-set-properties (point-min) (point-max)))
   (set-buffer-modified-p nil))
-  ;;
+  ;; -------------------------------------
   (defun my/dired-jump-to-top()
     "Dired, jump to top"
     (interactive)
     (goto-char (point-min))
     (dired-next-line 2))
-  ;;
+  ;; -------------------------------------
   (defun my/dired-jump-to-bottom()
     "Dired, jump to bottom"
     (interactive)
