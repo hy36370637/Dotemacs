@@ -602,11 +602,8 @@
   :hook (after-init . doom-modeline-mode)
   :config
   (setq doom-modeline-buffer-file-name-style 'truncate-nil) ;display full path
-  (cond
-  ((eq system-type 'darwin)
-   (setq doom-modeline-icon t))
-  ((eq system-type 'gnu/linux)
-   (setq doom-modeline-icon nil))))
+  (when (eq system-type 'gnu/linux)
+    (setq doom-modeline-icon nil)))
 ;;
 ;; ======================================
 ;;; denote
@@ -670,3 +667,15 @@
   (:map view-mode-map
 	("n" . next-line) ;move-down
 	("p" . previous-line)))
+;;
+;; ======================================
+;;; pdf-view, tools
+;; --------------------------------------
+;; only linux
+(use-package pdf-tools
+  :ensure nil
+  :if (eq system-type 'gnu/linux)
+  :mode ("\\.pdf\\'" . pdf-view-mode) ; Automatically open PDFs in pdf-view-mode
+  :config
+  (setq pdf-view-display-size 'fit-width) ; Set the default zoom level
+  (pdf-tools-install))
