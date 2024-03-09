@@ -62,7 +62,7 @@
 	  temporary-file-directory "~/Dropbox/eDoc/tmpdir/")
   (setq default-directory "~/eDoc/org/"
 	temporary-file-directory "~/eDoc/tmpdir/"))
-;; -------------------------------------
+;;
 (setq make-backup-files nil
       kill-whole-line 1
       search-highlight t)
@@ -93,8 +93,17 @@
 	modus-themes-mixed-fonts t
 	modus-themes-variable-pitch-ui nil
 	modus-themes-custom-auto-reload t 
-	modus-themes-mode-line '(borderless))
-  (load-theme 'modus-operandi))
+	modus-themes-mode-line '(borderless)))
+;;
+(defun set-theme-by-time ()
+  "시간에 따른 테마 변경"
+  (let ((current-hour (string-to-number (substring (current-time-string) 11 13))))
+    (if (and (>= current-hour 9) (< current-hour 17)) ; 9시부터 17시까지
+        (load-theme 'modus-operandi)
+      (load-theme 'modus-vivendi))))
+;; display-time 모듈 사용. Emacs 시작 테마 설정.
+(set-theme-by-time)
+
 ;;
 ;; ======================================
 ;;; exec-path-from-shell
