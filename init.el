@@ -36,8 +36,8 @@
 ;; ======================================
 ;;; system-info
 ;; --------------------------------------
-;; (defvar my-laptop (eq system-type 'gnu/linux))
-;; (defvar my-darwin (eq system-type 'darwin))
+(defvar my-laptop-p (eq system-type 'gnu/linux))
+(defvar my-mactop-p (eq system-type 'darwin))
 ;;
 ;; ======================================
 ;;; 외양
@@ -57,7 +57,7 @@
 ;;; 작은 설정 들
 ;; --------------------------------------
 ;; (setq global-auto-revert-non-file-buffers t)
-(if (eq system-type 'darwin)
+(if my-mactop-p               ;(eq system-type 'darwin)
     (setq default-directory "~/Dropbox/eDoc/org/"
 	  temporary-file-directory "~/Dropbox/eDoc/tmpdir/")
   (setq default-directory "~/eDoc/org/"
@@ -102,7 +102,7 @@
 ;; MacOS PATH 설정
 (use-package exec-path-from-shell
   :ensure t
-  :if (eq system-type 'darwin)   ; MacOS 
+  :if my-mactop-p  ;(eq system-type 'darwin)
   :init
   (exec-path-from-shell-initialize))
 ;;
@@ -254,7 +254,7 @@
   (org-log-done 'time)
   (org-image-actual-width '(100))       ; imagee 미리보기 사이즈
   :config
-  (if (eq system-type 'gnu/linux)
+  (if my-laptop-p        ;(eq system-type 'gnu/linux)
       (setq org-directory (expand-file-name "~/eDoc/org/"))
     (setq org-directory (expand-file-name "~/Dropbox/eDoc/org/")))
   (setq org-agenda-files '("Tasks.org" "Daily.org"))
@@ -431,9 +431,9 @@
   :ensure t
   :init
   (cond
-   ((eq system-type 'darwin)
+   (my-mactop-p   ;(eq system-type 'darwin)
     (setq eradio-player '("/Applications/VLC.app/Contents/MacOS/VLC" "--no-video" "-I" "rc")))
-   ((eq system-type 'gnu/linux)
+   (my-laptop-p   ;(eq system-type 'gnu/linux)
     (setq eradio-player '("vlc" "--no-video" "-I" "rc"))))
   :config
   (setq eradio-channels '(("1.CBS Music FM" . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8")
@@ -602,7 +602,7 @@
   :hook (after-init . doom-modeline-mode)
   :config
   (setq doom-modeline-buffer-file-name-style 'truncate-nil) ;display full path
-  (when (eq system-type 'gnu/linux)
+  (when my-laptop-p    ;(eq system-type 'gnu/linux)
     (setq doom-modeline-icon nil)))
 ;;
 ;; ======================================
@@ -674,7 +674,7 @@
 ;; only linux
 (use-package pdf-tools
   :ensure nil
-  :if (eq system-type 'gnu/linux)
+  :if my-laptop-p   ;;(eq system-type 'gnu/linux)
   :mode ("\\.pdf\\'" . pdf-view-mode) ; Automatically open PDFs in pdf-view-mode
   :config
   (setq pdf-view-display-size 'fit-width) ; Set the default zoom level
