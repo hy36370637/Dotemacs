@@ -80,7 +80,7 @@
 (global-auto-revert-mode 1)
 (transient-mark-mode t)
 (column-number-mode t)
-(display-time-mode 1)
+(display-time-mode 1) ;시간 표시, set-theme-by-time()
 ;;
 ;; ======================================
 ;;; modus theme
@@ -95,6 +95,10 @@
 	modus-themes-custom-auto-reload t 
 	modus-themes-mode-line '(borderless)))
 ;;
+;; ======================================
+;;; start emacs
+;; --------------------------------------
+;; 시간에 따른 theme 시작
 (defun set-theme-by-time ()
   "시간에 따른 테마 변경"
   (let ((current-hour (string-to-number (substring (current-time-string) 11 13))))
