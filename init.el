@@ -80,7 +80,7 @@
 (global-auto-revert-mode 1)
 (transient-mark-mode t)
 (column-number-mode t)
-(display-time-mode 1) ;시간 표시, set-theme-by-time()
+(display-time-mode 1)
 ;;
 ;; ======================================
 ;;; modus theme
@@ -95,19 +95,14 @@
 	modus-themes-custom-auto-reload t 
 	modus-themes-mode-line '(borderless)))
 ;;
-;; ======================================
-;;; start emacs
-;; --------------------------------------
-;; 시간에 따른 theme 시작
 (defun set-theme-by-time ()
-  "시간에 따른 테마 변경"
+  "시간에 따른 load theme"
   (let ((current-hour (string-to-number (substring (current-time-string) 11 13))))
     (if (and (>= current-hour 9) (< current-hour 17)) ; 9시부터 17시까지
         (load-theme 'modus-operandi)
       (load-theme 'modus-vivendi))))
 ;; display-time 모듈 사용. Emacs 시작 테마 설정.
 (set-theme-by-time)
-
 ;;
 ;; ======================================
 ;;; exec-path-from-shell
@@ -157,28 +152,44 @@
 ;; --------------------------------------
 (defun my-popmark (choice)
   "Choices for directories and files."
-  (interactive "c\[O]rg | [E]macs | [P]df | [i]nit | [t]asks | [c]Notes | [d]aily | [f]arm")
+  (interactive "c\[O]org(Dir) | [E]macs(Dir) | [P]pdf(Dir) | [i]nit | [t]asks | [c]Notes | [d]aily | [f]arm")
   (cond
    ((eq choice ?E)
-    (dired "~/Dropbox/emacs"))
+    (if my-mactop-p
+	(dired "~/Dropbox/emacs")
+      (dired "~/emacs")))
    ((eq choice ?O)
-    (dired "~/Dropbox/eDoc/org"))
+    (if my-mactop-p
+	(dired "~/Dropbox/eDoc/org")
+      (dired "~/eDoc/org")))
    ((eq choice ?P)
-    (dired "~/Dropbox/eDoc/pdf"))
+    (if my-mactop-p
+	(dired "~/Dropbox/eDoc/pdf")
+      (dired "~/eDoc/pdf")))
    ((eq choice ?i)
-    (find-file "~/Dropbox/emacs/init.el")
+    (if my-mactop-p
+	(find-file "~/Dropbox/emacs/init.el")
+      (find-file "~/emacs/init.el"))
     (message "Opened:  %s" (buffer-name)))
    ((eq choice ?t)
-    (find-file "~/Dropbox/eDoc/org/Tasks.org")
+    (if my-mactop-p
+	(find-file "~/Dropbox/eDoc/org/Tasks.org")
+      (find-file "~/eDoc/org/Tasks.org"))
     (message "Opened:  %s" (buffer-name)))
    ((eq choice ?c)
-    (find-file "~/Dropbox/eDoc/org/cNotes.org")
+    (if my-mactop-p
+	(find-file "~/Dropbox/eDoc/org/cNotes.org")
+      (find-file "~/eDoc/org/cNotes.org"))
     (message "Opened:  %s" (buffer-name)))
    ((eq choice ?d)
-    (find-file "~/Dropbox/eDoc/org/Daily.org")
+    (if my-mactop-p
+	(find-file "~/Dropbox/eDoc/org/Daily.org")
+      (find-file "~/eDoc/org/Daily.org"))
     (message "Opened:  %s" (buffer-name)))
    ((eq choice ?f)
-    (find-file "~/Dropbox/eDoc/org/dFarmNote.org")
+    (if my-mactop-p
+	(find-file "~/Dropbox/eDoc/org/dFarmNote.org")
+      (find-file "~/eDoc/org/dFarmNote.org"))
     (message "Opened:  %s" (buffer-name)))
    (t (message "Quit"))))
 ;; -------------------------------------
