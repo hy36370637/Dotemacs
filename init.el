@@ -91,7 +91,7 @@
 ;; ======================================
 ;;; start emacs (load theme by time)
 ;; --------------------------------------
-;; display-time 모듈 사용.
+;; display-time-mode 사용.
 (defun set-theme-by-time ()
   "set theme by time"
   (let ((current-hour (string-to-number (substring (current-time-string) 11 13))))
@@ -121,7 +121,6 @@
 ;; ======================================
 ;;; 단축키 prefix key
 ;; --------------------------------------
-;; 단축키 사용자 설정
 (global-unset-key [f11])  ;remove toggle-frame-fullscreen/MacOS
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
@@ -142,7 +141,6 @@
   "e" 'eshell
   "m" 'modus-themes-toggle
   "f" 'toggle-frame-fullscreen
-  "o" 'org-custom-action
   "r" 'toggle-my-reading-mode
   "v" 'view-mode)
 ;;
@@ -280,19 +278,19 @@
 ;; ======================================
 ;;; for org edit/custom function
 ;; --------------------------------------
-(defun org-custom-action (action)
-  "Perform custom org-mode action based on the given ACTION.
-   Possible values for ACTION:
-    - 'newline': Insert a new line.
-    - 'heading': Insert a new org-heading.
-    - 'cycle': Insert a new paragraph and cycle visibility."
-  (interactive
-   (list (completing-read "Action: " '("1.newline" "2.heading" "3.cycle"))))
+(defun org-custom-action (at)
+  "Perform custom org-mode action based on the numeric ACTION.
+   8: new line, 9: new org-heading, 0: new paragraph & org-cycle"
+  (interactive "nEnter action (8: new line, 9: heading, 0: new paragraph): ")
   (end-of-line)
   (cond
-   ((equal action "1.newline") (newline-and-indent))
-   ((equal action "2.heading") (org-insert-heading))
-   ((equal action "3.cycle") (progn (newline-and-indent) (next-line) (org-cycle)))))
+   ((= at 8) (newline-and-indent))
+   ((= at 9) (org-insert-heading))
+   ((= at 0) (progn (newline-and-indent) (next-line) (org-cycle)))
+   (t (message "err,, please enter 8, 9, or 0.")))
+  )
+
+(global-set-key (kbd "C-1") 'org-custom-action)
 ;;
 ;; ======================================
 ;;; which-key
@@ -693,10 +691,10 @@
   "지정한 검색 엔진에서 검색"
   (interactive
    (list
-    (completing-read "검색 선택 (google/naver): " '("gg" "nn"))
+    (completing-read "검색 선택 (google/naver): " '("google" "naver"))
     (read-string "검색어 입력: ")))
   (let ((url (cond
-               ((string= engine "gg") (concat "https://www.google.com/search?q=" (url-hexify-string query)))
-               ((string= engine "nn") (concat "https://search.naver.com/search.naver?query=" (url-hexify-string query)))
+               ((string= engine "google") (concat "https://www.google.com/search?q=" (url-hexify-string query)))
+               ((string= engine "naver") (concat "https://search.naver.com/search.naver?query=" (url-hexify-string query)))
                (t (error "지원하지 않는 검색 엔진입니다.")))))
     (browse-url url)))
