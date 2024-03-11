@@ -51,6 +51,7 @@
       visible-bell t
       initial-scratch-message nil
       use-dialog-box nil)
+(setq-default line-spacing 0.2)    ; 줄 간격 1.5
 ;; (setq frame-title-format "| dole's Emacs | %b |")
 ;;
 ;; ======================================
@@ -66,7 +67,6 @@
 (setq make-backup-files nil
       kill-whole-line 1
       search-highlight t)
-(setq-default line-spacing 0.2)    ; 줄 간격 1.5
 ;;; for corfu
 (setq completion-cycle-threshold 3
       tab-always-indent 'complete)
@@ -129,6 +129,7 @@
 ;; ======================================
 ;;; 단축키 prefix key
 ;; --------------------------------------
+;; 단축키 사용자 설정
 (global-unset-key [f11])  ;remove toggle-frame-fullscreen/MacOS
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
@@ -149,6 +150,7 @@
   "e" 'eshell
   "m" 'modus-themes-toggle
   "f" 'toggle-frame-fullscreen
+  "o" 'org-custom-action
   "r" 'toggle-my-reading-mode
   "v" 'view-mode)
 ;;
@@ -196,21 +198,6 @@
       (find-file "~/eDoc/org/dFarmNote.org"))
     (message "Opened:  %s" (buffer-name)))
    (t (message "Quit"))))
-;; -------------------------------------
-(defun toggle-my-reading-mode ()
-  "Toggle fullscreen & view-mode."
-  (interactive)
-  (if (and (boundp 'my-reading-mode-enabled) my-reading-mode-enabled)
-      (progn
-        (toggle-frame-fullscreen)
-        (text-scale-decrease 0.5)
-        (setq my-reading-mode-enabled nil)
-        (view-mode -1))
-    (progn
-      (toggle-frame-fullscreen)
-      (text-scale-increase 0.5)
-      (setq my-reading-mode-enabled t)
-      (view-mode))))
 ;;
 ;; ======================================
 ;;; 로케일, 한글
@@ -276,9 +263,7 @@
 (use-package org
   :bind(("M-n" . 'outline-next-visible-heading)
 	("M-p" . 'outline-previous-visible-heading)
-	("C-0" . 'org-Newline)
-	("C-9" . 'org-NewCycle)
-	("C-8" . 'org-NewHeading))
+	("C-0" . 'org-custom-action))
   :custom
   (org-startup-indented nil)            ;indent-mode enable
   (org-hide-leading-stars nil)          ;star invisible
@@ -325,28 +310,32 @@
 ;; ======================================
 ;;; for org edit/custom function
 ;; --------------------------------------
-(defun org-Newline ()
-  "new line, below current line"
-  (interactive)
-  (progn
-    (end-of-line)
-    (newline-and-indent)))
-;; -------------------------------------
-(defun org-NewHeading ()
-  "new org-insert-heading"
-  (interactive)
-  (progn
-    (end-of-line)
-    (org-insert-heading)))
-;; -------------------------------------
-(defun org-NewCycle ()
-  "new paragraph,org-cycle"
-  (interactive)
-  (progn
-    (end-of-line)
-    (newline-and-indent)
-    (next-line)
-    (org-cycle)))
+(defun org-custom-action (action)
+  "Perform custom org-mode action based on the given ACTION.
+   Possible values for ACTION:
+    - 'newline': Insert a new line.
+    - 'heading': Insert a new org-heading.
+    - 'cycle': Insert a new paragraph and cycle visibility."
+  (interactive
+   (list (completing-read "Action: " '("1.newline" "2.heading" "3.cycle"))))
+  (end-of-line)
+  (cond
+   ((equal action "1.newline") (newline-and-indent))
+   ((equal action "2.heading") (org-insert-heading))
+   ((equal action "3.cycle") (progn (newline-and-indent) (next-line) (org-cycle)))))
+;; (defun org-custom-action ()
+;;   "Perform custom org-mode action based on the user input."
+;;   (interactive)
+;;   (let ((action (read-string "Enter action (1: newline, 2: heading, 3: cycle): ")))
+;;     (end-of-line)
+;;     (cond
+;;      ((string-equal action "1") (newline-and-indent))
+;;      ((string-equal action "2") (org-insert-heading))
+;;      ((string-equal action "3") (progn (newline-and-indent) (next-line) (org-cycle)))
+;;      (t (message "Invalid action. Please enter 1, 2, or 3.")))
+;;   ))
+;; (global-set-key (kbd "C-c o") 'org-custom-action)
+
 ;;
 ;; ======================================
 ;;; which-key
@@ -733,3 +722,22 @@
 ;;         ;; 추가적인 키 바인딩 설정
 ;;         ))
 ;; )
+;;
+;; ======================================
+;;; my-reading-mode
+;; -------------------------------------
+;; 읽기 모드, 쓰기 금지
+(defun toggle-my-reading-mode ()
+  "Toggle fullscreen & view-mode."
+  (interactive)
+  (if (and (boundp 'my-reading-mode-enabled) my-reading-mode-enabled)
+      (progn
+        (toggle-frame-fullscreen)
+        (text-scale-decrease 0.5)
+        (setq my-reading-mode-enabled nil)
+        (view-mode -1))
+    (progn
+      (toggle-frame-fullscreen)
+      (text-scale-increase 0.5)
+      (setq my-reading-mode-enabled t)
+      (view-mode))))
