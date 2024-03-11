@@ -2,7 +2,7 @@
 ;;; Speed up emacs
 ;; --------------------------------------
 ;; 가비지 수집 호출 횟수 줄이기
-(setq gc-cons-threshold 10000000)
+(setq gc-cons-threshold 100000000)
 (add-hook 'emacs-startup-hook 'my/set-gc-threshold)
 (defun my/set-gc-threshold ()
   "Reset `gc-cons-threshold' to its default value."
@@ -57,19 +57,12 @@
 ;; ======================================
 ;;; 작은 설정 들
 ;; --------------------------------------
-;; (setq global-auto-revert-non-file-buffers t)
-(if my-mactop-p               ;(eq system-type 'darwin)
-    (setq default-directory "~/Dropbox/eDoc/org/"
-	  temporary-file-directory "~/Dropbox/eDoc/tmpdir/")
-  (setq default-directory "~/eDoc/org/"
-	temporary-file-directory "~/eDoc/tmpdir/"))
-;;
+;; defult-directory
+(setq default-directory (if my-mactop-p "~/Dropbox/eDoc/org/" "~/eDoc/org/")
+      temporary-file-directory (if my-mactop-p "~/Dropbox/eDoc/tmpdir/" "~/eDoc/tmpdir/"))
 (setq make-backup-files nil
       kill-whole-line 1
       search-highlight t)
-;;; for corfu
-(setq completion-cycle-threshold 3
-      tab-always-indent 'complete)
 ;;
 ;; ======================================
 ;;; 자잘한 필요 모드
@@ -98,14 +91,13 @@
 ;; ======================================
 ;;; start emacs (load theme by time)
 ;; --------------------------------------
-;;
+;; display-time 모듈 사용.
 (defun set-theme-by-time ()
   "set theme by time"
   (let ((current-hour (string-to-number (substring (current-time-string) 11 13))))
     (if (and (>= current-hour 9) (< current-hour 17)) ; 9시부터 17시까지
         (load-theme 'modus-operandi)
       (load-theme 'modus-vivendi))))
-;; display-time 모듈 사용. Emacs 시작 테마 설정.
 (set-theme-by-time)
 ;;
 ;; ======================================
@@ -156,48 +148,31 @@
 ;;
 (keymap-set global-map "C-t" my-prefix-map)
 ;; --------------------------------------
+;; base-dir 변수를 사용하여 Mac 여부에 따라 기본 디렉토리 선택
+;; 중복 코드 회피, my-open-directory 및 my-open-file 함수 사용
 (defun my-popmark (choice)
   "Choices for directories and files."
   (interactive "c\[O]org(Dir) | [E]macs(Dir) | [P]pdf(Dir) | [i]nit | [t]asks | [c]Notes | [d]aily | [f]arm")
-  (cond
-   ((eq choice ?E)
-    (if my-mactop-p
-	(dired "~/Dropbox/emacs")
-      (dired "~/emacs")))
-   ((eq choice ?O)
-    (if my-mactop-p
-	(dired "~/Dropbox/eDoc/org")
-      (dired "~/eDoc/org")))
-   ((eq choice ?P)
-    (if my-mactop-p
-	(dired "~/Dropbox/eDoc/pdf")
-      (dired "~/eDoc/pdf")))
-   ((eq choice ?i)
-    (if my-mactop-p
-	(find-file "~/Dropbox/emacs/init.el")
-      (find-file "~/emacs/init.el"))
-    (message "Opened:  %s" (buffer-name)))
-   ((eq choice ?t)
-    (if my-mactop-p
-	(find-file "~/Dropbox/eDoc/org/Tasks.org")
-      (find-file "~/eDoc/org/Tasks.org"))
-    (message "Opened:  %s" (buffer-name)))
-   ((eq choice ?c)
-    (if my-mactop-p
-	(find-file "~/Dropbox/eDoc/org/cNotes.org")
-      (find-file "~/eDoc/org/cNotes.org"))
-    (message "Opened:  %s" (buffer-name)))
-   ((eq choice ?d)
-    (if my-mactop-p
-	(find-file "~/Dropbox/eDoc/org/Daily.org")
-      (find-file "~/eDoc/org/Daily.org"))
-    (message "Opened:  %s" (buffer-name)))
-   ((eq choice ?f)
-    (if my-mactop-p
-	(find-file "~/Dropbox/eDoc/org/dFarmNote.org")
-      (find-file "~/eDoc/org/dFarmNote.org"))
-    (message "Opened:  %s" (buffer-name)))
-   (t (message "Quit"))))
+  (let ((base-dir (if my-mactop-p "~/Dropbox/" "~/")))
+    (cond
+     ((eq choice ?E) (my-open-directory "emacs"))
+     ((eq choice ?O) (my-open-directory "eDoc/org"))
+     ((eq choice ?P) (my-open-directory "eDoc/pdf"))
+     ((eq choice ?i) (my-open-file "emacs/init.el"))
+     ((eq choice ?t) (my-open-file "eDoc/org/Tasks.org"))
+     ((eq choice ?c) (my-open-file "eDoc/org/cNotes.org"))
+     ((eq choice ?d) (my-open-file "eDoc/org/Daily.org"))
+     ((eq choice ?f) (my-open-file "eDoc/org/dFarmNote.org"))
+     (t (message "Quit")))))
+;; --------------------------------------
+(defun my-open-directory (dir)
+  "Open a directory based on the platform and given subdirectory."
+  (dired (concat base-dir dir)))
+;; --------------------------------------
+(defun my-open-file (file)
+  "Open a file based on the platform and given file path."
+  (find-file (concat base-dir file))
+  (message "Opened: %s" (buffer-name)))
 ;;
 ;; ======================================
 ;;; 로케일, 한글
@@ -259,41 +234,38 @@
 ;;
 ;; ======================================
 ;;; org
-;; --------------------------------------  
+;; --------------------------------------
 (use-package org
-  :bind(("M-n" . 'outline-next-visible-heading)
-	("M-p" . 'outline-previous-visible-heading)
-	("C-0" . 'org-custom-action))
+  :bind
+  (("M-n" . outline-next-visible-heading)
+   ("M-p" . outline-previous-visible-heading))
   :custom
-  (org-startup-indented nil)            ;indent-mode enable
-  (org-hide-leading-stars nil)          ;star invisible
-  (org-startup-with-inline-images nil)  ;show inline images.(#+STARTUP: inlineimages)
-  (org-adapt-indentation t)		;heading 이하 들여쓰기
-  (org-src-preserve-indentation t)	;소스코드 여백 적용 export
-;;  (org-agenda-start-with-log-mode t) ; agenda(ex 예정일과 완료일 구분 표시)
-  (org-log-into-drawer t)               ; enable LOGBOOK drawer
+  (org-startup-indented nil)
+  (org-hide-leading-stars nil)
+  (org-startup-with-inline-images nil)
+  (org-adapt-indentation t)
+  (org-src-preserve-indentation t)
+  (org-log-into-drawer t)
   (org-log-done 'time)
-  (org-image-actual-width '(100))       ; imagee 미리보기 사이즈
+  (org-image-actual-width '(100))
   :config
-  (if my-laptop-p        ;(eq system-type 'gnu/linux)
-      (setq org-directory (expand-file-name "~/eDoc/org/"))
-    (setq org-directory (expand-file-name "~/Dropbox/eDoc/org/")))
+  (setq org-directory (expand-file-name (if my-laptop-p "~/eDoc/org/" "~/Dropbox/eDoc/org/")))
   (setq org-agenda-files '("Tasks.org" "Daily.org"))
   (setq org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
-;; capture
+  ;; Capture templates
   (setq org-capture-templates
-	'(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
-	  ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
-	  ("f" "dFarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
-;; export PDF
-  (setq org-latex-title-command "\\maketitle \\newpage")
-  (setq org-latex-toc-command "\\tableofcontents \\newpage")
-  (setq org-latex-compiler "xelatex")
-  (setq org-latex-to-pdf-process
-	'("xelatex -interaction nonstopmode -output-directory %o %f"
-	  "xelatex -interaction nonstopmode -output-directory %o %f"
-	  "xelatex -interaction nonstopmode -output-directory %o %f")))
-;;
+        '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
+          ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
+          ("f" "dFarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
+  ;; Export settings
+  (setq org-latex-title-command "\\maketitle \\newpage"
+        org-latex-toc-command "\\tableofcontents \\newpage"
+        org-latex-compiler "xelatex"
+        org-latex-to-pdf-process
+        '("xelatex -interaction nonstopmode -output-directory %o %f"
+          "xelatex -interaction nonstopmode -output-directory %o %f"
+          "xelatex -interaction nonstopmode -output-directory %o %f")))
+;; Global key bindings
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-c c") 'org-capture)
@@ -335,7 +307,6 @@
 ;;      (t (message "Invalid action. Please enter 1, 2, or 3.")))
 ;;   ))
 ;; (global-set-key (kbd "C-c o") 'org-custom-action)
-
 ;;
 ;; ======================================
 ;;; which-key
@@ -506,6 +477,8 @@
 ;; =======================================
 ;;; corfu
 ;; ---------------------------------------
+(setq completion-cycle-threshold 3
+      tab-always-indent 'complete)
 (use-package corfu
   ;; TAB-and-Go customizations
   :ensure t
@@ -560,27 +533,25 @@
 ;; ======================================
 ;;; dired
 ;; --------------------------------------
-;; directory 우선/한글파일명 순 정렬불가(macOS)
-;; → 해결(setenv "LC_COLLATE" "C")
+;; directory 우선/한글파일명 정렬불가(macOS) → 해결(setenv "LC_COLLATE" "C")
 (use-package dired
   :preface
   (defun sof/dired-sort ()
-  "Dired sort, directories first."
-  (save-excursion
-    (let (buffer-read-only)
-      (forward-line 2)
-      (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max))))
-  (and (featurep 'emacs)
-       (fboundp 'dired-insert-set-properties)
-       (dired-insert-set-properties (point-min) (point-max)))
-  (set-buffer-modified-p nil))
-  ;; -------------------------------------
+    "Dired sort, directories first."
+    (save-excursion
+      (let ((buffer-read-only nil))
+        (forward-line 2)
+        (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max))))
+    (when (and (featurep 'emacs) (fboundp 'dired-insert-set-properties))
+      (dired-insert-set-properties (point-min) (point-max)))
+    (set-buffer-modified-p nil))
+  ;; ------
   (defun my/dired-jump-to-top()
     "Dired, jump to top"
     (interactive)
     (goto-char (point-min))
     (dired-next-line 2))
-  ;; -------------------------------------
+  ;; ------
   (defun my/dired-jump-to-bottom()
     "Dired, jump to bottom"
     (interactive)
@@ -588,15 +559,15 @@
     (dired-next-line -1))
   :config
   (setq dired-auto-revert-buffer t)
-  :bind (:map dired-mode-map
-	      ("M-<up>" . my/dired-jump-to-top)
-	      ("M-<down>" . my/dired-jump-to-bottom)
-	      ("/" . dired-narrow)
-	      ("C-c f" . toggle-frame-fullscreen)
-	      ("<tab>" . dired-subtree-toggle)
-	      ("<backtab>" . dired-subree-cycle)))
-(add-hook 'dired-after-readin-hook 'sof/dired-sort)
-;;
+  :bind
+  (:map dired-mode-map
+        ("M-<up>" . my/dired-jump-to-top)
+        ("M-<down>" . my/dired-jump-to-bottom)
+        ("/" . dired-narrow)
+        ("C-c f" . toggle-frame-fullscreen)
+        ("<tab>" . dired-subtree-toggle)
+        ("<backtab>" . dired-subtree-cycle))
+  :hook (dired-after-readin . sof/dired-sort))
 ;; ======================================
 ;;; dired-narrow
 ;; --------------------------------------
@@ -626,43 +597,40 @@
   :ensure t
   :hook (after-init . doom-modeline-mode)
   :config
-  (setq doom-modeline-buffer-file-name-style 'truncate-nil) ;display full path
-  (when my-laptop-p    ;(eq system-type 'gnu/linux)
-    (setq doom-modeline-icon nil)))
+  (setq doom-modeline-buffer-file-name-style 'truncate-nil
+        doom-modeline-icon (when my-laptop-p nil)))
 ;;
 ;; ======================================
 ;;; denote
 ;; --------------------------------------
 (use-package denote
   :ensure t
-  :bind(("C-c n n" . denote)
-	("C-c n s" . denote-sort-dired))
+  :bind
+  (("C-c n n" . denote)
+   ("C-c n s" . denote-sort-dired))
   :config
-  ;; Remember to check the doc strings of those variables.
-  (if my-mactop-p
-      (setq denote-directory (expand-file-name "~/Dropbox/eDoc/org/denote/"))
-    (setq denote-directioy (expand-file-name "~/eDoc/org/denote/")))
-;;  (setq denote-known-keywords '("emacs" "latex" "idea"))
-  (setq denote-infer-keywords t)
-  (setq denote-sort-keywords t)
-  (setq denote-file-type nil) ; Org is the default, set others here
-  (setq denote-prompts '(title keywords))
-  (setq denote-excluded-directories-regexp nil)
-  (setq denote-excluded-keywords-regexp nil)
-  (setq denote-date-prompt-use-org-read-date t)
-  (setq denote-date-format nil) ; read doc string
-  (setq denote-backlinks-show-context t)
-  ;;
-  (setq denote-org-capture-specifiers "%l\n%i\n%?")
+  (setq denote-directory (expand-file-name (if my-mactop-p "~/Dropbox/eDoc/org/denote/" "~/eDoc/org/denote/")))
+  (setq denote-known-keywords '("emacs" "latex" "idea")
+        denote-infer-keywords t
+        denote-sort-keywords t
+        denote-file-type nil
+        denote-prompts '(title keywords)
+        denote-excluded-directories-regexp nil
+        denote-excluded-keywords-regexp nil
+        denote-date-prompt-use-org-read-date t
+        denote-date-format nil
+        denote-backlinks-show-context t
+        denote-org-capture-specifiers "%l\n%i\n%?")
+  
   (with-eval-after-load 'org-capture
-  (add-to-list 'org-capture-templates
-               '("n" "New Denote" plain
-                 (file denote-last-path)
-                 #'denote-org-capture
-                 :no-save t
-                 :immediate-finish nil
-                 :kill-buffer t
-                 :jump-to-captured t))))
+    (add-to-list 'org-capture-templates
+                 '("n" "New Denote" plain
+                   (file denote-last-path)
+                   #'denote-org-capture
+                   :no-save t
+                   :immediate-finish nil
+                   :kill-buffer t
+                   :jump-to-captured t))))
 ;;
 ;; ======================================
 ;;; rainbow-delimiters
@@ -687,13 +655,13 @@
 ;; --------------------------------------
 ;; 읽기 모드, 편집 보호
 (use-package view
-  :ensure nil       ; built-in
+  :ensure nil
   :init
   (setq view-read-only t)
   :bind
   (:map view-mode-map
-	("n" . next-line) ;move-down
-	("p" . previous-line)))
+        ("n" . View-scroll-line-forward) ; 이동 방향에 따라 변경
+        ("p" . View-scroll-line-backward)))
 ;;
 ;; ======================================
 ;;; pdf-view, tools
