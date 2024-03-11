@@ -95,8 +95,12 @@
 	modus-themes-custom-auto-reload t 
 	modus-themes-mode-line '(borderless)))
 ;;
+;; ======================================
+;;; start emacs (load theme by time)
+;; --------------------------------------
+;;
 (defun set-theme-by-time ()
-  "시간에 따른 load theme"
+  "set theme by time"
   (let ((current-hour (string-to-number (substring (current-time-string) 11 13))))
     (if (and (>= current-hour 9) (< current-hour 17)) ; 9시부터 17시까지
         (load-theme 'modus-operandi)
@@ -145,7 +149,7 @@
   "e" 'eshell
   "m" 'modus-themes-toggle
   "f" 'toggle-frame-fullscreen
-  "r" 'my-reading-mode
+  "r" 'toggle-my-reading-mode
   "v" 'view-mode)
 ;;
 (keymap-set global-map "C-t" my-prefix-map)
@@ -193,12 +197,20 @@
     (message "Opened:  %s" (buffer-name)))
    (t (message "Quit"))))
 ;; -------------------------------------
-(defun my-reading-mode()
-    "Fullscreen & view-mode"
+(defun toggle-my-reading-mode ()
+  "Toggle fullscreen & view-mode."
   (interactive)
-  (progn
-    (toggle-frame-fullscreen)
-    (view-mode)))
+  (if (and (boundp 'my-reading-mode-enabled) my-reading-mode-enabled)
+      (progn
+        (toggle-frame-fullscreen)
+        (text-scale-decrease 0.5)
+        (setq my-reading-mode-enabled nil)
+        (view-mode -1))
+    (progn
+      (toggle-frame-fullscreen)
+      (text-scale-increase 0.5)
+      (setq my-reading-mode-enabled t)
+      (view-mode))))
 ;;
 ;; ======================================
 ;;; 로케일, 한글
@@ -638,7 +650,9 @@
 	("C-c n s" . denote-sort-dired))
   :config
   ;; Remember to check the doc strings of those variables.
-  (setq denote-directory (expand-file-name "~/Dropbox/eDoc/org/denote/"))
+  (if my-mactop-p
+      (setq denote-directory (expand-file-name "~/Dropbox/eDoc/org/denote/"))
+    (setq denote-directioy (expand-file-name "~/eDoc/org/denote/")))
 ;;  (setq denote-known-keywords '("emacs" "latex" "idea"))
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
@@ -684,7 +698,7 @@
 ;; --------------------------------------
 ;; 읽기 모드, 편집 보호
 (use-package view
-  :ensure nil ; built-in
+  :ensure nil       ; built-in
   :init
   (setq view-read-only t)
   :bind
@@ -703,3 +717,19 @@
   :config
   (setq pdf-view-display-size 'fit-width) ; Set the default zoom level
   (pdf-tools-install))
+;;
+;; ======================================
+;;; exwm
+;; --------------------------------------
+;; only linux
+;; (if my-laptop-p
+;;     (require 'exwm)
+;;   (require 'exwm-config)
+;;   (exwm-config-default)
+;;   ;;Super + R로 EXWM을 재설정하고, Super + W로 워크스페이스를 전환
+;;   (setq exwm-input-global-keys
+;;       `(([?\s-r] . exwm-reset)
+;;         ([?\s-w] . exwm-workspace-switch)
+;;         ;; 추가적인 키 바인딩 설정
+;;         ))
+;; )
