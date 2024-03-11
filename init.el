@@ -299,11 +299,10 @@
 ;; --------------------------------------
 (use-package which-key
   :ensure t
+  :init (which-key-mode)
   :config
-  (setq which-key-side-window-location 'right)
-  (setq which-key-popup-type 'side-window)
-  (which-key-setup-side-window-right)
-  (which-key-mode 1))
+  (setq which-key-idle-delay 0.2)
+  (which-key-setup-side-window-right))
 ;;
 ;; ======================================
 ;;; vertico
@@ -686,3 +685,18 @@
       (text-scale-increase 0.5)
       (setq my-reading-mode-enabled t)
       (view-mode))))
+;;
+;; ======================================
+;;; web-search(google, naver)
+;; -------------------------------------
+(defun search-web (engine query)
+  "지정한 검색 엔진에서 검색"
+  (interactive
+   (list
+    (completing-read "검색 선택 (google/naver): " '("gg" "nn"))
+    (read-string "검색어 입력: ")))
+  (let ((url (cond
+               ((string= engine "gg") (concat "https://www.google.com/search?q=" (url-hexify-string query)))
+               ((string= engine "nn") (concat "https://search.naver.com/search.naver?query=" (url-hexify-string query)))
+               (t (error "지원하지 않는 검색 엔진입니다.")))))
+    (browse-url url)))
