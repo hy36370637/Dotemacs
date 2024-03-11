@@ -65,7 +65,7 @@
       search-highlight t)
 ;;
 ;; ======================================
-;;; 자잘한 필요 모드
+;;; 자잘한 필수 모드
 ;; --------------------------------------
 (save-place-mode 1)
 (global-font-lock-mode 1)
@@ -106,7 +106,7 @@
 ;; MacOS PATH 설정
 (use-package exec-path-from-shell
   :ensure t
-  :if my-mactop-p  ;(eq system-type 'darwin)
+  :if my-mactop-p
   :init
   (exec-path-from-shell-initialize))
 ;;
@@ -148,7 +148,7 @@
 ;;
 (keymap-set global-map "C-t" my-prefix-map)
 ;; --------------------------------------
-;; base-dir 변수를 사용하여 Mac 여부에 따라 기본 디렉토리 선택
+;; base-dir 변수 사용하여 Mac 여부에 따라 기본 디렉토리 선택
 ;; 중복 코드 회피, my-open-directory 및 my-open-file 함수 사용
 (defun my-popmark (choice)
   "Choices for directories and files."
@@ -164,11 +164,11 @@
      ((eq choice ?d) (my-open-file "eDoc/org/Daily.org"))
      ((eq choice ?f) (my-open-file "eDoc/org/dFarmNote.org"))
      (t (message "Quit")))))
-;; --------------------------------------
+;;;
 (defun my-open-directory (dir)
   "Open a directory based on the platform and given subdirectory."
   (dired (concat base-dir dir)))
-;; --------------------------------------
+;;;
 (defun my-open-file (file)
   "Open a file based on the platform and given file path."
   (find-file (concat base-dir file))
@@ -184,8 +184,6 @@
 ;; ======================================
 ;;; 글꼴 fonts
 ;; --------------------------------------
-;; (set-frame-font "Noto Sans CJK KR" nil t)
-;; (set-face-font 'fixed-pitch "Noto Sans Mono CJK KR")
 (set-face-attribute 'default nil
 		    :family "Hack" ;Hack, Menlo
 		    :height 160)
@@ -195,7 +193,7 @@
 (set-face-attribute 'variable-pitch nil
 		    :family "Noto Sans CJK KR"
 		    :height 160)
-(set-fontset-font t 'hangul (font-spec :family "Noto Sans Mono CJK KR"))
+(set-fontset-font nil 'hangul (font-spec :family "Noto Sans Mono CJK KR"))
 ;;
 ;; ======================================
 ;;; korean calendar
@@ -275,9 +273,9 @@
 ;; --------------------------------------
 (use-package org-bullets
   :ensure t
+  :hook (org-mode . org-bullets-mode)
   :config
-  (setq org-bullets-bullet-list '("◉" "◎" "●" "○" "●" "○" "●"))
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+  (setq org-bullets-bullet-list '("◉" "◎" "●" "○" "●" "○" "●")))
 ;;
 ;; ======================================
 ;;; for org edit/custom function
@@ -295,28 +293,17 @@
    ((equal action "1.newline") (newline-and-indent))
    ((equal action "2.heading") (org-insert-heading))
    ((equal action "3.cycle") (progn (newline-and-indent) (next-line) (org-cycle)))))
-;; (defun org-custom-action ()
-;;   "Perform custom org-mode action based on the user input."
-;;   (interactive)
-;;   (let ((action (read-string "Enter action (1: newline, 2: heading, 3: cycle): ")))
-;;     (end-of-line)
-;;     (cond
-;;      ((string-equal action "1") (newline-and-indent))
-;;      ((string-equal action "2") (org-insert-heading))
-;;      ((string-equal action "3") (progn (newline-and-indent) (next-line) (org-cycle)))
-;;      (t (message "Invalid action. Please enter 1, 2, or 3.")))
-;;   ))
-;; (global-set-key (kbd "C-c o") 'org-custom-action)
 ;;
 ;; ======================================
 ;;; which-key
 ;; --------------------------------------
 (use-package which-key
   :ensure t
-  :init (which-key-mode)
   :config
-  (setq which-key-idle-delay 0.2)
-  (which-key-setup-side-window-right))
+  (setq which-key-side-window-location 'right)
+  (setq which-key-popup-type 'side-window)
+  (which-key-setup-side-window-right)
+  (which-key-mode 1))
 ;;
 ;; ======================================
 ;;; vertico
@@ -367,7 +354,6 @@
 	("C-x b" . consult-buffer)
 	("C-x C-r" . consult-recent-file)
 	:map minibuffer-local-map
-        ("M-s" . consult-history)
         ("M-r" . consult-history))
   :hook (completion-list-mode . consult-preview-at-point-mode)
   :config
@@ -387,10 +373,9 @@
 ;; insert paths into minibuffer prompts in Emacs
 (use-package consult-dir
   :ensure t
-  :bind (("C-c r d" . consult-dir)
+  :bind (("C-c d" . consult-dir)
          :map vertico-map
-         ("C-c r d" . consult-dir)
-         ("C-c r j" . consult-dir-jump-file)))
+         ("C-c d" . consult-dir)))
 ;;
 ;; ======================================
 ;;; embark
@@ -398,19 +383,10 @@
 ;; extended minibuffer actions and context menu
 (use-package embark
   :ensure t
-  :bind(("C-." . embark-act)              ; pick some comfortable binding
-	("C-;" . embark-dwim)             ; good alternative: M-.
-	("C-h B" . embark-bindings))      ; alternative for `describe-bindings'
-  :init
-  (setq prefix-help-command #'embark-prefix-help-command)
+  :bind
+  (("C-." . embark-act))
   :config
-  ;; Show Embark actions via which-key
-  ;; https://config.daviwil.com/emacs
-  (setq embark-action-indicator
-	(lambda (map)
-	  (which-key--show-keymap "Embark" map nil nil 'no-paging)
-	  #'which-key--hide-popup-ignore-command)
-	embark-become-indicator embark-action-indicator))
+  (setq prefix-help-command #'embark-prefix-help-command))
 ;;
 ;; ======================================
 ;;; embark-consult
@@ -427,9 +403,9 @@
   :ensure t
   :init
   (cond
-   (my-mactop-p   ;(eq system-type 'darwin)
+   (my-mactop-p
     (setq eradio-player '("/Applications/VLC.app/Contents/MacOS/VLC" "--no-video" "-I" "rc")))
-   (my-laptop-p   ;(eq system-type 'gnu/linux)
+   (my-laptop-p
     (setq eradio-player '("vlc" "--no-video" "-I" "rc"))))
   :config
   (setq eradio-channels '(("1.CBS Music FM" . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8")
@@ -593,12 +569,12 @@
 ;; ======================================
 ;;; modeline
 ;; --------------------------------------
-(use-package doom-modeline
-  :ensure t
-  :hook (after-init . doom-modeline-mode)
-  :config
-  (setq doom-modeline-buffer-file-name-style 'truncate-nil
-        doom-modeline-icon (when my-laptop-p nil)))
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :hook (after-init . doom-modeline-mode)
+;;   :config
+;;   (setq doom-modeline-buffer-file-name-style 'truncate-nil
+;;         doom-modeline-icon (when my-laptop-p nil)))
 ;;
 ;; ======================================
 ;;; denote
@@ -705,7 +681,8 @@
         (setq my-reading-mode-enabled nil)
         (view-mode -1))
     (progn
-      (toggle-frame-fullscreen)
+      (unless (eq (frame-parameter nil 'fullscreen) 'fullboth)
+        (toggle-frame-fullscreen))
       (text-scale-increase 0.5)
       (setq my-reading-mode-enabled t)
       (view-mode))))
