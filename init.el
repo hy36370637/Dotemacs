@@ -239,10 +239,7 @@
    ("C-c l" . org-store-link)
    ("C-c a" . org-agenda)
    ("C-c c" . org-capture))
-  
-  ;; Customizations
-  :custom
-  ;; General org-mode settings
+  :custom                             ;; General org-mode settings
   (org-startup-indented nil)
   (org-hide-leading-stars nil)
   (org-startup-with-inline-images nil)
@@ -251,20 +248,16 @@
   (org-log-into-drawer t)
   (org-log-done 'time)
   (org-image-actual-width '(100))
-
   ;; Org directory and agenda files
   (org-directory (expand-file-name (if my-laptop-p "~/eDoc/org/" "~/Dropbox/eDoc/org/")))
   (org-agenda-files '("Tasks.org" "Daily.org"))
-  
   ;; Todo keywords
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
-  
   ;; Capture templates
   (org-capture-templates
     '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
       ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
       ("f" "dFarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
-  
   ;; Export settings
   (org-latex-title-command "\\maketitle \\newpage")
   (org-latex-toc-command "\\tableofcontents \\newpage")
@@ -272,53 +265,13 @@
   (org-latex-to-pdf-process
     '("xelatex -interaction nonstopmode -output-directory %o %f"
       "xelatex -interaction nonstopmode -output-directory %o %f"
-      "xelatex -interaction nonstopmode -output-directory %o %f"))
-  
-  ;; Agenda view customizations
-  (org-agenda-custom-commands
-    '(("d" "Custom agenda view"
-       ((agenda "" ((org-agenda-span 'week)
-                    (org-agenda-start-on-weekday 0)
-                    (org-agenda-format-date "%Y-%m-%d"))))))))
-
-;; (use-package org
-;;   :bind
-;;   (("M-n" . outline-next-visible-heading)
-;;    ("M-p" . outline-previous-visible-heading)
-;;    ("C-c l" . org-store-link)
-;;    ("C-c a" . org-agenda)
-;;    ("C-c c" . org-capture))
-;;   :custom
-;;   (org-startup-indented nil)
-;;   (org-hide-leading-stars nil)
-;;   (org-startup-with-inline-images nil)
-;;   (org-adapt-indentation t)
-;;   (org-src-preserve-indentation t)
-;;   (org-log-into-drawer t)
-;;   (org-log-done 'time)
-;;   (org-image-actual-width '(100))
-;;   (org-directory (expand-file-name (if my-laptop-p "~/eDoc/org/" "~/Dropbox/eDoc/org/")))
-;;   (org-agenda-files '("Tasks.org" "Daily.org"))
-;;   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
-;;   ;; Capture templates
-;;   (org-capture-templates
-;;     '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
-;;       ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
-;;       ("f" "dFarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
-;;   ;; Export settings
-;;   (org-latex-title-command "\\maketitle \\newpage")
-;;   (org-latex-toc-command "\\tableofcontents \\newpage")
-;;   (org-latex-compiler "xelatex")
-;;   (org-latex-to-pdf-process
-;;     '("xelatex -interaction nonstopmode -output-directory %o %f"
-;;       "xelatex -interaction nonstopmode -output-directory %o %f"
-;;       "xelatex -interaction nonstopmode -output-directory %o %f"))
-;;   ;; Agenda view customizations
-;;   (org-agenda-custom-commands
-;;     '(("d" "Custom agenda view"
-;;        ((agenda "" ((org-agenda-span 'week)
-;;                     (org-agenda-start-on-weekday 0)
-;;                     (org-agenda-format-date "%Y-%m-%d"))))))))
+      "xelatex -interaction nonstopmode -output-directory %o %f")))
+  ;; ;; Agenda view customizations
+  ;; (org-agenda-custom-commands
+  ;;   '(("d" "Custom agenda view"
+  ;;      ((agenda "" ((org-agenda-span 'week)
+  ;;                   (org-agenda-start-on-weekday 0)
+  ;;                   (org-agenda-format-date "%Y-%m-%d")))))))
 ;;
 ;; ======================================
 ;;; org-bullets
@@ -401,22 +354,23 @@
 ;; enhanced minibuffer commands, search
 (use-package consult
   :ensure t
-  :bind(("C-s" . consult-line)
-	("C-x b" . consult-buffer)
-	("C-x C-r" . consult-recent-file)
-	:map minibuffer-local-map
+  :bind
+  (("C-s" . consult-line)
+   ("C-x b" . consult-buffer)
+   ("C-x C-r" . consult-recent-file))
+  :bind
+  (:map minibuffer-local-map
         ("M-r" . consult-history))
   :hook (completion-list-mode . consult-preview-at-point-mode)
   :config
+  (setq consult-narrow-key "<")
   (consult-customize
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
    consult--source-bookmark consult--source-file-register
    consult--source-recent-file consult--source-project-recent-file
-   ;; :preview-key "M-."
-   :preview-key '(:debounce 0.4 any))
-  (setq consult-narrow-key "<"))
+   :preview-key '(:debounce 0.4 any)))
 ;;
 ;; ======================================
 ;;; consult-dir
@@ -507,28 +461,22 @@
 (setq completion-cycle-threshold 3
       tab-always-indent 'complete)
 (use-package corfu
-  ;; TAB-and-Go customizations
   :ensure t
+  :bind (:map corfu-map
+         ("TAB" . corfu-next)
+         ([tab] . corfu-next)
+         ("S-TAB" . corfu-previous)
+         ("S-<return>" . corfu-insert))
   :custom
   (corfu-auto t)
   (corfu-auto-delay 0.2)
   (corfu-auto-prefix 0)
-  (corfu-cycle t)             ;; Enable cycling for `corfu-next/previous'
-;;  (completion-styles '(basic)) ;consult-line err
-  (corfu-preselect 'prompt)   ;; Always preselect the prompt
+  (corfu-cycle t)
+  (corfu-preselect 'prompt)
   (corfu-echo-documentation 0.2)
   (corfu-preview-current 'insert)
-  (corfu-separator ?\s)       ;; Necessary for use with orderless
+  (corfu-separator ?\s)
   (corfu-quit-no-match 'separator)
-;; (corfu-quit-at-boundary 'separator)
-;; Use TAB for cycling, default is `corfu-complete'.
-  :bind
-  (:map corfu-map
-        ("TAB" . corfu-next)
-        ([tab] . corfu-next)
-        ("S-TAB" . corfu-previous)
-        ([backtab] . corfu-previous)
-	("S-<return>" . corfu-insert))
   :init
   (global-corfu-mode)
   (corfu-history-mode)
@@ -544,6 +492,7 @@
 ;; dired with icons
 (use-package all-the-icons-dired
   :ensure t
+  :after dired
   :if (display-graphic-p)
   :hook
   (dired-mode . all-the-icons-dired-mode))
@@ -551,8 +500,8 @@
 ;; from https://kristofferbalintona.me/posts/202202211546/
 (use-package all-the-icons-completion
   :ensure t
-  :if (display-graphic-p)
   :after (marginalia all-the-icons)
+  :if (display-graphic-p)
   :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
   :init
   (all-the-icons-completion-mode))
@@ -599,14 +548,16 @@
 ;;; dired-narrow
 ;; --------------------------------------
 ;; Dired 모드에서 파일 목록 필터링
-(use-package dired-narrow :ensure t
+(use-package dired-narrow
+  :ensure t
   :after dired)
 ;;
 ;; ======================================
 ;; dired-subtree
 ;; --------------------------------------
 ;; Tab. sub directory 표시
-(use-package dired-subtree :ensure t
+(use-package dired-subtree
+  :ensure t
   :after dired)
 ;;
 ;; ======================================
@@ -667,15 +618,34 @@
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode)
   :config
-  (custom-set-faces
-	  '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
-	  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep pink"))))
-	  '(rainbow-delimiters-depth-3-face ((t (:foreground "chartreuse"))))
-	  '(rainbow-delimiters-depth-4-face ((t (:foreground "deep sky blue"))))
-	  '(rainbow-delimiters-depth-5-face ((t (:foreground "yellow"))))
-	  '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid"))))
-	  '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
-	  '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1"))))))
+  (setq rainbow-delimiters-max-face-count 8)
+  (setq rainbow-delimiters-outermost-only-face-count 1)
+  (setq rainbow-delimiters-outermost-only-innermost-first nil)
+  (setq rainbow-delimiters-outermost-only-predicate 'rainbow-delimiters-generic-outermost-p)
+  (custom-theme-set-faces
+   'user
+   '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
+   '(rainbow-delimiters-depth-2-face ((t (:foreground "deep pink"))))
+   '(rainbow-delimiters-depth-3-face ((t (:foreground "chartreuse"))))
+   '(rainbow-delimiters-depth-4-face ((t (:foreground "deep sky blue"))))
+   '(rainbow-delimiters-depth-5-face ((t (:foreground "yellow"))))
+   '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid"))))
+   '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
+   '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1"))))))
+
+;; (use-package rainbow-delimiters
+;;   :ensure t
+;;   :hook (prog-mode . rainbow-delimiters-mode)
+;;   :config
+;;   (custom-set-faces
+;; 	  '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
+;; 	  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep pink"))))
+;; 	  '(rainbow-delimiters-depth-3-face ((t (:foreground "chartreuse"))))
+;; 	  '(rainbow-delimiters-depth-4-face ((t (:foreground "deep sky blue"))))
+;; 	  '(rainbow-delimiters-depth-5-face ((t (:foreground "yellow"))))
+;; 	  '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid"))))
+;; 	  '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
+;; 	  '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1"))))))
 ;;
 ;; ======================================
 ;;; view-mode
