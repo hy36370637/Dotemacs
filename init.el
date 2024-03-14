@@ -247,7 +247,7 @@
   (org-src-preserve-indentation t)
   (org-log-into-drawer t)
   (org-log-done 'time)
-  (org-image-actual-width '(100))
+  (org-image-actual-width '(30))
   ;; Org directory and agenda files
   (org-directory (expand-file-name (if my-laptop-p "~/eDoc/org/" "~/Dropbox/eDoc/org/")))
   (org-agenda-files '("Tasks.org" "Daily.org"))
@@ -400,27 +400,6 @@
   :ensure t
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
-;;
-;; ======================================
-;;; eradio
-;; --------------------------------------
-(use-package eradio
-  :ensure t
-  :init
-  (cond
-   (my-mactop-p
-    (setq eradio-player '("/Applications/VLC.app/Contents/MacOS/VLC" "--no-video" "-I" "rc")))
-   (my-laptop-p
-    (setq eradio-player '("vlc" "--no-video" "-I" "rc"))))
-  :config
-  (setq eradio-channels '(("1.CBS Music FM" . "http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8")
-			  ("2.BBS Radio" . "http://bbslive.clouducs.com:1935/bbsradio-live/livestream/playlist.m3u8")
-			  ("3.BTN Woolim FM" . "rtmp://btn.nowcdn.co.kr/btn_ch4st/live.stream")
-			  ("4.BTN BuddaMusic" . "rtmp://btn.nowcdn.co.kr/btn_ch3st/live.stream")
-			  ("5.KBS Happy FM" . "http://serpent0.duckdns.org:8088/kbs2radio.pls")
-			  ("6.KBS classic FM" . "http://serpent0.duckdns.org:8088/kbsfm.pls")
-			  ("7.7080" . "http://wnffl.inlive.co.kr/live/listen.pls")
-			  ("8.Trot" . "http://nest7942.inlive.co.kr/listen.pls"))))
 ;;
 ;; ======================================
 ;;; gnus
@@ -722,3 +701,49 @@
                ((string= engine "naver") (concat "https://search.naver.com/search.naver?query=" (url-hexify-string query)))
                (t (error "지원하지 않는 검색 엔진입니다.")))))
     (browse-url url)))
+;;
+;; ======================================
+;;; stream Radio
+;; -------------------------------------
+;; vlc 이용하여 streamming / eradio 대신
+(defvar stream-process nil
+  "Variable to store the VLC process.")
+
+(defun start-streaming (url)
+  "Start streaming audio from a given URL using VLC."
+  (interactive (list (read-url-from-file "~/Dropbox/Mp3/mmslist.txt")))
+  (stop-streaming)
+  (let ((vlc-command (if (eq system-type 'darwin)
+                         "/Applications/VLC.app/Contents/MacOS/VLC"
+                       "vlc")))   ;linux vs macOS
+    (setq stream-process (start-process "vlc" nil vlc-command url))
+    (set-process-query-on-exit-flag stream-process nil)))
+
+(defun stop-streaming ()
+  "Stop the currently running VLC process."
+  (interactive)
+  (when stream-process
+    (delete-process stream-process)
+    (setq stream-process nil)))
+
+(defun read-url-from-file (file)
+  "Read streaming URLs from a file and return a URL chosen by the user."
+  (let* ((items (with-temp-buffer
+                  (insert-file-contents file)
+                  (split-string (buffer-string) "\n" t)))
+         (titles (mapcar (lambda (item) (car (split-string item "|"))) items))
+         (chosen-title (completing-read "Choose a title to play: " titles))
+         (chosen-item (seq-find (lambda (item) (string= chosen-title (car (split-string item "|")))) items))
+         (url (when chosen-item
+                (cadr (split-string chosen-item "|")))))
+    url))
+
+(defun edit-mmslist ()
+  "Edit the mmslist.txt file."
+  (interactive)
+  (find-file "~/Dropbox/Mp3/mmslist.txt"))
+
+;; 함수 호출을 위한 global key binding
+(global-set-key (kbd "C-c C-s") 'start-streaming)
+(global-set-key (kbd "C-c C-p") 'stop-streaming)
+;;(global-set-key (kbd "C-c C-e") 'edit-mmslist)
