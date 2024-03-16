@@ -150,6 +150,7 @@
   "m" 'modus-themes-toggle
   "f" 'toggle-frame-fullscreen
   "r" 'toggle-my-reading-mode
+  "s" 'toggle-streaming ; play VLC streaming
   "v" 'view-mode)
 ;;
 (keymap-set global-map "C-t" my-prefix-map)
@@ -699,28 +700,44 @@
 ;; ======================================
 ;;; stream Radio
 ;; --------------------------------------
-;; vlc 이용하여 streamming / eradio 대신
+;; vlc streamming / Toggle On/Off
 (defvar stream-process nil
   "Variable to store the VLC process.")
 
+(defvar stream-playing nil
+  "Variable to track if streaming is currently playing.")
+
+(defun toggle-streaming ()
+  "Toggle streaming on/off."
+  (interactive)
+  (if stream-playing
+      (stop-streaming)
+    (play-start-streaming (read-url-from-file "~/Dropbox/Mp3/mmslist.txt"))))
+
 (defun play-start-streaming (url)
   "Start streaming audio from a given URL using VLC."
-  (interactive (list (read-url-from-file "~/Dropbox/Mp3/mmslist.txt")))
-  (stop-streaming)
-  (let ((vlc-command (if (eq system-type 'darwin)
-                         "/Applications/VLC.app/Contents/MacOS/VLC"
-                       "vlc"))
-        (chosen-title (get-chosen-title "~/Dropbox/Mp3/mmslist.txt")))
-    (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url))
-    (set-process-query-on-exit-flag stream-process nil)
-    (message "Playing: %s" chosen-title)))
+  (interactive "sURL: ")
+  (if (not stream-process)
+      (let* ((vlc-command (if (eq system-type 'darwin)
+                              "/Applications/VLC.app/Contents/MacOS/VLC"
+                            "vlc"))
+             (chosen-title (get-chosen-title "~/Dropbox/Mp3/mmslist.txt")))
+        (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url))
+        (set-process-query-on-exit-flag stream-process nil)
+        (message "Playing: %s" chosen-title)
+        (setq stream-playing t))
+    (message "Streaming is already playing.")))
 
 (defun stop-streaming ()
   "Stop the currently running VLC process."
   (interactive)
-  (when stream-process
-    (delete-process stream-process)
-    (setq stream-process nil)))
+  (if stream-process
+      (progn
+        (delete-process stream-process)
+        (setq stream-process nil)
+        (setq stream-playing nil) ; Stop 시 stream-playing을 nil로 설정
+        (message "Streaming stopped."))
+    (message "No streaming is currently playing.")))
 
 (defun get-chosen-title (file)
   "Get the chosen title from the user."
@@ -747,8 +764,3 @@
          (url (when chosen-item
                 (cadr (split-string chosen-item "|")))))
     url))
-
-;; 함수 호출을 위한 global key binding
-(bind-key "C-c C-p" 'play-start-streaming)
-(bind-key "C-c C-s" 'stop-streaming)
-;; (bind-key "C-c C-e" 'edit-mmslist)
