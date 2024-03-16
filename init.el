@@ -622,19 +622,6 @@
    '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1"))))))
 ;;
 ;; ======================================
-;;; view-mode
-;; --------------------------------------
-;; 읽기 모드, 편집 보호
-(use-package view
-  :ensure nil
-  :init
-  (setq view-read-only t)
-  :bind
-  (:map view-mode-map
-        ("n" . View-scroll-line-forward) ; 이동 방향에 따라 변경
-        ("p" . View-scroll-line-backward)))
-;;
-;; ======================================
 ;;; pdf-view, tools
 ;; --------------------------------------
 ;; only linux
@@ -663,9 +650,24 @@
 ;; )
 ;;
 ;; ======================================
+;;; view-mode
+;; --------------------------------------
+;; 읽기 모드, 편집 보호
+(use-package view
+  :ensure nil
+  :init
+  (setq view-read-only t)
+  :bind
+  (:map view-mode-map
+        ("n" . View-scroll-line-forward)
+        ("p" . View-scroll-line-backward)))
+;;
+;; ======================================
 ;;; my-reading-mode
 ;; --------------------------------------
-;; 읽기 모드, 쓰기 금지
+;; "Read-only mode, not editable."
+;; I drew inspiration from novel-mode and view-mode.
+;; Therefore, you should refer to the view-mode settings.
 (defun toggle-my-reading-mode ()
   "Toggle fullscreen & view-mode."
   (interactive)
@@ -700,7 +702,11 @@
 ;; ======================================
 ;;; stream Radio
 ;; --------------------------------------
-;; vlc streamming / Toggle On/Off
+;; vlc streamming / Toggle On/Off (M-x toggle-streaming)
+;; I was inspired by the eRadio package.
+;; The streaming source is mmslist.txt, and it's in the format of title/address.
+;; I haven't been able to test it on Linux yet. I'm using the Lubuntu distribution.
+;; I used ChatGPT, and distribution is free.
 (defvar stream-process nil
   "Variable to store the VLC process.")
 
@@ -719,8 +725,8 @@
   (interactive "sURL: ")
   (if (not stream-process)
       (let* ((vlc-command (if (eq system-type 'darwin)
-                              "/Applications/VLC.app/Contents/MacOS/VLC"
-                            "vlc"))
+                              "/Applications/VLC.app/Contents/MacOS/VLC" ; for macOS
+                            "vlc"))  ;; for linux
              (chosen-title (get-chosen-title "~/Dropbox/Mp3/mmslist.txt")))
         (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url))
         (set-process-query-on-exit-flag stream-process nil)
