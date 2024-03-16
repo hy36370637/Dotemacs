@@ -32,6 +32,14 @@
   (package-refresh-contents)
   (package-install 'use-package))
 ;; (setq use-package-always-ensure nil)
+;; 
+;; ======================================
+;;; load-my-package
+;; --------------------------------------
+
+;; (add-to-list 'load-path "~/Dropbox/emacs/lisp/")
+;; (require 'my-play-streaming)
+
 ;;
 ;; ======================================
 ;;; system-info
@@ -611,20 +619,6 @@
    '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid"))))
    '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
    '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1"))))))
-
-;; (use-package rainbow-delimiters
-;;   :ensure t
-;;   :hook (prog-mode . rainbow-delimiters-mode)
-;;   :config
-;;   (custom-set-faces
-;; 	  '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
-;; 	  '(rainbow-delimiters-depth-2-face ((t (:foreground "deep pink"))))
-;; 	  '(rainbow-delimiters-depth-3-face ((t (:foreground "chartreuse"))))
-;; 	  '(rainbow-delimiters-depth-4-face ((t (:foreground "deep sky blue"))))
-;; 	  '(rainbow-delimiters-depth-5-face ((t (:foreground "yellow"))))
-;; 	  '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid"))))
-;; 	  '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
-;; 	  '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1"))))))
 ;;
 ;; ======================================
 ;;; view-mode
@@ -669,7 +663,7 @@
 ;;
 ;; ======================================
 ;;; my-reading-mode
-;; -------------------------------------
+;; --------------------------------------
 ;; 읽기 모드, 쓰기 금지
 (defun toggle-my-reading-mode ()
   "Toggle fullscreen & view-mode."
@@ -689,7 +683,7 @@
 ;;
 ;; ======================================
 ;;; web-search(google, naver)
-;; -------------------------------------
+;; --------------------------------------
 (defun search-web (engine query)
   "지정한 검색 엔진에서 검색"
   (interactive
@@ -704,20 +698,22 @@
 ;;
 ;; ======================================
 ;;; stream Radio
-;; -------------------------------------
+;; --------------------------------------
 ;; vlc 이용하여 streamming / eradio 대신
 (defvar stream-process nil
   "Variable to store the VLC process.")
 
-(defun start-streaming (url)
+(defun play-start-streaming (url)
   "Start streaming audio from a given URL using VLC."
   (interactive (list (read-url-from-file "~/Dropbox/Mp3/mmslist.txt")))
   (stop-streaming)
   (let ((vlc-command (if (eq system-type 'darwin)
                          "/Applications/VLC.app/Contents/MacOS/VLC"
-                       "vlc")))   ;linux vs macOS
-    (setq stream-process (start-process "vlc" nil vlc-command url))
-    (set-process-query-on-exit-flag stream-process nil)))
+                       "vlc"))
+        (chosen-title (get-chosen-title "~/Dropbox/Mp3/mmslist.txt")))
+    (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url))
+    (set-process-query-on-exit-flag stream-process nil)
+    (message "Playing: %s" chosen-title)))
 
 (defun stop-streaming ()
   "Stop the currently running VLC process."
@@ -725,6 +721,20 @@
   (when stream-process
     (delete-process stream-process)
     (setq stream-process nil)))
+
+(defun get-chosen-title (file)
+  "Get the chosen title from the user."
+  (let* ((items (with-temp-buffer
+                  (insert-file-contents file)
+                  (split-string (buffer-string) "\n" t)))
+         (titles (mapcar (lambda (item) (car (split-string item "|"))) items))
+         (chosen-title (completing-read "Choose a title to play: " titles)))
+    chosen-title))
+
+(defun edit-mmslist ()
+  "Edit the mmslist.txt file."
+  (interactive)
+  (find-file "~/Dropbox/Mp3/mmslist.txt"))
 
 (defun read-url-from-file (file)
   "Read streaming URLs from a file and return a URL chosen by the user."
@@ -738,12 +748,7 @@
                 (cadr (split-string chosen-item "|")))))
     url))
 
-(defun edit-mmslist ()
-  "Edit the mmslist.txt file."
-  (interactive)
-  (find-file "~/Dropbox/Mp3/mmslist.txt"))
-
 ;; 함수 호출을 위한 global key binding
-(global-set-key (kbd "C-c C-s") 'start-streaming)
-(global-set-key (kbd "C-c C-p") 'stop-streaming)
-;;(global-set-key (kbd "C-c C-e") 'edit-mmslist)
+(bind-key "C-c C-p" 'play-start-streaming)
+(bind-key "C-c C-s" 'stop-streaming)
+;; (bind-key "C-c C-e" 'edit-mmslist)
