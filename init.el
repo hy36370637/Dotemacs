@@ -133,20 +133,22 @@
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
 ;;
-(defvar-keymap my-consult-map
-  :doc "my consult map."
-  "b" 'consult-bookmark
-  "d" 'consult-dir
-  "g" 'consult-grep
-  "o" 'consult-outline
-  "r" 'consult-recent-file
-  "t" 'consult-theme)
+;; (defvar-keymap my-consult-map
+;;   :doc "my consult map."
+;;   "b" 'consult-bookmark
+;;   "d" 'consult-dir
+;;   "g" 'consult-grep
+;;   "o" 'consult-outline
+;;   "r" 'consult-recent-file
+;;   "t" 'consult-theme)
 ;; -------------------------------------
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
-  "c" my-consult-map
-  "t" 'my-popmark
+ ;; "c" my-consult-map
+  "g" 'consult-grep
   "e" 'eshell
+  "t" 'my-popmark
+  "l" 'my-latex-custom-function
   "m" 'modus-themes-toggle
   "f" 'toggle-frame-fullscreen
   "r" 'toggle-my-reading-mode
@@ -366,7 +368,12 @@
   :bind
   (("C-s" . consult-line)
    ("C-x b" . consult-buffer)
-   ("C-x C-r" . consult-recent-file))
+   ("C-x C-r" . consult-recent-file)
+   ("C-c r b" . consult-bookmark)
+   ("C-c r d" . consult-dir)
+   ("C-c r g" . consult-grep)
+   ("C-c r o" . consult-outline)
+   ("C-c r t" . consult-theme))
   :bind
   (:map minibuffer-local-map
         ("M-r" . consult-history))
@@ -718,7 +725,8 @@
   (interactive)
   (if stream-playing
       (stop-streaming)
-    (play-start-streaming (read-url-from-file "~/Dropbox/Mp3/mmslist.txt"))))
+    (play-start-streaming (read-url-from-file (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt")))))
+    ;; (play-start-streaming (read-url-from-file "~/Dropbox/Mp3/mmslist.txt"))))
 
 (defun play-start-streaming (url)
   "Start streaming audio from a given URL using VLC."
@@ -727,8 +735,9 @@
       (let* ((vlc-command (if (eq system-type 'darwin)
                               "/Applications/VLC.app/Contents/MacOS/VLC" ; for macOS
                             "vlc"))  ;; for linux
-             (chosen-title (get-chosen-title "~/Dropbox/Mp3/mmslist.txt")))
-        (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url))
+	     (chosen-title (get-chosen-title (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt"))))
+             ;; (chosen-title (get-chosen-title "~/Dropbox/Mp3/mmslist.txt")))
+        (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url)) ;background play
         (set-process-query-on-exit-flag stream-process nil)
         (message "Playing: %s" chosen-title)
         (setq stream-playing t))
@@ -757,7 +766,8 @@
 (defun edit-mmslist ()
   "Edit the mmslist.txt file."
   (interactive)
-  (find-file "~/Dropbox/Mp3/mmslist.txt"))
+  (find-file (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt")))
+  ;; (find-file "~/Dropbox/Mp3/mmslist.txt"))
 
 (defun read-url-from-file (file)
   "Read streaming URLs from a file and return a URL chosen by the user."
@@ -770,3 +780,64 @@
          (url (when chosen-item
                 (cadr (split-string chosen-item "|")))))
     url))
+
+;;
+;; ======================================
+;;; my-highlight-section
+;; --------------------------------------
+;; export latex, PDF 적용안됨
+;; 지정 영역내 font Color Change
+;; (defun my-highlight-selection (color)
+;;   "선택한 텍스트의 색상 COLOR 지정."
+;;   (interactive
+;;    (list (completing-read "색상을 선택하세요: "
+;;                           '("red" "blue" "green" "yellow" "orange"))))
+;;   (put-text-property (region-beginning) (region-end) 'font-lock-face `((foreground-color . ,color))))
+;;
+;; ======================================
+;;; my-latex-custom-function
+;; --------------------------------------
+;; text-color change
+(defun latex-text-color (text color)
+  "Return LaTeX text with specified color."
+  (format "\\textcolor{%s}{%s}" color text))
+
+(defun insert-latex-text-color (begin end)
+  "latex. selected-text color change"
+;;  (interactive "r")
+  (if (use-region-p)
+      (let ((selected-text (buffer-substring-no-properties begin end))
+            (color (read-string "Enter color: ")))
+        (delete-region begin end)
+        (insert (latex-text-color selected-text color)))
+    (message "No region selected")))
+
+(defun latex-subText (begin end)
+  "latex selected-text 아래첨자"
+;;  (interactive "r")
+  (if (use-region-p)
+      (let ((selected-text (buffer-substring-no-properties begin end)))
+        (delete-region begin end)
+        (setq selected-text (concat "_{" selected-text "}")) ; Wrap text with dashes
+        (insert selected-text))
+    (message "No region selected")))
+
+(defun latex-SuperText (begin end)
+  "latex selected-text 위첨자"
+  (if (use-region-p)
+      (let ((selected-text (buffer-substring-no-properties begin end)))
+        (delete-region begin end)
+        (setq selected-text (concat "^{" selected-text "}")) ; Wrap text with dashes
+        (insert selected-text))
+    (message "No region selected")))
+
+(defun my-latex-custom-function (begin end)
+  "my LATEX Custom handy"
+  (interactive "r")
+  (if (use-region-p)
+      (let ((choice (read-char-choice "Select action: [c]글자색,[s]아래첨자,[S]위첨자: " '(?c ?s ?S))))
+        (pcase choice
+          (?c (insert-latex-text-color begin end))
+          (?s (latex-subText begin end))
+          (?S (latex-SuperText begin end))))
+    (message "No region selected")))
