@@ -517,13 +517,13 @@
     (when (and (featurep 'emacs) (fboundp 'dired-insert-set-properties))
       (dired-insert-set-properties (point-min) (point-max)))
     (set-buffer-modified-p nil))
-  ;; ------
+  ;;
   (defun my/dired-jump-to-top()
     "Dired, jump to top"
     (interactive)
     (goto-char (point-min))
     (dired-next-line 2))
-  ;; ------
+  ;;
   (defun my/dired-jump-to-bottom()
     "Dired, jump to bottom"
     (interactive)
@@ -736,7 +736,6 @@
                               "/Applications/VLC.app/Contents/MacOS/VLC" ; for macOS
                             "vlc"))  ;; for linux
 	     (chosen-title (get-chosen-title (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt"))))
-             ;; (chosen-title (get-chosen-title "~/Dropbox/Mp3/mmslist.txt")))
         (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url)) ;background play
         (set-process-query-on-exit-flag stream-process nil)
         (message "Playing: %s" chosen-title)
@@ -826,12 +825,12 @@
   (if (use-region-p)
       (let ((selected-text (buffer-substring-no-properties begin end)))
         (delete-region begin end)
-        (setq selected-text (concat "^{" selected-text "}")) ; Wrap text with dashes
+        (setq selected-text (concat "^{" selected-text "}"))
         (insert selected-text))
     (message "No region selected")))
 
 (defun my-latex-font-custom (begin end)
-  "Custom handy for latex"
+  "Custom font for latex"
   (interactive "r")
   (if (use-region-p)
       (let ((choice (read-char-choice "Select action: [c]글자색,[s]아래첨자,[S]위첨자: " '(?c ?s ?S))))
@@ -842,16 +841,26 @@
     (message "No region selected")))
 
 (defun my-latex-insert-block (block-type)
-  "Inserts `#+begin-BLOCK-TYPE` at the beginning and `#+end-BLOCK-TYPE` at the end of the selected region."
+  "Inserts `#+begin_block` and `#+end_block` around the selected region."
   (interactive
    (list (completing-read "Choose block type: " '("quote" "verse"))))
-  (when (use-region-p)
-    (let ((beg (region-beginning))
-          (end (region-end)))
-      (save-excursion
-        (goto-char beg)
-        (beginning-of-line)
-        (insert (format "#+begin-%s\n" block-type))
-        (goto-char (1+ end))
-        (end-of-line)
-        (insert (format "\n#+end-%s" block-type))))))
+  (if (use-region-p)
+      (let ((beg (region-beginning))
+            (end (region-end))
+            (indent ""))
+        ;; Determine the current indentation level
+        (save-excursion
+          (goto-char beg)
+          (skip-chars-forward "[:space:]")
+          (setq indent (concat (make-string (current-column) ?\s))))
+        (save-excursion
+          (goto-char beg)
+          (beginning-of-line)
+	  (insert (format "%s#+begin_%s\n" indent block-type))
+          ;; Apply the same indentation to the end of the block
+          (goto-char (1+ end))
+          (end-of-line)
+          (insert (format "\n%s#+end_%s" indent block-type))))
+    (message "No region selected")))
+
+
