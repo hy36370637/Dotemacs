@@ -144,11 +144,12 @@
 ;; -------------------------------------
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
- ;; "c" my-consult-map
+  "b" 'my-latex-insert-block
+  ;; "c" my-consult-map
+  "c" 'my-latex-font-custom
   "g" 'consult-grep
   "e" 'eshell
   "t" 'my-popmark
-  "l" 'my-latex-custom-function
   "m" 'modus-themes-toggle
   "f" 'toggle-frame-fullscreen
   "r" 'toggle-my-reading-mode
@@ -726,7 +727,6 @@
   (if stream-playing
       (stop-streaming)
     (play-start-streaming (read-url-from-file (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt")))))
-    ;; (play-start-streaming (read-url-from-file "~/Dropbox/Mp3/mmslist.txt"))))
 
 (defun play-start-streaming (url)
   "Start streaming audio from a given URL using VLC."
@@ -763,11 +763,10 @@
          (chosen-title (completing-read "Choose a title to play: " titles)))
     chosen-title))
 
-(defun edit-mmslist ()
-  "Edit the mmslist.txt file."
-  (interactive)
-  (find-file (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt")))
-  ;; (find-file "~/Dropbox/Mp3/mmslist.txt"))
+;; (defun edit-mmslist ()
+;;   "Edit the mmslist.txt file."
+;;   (interactive)
+;;   (find-file (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt")))
 
 (defun read-url-from-file (file)
   "Read streaming URLs from a file and return a URL chosen by the user."
@@ -818,7 +817,7 @@
   (if (use-region-p)
       (let ((selected-text (buffer-substring-no-properties begin end)))
         (delete-region begin end)
-        (setq selected-text (concat "_{" selected-text "}")) ; Wrap text with dashes
+        (setq selected-text (concat "_{" selected-text "}"))
         (insert selected-text))
     (message "No region selected")))
 
@@ -831,8 +830,8 @@
         (insert selected-text))
     (message "No region selected")))
 
-(defun my-latex-custom-function (begin end)
-  "my LATEX Custom handy"
+(defun my-latex-font-custom (begin end)
+  "Custom handy for latex"
   (interactive "r")
   (if (use-region-p)
       (let ((choice (read-char-choice "Select action: [c]글자색,[s]아래첨자,[S]위첨자: " '(?c ?s ?S))))
@@ -841,3 +840,18 @@
           (?s (latex-subText begin end))
           (?S (latex-SuperText begin end))))
     (message "No region selected")))
+
+(defun my-latex-insert-block (block-type)
+  "Inserts `#+begin-BLOCK-TYPE` at the beginning and `#+end-BLOCK-TYPE` at the end of the selected region."
+  (interactive
+   (list (completing-read "Choose block type: " '("quote" "verse"))))
+  (when (use-region-p)
+    (let ((beg (region-beginning))
+          (end (region-end)))
+      (save-excursion
+        (goto-char beg)
+        (beginning-of-line)
+        (insert (format "#+begin-%s\n" block-type))
+        (goto-char (1+ end))
+        (end-of-line)
+        (insert (format "\n#+end-%s" block-type))))))
