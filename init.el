@@ -71,6 +71,7 @@
 (setq make-backup-files nil
       kill-whole-line 1
       search-highlight t)
+;;      display-time-format "%b-%d(%a) %H:%M")
 ;;
 ;; ======================================
 ;;; 자잘한 필수 모드
@@ -516,13 +517,13 @@
     (when (and (featurep 'emacs) (fboundp 'dired-insert-set-properties))
       (dired-insert-set-properties (point-min) (point-max)))
     (set-buffer-modified-p nil))
-  ;;
+
   (defun my/dired-jump-to-top()
     "Dired, jump to top"
     (interactive)
     (goto-char (point-min))
     (dired-next-line 2))
-  ;;
+
   (defun my/dired-jump-to-bottom()
     "Dired, jump to bottom"
     (interactive)
@@ -566,12 +567,31 @@
 ;; ======================================
 ;;; modeline
 ;; --------------------------------------
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :hook (after-init . doom-modeline-mode)
-;;   :config
-;;   (setq doom-modeline-buffer-file-name-style 'truncate-nil
-;;         doom-modeline-icon (when my-laptop-p nil)))
+(defun my-custom-modeline (left right)
+  "window-width, return left right, align"
+  (let ((length-width
+         (- (window-total-width)
+            (+ (length (format-mode-line left))
+               (length (format-mode-line right))))))
+    (append left
+            (list (format (format "%%%ds" length-width) ""))
+            right)))
+
+(setq-default mode-line-format
+ '((:eval
+    (my-custom-modeline
+     ;; Left display
+     (quote ("%e "
+	     mode-line-front-space
+	     mode-line-mule-info
+	     mode-line-modified
+	     "  " 
+             mode-line-buffer-identification
+	     mode-line-frame-identification
+	     mode-line-modes))             
+     ;; Right display
+     (quote ("(%l, %c) "  ;" %p"
+             mode-line-misc-info))))))
 ;;
 ;; ======================================
 ;;; denote
@@ -733,9 +753,9 @@
   (if (not stream-process)
       (let* ((vlc-command (if (eq system-type 'darwin)
                               "/Applications/VLC.app/Contents/MacOS/VLC" ; for macOS
-                            "vlc"))  ;; for linux
+                            "vlc"))                                      ; for linux
 	     (chosen-title (get-chosen-title (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt"))))
-        (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url)) ;background play
+        (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url)) ; background play
         (set-process-query-on-exit-flag stream-process nil)
         (message "Playing: %s" chosen-title)
         (setq stream-playing t))
@@ -817,7 +837,7 @@
         (insert selected-text))
     (message "No region selected")))
 
-;; 블럭 / 단락으로 확실히 구분된 영역만 사용
+;; 단락으로 분명하게 구분된 영역만 사용
 (defun my-latex-insert-block () ;; ver 0.2.1
   "Inserts `#+begin_block`, `#+end_block`. selected region."
   (let ((block-type (completing-read "Choose block type: " '("quote" "verse"))))
@@ -842,7 +862,7 @@
 
 ;; 통합본
 (defun my-latex-custom-func (begin end)
-  "Custom font for LaTeX"
+  "Custom function for LaTeX"
   (interactive "r")
   (if (use-region-p)
       (let ((choice (read-char-choice "Select action: [c]글자색, [s]아래첨자, [S]위첨자, [b]블록: " '(?c ?s ?S ?b))))
