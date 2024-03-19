@@ -144,9 +144,8 @@
 ;; -------------------------------------
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
-  "b" 'my-latex-insert-block
   ;; "c" my-consult-map
-  "c" 'my-latex-font-custom
+  "c" 'my-latex-custom-func
   "g" 'consult-grep
   "e" 'eshell
   "t" 'my-popmark
@@ -793,7 +792,7 @@
 ;;   (put-text-property (region-beginning) (region-end) 'font-lock-face `((foreground-color . ,color))))
 ;;
 ;; ======================================
-;;; my-latex-custom-function
+;;; my-latex-custom-function/for org-mode
 ;; --------------------------------------
 ;; text-color change
 (defun latex-text-color (text color)
@@ -802,7 +801,6 @@
 
 (defun insert-latex-text-color (begin end)
   "latex. selected-text color change"
-;;  (interactive "r")
   (if (use-region-p)
       (let ((selected-text (buffer-substring-no-properties begin end))
             (color (read-string "Enter color: ")))
@@ -810,57 +808,47 @@
         (insert (latex-text-color selected-text color)))
     (message "No region selected")))
 
-(defun latex-subText (begin end)
-  "latex selected-text 아래첨자"
-;;  (interactive "r")
+(defun latex-modify-text (begin end modifier)
+  "Modify selected text, '_ for subscript and '^ for superscript."
   (if (use-region-p)
       (let ((selected-text (buffer-substring-no-properties begin end)))
         (delete-region begin end)
-        (setq selected-text (concat "_{" selected-text "}"))
+        (setq selected-text (concat modifier "{" selected-text "}"))
         (insert selected-text))
     (message "No region selected")))
 
-(defun latex-SuperText (begin end)
-  "latex selected-text 위첨자"
-  (if (use-region-p)
-      (let ((selected-text (buffer-substring-no-properties begin end)))
-        (delete-region begin end)
-        (setq selected-text (concat "^{" selected-text "}"))
-        (insert selected-text))
-    (message "No region selected")))
+;; 블럭 / 단락으로 확실히 구분된 영역만 사용
+(defun my-latex-insert-block () ;; ver 0.2.1
+  "Inserts `#+begin_block`, `#+end_block`. selected region."
+  (let ((block-type (completing-read "Choose block type: " '("quote" "verse"))))
+    (if (use-region-p)
+        (let ((beg (region-beginning))
+              (end (region-end))
+              (indent ""))
+          ;; Determine the current indentation level
+          (save-excursion
+            (goto-char beg)
+            (skip-chars-forward "[:space:]")
+            (setq indent (concat (make-string (current-column) ?\s))))
+          (save-excursion
+            (goto-char beg)
+            (insert (format "%s#+begin_%s\n" indent block-type))
+            ;; Apply the same indentation to the end of the block
+            (goto-char end)
+  ;;          (forward-line)
+            (end-of-line)
+            (insert-before-markers (format "\n%s#+end_%s" indent block-type))))
+      (message "No region selected"))))
 
-(defun my-latex-font-custom (begin end)
-  "Custom font for latex"
+;; 통합본
+(defun my-latex-custom-func (begin end)
+  "Custom font for LaTeX"
   (interactive "r")
   (if (use-region-p)
-      (let ((choice (read-char-choice "Select action: [c]글자색,[s]아래첨자,[S]위첨자: " '(?c ?s ?S))))
+      (let ((choice (read-char-choice "Select action: [c]글자색, [s]아래첨자, [S]위첨자, [b]블록: " '(?c ?s ?S ?b))))
         (pcase choice
           (?c (insert-latex-text-color begin end))
-          (?s (latex-subText begin end))
-          (?S (latex-SuperText begin end))))
+          (?s (latex-modify-text begin end "_"))
+          (?S (latex-modify-text begin end "^"))
+          (?b (my-latex-insert-block))))
     (message "No region selected")))
-
-(defun my-latex-insert-block (block-type)
-  "Inserts `#+begin_block` and `#+end_block` around the selected region."
-  (interactive
-   (list (completing-read "Choose block type: " '("quote" "verse"))))
-  (if (use-region-p)
-      (let ((beg (region-beginning))
-            (end (region-end))
-            (indent ""))
-        ;; Determine the current indentation level
-        (save-excursion
-          (goto-char beg)
-          (skip-chars-forward "[:space:]")
-          (setq indent (concat (make-string (current-column) ?\s))))
-        (save-excursion
-          (goto-char beg)
-          (beginning-of-line)
-	  (insert (format "%s#+begin_%s\n" indent block-type))
-          ;; Apply the same indentation to the end of the block
-          (goto-char (1+ end))
-          (end-of-line)
-          (insert (format "\n%s#+end_%s" indent block-type))))
-    (message "No region selected")))
-
-
