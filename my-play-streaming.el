@@ -18,7 +18,7 @@
   (interactive)
   (if stream-playing
       (stop-streaming)
-    (play-start-streaming (read-url-from-file "~/Dropbox/Mp3/mmslist.txt"))))
+    (play-start-streaming (read-url-from-file (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt")))))
 
 (defun play-start-streaming (url)
   "Start streaming audio from a given URL using VLC."
@@ -26,9 +26,9 @@
   (if (not stream-process)
       (let* ((vlc-command (if (eq system-type 'darwin)
                               "/Applications/VLC.app/Contents/MacOS/VLC" ; for macOS
-                            "vlc"))  ;; for linux
-             (chosen-title (get-chosen-title "~/Dropbox/Mp3/mmslist.txt")))
-        (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url))
+                            "vlc"))                                      ; for linux
+	     (chosen-title (get-chosen-title (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt"))))
+        (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url)) ; background play
         (set-process-query-on-exit-flag stream-process nil)
         (message "Playing: %s" chosen-title)
         (setq stream-playing t))
@@ -54,10 +54,10 @@
          (chosen-title (completing-read "Choose a title to play: " titles)))
     chosen-title))
 
-(defun edit-mmslist ()
-  "Edit the mmslist.txt file."
-  (interactive)
-  (find-file "~/Dropbox/Mp3/mmslist.txt"))
+;; (defun edit-mmslist ()
+;;   "Edit the mmslist.txt file."
+;;   (interactive)
+;;   (find-file (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt")))
 
 (defun read-url-from-file (file)
   "Read streaming URLs from a file and return a URL chosen by the user."
