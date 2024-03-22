@@ -32,20 +32,23 @@
   (package-refresh-contents)
   (package-install 'use-package))
 ;; (setq use-package-always-ensure nil)
-;; 
-;; ======================================
-;;; load-my-package
-;; --------------------------------------
-
-;; (add-to-list 'load-path "~/Dropbox/emacs/lisp/")
-;; (require 'my-play-streaming)
-
 ;;
 ;; ======================================
 ;;; system-info
 ;; --------------------------------------
 (defvar my-laptop-p (eq system-type 'gnu/linux))
 (defvar my-mactop-p (eq system-type 'darwin))
+
+;; ======================================
+;;; load-my-package
+;; --------------------------------------
+(if my-mactop-p
+    (add-to-list 'load-path "~/Dropbox/emacs/lisp/")
+  (add-to-list 'load-path "~/emacs/lisp/"))
+(require 'my-play-streaming)
+(require 'my-latex-custom-func)
+(require 'my-org-custom.el)
+(require 'my-dired-custom.el)
 ;;
 ;; ======================================
 ;;; 외양
@@ -194,6 +197,7 @@
 ;; ======================================
 ;;; 글꼴 fonts
 ;; --------------------------------------
+;;(set-frame-font "Noto Sans Mono CJK KR")
 (set-face-attribute 'default nil
 		    :family "Hack" ;Hack, Menlo
 		    :height 160)
@@ -243,73 +247,73 @@
 ;; ======================================
 ;;; org
 ;; --------------------------------------
-;; Key bindings
-(use-package org
-  :bind
-  (("M-n" . outline-next-visible-heading)
-   ("M-p" . outline-previous-visible-heading)
-   ("C-c l" . org-store-link)
-   ("C-c a" . org-agenda)
-   ("C-c c" . org-capture))
-  :custom                             ;; General org-mode settings
-  (org-startup-indented nil)
-  (org-hide-leading-stars nil)
-  (org-startup-with-inline-images nil)
-  (org-adapt-indentation t)
-  (org-src-preserve-indentation t)
-  (org-log-into-drawer t)
-  (org-log-done 'time)
-  (org-image-actual-width '(30))
-  ;; Org directory and agenda files
-  (org-directory (expand-file-name (if my-laptop-p "~/eDoc/org/" "~/Dropbox/eDoc/org/")))
-  (org-agenda-files '("Tasks.org" "Daily.org"))
-  ;; Todo keywords
-  (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
-  ;; Capture templates
-  (org-capture-templates
-    '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
-      ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
-      ("f" "dFarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
-  ;; Export settings
-  (org-latex-title-command "\\maketitle \\newpage")
-  (org-latex-toc-command "\\tableofcontents \\newpage")
-  (org-latex-compiler "xelatex")
-  (org-latex-to-pdf-process
-    '("xelatex -interaction nonstopmode -output-directory %o %f"
-      "xelatex -interaction nonstopmode -output-directory %o %f"
-      "xelatex -interaction nonstopmode -output-directory %o %f")))
-  ;; ;; Agenda view customizations
-  ;; (org-agenda-custom-commands
-  ;;   '(("d" "Custom agenda view"
-  ;;      ((agenda "" ((org-agenda-span 'week)
-  ;;                   (org-agenda-start-on-weekday 0)
-  ;;                   (org-agenda-format-date "%Y-%m-%d")))))))
-;;
-;; ======================================
-;;; org-bullets
-;; --------------------------------------
-(use-package org-bullets
-  :ensure t
-  :hook (org-mode . org-bullets-mode)
-  :config
-  (setq org-bullets-bullet-list '("◉" "◎" "●" "○" "●" "○" "●")))
-;;
-;; ======================================
-;;; for org edit/custom function
-;; --------------------------------------
-(defun org-custom-action (at)
-  "Perform custom org-mode action based on the numeric ACTION.
-   8: new line, 9: new org-heading, 0: new paragraph & org-cycle"
-  (interactive "nEnter action (8: new line, 9: heading, 0: new paragraph): ")
-  (end-of-line)
-  (cond
-   ((= at 8) (newline-and-indent))
-   ((= at 9) (org-insert-heading))
-   ((= at 0) (progn (newline-and-indent) (next-line) (org-cycle)))
-   (t (message "err,, please enter 8, 9, or 0.")))
-  )
+;; ;; Key bindings
+;; (use-package org
+;;   :bind
+;;   (("M-n" . outline-next-visible-heading)
+;;    ("M-p" . outline-previous-visible-heading)
+;;    ("C-c l" . org-store-link)
+;;    ("C-c a" . org-agenda)
+;;    ("C-c c" . org-capture))
+;;   :custom                             ;; General org-mode settings
+;;   (org-startup-indented nil)
+;;   (org-hide-leading-stars nil)
+;;   (org-startup-with-inline-images nil)
+;;   (org-adapt-indentation t)
+;;   (org-src-preserve-indentation t)
+;;   (org-log-into-drawer t)
+;;   (org-log-done 'time)
+;;   (org-image-actual-width '(30))
+;;   ;; Org directory and agenda files
+;;   (org-directory (expand-file-name (if my-laptop-p "~/eDoc/org/" "~/Dropbox/eDoc/org/")))
+;;   (org-agenda-files '("Tasks.org" "Daily.org"))
+;;   ;; Todo keywords
+;;   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
+;;   ;; Capture templates
+;;   (org-capture-templates
+;;     '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
+;;       ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
+;;       ("f" "dFarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
+;;   ;; Export settings
+;;   (org-latex-title-command "\\maketitle \\newpage")
+;;   (org-latex-toc-command "\\tableofcontents \\newpage")
+;;   (org-latex-compiler "xelatex")
+;;   (org-latex-to-pdf-process
+;;     '("xelatex -interaction nonstopmode -output-directory %o %f"
+;;       "xelatex -interaction nonstopmode -output-directory %o %f"
+;;       "xelatex -interaction nonstopmode -output-directory %o %f")))
+;;   ;; ;; Agenda view customizations
+;;   ;; (org-agenda-custom-commands
+;;   ;;   '(("d" "Custom agenda view"
+;;   ;;      ((agenda "" ((org-agenda-span 'week)
+;;   ;;                   (org-agenda-start-on-weekday 0)
+;;   ;;                   (org-agenda-format-date "%Y-%m-%d")))))))
+;; ;;
+;; ;; ======================================
+;; ;;; org-bullets
+;; ;; --------------------------------------
+;; (use-package org-bullets
+;;   :ensure t
+;;   :hook (org-mode . org-bullets-mode)
+;;   :config
+;;   (setq org-bullets-bullet-list '("◉" "◎" "●" "○" "●" "○" "●")))
+;; ;;
+;; ;; ======================================
+;; ;;; for org edit/custom function
+;; ;; --------------------------------------
+;; (defun org-custom-action (at)
+;;   "Perform custom org-mode action based on the numeric ACTION.
+;;    8: new line, 9: new org-heading, 0: new paragraph & org-cycle"
+;;   (interactive "nEnter action (8: new line, 9: heading, 0: new paragraph): ")
+;;   (end-of-line)
+;;   (cond
+;;    ((= at 8) (newline-and-indent))
+;;    ((= at 9) (org-insert-heading))
+;;    ((= at 0) (progn (newline-and-indent) (next-line) (org-cycle)))
+;;    (t (message "err,, please enter 8, 9, or 0.")))
+;;   )
 
-(global-set-key (kbd "C-0") 'org-custom-action)
+;; (global-set-key (kbd "C-0") 'org-custom-action)
 ;;
 ;; ======================================
 ;;; which-key
@@ -503,60 +507,6 @@
   (all-the-icons-completion-mode))
 ;;
 ;; ======================================
-;;; dired
-;; --------------------------------------
-;; directory 우선/한글파일명 정렬불가(macOS) → 해결(setenv "LC_COLLATE" "C")
-(use-package dired
-  :preface
-  (defun sof/dired-sort ()
-    "Dired sort, directories first."
-    (save-excursion
-      (let ((buffer-read-only nil))
-        (forward-line 2)
-        (sort-regexp-fields t "^.*$" "[ ]*." (point) (point-max))))
-    (when (and (featurep 'emacs) (fboundp 'dired-insert-set-properties))
-      (dired-insert-set-properties (point-min) (point-max)))
-    (set-buffer-modified-p nil))
-
-  (defun my/dired-jump-to-top()
-    "Dired, jump to top"
-    (interactive)
-    (goto-char (point-min))
-    (dired-next-line 2))
-
-  (defun my/dired-jump-to-bottom()
-    "Dired, jump to bottom"
-    (interactive)
-    (goto-char (point-max))
-    (dired-next-line -1))
-  :config
-  (setq dired-auto-revert-buffer t)
-  :bind
-  (:map dired-mode-map
-        ("M-<up>" . my/dired-jump-to-top)
-        ("M-<down>" . my/dired-jump-to-bottom)
-        ("/" . dired-narrow)
-        ("C-c f" . toggle-frame-fullscreen)
-        ("<tab>" . dired-subtree-toggle)
-        ("<backtab>" . dired-subtree-cycle))
-  :hook (dired-after-readin . sof/dired-sort)) ;dired-mode에서 파일 로드 후 sof함수 호출
-;; ======================================
-;;; dired-narrow
-;; --------------------------------------
-;; Dired 모드에서 파일 목록 필터링
-(use-package dired-narrow
-  :ensure t
-  :after dired)
-;;
-;; ======================================
-;; dired-subtree
-;; --------------------------------------
-;; Tab. sub directory 표시
-(use-package dired-subtree
-  :ensure t
-  :after dired)
-;;
-;; ======================================
 ;;; eshell
 ;; --------------------------------------
 (use-package eshell
@@ -567,6 +517,7 @@
 ;; ======================================
 ;;; modeline
 ;; --------------------------------------
+;; 양쪽 정렬하여 배치
 (defun my-custom-modeline (left right)
   "window-width, return left right, align"
   (let ((length-width
@@ -583,14 +534,16 @@
      ;; Left display
      (quote ("%e "
 	     mode-line-front-space
+	     "◎ "
 	     mode-line-mule-info
 	     mode-line-modified
-	     "  " 
+	     " ◎ "
              mode-line-buffer-identification
 	     mode-line-frame-identification
 	     mode-line-modes))             
      ;; Right display
      (quote ("(%l, %c) "  ;" %p"
+	     " ◔ "
              mode-line-misc-info))))))
 ;;
 ;; ======================================
@@ -600,6 +553,7 @@
   :ensure t
   :bind
   (("C-c n n" . denote)
+   ("C-c n r" . denote-region)
    ("C-c n s" . denote-sort-dired))
   :config
   (setq denote-directory (expand-file-name (if my-mactop-p "~/Dropbox/eDoc/org/denote/" "~/eDoc/org/denote/")))
@@ -673,9 +627,14 @@
 ;;       `(([?\s-r] . exwm-reset)
 ;;         ([?\s-w] . exwm-workspace-switch)
 ;;         ;; 추가적인 키 바인딩 설정
-;;         ))
-;; )
-;;
+;;         )))
+;; ======================================
+;;; keycast
+;; --------------------------------------
+;; (use-package keycast
+;;   :config
+;;   (keycast-mode-line-mode 1))
+
 ;; ======================================
 ;;; view-mode
 ;; --------------------------------------
@@ -690,7 +649,7 @@
         ("p" . View-scroll-line-backward)))
 ;;
 ;; ======================================
-;;; my-reading-mode
+;;; my-reading(view)-mode
 ;; --------------------------------------
 ;; "Read-only mode, not editable."
 ;; I drew inspiration from novel-mode and view-mode.
@@ -726,78 +685,6 @@
                (t (error "지원하지 않는 검색 엔진입니다.")))))
     (browse-url url)))
 ;;
-;; ======================================
-;;; stream Radio
-;; --------------------------------------
-;; vlc streamming / Toggle On/Off (M-x toggle-streaming)
-;; I was inspired by the eRadio package.
-;; The streaming source is mmslist.txt, and it's in the format of title/address.
-;; I haven't been able to test it on Linux yet. I'm using the Lubuntu distribution.
-;; I used ChatGPT, and distribution is free.
-(defvar stream-process nil
-  "Variable to store the VLC process.")
-
-(defvar stream-playing nil
-  "Variable to track if streaming is currently playing.")
-
-(defun toggle-streaming ()
-  "Toggle streaming on/off."
-  (interactive)
-  (if stream-playing
-      (stop-streaming)
-    (play-start-streaming (read-url-from-file (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt")))))
-
-(defun play-start-streaming (url)
-  "Start streaming audio from a given URL using VLC."
-  (interactive "sURL: ")
-  (if (not stream-process)
-      (let* ((vlc-command (if (eq system-type 'darwin)
-                              "/Applications/VLC.app/Contents/MacOS/VLC" ; for macOS
-                            "vlc"))                                      ; for linux
-	     (chosen-title (get-chosen-title (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt"))))
-        (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url)) ; background play
-        (set-process-query-on-exit-flag stream-process nil)
-        (message "Playing: %s" chosen-title)
-        (setq stream-playing t))
-    (message "Streaming is already playing.")))
-
-(defun stop-streaming ()
-  "Stop the currently running VLC process."
-  (interactive)
-  (if stream-process
-      (progn
-        (delete-process stream-process)
-        (setq stream-process nil)
-        (setq stream-playing nil) ; Stop 시 stream-playing을 nil로 설정
-        (message "Streaming stopped."))
-    (message "No streaming is currently playing.")))
-
-(defun get-chosen-title (file)
-  "Get the chosen title from the user."
-  (let* ((items (with-temp-buffer
-                  (insert-file-contents file)
-                  (split-string (buffer-string) "\n" t)))
-         (titles (mapcar (lambda (item) (car (split-string item "|"))) items))
-         (chosen-title (completing-read "Choose a title to play: " titles)))
-    chosen-title))
-
-;; (defun edit-mmslist ()
-;;   "Edit the mmslist.txt file."
-;;   (interactive)
-;;   (find-file (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt")))
-
-(defun read-url-from-file (file)
-  "Read streaming URLs from a file and return a URL chosen by the user."
-  (let* ((items (with-temp-buffer
-                  (insert-file-contents file)
-                  (split-string (buffer-string) "\n" t)))
-         (titles (mapcar (lambda (item) (car (split-string item "|"))) items))
-         (chosen-title (completing-read "Choose a title to play: " titles))
-         (chosen-item (seq-find (lambda (item) (string= chosen-title (car (split-string item "|")))) items))
-         (url (when chosen-item
-                (cadr (split-string chosen-item "|")))))
-    url))
-
 ;;
 ;; ======================================
 ;;; my-highlight-section
@@ -811,64 +698,3 @@
 ;;                           '("red" "blue" "green" "yellow" "orange"))))
 ;;   (put-text-property (region-beginning) (region-end) 'font-lock-face `((foreground-color . ,color))))
 ;;
-;; ======================================
-;;; my-latex-custom-function/for org-mode
-;; --------------------------------------
-;; text-color change
-(defun latex-text-color (text color)
-  "Return LaTeX text with specified color."
-  (format "\\textcolor{%s}{%s}" color text))
-
-(defun insert-latex-text-color (begin end)
-  "latex. selected-text color change"
-  (if (use-region-p)
-      (let ((selected-text (buffer-substring-no-properties begin end))
-            (color (read-string "Enter color: ")))
-        (delete-region begin end)
-        (insert (latex-text-color selected-text color)))
-    (message "No region selected")))
-
-(defun latex-modify-text (begin end modifier)
-  "Modify selected text, '_ for subscript and '^ for superscript."
-  (if (use-region-p)
-      (let ((selected-text (buffer-substring-no-properties begin end)))
-        (delete-region begin end)
-        (setq selected-text (concat modifier "{" selected-text "}"))
-        (insert selected-text))
-    (message "No region selected")))
-
-;; 단락으로 분명하게 구분된 영역만 사용
-(defun my-latex-insert-block () ;; ver 0.2.1
-  "Inserts `#+begin_block`, `#+end_block`. selected region."
-  (let ((block-type (completing-read "Choose block type: " '("quote" "verse"))))
-    (if (use-region-p)
-        (let ((beg (region-beginning))
-              (end (region-end))
-              (indent ""))
-          ;; Determine the current indentation level
-          (save-excursion
-            (goto-char beg)
-            (skip-chars-forward "[:space:]")
-            (setq indent (concat (make-string (current-column) ?\s))))
-          (save-excursion
-            (goto-char beg)
-            (insert (format "%s#+begin_%s\n" indent block-type))
-            ;; Apply the same indentation to the end of the block
-            (goto-char end)
-  ;;          (forward-line)
-            (end-of-line)
-            (insert-before-markers (format "\n%s#+end_%s" indent block-type))))
-      (message "No region selected"))))
-
-;; 통합본
-(defun my-latex-custom-func (begin end)
-  "Custom function for LaTeX"
-  (interactive "r")
-  (if (use-region-p)
-      (let ((choice (read-char-choice "Select action: [c]글자색, [s]아래첨자, [S]위첨자, [b]블록: " '(?c ?s ?S ?b))))
-        (pcase choice
-          (?c (insert-latex-text-color begin end))
-          (?s (latex-modify-text begin end "_"))
-          (?S (latex-modify-text begin end "^"))
-          (?b (my-latex-insert-block))))
-    (message "No region selected")))
