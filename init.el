@@ -1,6 +1,7 @@
+(setq debug-on-error t)
 ;; ======================================
 ;;; Speed up emacs
-;; --------------------------------------
+;; ======================================
 ;; 가비지 수집 호출 횟수 줄이기
 (setq gc-cons-threshold 100000000)
 (add-hook 'emacs-startup-hook 'my/set-gc-threshold)
@@ -10,14 +11,14 @@
 ;;
 ;; ======================================
 ;;; custom file
-;; --------------------------------------
+;; ======================================
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 ;; (setq custom-file (concat user-emacs-directory "custom.el"))
 ;; (when (file-exists-p custom-file) (load custom-file 't))
 ;;
 ;; ======================================
 ;;; package source list
-;; --------------------------------------
+;;; ======================================
 (require 'package)
 (setq package-archives
       '(("melpa" . "https://melpa.org/packages/")
@@ -27,7 +28,7 @@
 ;; 
 ;; ======================================
 ;;; use-package
-;; --------------------------------------
+;; ======================================
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -35,24 +36,23 @@
 ;;
 ;; ======================================
 ;;; system-info
-;; --------------------------------------
+;; ======================================
 (defvar my-laptop-p (eq system-type 'gnu/linux))
 (defvar my-mactop-p (eq system-type 'darwin))
 
 ;; ======================================
 ;;; load-my-package
-;; --------------------------------------
+;; ======================================
 (if my-mactop-p
     (add-to-list 'load-path "~/Dropbox/emacs/lisp/")
   (add-to-list 'load-path "~/emacs/lisp/"))
 (require 'my-play-streaming)
 (require 'my-latex-custom-func)
-(require 'my-org-custom.el)
-(require 'my-dired-custom.el)
+(require 'my-dired-custom)
 ;;
 ;; ======================================
 ;;; 외양
-;; --------------------------------------
+;; ======================================
 ;;; hidden menu Bar
 (menu-bar-mode 1)
 (tool-bar-mode -1)
@@ -67,10 +67,10 @@
 ;;
 ;; ======================================
 ;;; 작은 설정 들
-;; --------------------------------------
+;; ======================================
 ;; defult-directory
-(setq default-directory (if my-mactop-p "~/Dropbox/eDoc/org/" "~/eDoc/org/")
-      temporary-file-directory (if my-mactop-p "~/Dropbox/eDoc/tmpdir/" "~/eDoc/tmpdir/"))
+(setq default-directory (if my-mactop-p "~/Dropbox/Docs/org/" "~/Docs/org/")
+      temporary-file-directory (if my-mactop-p "~/Dropbox/Docs/tmpdir/" "~/Docs/tmpdir/"))
 (setq make-backup-files nil
       kill-whole-line 1
       search-highlight t)
@@ -78,7 +78,7 @@
 ;;
 ;; ======================================
 ;;; 자잘한 필수 모드
-;; --------------------------------------
+;; ======================================
 (save-place-mode 1)
 (global-font-lock-mode 1)
 (global-visual-line-mode t) ;word wrap
@@ -89,7 +89,7 @@
 ;;
 ;; ======================================
 ;;; modus theme
-;; --------------------------------------
+;; ======================================
 (use-package emacs
   :config
   (require-theme 'modus-themes)
@@ -102,7 +102,7 @@
 ;;
 ;; ======================================
 ;;; start emacs (load theme by time)
-;; --------------------------------------
+;; ======================================
 ;; display-time-mode 사용.
 (defun set-theme-by-time ()
   "set theme by time"
@@ -114,7 +114,7 @@
 ;;
 ;; ======================================
 ;;; exec-path-from-shell
-;; --------------------------------------
+;; ======================================
 ;; MacOS PATH 설정
 (use-package exec-path-from-shell
   :ensure t
@@ -124,7 +124,7 @@
 ;;
 ;; ======================================
 ;;; Keyboard for MacOS
-;; --------------------------------------
+;; ======================================
 ;; (when (equal system-type 'darwin)
 ;; ;;(when (string= system-name "MacBookAir.local")
 ;;   (setq mac-option-modifier 'super)
@@ -132,7 +132,7 @@
 ;;
 ;; ======================================
 ;;; 단축키 prefix key
-;; --------------------------------------
+;; ======================================
 (global-unset-key [f11])  ;remove toggle-frame-fullscreen/MacOS
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
@@ -145,7 +145,7 @@
 ;;   "o" 'consult-outline
 ;;   "r" 'consult-recent-file
 ;;   "t" 'consult-theme)
-;; -------------------------------------
+;; ======================================
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
   ;; "c" my-consult-map
@@ -160,7 +160,7 @@
   "v" 'view-mode)
 ;;
 (keymap-set global-map "C-t" my-prefix-map)
-;; --------------------------------------
+;;
 ;; base-dir 변수 사용하여 Mac 여부에 따라 기본 디렉토리 선택
 ;; 중복 코드 회피, my-open-directory 및 my-open-file 함수 사용
 (defun my-popmark (choice)
@@ -169,19 +169,19 @@
   (let ((base-dir (if my-mactop-p "~/Dropbox/" "~/")))
     (cond
      ((eq choice ?E) (my-open-directory "emacs"))
-     ((eq choice ?O) (my-open-directory "eDoc/org"))
-     ((eq choice ?P) (my-open-directory "eDoc/pdf"))
+     ((eq choice ?O) (my-open-directory "Docs/org"))
+     ((eq choice ?P) (my-open-directory "Docs/pdf"))
      ((eq choice ?i) (my-open-file "emacs/init.el"))
-     ((eq choice ?t) (my-open-file "eDoc/org/Tasks.org"))
-     ((eq choice ?c) (my-open-file "eDoc/org/cNotes.org"))
-     ((eq choice ?d) (my-open-file "eDoc/org/Daily.org"))
-     ((eq choice ?f) (my-open-file "eDoc/org/dFarmNote.org"))
+     ((eq choice ?t) (my-open-file "Docs/org/Tasks.org"))
+     ((eq choice ?c) (my-open-file "Docs/org/cNotes.org"))
+     ((eq choice ?d) (my-open-file "Docs/org/Daily.org"))
+     ((eq choice ?f) (my-open-file "Docs/org/dFarmNote.org"))
      (t (message "Quit")))))
-;;;
+
 (defun my-open-directory (dir)
   "Open a directory based on the platform and given subdirectory."
   (dired (concat base-dir dir)))
-;;;
+
 (defun my-open-file (file)
   "Open a file based on the platform and given file path."
   (find-file (concat base-dir file))
@@ -189,17 +189,17 @@
 ;;
 ;; ======================================
 ;;; 로케일, 한글
-;; --------------------------------------
+;; ======================================
 (setenv "LANG" "ko_KR.UTF-8")
 (setenv "LC_COLLATE" "C")		  ;Dired 한글 파일명 정렬 macOS
 (set-locale-environment "ko_KR.UTF-8")	  ;kbd 한글 S-SPC
 ;;
 ;; ======================================
 ;;; 글꼴 fonts
-;; --------------------------------------
+;; ======================================
 ;;(set-frame-font "Noto Sans Mono CJK KR")
 (set-face-attribute 'default nil
-		    :family "Hack" ;Hack, Menlo
+		    :family "Noto Sans Mono CJK KR"    ;Hack, Menlo;Noto Sans CJK KR
 		    :height 160)
 (set-face-attribute 'fixed-pitch nil
 		    :family "Noto Sans Mono CJK KR"
@@ -207,11 +207,11 @@
 (set-face-attribute 'variable-pitch nil
 		    :family "Noto Sans CJK KR"
 		    :height 160)
-(set-fontset-font nil 'hangul (font-spec :family "Noto Sans Mono CJK KR"))
+(set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR"))
 ;;
 ;; ======================================
 ;;; korean calendar
-;; --------------------------------------
+;; ======================================
 (use-package calendar
   :config  
   (setq calendar-week-start-day 0
@@ -221,12 +221,12 @@
 ;;
 ;;; calendar layout 보정. D2coding size
 ;; (defun cal-fixLayout ()
-;;   (face-remap-add-relative 'default '(:family "D2Coding" :height 120)))           
+;;   (face-remap-add-relative 'default '(:family "D2Coding" :height 150)))           
 ;; (add-hook 'calendar-mode-hook 'cal-fixLayout)
 ;;
 ;; ======================================
 ;;; helpful
-;; --------------------------------------
+;; ======================================
 (use-package helpful
   :ensure t
   :bind(("C-h k" . helpful-key)
@@ -236,7 +236,7 @@
 ;;
 ;; ======================================
 ;;; recentF
-;; --------------------------------------
+;; ======================================
 (use-package recentf
   :ensure t
   :init
@@ -245,79 +245,8 @@
   (recentf-max-saved-items 50))
 ;;
 ;; ======================================
-;;; org
-;; --------------------------------------
-;; ;; Key bindings
-;; (use-package org
-;;   :bind
-;;   (("M-n" . outline-next-visible-heading)
-;;    ("M-p" . outline-previous-visible-heading)
-;;    ("C-c l" . org-store-link)
-;;    ("C-c a" . org-agenda)
-;;    ("C-c c" . org-capture))
-;;   :custom                             ;; General org-mode settings
-;;   (org-startup-indented nil)
-;;   (org-hide-leading-stars nil)
-;;   (org-startup-with-inline-images nil)
-;;   (org-adapt-indentation t)
-;;   (org-src-preserve-indentation t)
-;;   (org-log-into-drawer t)
-;;   (org-log-done 'time)
-;;   (org-image-actual-width '(30))
-;;   ;; Org directory and agenda files
-;;   (org-directory (expand-file-name (if my-laptop-p "~/eDoc/org/" "~/Dropbox/eDoc/org/")))
-;;   (org-agenda-files '("Tasks.org" "Daily.org"))
-;;   ;; Todo keywords
-;;   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
-;;   ;; Capture templates
-;;   (org-capture-templates
-;;     '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
-;;       ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
-;;       ("f" "dFarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
-;;   ;; Export settings
-;;   (org-latex-title-command "\\maketitle \\newpage")
-;;   (org-latex-toc-command "\\tableofcontents \\newpage")
-;;   (org-latex-compiler "xelatex")
-;;   (org-latex-to-pdf-process
-;;     '("xelatex -interaction nonstopmode -output-directory %o %f"
-;;       "xelatex -interaction nonstopmode -output-directory %o %f"
-;;       "xelatex -interaction nonstopmode -output-directory %o %f")))
-;;   ;; ;; Agenda view customizations
-;;   ;; (org-agenda-custom-commands
-;;   ;;   '(("d" "Custom agenda view"
-;;   ;;      ((agenda "" ((org-agenda-span 'week)
-;;   ;;                   (org-agenda-start-on-weekday 0)
-;;   ;;                   (org-agenda-format-date "%Y-%m-%d")))))))
-;; ;;
-;; ;; ======================================
-;; ;;; org-bullets
-;; ;; --------------------------------------
-;; (use-package org-bullets
-;;   :ensure t
-;;   :hook (org-mode . org-bullets-mode)
-;;   :config
-;;   (setq org-bullets-bullet-list '("◉" "◎" "●" "○" "●" "○" "●")))
-;; ;;
-;; ;; ======================================
-;; ;;; for org edit/custom function
-;; ;; --------------------------------------
-;; (defun org-custom-action (at)
-;;   "Perform custom org-mode action based on the numeric ACTION.
-;;    8: new line, 9: new org-heading, 0: new paragraph & org-cycle"
-;;   (interactive "nEnter action (8: new line, 9: heading, 0: new paragraph): ")
-;;   (end-of-line)
-;;   (cond
-;;    ((= at 8) (newline-and-indent))
-;;    ((= at 9) (org-insert-heading))
-;;    ((= at 0) (progn (newline-and-indent) (next-line) (org-cycle)))
-;;    (t (message "err,, please enter 8, 9, or 0.")))
-;;   )
-
-;; (global-set-key (kbd "C-0") 'org-custom-action)
-;;
-;; ======================================
 ;;; which-key
-;; --------------------------------------
+;; ======================================
 (use-package which-key
   :ensure t
   :init (which-key-mode)
@@ -327,7 +256,7 @@
 ;;
 ;; ======================================
 ;;; vertico
-;; --------------------------------------
+;; ======================================
 (use-package vertico
   :ensure t
   :init
@@ -337,7 +266,7 @@
 ;;
 ;; ======================================
 ;;; marginalia
-;; --------------------------------------
+;; ======================================
 ;; annotations in the minibuffer
 (use-package marginalia
   :ensure t
@@ -348,7 +277,7 @@
 ;;
 ;; ======================================
 ;;; savehist
-;; --------------------------------------
+;; ======================================
 (use-package savehist
   :ensure t
   :init
@@ -356,7 +285,7 @@
 ;;
 ;; ======================================
 ;;; orderless
-;; --------------------------------------
+;; ======================================
 ;; advenced completion stlye
 (use-package orderless
   :ensure t
@@ -366,7 +295,7 @@
 ;;
 ;; ======================================
 ;;; consult
-;; --------------------------------------
+;; ======================================
 ;; enhanced minibuffer commands, search
 (use-package consult
   :ensure t
@@ -395,7 +324,7 @@
 ;;
 ;; ======================================
 ;;; consult-dir
-;; --------------------------------------
+;; ======================================
 ;; insert paths into minibuffer prompts in Emacs
 (use-package consult-dir
   :ensure t
@@ -405,7 +334,7 @@
 ;;
 ;; ======================================
 ;;; embark
-;; --------------------------------------
+;; ======================================
 ;; extended minibuffer actions and context menu
 (use-package embark
   :ensure t
@@ -416,15 +345,85 @@
 ;;
 ;; ======================================
 ;;; embark-consult
-;; --------------------------------------
+;; ======================================
 (use-package embark-consult
   :ensure t
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 ;;
 ;; ======================================
-;;; gnus
+;;; org
+;; ======================================
+;; Key bindings
+(use-package org
+  :bind
+  (("M-n" . outline-next-visible-heading)
+   ("M-p" . outline-previous-visible-heading)
+   ("C-c l" . org-store-link)
+   ("C-c a" . org-agenda)
+   ("C-c c" . org-capture))
+  :custom
+  (org-hide-leading-stars nil)
+  (org-startup-with-inline-images nil)
+  (org-src-preserve-indentation t)
+  (org-log-into-drawer t)
+  (org-log-done 'time)
+  (org-image-actual-width '(100))
+  ;; Org directory and agenda files
+  (org-directory (expand-file-name (if my-laptop-p "~/Docs/org/" "~/Dropbox/Docs/org/")))
+  (org-agenda-files '("Tasks.org" "Daily.org"))
+  ;; Todo keywords
+  (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
+  ;; Capture templates
+  (org-capture-templates
+    '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
+      ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
+      ("f" "dFarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
+  ;; Export settings
+  (org-latex-title-command "\\maketitle \\newpage")
+  (org-latex-toc-command "\\tableofcontents \\newpage")
+  (org-latex-compiler "xelatex")
+  (org-latex-to-pdf-process
+    '("xelatex -interaction nonstopmode -output-directory %o %f"
+      "xelatex -interaction nonstopmode -output-directory %o %f"
+      "xelatex -interaction nonstopmode -output-directory %o %f"))
+  :hook (org-mode . org-indent-mode)  ; auto indent
+  )
+  ;; ;; Agenda view customizations
+  ;; (org-agenda-custom-commands
+  ;;   '(("d" "Custom agenda view"
+  ;;      ((agenda "" ((org-agenda-span 'week)
+  ;;                   (org-agenda-start-on-weekday 0)
+  ;;                   (org-agenda-format-date "%Y-%m-%d")))))))
+;;
+;; ======================================
+;;; org-bullets
+;; ======================================
+(use-package org-bullets
+  :ensure t
+  :hook (org-mode . org-bullets-mode)
+  :config
+  (setq org-bullets-bullet-list '("◉" "◎" "●" "○" "●" "○" "●")))
+;;
+;; ======================================
+;;; for org edit/custom function
 ;; --------------------------------------
+(defun org-custom-action (at)
+  "Perform custom org-mode action based on the numeric ACTION.
+   8: new line, 9: new org-heading, 0: paragraph & org-cycle"
+  (interactive "nEnter action (8: new line, 9: heading, 0: new paragraph): ")
+  (end-of-line)
+  (cond
+   ((= at 8) (newline-and-indent))
+   ((= at 9) (org-insert-heading))
+   ((= at 0) (progn (newline-and-indent) (next-line) (org-cycle)))
+   (t (message "err,, please enter 8, 9, or 0."))))
+
+(global-set-key (kbd "C-0") 'org-custom-action)
+;;
+;; ======================================
+;;; gnus
+;; ======================================
 (setq user-mail-address "under9@icloud.com"
       user-full-name "Young")
 ;;
@@ -447,7 +446,7 @@
 ;;
 ;; =======================================
 ;;; electric-pair-mode
-;; ---------------------------------------
+;; ======================================-
 (progn
   (electric-pair-mode 1)
   (setq electric-pair-pairs '((?\{ . ?\})
@@ -457,7 +456,7 @@
 ;;
 ;; =======================================
 ;;; corfu
-;; ---------------------------------------
+;; ======================================-
 (setq completion-cycle-threshold 3
       tab-always-indent 'complete)
 (use-package corfu
@@ -484,7 +483,7 @@
 ;;
 ;; =======================================
 ;;; all-the-icons
-;; ---------------------------------------
+;; ======================================-
 (use-package all-the-icons
   :ensure t
   :if (display-graphic-p))
@@ -508,7 +507,7 @@
 ;;
 ;; ======================================
 ;;; eshell
-;; --------------------------------------
+;; ======================================
 (use-package eshell
   :commands eshell
   :config
@@ -516,39 +515,31 @@
 ;;
 ;; ======================================
 ;;; modeline
-;; --------------------------------------
-;; 양쪽 정렬하여 배치
-(defun my-custom-modeline (left right)
-  "window-width, return left right, align"
-  (let ((length-width
-         (- (window-total-width)
-            (+ (length (format-mode-line left))
-               (length (format-mode-line right))))))
-    (append left
-            (list (format (format "%%%ds" length-width) ""))
-            right)))
-
+;; ======================================
+;; 단순 버젼 original
 (setq-default mode-line-format
- '((:eval
-    (my-custom-modeline
-     ;; Left display
-     (quote ("%e "
-	     mode-line-front-space
-	     "◎ "
-	     mode-line-mule-info
-	     mode-line-modified
-	     " ◎ "
-             mode-line-buffer-identification
-	     mode-line-frame-identification
-	     mode-line-modes))             
-     ;; Right display
-     (quote ("(%l, %c) "  ;" %p"
-	     " ◔ "
-             mode-line-misc-info))))))
+     '("%e "
+       mode-line-front-space
+       " Ⓗ  "
+       ;;     mode-line-mule-info
+       mode-line-buffer-identification       
+       mode-line-frame-identification
+       ;;     mode-line-modified
+       "  Ⓨ  "
+       mode-line-modes
+       mode-line-position
+       (vc-mode vc-mode)
+       " Ⓚ "
+       mode-line-misc-info
+       (:eval (propertize (if (string= current-input-method "korean-hangul")
+                             " 한"
+                           " EN")
+                           'face '(:foreground "orange")))
+       ))
 ;;
 ;; ======================================
 ;;; denote
-;; --------------------------------------
+;; ======================================
 (use-package denote
   :ensure t
   :bind
@@ -556,7 +547,7 @@
    ("C-c n r" . denote-region)
    ("C-c n s" . denote-sort-dired))
   :config
-  (setq denote-directory (expand-file-name (if my-mactop-p "~/Dropbox/eDoc/org/denote/" "~/eDoc/org/denote/")))
+  (setq denote-directory (expand-file-name (if my-mactop-p "~/Dropbox/Docs/org/denote/" "~/Docs/org/denote/")))
   (setq denote-known-keywords '("emacs" "latex" "idea")
         denote-infer-keywords t
         denote-sort-keywords t
@@ -581,7 +572,7 @@
 ;;
 ;; ======================================
 ;;; rainbow-delimiters
-;; --------------------------------------
+;; ======================================
 ;; 괄호, 중괄호, 각종 쌍을 시각적(무지개색) 구분
 (use-package rainbow-delimiters
   :ensure t
@@ -604,7 +595,7 @@
 ;;
 ;; ======================================
 ;;; pdf-view, tools
-;; --------------------------------------
+;; ======================================
 ;; only linux
 (use-package pdf-tools
   :ensure nil
@@ -616,7 +607,7 @@
 ;;
 ;; ======================================
 ;;; exwm
-;; --------------------------------------
+;; ======================================
 ;; only linux
 ;; (if my-laptop-p
 ;;     (require 'exwm)
@@ -629,15 +620,8 @@
 ;;         ;; 추가적인 키 바인딩 설정
 ;;         )))
 ;; ======================================
-;;; keycast
-;; --------------------------------------
-;; (use-package keycast
-;;   :config
-;;   (keycast-mode-line-mode 1))
-
-;; ======================================
 ;;; view-mode
-;; --------------------------------------
+;; ======================================
 ;; 읽기 모드, 편집 보호
 (use-package view
   :ensure nil
@@ -650,7 +634,7 @@
 ;;
 ;; ======================================
 ;;; my-reading(view)-mode
-;; --------------------------------------
+;; ======================================
 ;; "Read-only mode, not editable."
 ;; I drew inspiration from novel-mode and view-mode.
 ;; Therefore, you should refer to the view-mode settings.
@@ -672,7 +656,7 @@
 ;;
 ;; ======================================
 ;;; web-search(google, naver)
-;; --------------------------------------
+;; ======================================
 (defun search-web (engine query)
   "지정한 검색 엔진에서 검색"
   (interactive
@@ -685,10 +669,9 @@
                (t (error "지원하지 않는 검색 엔진입니다.")))))
     (browse-url url)))
 ;;
-;;
 ;; ======================================
 ;;; my-highlight-section
-;; --------------------------------------
+;; ======================================
 ;; export latex, PDF 적용안됨
 ;; 지정 영역내 font Color Change
 ;; (defun my-highlight-selection (color)
