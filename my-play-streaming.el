@@ -1,4 +1,4 @@
-;;
+ ;;
 ;; ======================================
 ;;; stream Radio
 ;; --------------------------------------
@@ -13,24 +13,30 @@
 (defvar stream-playing nil
   "Variable to track if streaming is currently playing.")
 
+(defun get-mmslist-file-path ()
+  "Get the file path for the mmslist.txt file."
+  (if my-mactop-p
+      "~/Dropbox/emacs/mmslist.txt"
+    "~/emacs/mmslist.txt"))
+
 (defun toggle-streaming ()
   "Toggle streaming on/off."
   (interactive)
   (if stream-playing
       (stop-streaming)
-    (play-start-streaming (read-url-from-file (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt")))))
+    (play-start-streaming (read-url-from-file (get-mmslist-file-path)))))
 
-(defun play-start-streaming (url)  ;vlc Check version
+(defun play-start-streaming (url)
   "Start streaming audio from a given URL using VLC."
-  (interactive "sURL: ")
+;;  (interactive "sURL: ")
   (let* ((vlc-command (if (eq system-type 'darwin)
                           "/Applications/VLC.app/Contents/MacOS/VLC" ; for macOS
-                        "vlc")))                                     ; for linux
-    (if (not (file-executable-p vlc-command))   ;vlc 존재 여부
+                        "vlc")))
+    (if (not (executable-find vlc-command))
         (message "VLC is not installed. Please install VLC to stream audio.")
       (if (not stream-process)
-          (let* ((chosen-title (get-chosen-title (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt"))))
-            (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url)) ; background play
+          (let* ((chosen-title (get-chosen-title (get-mmslist-file-path))))
+            (setq stream-process (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url))
             (set-process-query-on-exit-flag stream-process nil)
             (message "Playing: %s" chosen-title)
             (setq stream-playing t))
@@ -38,12 +44,12 @@
 
 (defun stop-streaming ()
   "Stop the currently running VLC process."
-  (interactive)
+;;  (interactive)
   (if stream-process
       (progn
         (delete-process stream-process)
         (setq stream-process nil)
-        (setq stream-playing nil) ; Stop 시 stream-playing을 nil로 설정
+        (setq stream-playing nil)
         (message "Streaming stopped."))
     (message "No streaming is currently playing.")))
 
@@ -59,7 +65,7 @@
 (defun edit-mmslist ()
   "Edit the mmslist.txt file."
   (interactive)
-  (find-file (if my-mactop-p "~/Dropbox/Mp3/mmslist.txt" "~/emacs/mmslist.txt")))
+  (find-file (get-mmslist-file-path)))
 
 (defun read-url-from-file (file)
   "Read streaming URLs from a file and return a URL chosen by the user."
@@ -74,7 +80,3 @@
     url))
 
 (provide 'my-play-streaming)
-;; Set global key bindings
-;; (bind-key "C-c C-p" 'play-start-streaming)
-;; (bind-key "C-c C-s" 'stop-streaming)
-;;; my-play-streaming.el ends here
