@@ -49,6 +49,7 @@
 (require 'my-play-streaming)
 (require 'my-latex-custom-func)
 (require 'my-dired-custom)
+(require 'my-reading-mode-custom)
 ;;
 ;; ======================================
 ;;; 외양
@@ -304,8 +305,8 @@
    ("C-x b" . consult-buffer)
    ("C-x C-r" . consult-recent-file)
    ("C-c r b" . consult-bookmark)
-   ("C-c r d" . consult-dir)
-   ("C-c r g" . consult-grep)
+;;   ("C-c r d" . consult-dir)
+   ("C-c g" . consult-grep)
    ("C-c r o" . consult-outline)
    ("C-c r t" . consult-theme))
   :bind
@@ -518,24 +519,26 @@
 ;; ======================================
 ;; 단순 버젼 original
 (setq-default mode-line-format
-     '("%e "
-       mode-line-front-space
-       " Ⓗ  "
-       ;;     mode-line-mule-info
-       mode-line-buffer-identification       
-       mode-line-frame-identification
-       ;;     mode-line-modified
-       "  Ⓨ  "
-       mode-line-modes
-       mode-line-position
-       (vc-mode vc-mode)
-       " Ⓚ "
-       mode-line-misc-info
-       (:eval (propertize (if (string= current-input-method "korean-hangul")
-                             " 한"
-                           " EN")
-                           'face '(:foreground "orange")))
-       ))
+	      '("%e "
+		mode-line-front-space
+		" Ⓗ  "
+		;;     mode-line-mule-info
+		mode-line-buffer-identification       
+		mode-line-frame-identification
+		;;     mode-line-modified
+		"  Ⓨ  "
+		mode-line-modes
+		mode-line-position
+		;; (vc-mode vc-mode)
+		" Ⓚ "
+		mode-line-misc-info
+		(:eval (if (string= current-input-method "korean-hangul")
+                           " 한"
+                         " EN"))))
+       ;; (:eval (propertize (if (string= current-input-method "korean-hangul")
+       ;;                       " 한"
+       ;;                     " EN")
+       ;;                     'face '(:foreground "red")))))
 ;;
 ;; ======================================
 ;;; denote
@@ -619,40 +622,6 @@
 ;;         ([?\s-w] . exwm-workspace-switch)
 ;;         ;; 추가적인 키 바인딩 설정
 ;;         )))
-;; ======================================
-;;; view-mode
-;; ======================================
-;; 읽기 모드, 편집 보호
-(use-package view
-  :ensure nil
-  :init
-  (setq view-read-only t)
-  :bind
-  (:map view-mode-map
-        ("n" . View-scroll-line-forward)
-        ("p" . View-scroll-line-backward)))
-;;
-;; ======================================
-;;; my-reading(view)-mode
-;; ======================================
-;; "Read-only mode, not editable."
-;; I drew inspiration from novel-mode and view-mode.
-;; Therefore, you should refer to the view-mode settings.
-(defun toggle-my-reading-mode ()
-  "Toggle fullscreen & view-mode."
-  (interactive)
-  (if (and (boundp 'my-reading-mode-enabled) my-reading-mode-enabled)
-      (progn
-        (toggle-frame-fullscreen)
-        (text-scale-decrease 0.5)
-        (setq my-reading-mode-enabled nil)
-        (view-mode -1))
-    (progn
-      (unless (eq (frame-parameter nil 'fullscreen) 'fullboth)
-        (toggle-frame-fullscreen))
-      (text-scale-increase 0.5)
-      (setq my-reading-mode-enabled t)
-      (view-mode))))
 ;;
 ;; ======================================
 ;;; web-search(google, naver)
