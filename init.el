@@ -46,10 +46,10 @@
 (if my-mactop-p
     (add-to-list 'load-path "~/Dropbox/emacs/lisp/")
   (add-to-list 'load-path "~/emacs/lisp/"))
-(require 'my-play-streaming)
-(require 'my-latex-custom-func)
+(require 'my-play-streaming)        ;radio 청취 
+(require 'my-latex-custom-func)     ;org export pdf
 (require 'my-dired-custom)
-(require 'my-reading-mode-custom)
+(require 'my-reading-mode-custom)   ;reading mode
 ;;
 ;; ======================================
 ;;; 외양
@@ -106,9 +106,9 @@
 ;; ======================================
 ;; display-time-mode 사용.
 (defun set-theme-by-time ()
-  "set theme by time"
+  "set theme by time, loading emacs"
   (let ((current-hour (string-to-number (substring (current-time-string) 11 13))))
-    (if (and (>= current-hour 9) (< current-hour 17)) ; 9시부터 17시까지
+    (if (and (>= current-hour 9) (< current-hour 17))  ; 9시부터 17시까지
         (load-theme 'modus-operandi)
       (load-theme 'modus-vivendi))))
 (set-theme-by-time)
@@ -208,7 +208,8 @@
 (set-face-attribute 'variable-pitch nil
 		    :family "Noto Sans CJK KR"
 		    :height 160)
-(set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR"))
+(when (display-graphic-p)
+(set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")))
 ;;
 ;; ======================================
 ;;; korean calendar
@@ -379,6 +380,8 @@
   (org-capture-templates
     '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
       ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
+      ;; ("e" "경조사" table-line (file+headline "cNotes.org" "경조사")
+      ;;  "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
       ("f" "dFarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
   ;; Export settings
   (org-latex-title-command "\\maketitle \\newpage")
@@ -521,24 +524,24 @@
 (setq-default mode-line-format
 	      '("%e "
 		mode-line-front-space
-		" Ⓗ  "
 		;;     mode-line-mule-info
+		;; (:eval (propertize (if (string= current-input-method "korean-hangul")
+		;; 		       " KO "
+		;; 		     " EN ")
+		;; 		   'face '(:foreground "orange")))
+		(:eval (if (string= current-input-method "korean-hangul")
+				       "KO"
+				     "EN"))
+		" Ⓗ "
 		mode-line-buffer-identification       
 		mode-line-frame-identification
 		;;     mode-line-modified
-		"  Ⓨ  "
+		" Ⓨ "
 		mode-line-modes
 		mode-line-position
 		;; (vc-mode vc-mode)
 		" Ⓚ "
-		mode-line-misc-info
-		(:eval (if (string= current-input-method "korean-hangul")
-                           " 한"
-                         " EN"))))
-       ;; (:eval (propertize (if (string= current-input-method "korean-hangul")
-       ;;                       " 한"
-       ;;                     " EN")
-       ;;                     'face '(:foreground "red")))))
+		mode-line-misc-info))
 ;;
 ;; ======================================
 ;;; denote
@@ -635,18 +638,26 @@
   (let ((url (cond
                ((string= engine "google") (concat "https://www.google.com/search?q=" (url-hexify-string query)))
                ((string= engine "naver") (concat "https://search.naver.com/search.naver?query=" (url-hexify-string query)))
-               (t (error "지원하지 않는 검색 엔진입니다.")))))
+               (t (error "지원하지 않는 검색 엔진!")))))
     (browse-url url)))
 ;;
 ;; ======================================
-;;; my-highlight-section
+;;; etc my-custom-fuction
 ;; ======================================
-;; export latex, PDF 적용안됨
-;; 지정 영역내 font Color Change
-;; (defun my-highlight-selection (color)
-;;   "선택한 텍스트의 색상 COLOR 지정."
-;;   (interactive
-;;    (list (completing-read "색상을 선택하세요: "
-;;                           '("red" "blue" "green" "yellow" "orange"))))
-;;   (put-text-property (region-beginning) (region-end) 'font-lock-face `((foreground-color . ,color))))
-;;
+(defun my/today-custom-format (fm)
+  "Inserts today() at point in the specified format."
+  (interactive
+   (list (completing-read "Select: " '("dash-format" "dot-format"))))
+  (let ((format-string
+         (cond
+          ((string= fm "dash-format") "%Y-%m-%d")
+          ((string= fm "dot-format") "%Y.%m.%d")
+          (t (error "Invalid date format specified")))))
+    (insert (format-time-string format-string))))
+
+(defun my/region-colorful (color)
+  "선택한 텍스트의 색상 COLOR 지정."
+  (interactive
+   (list (completing-read "Select: "
+                          '("red" "blue" "green" "yellow" "orange"))))
+  (put-text-property (region-beginning) (region-end) 'font-lock-face `((foreground-color . ,color))))
