@@ -1,4 +1,3 @@
-(setq debug-on-error t)
 ;; ======================================
 ;;; Speed up emacs
 ;; ======================================
@@ -8,14 +7,14 @@
 (defun my/set-gc-threshold ()
   "Reset `gc-cons-threshold' to its default value."
   (setq gc-cons-threshold 800000))
-;;
+
 ;; ======================================
 ;;; custom file
 ;; ======================================
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 ;; (setq custom-file (concat user-emacs-directory "custom.el"))
 ;; (when (file-exists-p custom-file) (load custom-file 't))
-;;
+
 ;; ======================================
 ;;; package source list
 ;;; ======================================
@@ -23,16 +22,17 @@
 (setq package-archives
       '(("melpa" . "https://melpa.org/packages/")
 	("gnu" . "https://elpa.gnu.org/packages/")))
+;;	("org" . "https://orgmode.org/elpa/")
 ;;	("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 (package-initialize)
-;; 
+
 ;; ======================================
 ;;; use-package
 ;; ======================================
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-;; (setq use-package-always-ensure nil)
+;; (unless (package-installed-p 'use-package)
+;;   (package-refresh-contents)
+;;   (package-install 'use-package))
+;; ;; (setq use-package-always-ensure nil)
 ;;
 ;; ======================================
 ;;; system-info
@@ -41,29 +41,15 @@
 (defvar my-mactop-p (eq system-type 'darwin))
 
 ;; ======================================
-;;; load-my-package
-;; ======================================
-(if my-mactop-p
-    (add-to-list 'load-path "~/Dropbox/emacs/lisp/")
-  (add-to-list 'load-path "~/emacs/lisp/"))
-(require 'my-play-streaming)        ;radio 청취 
-(require 'my-latex-custom-func)     ;org export pdf
-(require 'my-dired-custom)
-(require 'my-reading-mode-custom)   ;reading mode
-;;
-;; ======================================
 ;;; 외양
 ;; ======================================
-;;; hidden menu Bar
-(menu-bar-mode 1)
-(tool-bar-mode -1)
+(tool-bar-mode -1)  ; 도구상자 비활성
 (toggle-scroll-bar -1)
-;;; hidden start message
-(setq inhibit-startup-message t
-      visible-bell t
-      initial-scratch-message nil
-      use-dialog-box nil)
-(setq-default line-spacing 0.2)    ; 줄 간격 1.5
+(setq inhibit-startup-message t)     ;시작 메시지  안나오게
+(setq visible-bell t )                             ; 경로 벨 대신 시각적인 벨로 표시
+(setq initial-scratch-message nil)
+(setq use-dialog-box nil)
+(setq-default line-spacing 0.2)        ; 줄 간격 1.5
 ;; (setq frame-title-format "| dole's Emacs | %b |")
 ;;
 ;; ======================================
@@ -72,9 +58,9 @@
 ;; defult-directory
 (setq default-directory (if my-mactop-p "~/Dropbox/Docs/org/" "~/Docs/org/")
       temporary-file-directory (if my-mactop-p "~/Dropbox/Docs/tmpdir/" "~/Docs/tmpdir/"))
-(setq make-backup-files nil
-      kill-whole-line 1
-      search-highlight t)
+(setq make-backup-files nil)
+(setq kill-whole-line 1)
+(setq search-highlight t)
 ;;      display-time-format "%b-%d(%a) %H:%M")
 ;;
 ;; ======================================
@@ -124,6 +110,18 @@
   (exec-path-from-shell-initialize))
 ;;
 ;; ======================================
+;;; load-my-package
+;; ======================================
+(if my-mactop-p
+    (add-to-list 'load-path "~/Dropbox/emacs/lisp/")
+  (add-to-list 'load-path "~/emacs/lisp/"))
+(require 'my-org-custom)               ;org-mode
+(require 'my-org-latex-custom)     ;org export pdf
+(require 'my-dired-custom)            ;dired
+(require 'my-reading-mode-custom)   ;reading mode
+(require 'my-play-streaming)        ;radio 청취 
+;;
+;; ======================================
 ;;; Keyboard for MacOS
 ;; ======================================
 ;; (when (equal system-type 'darwin)
@@ -137,20 +135,10 @@
 (global-unset-key [f11])  ;remove toggle-frame-fullscreen/MacOS
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
-;;
-;; (defvar-keymap my-consult-map
-;;   :doc "my consult map."
-;;   "b" 'consult-bookmark
-;;   "d" 'consult-dir
-;;   "g" 'consult-grep
-;;   "o" 'consult-outline
-;;   "r" 'consult-recent-file
-;;   "t" 'consult-theme)
 ;; ======================================
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
-  ;; "c" my-consult-map
-  "c" 'my-latex-custom-func
+  "c" 'my-org-latex-custom
   "g" 'consult-grep
   "e" 'eshell
   "t" 'my-popmark
@@ -159,13 +147,12 @@
   "r" 'toggle-my-reading-mode
   "s" 'toggle-streaming ; play VLC streaming
   "v" 'view-mode)
-;;
 (keymap-set global-map "C-t" my-prefix-map)
-;;
+;; --------------------------------------------------------
 ;; base-dir 변수 사용하여 Mac 여부에 따라 기본 디렉토리 선택
 ;; 중복 코드 회피, my-open-directory 및 my-open-file 함수 사용
 (defun my-popmark (choice)
-  "Choices for directories and files."
+  "Choices for faverite directories and files."
   (interactive "c\[O]org(Dir) | [E]macs(Dir) | [P]pdf(Dir) | [i]nit | [t]asks | [c]Notes | [d]aily | [f]arm")
   (let ((base-dir (if my-mactop-p "~/Dropbox/" "~/")))
     (cond
@@ -200,14 +187,11 @@
 ;; ======================================
 ;;(set-frame-font "Noto Sans Mono CJK KR")
 (set-face-attribute 'default nil
-		    :family "Noto Sans Mono CJK KR"    ;Hack, Menlo;Noto Sans CJK KR
+		    :family "Noto Sans CJK KR"    ;Hack, Menlo;Noto Sans CJK KR
 		    :height 160)
 (set-face-attribute 'fixed-pitch nil
-		    :family "Noto Sans Mono CJK KR"
-		    :height 160)
-(set-face-attribute 'variable-pitch nil
-		    :family "Noto Sans CJK KR"
-		    :height 160)
+		    :family "Noto Sans Mono CJK KR")
+(set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
 (when (display-graphic-p)
 (set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")))
 ;;
@@ -222,9 +206,9 @@
         calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월" "10월" "11월" "12월"]))
 ;;
 ;;; calendar layout 보정. D2coding size
-;; (defun cal-fixLayout ()
-;;   (face-remap-add-relative 'default '(:family "D2Coding" :height 150)))           
-;; (add-hook 'calendar-mode-hook 'cal-fixLayout)
+(defun cal-fixLayout ()
+  (face-remap-add-relative 'default '(:family "Noto Sans Mono CJK KR" :height 150)))           
+(add-hook 'calendar-mode-hook 'cal-fixLayout)
 ;;
 ;; ======================================
 ;;; helpful
@@ -313,16 +297,16 @@
   :bind
   (:map minibuffer-local-map
         ("M-r" . consult-history))
-  :hook (completion-list-mode . consult-preview-at-point-mode)
-  :config
-  (setq consult-narrow-key "<")
-  (consult-customize
-   consult-theme :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
-   :preview-key '(:debounce 0.4 any)))
+  :hook (completion-list-mode . consult-preview-at-point-mode))
+  ;; :config
+  ;; (setq consult-narrow-key "<")
+  ;; (consult-customize
+  ;;  consult-theme :preview-key '(:debounce 0.2 any)
+  ;;  consult-ripgrep consult-git-grep consult-grep
+  ;;  consult-bookmark consult-recent-file consult-xref
+  ;;  consult--source-bookmark consult--source-file-register
+  ;;  consult--source-recent-file consult--source-project-recent-file
+  ;;  :preview-key '(:debounce 0.4 any)))
 ;;
 ;; ======================================
 ;;; consult-dir
@@ -354,99 +338,27 @@
   (embark-collect-mode . consult-preview-at-point-mode))
 ;;
 ;; ======================================
-;;; org
-;; ======================================
-;; Key bindings
-(use-package org
-  :bind
-  (("M-n" . outline-next-visible-heading)
-   ("M-p" . outline-previous-visible-heading)
-   ("C-c l" . org-store-link)
-   ("C-c a" . org-agenda)
-   ("C-c c" . org-capture))
-  :custom
-  (org-hide-leading-stars nil)
-  (org-startup-with-inline-images nil)
-  (org-src-preserve-indentation t)
-  (org-log-into-drawer t)
-  (org-log-done 'time)
-  (org-image-actual-width '(100))
-  ;; Org directory and agenda files
-  (org-directory (expand-file-name (if my-laptop-p "~/Docs/org/" "~/Dropbox/Docs/org/")))
-  (org-agenda-files '("Tasks.org" "Daily.org"))
-  ;; Todo keywords
-  (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
-  ;; Capture templates
-  (org-capture-templates
-    '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
-      ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
-      ;; ("e" "경조사" table-line (file+headline "cNotes.org" "경조사")
-      ;;  "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
-      ("f" "dFarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
-  ;; Export settings
-  (org-latex-title-command "\\maketitle \\newpage")
-  (org-latex-toc-command "\\tableofcontents \\newpage")
-  (org-latex-compiler "xelatex")
-  (org-latex-to-pdf-process
-    '("xelatex -interaction nonstopmode -output-directory %o %f"
-      "xelatex -interaction nonstopmode -output-directory %o %f"
-      "xelatex -interaction nonstopmode -output-directory %o %f"))
-  :hook (org-mode . org-indent-mode)  ; auto indent
-  )
-  ;; ;; Agenda view customizations
-  ;; (org-agenda-custom-commands
-  ;;   '(("d" "Custom agenda view"
-  ;;      ((agenda "" ((org-agenda-span 'week)
-  ;;                   (org-agenda-start-on-weekday 0)
-  ;;                   (org-agenda-format-date "%Y-%m-%d")))))))
-;;
-;; ======================================
-;;; org-bullets
-;; ======================================
-(use-package org-bullets
-  :ensure t
-  :hook (org-mode . org-bullets-mode)
-  :config
-  (setq org-bullets-bullet-list '("◉" "◎" "●" "○" "●" "○" "●")))
-;;
-;; ======================================
-;;; for org edit/custom function
-;; --------------------------------------
-(defun org-custom-action (at)
-  "Perform custom org-mode action based on the numeric ACTION.
-   8: new line, 9: new org-heading, 0: paragraph & org-cycle"
-  (interactive "nEnter action (8: new line, 9: heading, 0: new paragraph): ")
-  (end-of-line)
-  (cond
-   ((= at 8) (newline-and-indent))
-   ((= at 9) (org-insert-heading))
-   ((= at 0) (progn (newline-and-indent) (next-line) (org-cycle)))
-   (t (message "err,, please enter 8, 9, or 0."))))
-
-(global-set-key (kbd "C-0") 'org-custom-action)
-;;
-;; ======================================
 ;;; gnus
 ;; ======================================
 (setq user-mail-address "under9@icloud.com"
-      user-full-name "Young")
+      user-full-name "Ho-Young")
 ;;
-(setq gnus-select-method
-      '(nnimap "icloud"
-               (nnimap-address "imap.mail.me.com")
-               (nnimap-server-port 993)
-               (nnimap-stream ssl)
-               (nnir-search-engine imap)
-               (nnmail-expiry-target "nnimap+icloud:Deleted Messages")
-               (nnimap-authinfo-file "~/.authinfo")))
-(setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-default-smtp-server "smtp.mail.me.com"
-      smtpmail-smtp-server "smtp.mail.me.com"
-      smtpmail-smtp-service 587
-      smtpmail-stream-type 'starttls
-      smtpmail-smtp-user "under9@icloud.com"
-      smtpmail-debug-info t
-      gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
+;; (setq gnus-select-method
+;;       '(nnimap "icloud"
+;;                (nnimap-address "imap.mail.me.com")
+;;                (nnimap-server-port 993)
+;;                (nnimap-stream ssl)
+;;                (nnir-search-engine imap)
+;;                (nnmail-expiry-target "nnimap+icloud:Deleted Messages")
+;;                (nnimap-authinfo-file "~/.authinfo")))
+;; (setq message-send-mail-function 'smtpmail-send-it
+;;       smtpmail-default-smtp-server "smtp.mail.me.com"
+;;       smtpmail-smtp-server "smtp.mail.me.com"
+;;       smtpmail-smtp-service 587
+;;       smtpmail-stream-type 'starttls
+;;       smtpmail-smtp-user "under9@icloud.com"
+;;       smtpmail-debug-info t
+;;       gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
 ;;
 ;; =======================================
 ;;; electric-pair-mode
@@ -488,26 +400,20 @@
 ;; =======================================
 ;;; all-the-icons
 ;; ======================================-
-(use-package all-the-icons
+(use-package nerd-icons
   :ensure t
   :if (display-graphic-p))
-;;
-;; dired with icons
-(use-package all-the-icons-dired
-  :ensure t
+
+(use-package nerd-icons-dired
   :after dired
   :if (display-graphic-p)
-  :hook
-  (dired-mode . all-the-icons-dired-mode))
-;;
-;; from https://kristofferbalintona.me/posts/202202211546/
-(use-package all-the-icons-completion
-  :ensure t
-  :after (marginalia all-the-icons)
-  :if (display-graphic-p)
-  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
-  :init
-  (all-the-icons-completion-mode))
+  :config
+(add-hook 'dired-mode-hook 'nerd-icons-dired-mode))
+
+(use-package nerd-icons-completion
+  :after completion
+  :config
+  (add-hook 'completion-list-mode-hook 'nerd-icons-completion-mode))
 ;;
 ;; ======================================
 ;;; eshell
@@ -582,22 +488,7 @@
 ;; 괄호, 중괄호, 각종 쌍을 시각적(무지개색) 구분
 (use-package rainbow-delimiters
   :ensure t
-  :hook (prog-mode . rainbow-delimiters-mode)
-  :config
-  (setq rainbow-delimiters-max-face-count 8)
-  (setq rainbow-delimiters-outermost-only-face-count 1)
-  (setq rainbow-delimiters-outermost-only-innermost-first nil)
-  (setq rainbow-delimiters-outermost-only-predicate 'rainbow-delimiters-generic-outermost-p)
-  (custom-theme-set-faces
-   'user
-   '(rainbow-delimiters-depth-1-face ((t (:foreground "dark orange"))))
-   '(rainbow-delimiters-depth-2-face ((t (:foreground "deep pink"))))
-   '(rainbow-delimiters-depth-3-face ((t (:foreground "chartreuse"))))
-   '(rainbow-delimiters-depth-4-face ((t (:foreground "deep sky blue"))))
-   '(rainbow-delimiters-depth-5-face ((t (:foreground "yellow"))))
-   '(rainbow-delimiters-depth-6-face ((t (:foreground "orchid"))))
-   '(rainbow-delimiters-depth-7-face ((t (:foreground "spring green"))))
-   '(rainbow-delimiters-depth-8-face ((t (:foreground "sienna1"))))))
+  :hook (prog-mode . rainbow-delimiters-mode))
 ;;
 ;; ======================================
 ;;; pdf-view, tools
@@ -647,16 +538,16 @@
 (defun my/today-custom-format (fm)
   "Inserts today() at point in the specified format."
   (interactive
-   (list (completing-read "Select: " '("dash-format" "dot-format"))))
+   (list (completing-read "Select: " '("dash" "dot"))))
   (let ((format-string
          (cond
-          ((string= fm "dash-format") "%Y-%m-%d")
-          ((string= fm "dot-format") "%Y.%m.%d")
+          ((string= fm "dash") "%Y-%m-%d")
+          ((string= fm "dot") "%Y.%m.%d")
           (t (error "Invalid date format specified")))))
     (insert (format-time-string format-string))))
 
 (defun my/region-colorful (color)
-  "선택한 텍스트의 색상 COLOR 지정."
+  "선택 텍스트, 색상 COLOR 지정."
   (interactive
    (list (completing-read "Select: "
                           '("red" "blue" "green" "yellow" "orange"))))
