@@ -1,12 +1,12 @@
- ;;
 ;; ======================================
 ;;; stream Radio
 ;; --------------------------------------
 ;; vlc streamming / Toggle On/Off (M-x toggle-streaming)
 ;; I was inspired by the eRadio package.
 ;; The streaming source is mmslist.txt, and it's in the format of title/address.
-;; I haven't been able to test it on Linux yet. I'm using the Lubuntu distribution.
+;; I'm using the Lubuntu distribution.
 ;; I used ChatGPT, and distribution is free.
+;; /emacs/lisp/my-play-streaming.el
 (defvar stream-process nil
   "Variable to store the VLC process.")
 
@@ -62,10 +62,10 @@
          (chosen-title (completing-read "Choose a title to play: " titles)))
     chosen-title))
 
-(defun edit-mmslist ()
-  "Edit the mmslist.txt file."
-  (interactive)
-  (find-file (get-mmslist-file-path)))
+;; (defun edit-mmslist ()
+;;   "Edit the mmslist.txt file."
+;;   (interactive)
+;;   (find-file (get-mmslist-file-path)))
 
 (defun read-url-from-file (file)
   "Read streaming URLs from a file and return a URL chosen by the user."

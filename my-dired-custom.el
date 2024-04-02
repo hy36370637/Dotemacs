@@ -1,6 +1,8 @@
 ;; ======================================
 ;;; dired
 ;; --------------------------------------
+;; dired 관련 lisp 모음
+;; /emacs/lisp/my-dired-custom.el
 ;; directory 우선/한글파일명 정렬불가(macOS) → 해결(setenv "LC_COLLATE" "C")
 (use-package dired
   :preface
@@ -32,7 +34,6 @@
         ("M-<up>" . my/dired-jump-to-top)
         ("M-<down>" . my/dired-jump-to-bottom)
         ("/" . dired-narrow)
-        ("C-c f" . toggle-frame-fullscreen)
         ("<tab>" . dired-subtree-toggle)
         ("<backtab>" . dired-subtree-cycle))
   :hook (dired-after-readin . sof/dired-sort)) ;dired-mode에서 파일 로드 후 sof함수 호출
@@ -52,4 +53,4 @@
   :ensure t
   :after dired)
 
-(provide 'my-dired-custom.el)
+(provide 'my-dired-custom)

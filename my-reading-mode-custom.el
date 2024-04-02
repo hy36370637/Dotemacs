@@ -1,7 +1,10 @@
 ;; ======================================
 ;;; view-mode
 ;; ======================================
+;; 주로 org-mode를 이용한 읽기모드
+;; /emacs/lisp/my-reading-mode-custom.el
 ;; 읽기 모드, 편집 보호
+
 (use-package view
   :ensure nil    ;built-in
   :init
