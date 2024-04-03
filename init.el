@@ -56,8 +56,10 @@
 ;;; 작은 설정 들
 ;; ======================================
 ;; defult-directory
-(setq default-directory (if my-mactop-p "~/Dropbox/Docs/org/" "~/Docs/org/")
-      temporary-file-directory (if my-mactop-p "~/Dropbox/Docs/tmpdir/" "~/Docs/tmpdir/"))
+;; (setq default-directory (if my-mactop-p "~/Dropbox/Docs/org/" "~/Docs/org/")
+;;       temporary-file-directory (if my-mactop-p "~/Dropbox/Docs/tmpdir/" "~/Docs/tmpdir/"))
+(setq default-directory  "~/Docs/org/")
+(setq temporary-file-directory "~/Docs/tmpdir/")
 (setq make-backup-files nil)
 (setq kill-whole-line 1)
 (setq search-highlight t)
@@ -112,9 +114,10 @@
 ;; ======================================
 ;;; load-my-package
 ;; ======================================
-(if my-mactop-p
-    (add-to-list 'load-path "~/Dropbox/emacs/lisp/")
-  (add-to-list 'load-path "~/emacs/lisp/"))
+;; (if my-mactop-p
+;;     (add-to-list 'load-path "~/Dropbox/emacs/lisp/")
+;;   (add-to-list 'load-path "~/emacs/lisp/"))
+(add-to-list 'load-path "~/emacs/lisp/")
 (require 'my-org-custom)               ;org-mode
 (require 'my-org-latex-custom)     ;org export pdf
 (require 'my-dired-custom)            ;dired
@@ -133,15 +136,16 @@
 ;;; 단축키 prefix key
 ;; ======================================
 (global-unset-key [f11])  ;remove toggle-frame-fullscreen/MacOS
+(global-unset-key (kbd "C-x o"))  ;remove  'other-window
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
 ;; ======================================
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
-  "c" 'my-org-latex-custom
   "g" 'consult-grep
   "e" 'eshell
   "t" 'my-popmark
+  "l" 'my-org-latex-custom
   "m" 'modus-themes-toggle
   "f" 'toggle-frame-fullscreen
   "r" 'toggle-my-reading-mode
@@ -154,7 +158,8 @@
 (defun my-popmark (choice)
   "Choices for faverite directories and files."
   (interactive "c\[O]org(Dir) | [E]macs(Dir) | [P]pdf(Dir) | [i]nit | [t]asks | [c]Notes | [d]aily | [f]arm")
-  (let ((base-dir (if my-mactop-p "~/Dropbox/" "~/")))
+  (let ((base-dir "~/"))
+;;    (let ((base-dir (if my-mactop-p "~/Dropbox/" "~/")))
     (cond
      ((eq choice ?E) (my-open-directory "emacs"))
      ((eq choice ?O) (my-open-directory "Docs/org"))
@@ -294,19 +299,7 @@
    ("C-c g" . consult-grep)
    ("C-c r o" . consult-outline)
    ("C-c r t" . consult-theme))
-  :bind
-  (:map minibuffer-local-map
-        ("M-r" . consult-history))
   :hook (completion-list-mode . consult-preview-at-point-mode))
-  ;; :config
-  ;; (setq consult-narrow-key "<")
-  ;; (consult-customize
-  ;;  consult-theme :preview-key '(:debounce 0.2 any)
-  ;;  consult-ripgrep consult-git-grep consult-grep
-  ;;  consult-bookmark consult-recent-file consult-xref
-  ;;  consult--source-bookmark consult--source-file-register
-  ;;  consult--source-recent-file consult--source-project-recent-file
-  ;;  :preview-key '(:debounce 0.4 any)))
 ;;
 ;; ======================================
 ;;; consult-dir
@@ -459,7 +452,8 @@
    ("C-c n r" . denote-region)
    ("C-c n s" . denote-sort-dired))
   :config
-  (setq denote-directory (expand-file-name (if my-mactop-p "~/Dropbox/Docs/org/denote/" "~/Docs/org/denote/")))
+  ;; (setq denote-directory (expand-file-name (if my-mactop-p "~/Dropbox/Docs/org/denote/" "~/Docs/org/denote/")))
+  (setq denote-directory (expand-file-name  "~/Docs/org/denote/"))
   (setq denote-known-keywords '("emacs" "latex" "idea")
         denote-infer-keywords t
         denote-sort-keywords t
@@ -496,7 +490,7 @@
 ;; only linux
 (use-package pdf-tools
   :ensure nil
-  :if my-laptop-p   ;;(eq system-type 'gnu/linux)
+  :if my-laptop-p 
   :mode ("\\.pdf\\'" . pdf-view-mode) ; Automatically open PDFs in pdf-view-mode
   :config
   (setq pdf-view-display-size 'fit-width) ; Set the default zoom level
@@ -518,10 +512,10 @@
 ;;         )))
 ;;
 ;; ======================================
-;;; web-search(google, naver)
+;;; etc my-custom-fuction
 ;; ======================================
 (defun search-web (engine query)
-  "지정한 검색 엔진에서 검색"
+  "검색 엔진, 검색"
   (interactive
    (list
     (completing-read "검색 선택 (google/naver): " '("google" "naver"))
@@ -529,12 +523,9 @@
   (let ((url (cond
                ((string= engine "google") (concat "https://www.google.com/search?q=" (url-hexify-string query)))
                ((string= engine "naver") (concat "https://search.naver.com/search.naver?query=" (url-hexify-string query)))
-               (t (error "지원하지 않는 검색 엔진!")))))
+               (t (error "검색 엔진 err!")))))
     (browse-url url)))
-;;
-;; ======================================
-;;; etc my-custom-fuction
-;; ======================================
+
 (defun my/today-custom-format (fm)
   "Inserts today() at point in the specified format."
   (interactive
@@ -547,7 +538,7 @@
     (insert (format-time-string format-string))))
 
 (defun my/region-colorful (color)
-  "선택 텍스트, 색상 COLOR 지정."
+  "선택 텍스트, 색상 COLOR 지정. 저장불가"
   (interactive
    (list (completing-read "Select: "
                           '("red" "blue" "green" "yellow" "orange"))))
