@@ -19,7 +19,8 @@
   (org-log-done 'time)
   (org-image-actual-width '(100))
   ;; Org directory and agenda files
-  (org-directory (expand-file-name (if my-laptop-p "~/Docs/org/" "~/Dropbox/Docs/org/")))
+  ;;  (org-directory (expand-file-name (if my-laptop-p "~/Docs/org/" "~/Dropbox/Docs/org/")))
+  (org-directory (expand-file-name "~/Docs/org/"))
   (org-agenda-files '("Tasks.org" "Daily.org"))
   ;; Todo keywords
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
