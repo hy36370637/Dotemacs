@@ -27,6 +27,7 @@
     (message "No region selected")))
 
 ;; 단락으로 분명하게 구분된 영역만 사용
+;; C-c C-, org-insert-structure-template 사용 권장
 (defun my-latex-insert-block () ;; ver 0.2.1
   "Inserts `#+begin_block`, `#+end_block`. selected region."
   (let ((block-type (completing-read "Choose block type: " '("quote" "verse"))))

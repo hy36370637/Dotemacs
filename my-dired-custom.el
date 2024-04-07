@@ -29,28 +29,31 @@
     (dired-next-line -1))
   :config
   (setq dired-auto-revert-buffer t)
+  (setq delete-by-moving-to-trash t)     ;삭제 →휴지통
   :bind
   (:map dired-mode-map
         ("M-<up>" . my/dired-jump-to-top)
         ("M-<down>" . my/dired-jump-to-bottom)
-        ("/" . dired-narrow)
-        ("<tab>" . dired-subtree-toggle)
-        ("<backtab>" . dired-subtree-cycle))
+	("C-<return>" . #'dired-do-open))   ; Emacs 30
   :hook (dired-after-readin . sof/dired-sort)) ;dired-mode에서 파일 로드 후 sof함수 호출
+
 ;; ======================================
 ;;; dired-narrow
 ;; --------------------------------------
 ;; Dired 모드에서 파일 목록 필터링
 (use-package dired-narrow
   :ensure t
-  :after dired)
-;;
+  :after dired
+  :bind
+  (:map dired-mode-map
+        ("/" . dired-narrow)))
+
 ;; ======================================
 ;; dired-subtree
 ;; --------------------------------------
 ;; Tab. sub directory 표시
-(use-package dired-subtree
-  :ensure t
-  :after dired)
+;; (use-package dired-subtree
+;;   :ensure t
+;;   :after dired)
 
 (provide 'my-dired-custom)

@@ -30,7 +30,7 @@
       ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
       ("a" "Assist" table-line (file+headline "eMoney.org" "eMoney")
        "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
-      ("f" "dFarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
+      ("f" "FarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
   ;; Export settings
   (org-latex-title-command "\\maketitle \\newpage")
   (org-latex-toc-command "\\tableofcontents \\newpage")
