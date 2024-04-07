@@ -29,6 +29,7 @@
 ;; ======================================
 ;;; use-package
 ;; ======================================
+(require 'use-package)
 ;; (unless (package-installed-p 'use-package)
 ;;   (package-refresh-contents)
 ;;   (package-install 'use-package))
@@ -39,7 +40,7 @@
 ;; ======================================
 (defvar my-laptop-p (eq system-type 'gnu/linux))
 (defvar my-mactop-p (eq system-type 'darwin))
-
+;; (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 ;; ======================================
 ;;; 외양
 ;; ======================================
@@ -86,8 +87,12 @@
         modus-themes-bold-constructs nil
 	modus-themes-mixed-fonts t
 	modus-themes-variable-pitch-ui nil
-	modus-themes-custom-auto-reload t 
-	modus-themes-mode-line '(borderless)))
+	modus-themes-custom-auto-reload t
+	modus-themes-disable-other-themes t))
+;; Remove the border
+(setq modus-themes-common-palette-overrides
+      '((border-mode-line-active unspecified)
+        (border-mode-line-inactive unspecified)))
 ;;
 ;; ======================================
 ;;; start emacs (load theme by time)
@@ -137,21 +142,23 @@
 ;; ======================================
 (global-unset-key [f11])  ;remove toggle-frame-fullscreen/MacOS
 (global-unset-key (kbd "C-x o"))  ;remove  'other-window
+(global-unset-key (kbd "s-t"))      ;remove set font
+(global-unset-key (kbd "s-c"))     ;remove Copy
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
 ;; ======================================
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
+  "c" 'my-popmark
   "g" 'consult-grep
   "e" 'eshell
-  "t" 'my-popmark
   "l" 'my-org-latex-custom
   "m" 'modus-themes-toggle
   "f" 'toggle-frame-fullscreen
   "r" 'toggle-my-reading-mode
   "s" 'toggle-streaming ; play VLC streaming
   "v" 'view-mode)
-(keymap-set global-map "C-t" my-prefix-map)
+(keymap-set global-map "s-c" my-prefix-map)
 ;; --------------------------------------------------------
 ;; base-dir 변수 사용하여 Mac 여부에 따라 기본 디렉토리 선택
 ;; 중복 코드 회피, my-open-directory 및 my-open-file 함수 사용
@@ -190,6 +197,7 @@
 ;; ======================================
 ;;; 글꼴 fonts
 ;; ======================================
+(when (display-graphic-p)
 ;;(set-frame-font "Noto Sans Mono CJK KR")
 (set-face-attribute 'default nil
 		    :family "Noto Sans CJK KR"    ;Hack, Menlo;Noto Sans CJK KR
@@ -197,7 +205,7 @@
 (set-face-attribute 'fixed-pitch nil
 		    :family "Noto Sans Mono CJK KR")
 (set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
-(when (display-graphic-p)
+;;(when (display-graphic-p)
 (set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")))
 ;;
 ;; ======================================
@@ -333,35 +341,40 @@
 ;; ======================================
 ;;; gnus
 ;; ======================================
-(setq user-mail-address "under9@icloud.com"
-      user-full-name "Ho-Young")
-;;
-;; (setq gnus-select-method
-;;       '(nnimap "icloud"
-;;                (nnimap-address "imap.mail.me.com")
-;;                (nnimap-server-port 993)
-;;                (nnimap-stream ssl)
-;;                (nnir-search-engine imap)
-;;                (nnmail-expiry-target "nnimap+icloud:Deleted Messages")
-;;                (nnimap-authinfo-file "~/.authinfo")))
-;; (setq message-send-mail-function 'smtpmail-send-it
-;;       smtpmail-default-smtp-server "smtp.mail.me.com"
-;;       smtpmail-smtp-server "smtp.mail.me.com"
-;;       smtpmail-smtp-service 587
-;;       smtpmail-stream-type 'starttls
-;;       smtpmail-smtp-user "under9@icloud.com"
-;;       smtpmail-debug-info t
-;;       gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
+;; (use-package gnus
+;;   :ensure nil
+;;   :if my-Macbook-p
+;;   :config
+;;   (setq user-mail-address "under9@icloud.com"
+;; 	user-full-name "Ho-Young")
+;;   (setq gnus-select-method
+;; 	'(nnimap "icloud"
+;; 		 (nnimap-address "imap.mail.me.com")
+;; 		 (nnimap-server-port 993)
+;; 		 (nnimap-stream ssl)
+;; 		 (nnir-search-engine imap)
+;; 		 (nnmail-expiry-target "nnimap+icloud:Deleted Messages")
+;; 		 (nnimap-authinfo-file "~/.authinfo")))
+;;   (setq message-send-mail-function 'smtpmail-send-it
+;; 	smtpmail-default-smtp-server "smtp.mail.me.com"
+;; 	smtpmail-smtp-server "smtp.mail.me.com"
+;; 	smtpmail-smtp-service 587
+;; 	smtpmail-stream-type 'starttls
+;; 	smtpmail-smtp-user "under9@icloud.com"
+;; 	smtpmail-debug-info t
+;; 	gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
 ;;
 ;; =======================================
 ;;; electric-pair-mode
 ;; ======================================-
-(progn
-  (electric-pair-mode 1)
-  (setq electric-pair-pairs '((?\{ . ?\})
-                              (?\( . ?\))
+(use-package electric
+  :ensure nil  ;built in
+  :config
+  (electric-pair-mode t)
+  (setq electric-pair-pairs '((?\" . ?\")
+                              (?\{ . ?\})
                               (?\[ . ?\])
-                              (?\" . ?\"))))
+                              (?\( . ?\)))))
 ;;
 ;; =======================================
 ;;; corfu
@@ -437,44 +450,45 @@
 		;;     mode-line-modified
 		" Ⓨ "
 		mode-line-modes
+		mode-line-format-right-align  ;; emacs 30
 		mode-line-position
 		;; (vc-mode vc-mode)
-		" Ⓚ "
+		"Ⓚ "
 		mode-line-misc-info))
 ;;
 ;; ======================================
 ;;; denote
 ;; ======================================
-(use-package denote
-  :ensure t
-  :bind
-  (("C-c n n" . denote)
-   ("C-c n r" . denote-region)
-   ("C-c n s" . denote-sort-dired))
-  :config
-  ;; (setq denote-directory (expand-file-name (if my-mactop-p "~/Dropbox/Docs/org/denote/" "~/Docs/org/denote/")))
-  (setq denote-directory (expand-file-name  "~/Docs/org/denote/"))
-  (setq denote-known-keywords '("emacs" "latex" "idea")
-        denote-infer-keywords t
-        denote-sort-keywords t
-        denote-file-type nil
-        denote-prompts '(title keywords)
-        denote-excluded-directories-regexp nil
-        denote-excluded-keywords-regexp nil
-        denote-date-prompt-use-org-read-date t
-        denote-date-format nil
-        denote-backlinks-show-context t
-        denote-org-capture-specifiers "%l\n%i\n%?")
+;; (use-package denote
+;;   :ensure t
+;;   :bind
+;;   (("C-c n n" . denote)
+;;    ("C-c n r" . denote-region)
+;;    ("C-c n s" . denote-sort-dired))
+;;   :config
+;;   ;; (setq denote-directory (expand-file-name (if my-mactop-p "~/Dropbox/Docs/org/denote/" "~/Docs/org/denote/")))
+;;   (setq denote-directory (expand-file-name  "~/Docs/org/denote/"))
+;;   (setq denote-known-keywords '("emacs" "latex" "idea")
+;;         denote-infer-keywords t
+;;         denote-sort-keywords t
+;;         denote-file-type nil
+;;         denote-prompts '(title keywords)
+;;         denote-excluded-directories-regexp nil
+;;         denote-excluded-keywords-regexp nil
+;;         denote-date-prompt-use-org-read-date t
+;;         denote-date-format nil
+;;         denote-backlinks-show-context t
+;;         denote-org-capture-specifiers "%l\n%i\n%?")
   
-  (with-eval-after-load 'org-capture
-    (add-to-list 'org-capture-templates
-                 '("n" "New Denote" plain
-                   (file denote-last-path)
-                   #'denote-org-capture
-                   :no-save t
-                   :immediate-finish nil
-                   :kill-buffer t
-                   :jump-to-captured t))))
+;;   (with-eval-after-load 'org-capture
+;;     (add-to-list 'org-capture-templates
+;;                  '("n" "New Denote" plain
+;;                    (file denote-last-path)
+;;                    #'denote-org-capture
+;;                    :no-save t
+;;                    :immediate-finish nil
+;;                    :kill-buffer t
+;;                    :jump-to-captured t))))
 ;;
 ;; ======================================
 ;;; rainbow-delimiters
@@ -543,3 +557,5 @@
    (list (completing-read "Select: "
                           '("red" "blue" "green" "yellow" "orange"))))
   (put-text-property (region-beginning) (region-end) 'font-lock-face `((foreground-color . ,color))))
+;;; Tesing'
+
