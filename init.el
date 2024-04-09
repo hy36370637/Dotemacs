@@ -34,13 +34,14 @@
 ;;   (package-refresh-contents)
 ;;   (package-install 'use-package))
 ;; ;; (setq use-package-always-ensure nil)
-;;
+
 ;; ======================================
 ;;; system-info
 ;; ======================================
 (defvar my-laptop-p (eq system-type 'gnu/linux))
 (defvar my-mactop-p (eq system-type 'darwin))
 ;; (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
+
 ;; ======================================
 ;;; 외양
 ;; ======================================
@@ -52,7 +53,7 @@
 (setq use-dialog-box nil)
 (setq-default line-spacing 0.2)        ; 줄 간격 1.5
 ;; (setq frame-title-format "| dole's Emacs | %b |")
-;;
+
 ;; ======================================
 ;;; 작은 설정 들
 ;; ======================================
@@ -65,7 +66,7 @@
 (setq kill-whole-line 1)
 (setq search-highlight t)
 ;;      display-time-format "%b-%d(%a) %H:%M")
-;;
+
 ;; ======================================
 ;;; 자잘한 필수 모드
 ;; ======================================
@@ -76,13 +77,17 @@
 (transient-mark-mode t)
 (column-number-mode t)
 (display-time-mode 1)
-;;
+
 ;; ======================================
 ;;; modus theme
 ;; ======================================
 (use-package emacs
   :config
   (require-theme 'modus-themes)
+  (setq ;; modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
+        modus-themes-to-toggle '(modus-operandi modus-vivendi))
+        ;; modus-themes-to-toggle '(modus-operandi-deuteranopia modus-vivendi-deuteranopia)
+        ;; modus-themes-to-toggle '(modus-operandi-tritanopia modus-vivendi-tritanopia)
   (setq modus-themes-italic-constructs t
         modus-themes-bold-constructs nil
 	modus-themes-mixed-fonts t
@@ -93,7 +98,7 @@
 (setq modus-themes-common-palette-overrides
       '((border-mode-line-active unspecified)
         (border-mode-line-inactive unspecified)))
-;;
+
 ;; ======================================
 ;;; start emacs (load theme by time)
 ;; ======================================
@@ -144,7 +149,8 @@
 (global-unset-key (kbd "C-x o"))  ;remove  'other-window
 (global-unset-key (kbd "s-t"))      ;remove set font
 (global-unset-key (kbd "s-c"))     ;remove Copy
-(global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
+(global-unset-key (kbd "s-v"))     ;remove Paste
+;; (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
 ;; ======================================
 (defvar-keymap my-prefix-map
@@ -152,13 +158,14 @@
   "c" 'my-popmark
   "g" 'consult-grep
   "e" 'eshell
+  "k" 'keycast-mode-line-mode
   "l" 'my-org-latex-custom
   "m" 'modus-themes-toggle
   "f" 'toggle-frame-fullscreen
   "r" 'toggle-my-reading-mode
   "s" 'toggle-streaming ; play VLC streaming
   "v" 'view-mode)
-(keymap-set global-map "s-c" my-prefix-map)
+(keymap-set global-map "s-m" my-prefix-map)
 ;; --------------------------------------------------------
 ;; base-dir 변수 사용하여 Mac 여부에 따라 기본 디렉토리 선택
 ;; 중복 코드 회피, my-open-directory 및 my-open-file 함수 사용
@@ -370,11 +377,16 @@
 (use-package electric
   :ensure nil  ;built in
   :config
-  (electric-pair-mode t)
   (setq electric-pair-pairs '((?\" . ?\")
                               (?\{ . ?\})
                               (?\[ . ?\])
-                              (?\( . ?\)))))
+                              (?\( . ?\))))
+  (electric-pair-mode t))
+(add-hook 'org-mode-hook (lambda ()   ; pair-mode '< '제외
+			   (setq-local electric-pair-inhibit-predicate
+				       `(lambda (c)
+					  (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+
 ;;
 ;; =======================================
 ;;; corfu
@@ -455,7 +467,16 @@
 		;; (vc-mode vc-mode)
 		"Ⓚ "
 		mode-line-misc-info))
-;;
+
+;; ======================================
+;;; keycast
+;; ======================================
+(use-package keycast
+  :config
+  (setq keycast-mode-line-insert-after 'mode-line-modes)
+  (setq keycast-mode-line-window-predicate 'mode-line-window-selected-p)
+  (setq keycast-mode-line-remove-tail-elements nil)
+  (keycast-mode-line-mode -1) )
 ;; ======================================
 ;;; denote
 ;; ======================================
