@@ -84,8 +84,8 @@
 (use-package emacs
   :config
   (require-theme 'modus-themes)
-  (setq ;; modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
-        modus-themes-to-toggle '(modus-operandi modus-vivendi))
+  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi))
+        ;; modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
         ;; modus-themes-to-toggle '(modus-operandi-deuteranopia modus-vivendi-deuteranopia)
         ;; modus-themes-to-toggle '(modus-operandi-tritanopia modus-vivendi-tritanopia)
   (setq modus-themes-italic-constructs t
@@ -110,7 +110,7 @@
         (load-theme 'modus-operandi)
       (load-theme 'modus-vivendi))))
 (set-theme-by-time)
-;;
+
 ;; ======================================
 ;;; exec-path-from-shell
 ;; ======================================
@@ -120,7 +120,7 @@
   :if my-mactop-p
   :init
   (exec-path-from-shell-initialize))
-;;
+
 ;; ======================================
 ;;; load-my-package
 ;; ======================================
@@ -132,8 +132,9 @@
 (require 'my-org-latex-custom)     ;org export pdf
 (require 'my-dired-custom)            ;dired
 (require 'my-reading-mode-custom)   ;reading mode
-(require 'my-play-streaming)        ;radio 청취 
-;;
+(require 'my-play-streaming)        ;radio 청취
+(require 'my-emacs-super-keys)  ; minor. super key
+
 ;; ======================================
 ;;; Keyboard for MacOS
 ;; ======================================
@@ -141,7 +142,7 @@
 ;; ;;(when (string= system-name "MacBookAir.local")
 ;;   (setq mac-option-modifier 'super)
 ;;   (setq mac-command-modifier 'meta))
-;;
+
 ;; ======================================
 ;;; 단축키 prefix key
 ;; ======================================
@@ -149,22 +150,25 @@
 (global-unset-key (kbd "C-x o"))  ;remove  'other-window
 (global-unset-key (kbd "s-t"))      ;remove set font
 (global-unset-key (kbd "s-c"))     ;remove Copy
-(global-unset-key (kbd "s-v"))     ;remove Paste
+(global-unset-key (kbd "s-f"))     ;remove I-search forward
+(global-unset-key (kbd "s-g"))    ;  
+;; (global-unset-key (kbd "s-v"))     ;remove Paste. alfred paste 
 ;; (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
 ;; ======================================
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
-  "c" 'my-popmark
-  "g" 'consult-grep
+  "p" 'my-popmark
+;;  "g" 'consult-grep
   "e" 'eshell
-  "k" 'keycast-mode-line-mode
+;;  "k" 'keycast-mode-line-mode
   "l" 'my-org-latex-custom
   "m" 'modus-themes-toggle
-  "f" 'toggle-frame-fullscreen
+;;  "f" 'toggle-frame-fullscreen
   "r" 'toggle-my-reading-mode
-  "s" 'toggle-streaming ; play VLC streaming
-  "v" 'view-mode)
+  ;;  "s" 'toggle-streaming)
+  )
+
 (keymap-set global-map "s-m" my-prefix-map)
 ;; --------------------------------------------------------
 ;; base-dir 변수 사용하여 Mac 여부에 따라 기본 디렉토리 선택
@@ -200,7 +204,7 @@
 (setenv "LANG" "ko_KR.UTF-8")
 (setenv "LC_COLLATE" "C")		  ;Dired 한글 파일명 정렬 macOS
 (set-locale-environment "ko_KR.UTF-8")	  ;kbd 한글 S-SPC
-;;
+
 ;; ======================================
 ;;; 글꼴 fonts
 ;; ======================================
@@ -214,7 +218,7 @@
 (set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
 ;;(when (display-graphic-p)
 (set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")))
-;;
+
 ;; ======================================
 ;;; korean calendar
 ;; ======================================
@@ -229,7 +233,7 @@
 (defun cal-fixLayout ()
   (face-remap-add-relative 'default '(:family "Noto Sans Mono CJK KR" :height 150)))           
 (add-hook 'calendar-mode-hook 'cal-fixLayout)
-;;
+
 ;; ======================================
 ;;; helpful
 ;; ======================================
@@ -239,7 +243,7 @@
 	("C-c C-d" . helpful-at-point)
 	("C-h C" . helpful-command)
 	("C-h o" . helpful-symbol)))
-;;
+
 ;; ======================================
 ;;; recentF
 ;; ======================================
@@ -249,7 +253,7 @@
   (recentf-mode 1)
   :custom
   (recentf-max-saved-items 50))
-;;
+
 ;; ======================================
 ;;; which-key
 ;; ======================================
@@ -259,7 +263,7 @@
   :config
   (setq which-key-idle-delay 0.2)
   (which-key-setup-side-window-right))
-;;
+
 ;; ======================================
 ;;; vertico
 ;; ======================================
@@ -269,7 +273,7 @@
   (vertico-mode)
   (setq vertico-resize t)
   (setq vertico-cycle t))
-;;
+
 ;; ======================================
 ;;; marginalia
 ;; ======================================
@@ -280,7 +284,7 @@
   (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
   :init
   (marginalia-mode))
-;;
+
 ;; ======================================
 ;;; savehist
 ;; ======================================
@@ -288,7 +292,7 @@
   :ensure t
   :init
   (savehist-mode))
-;;
+
 ;; ======================================
 ;;; orderless
 ;; ======================================
@@ -298,7 +302,7 @@
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
-;;
+
 ;; ======================================
 ;;; consult
 ;; ======================================
@@ -315,7 +319,7 @@
    ("C-c r o" . consult-outline)
    ("C-c r t" . consult-theme))
   :hook (completion-list-mode . consult-preview-at-point-mode))
-;;
+
 ;; ======================================
 ;;; consult-dir
 ;; ======================================
@@ -325,7 +329,7 @@
   :bind (("C-c d" . consult-dir)
          :map vertico-map
          ("C-c d" . consult-dir)))
-;;
+
 ;; ======================================
 ;;; embark
 ;; ======================================
@@ -336,7 +340,7 @@
   (("C-." . embark-act))
   :config
   (setq prefix-help-command #'embark-prefix-help-command))
-;;
+
 ;; ======================================
 ;;; embark-consult
 ;; ======================================
@@ -344,7 +348,7 @@
   :ensure t
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
-;;
+
 ;; ======================================
 ;;; gnus
 ;; ======================================
@@ -370,7 +374,7 @@
 ;; 	smtpmail-smtp-user "under9@icloud.com"
 ;; 	smtpmail-debug-info t
 ;; 	gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
-;;
+
 ;; =======================================
 ;;; electric-pair-mode
 ;; ======================================-
@@ -387,7 +391,6 @@
 				       `(lambda (c)
 					  (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
 
-;;
 ;; =======================================
 ;;; corfu
 ;; ======================================-
@@ -414,7 +417,7 @@
   (global-corfu-mode)
   (corfu-history-mode)
   (corfu-popupinfo-mode))
-;;
+
 ;; =======================================
 ;;; all-the-icons
 ;; ======================================-
@@ -432,7 +435,7 @@
   :after completion
   :config
   (add-hook 'completion-list-mode-hook 'nerd-icons-completion-mode))
-;;
+
 ;; ======================================
 ;;; eshell
 ;; ======================================
@@ -440,7 +443,7 @@
   :commands eshell
   :config
   (setq eshell-destroy-buffer-when-process-dies t))
-;;
+
 ;; ======================================
 ;;; modeline
 ;; ======================================
@@ -448,23 +451,16 @@
 (setq-default mode-line-format
 	      '("%e "
 		mode-line-front-space
-		;;     mode-line-mule-info
-		;; (:eval (propertize (if (string= current-input-method "korean-hangul")
-		;; 		       " KO "
-		;; 		     " EN ")
-		;; 		   'face '(:foreground "orange")))
 		(:eval (if (string= current-input-method "korean-hangul")
 				       "KO"
 				     "EN"))
 		" Ⓗ "
 		mode-line-buffer-identification       
 		mode-line-frame-identification
-		;;     mode-line-modified
 		" Ⓨ "
 		mode-line-modes
 		mode-line-format-right-align  ;; emacs 30
 		mode-line-position
-		;; (vc-mode vc-mode)
 		"Ⓚ "
 		mode-line-misc-info))
 
@@ -472,45 +468,13 @@
 ;;; keycast
 ;; ======================================
 (use-package keycast
+  :ensure t
   :config
   (setq keycast-mode-line-insert-after 'mode-line-modes)
   (setq keycast-mode-line-window-predicate 'mode-line-window-selected-p)
   (setq keycast-mode-line-remove-tail-elements nil)
-  (keycast-mode-line-mode -1) )
-;; ======================================
-;;; denote
-;; ======================================
-;; (use-package denote
-;;   :ensure t
-;;   :bind
-;;   (("C-c n n" . denote)
-;;    ("C-c n r" . denote-region)
-;;    ("C-c n s" . denote-sort-dired))
-;;   :config
-;;   ;; (setq denote-directory (expand-file-name (if my-mactop-p "~/Dropbox/Docs/org/denote/" "~/Docs/org/denote/")))
-;;   (setq denote-directory (expand-file-name  "~/Docs/org/denote/"))
-;;   (setq denote-known-keywords '("emacs" "latex" "idea")
-;;         denote-infer-keywords t
-;;         denote-sort-keywords t
-;;         denote-file-type nil
-;;         denote-prompts '(title keywords)
-;;         denote-excluded-directories-regexp nil
-;;         denote-excluded-keywords-regexp nil
-;;         denote-date-prompt-use-org-read-date t
-;;         denote-date-format nil
-;;         denote-backlinks-show-context t
-;;         denote-org-capture-specifiers "%l\n%i\n%?")
-  
-;;   (with-eval-after-load 'org-capture
-;;     (add-to-list 'org-capture-templates
-;;                  '("n" "New Denote" plain
-;;                    (file denote-last-path)
-;;                    #'denote-org-capture
-;;                    :no-save t
-;;                    :immediate-finish nil
-;;                    :kill-buffer t
-;;                    :jump-to-captured t))))
-;;
+  (keycast-mode-line-mode -1))
+
 ;; ======================================
 ;;; rainbow-delimiters
 ;; ======================================
@@ -518,7 +482,7 @@
 (use-package rainbow-delimiters
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
-;;
+
 ;; ======================================
 ;;; pdf-view, tools
 ;; ======================================
@@ -530,22 +494,7 @@
   :config
   (setq pdf-view-display-size 'fit-width) ; Set the default zoom level
   (pdf-tools-install))
-;;
-;; ======================================
-;;; exwm
-;; ======================================
-;; only linux
-;; (if my-laptop-p
-;;     (require 'exwm)
-;;   (require 'exwm-config)
-;;   (exwm-config-default)
-;;   ;;Super + R로 EXWM을 재설정하고, Super + W로 워크스페이스를 전환
-;;   (setq exwm-input-global-keys
-;;       `(([?\s-r] . exwm-reset)
-;;         ([?\s-w] . exwm-workspace-switch)
-;;         ;; 추가적인 키 바인딩 설정
-;;         )))
-;;
+
 ;; ======================================
 ;;; etc my-custom-fuction
 ;; ======================================
@@ -578,5 +527,4 @@
    (list (completing-read "Select: "
                           '("red" "blue" "green" "yellow" "orange"))))
   (put-text-property (region-beginning) (region-end) 'font-lock-face `((foreground-color . ,color))))
-;;; Tesing'
 
