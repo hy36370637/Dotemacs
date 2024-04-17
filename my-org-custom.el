@@ -11,43 +11,62 @@
    ("C-c l" . org-store-link)
    ("C-c a" . org-agenda)
    ("C-c c" . org-capture))
+  :config
+  (setq org-directory (expand-file-name "~/Docs/org/"))
+  (setq org-agenda-files '("Tasks.org" "Daily.org"))
+  ;;  (setq org-startup-indented nil)                 ;indent-mode enable
+  ;; hard indent
+  (setq org-adapt-indentation t)		;heading 이하 들여쓰기
+  (setq org-hide-leading-stars t)
+  (setq org-src-preserve-indentation t)
+  (setq org-structure-template-alist
+        '(("s" . "src")
+          ("e" . "src emacs-lisp")
+          ("x" . "example")
+          ("v" . "verse")
+          ("q" . "quote")))
   :custom
-  (org-hide-leading-stars nil)
+;;  (org-directory (expand-file-name "~/Docs/org/"))
   (org-startup-with-inline-images nil)
-  (org-src-preserve-indentation t)
   (org-log-into-drawer t)
   (org-log-done 'time)
   (org-image-actual-width '(100))
-  ;; Org directory and agenda files
-  ;;  (org-directory (expand-file-name (if my-laptop-p "~/Docs/org/" "~/Dropbox/Docs/org/")))
-  (org-directory (expand-file-name "~/Docs/org/"))
-  (org-agenda-files '("Tasks.org" "Daily.org"))
-  ;; Todo keywords
+;;  (org-agenda-files '("Tasks.org" "Daily.org"))
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
-  ;; Capture templates
   (org-capture-templates
-    '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
-      ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
-      ("a" "Assist" table-line (file+headline "eMoney.org" "eMoney")
-       "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
-      ("f" "FarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
+   '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
+     ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
+     ("a" "Assist" table-line (file+headline "eMoney.org" "eMoney")
+      "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
+     ("f" "FarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
   ;; Export settings
   (org-latex-title-command "\\maketitle \\newpage")
   (org-latex-toc-command "\\tableofcontents \\newpage")
   (org-latex-compiler "xelatex")
   (org-latex-to-pdf-process
-    '("xelatex -interaction nonstopmode -output-directory %o %f"
-      "xelatex -interaction nonstopmode -output-directory %o %f"
-      "xelatex -interaction nonstopmode -output-directory %o %f"))
-  :hook (org-mode . org-indent-mode)  ; auto indent
+   '("xelatex -interaction nonstopmode -output-directory %o %f"
+     "xelatex -interaction nonstopmode -output-directory %o %f"
+     "xelatex -interaction nonstopmode -output-directory %o %f"))
   )
+
+;; ======================================
+;;; org-agenda
+;; ======================================
+(setq org-agenda-prefix-format
+      '((agenda . " %t %-12:c%?-12t% s")
+        (timeline . "  % s")
+        (todo . " %i %-12:c")
+        (tags . " %i %-12:c")
+        (search . " %i %-12:c")))
+(setq org-agenda-format-date "%Y-%m-%d (%a)")  ; 날자 포맷. 가독성 높힘
+
   ;; ;; Agenda view customizations
   ;; (org-agenda-custom-commands
   ;;   '(("d" "Custom agenda view"
   ;;      ((agenda "" ((org-agenda-span 'week)
   ;;                   (org-agenda-start-on-weekday 0)
   ;;                   (org-agenda-format-date "%Y-%m-%d")))))))
-;;
+
 ;; ======================================
 ;;; org-bullets
 ;; ======================================
@@ -56,7 +75,7 @@
   :hook (org-mode . org-bullets-mode)
   :config
   (setq org-bullets-bullet-list '("◉" "◎" "●" "○" "●" "○" "●")))
-;;
+
 ;; ======================================
 ;;; for org edit/custom function
 ;; --------------------------------------
@@ -72,5 +91,6 @@
    (t (message "err,, please enter 8, 9, or 0."))))
 
 (global-set-key (kbd "C-0") 'org-custom-action)
+
 
 (provide 'my-org-custom)
