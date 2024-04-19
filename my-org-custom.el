@@ -26,17 +26,15 @@
           ("v" . "verse")
           ("q" . "quote")))
   :custom
-;;  (org-directory (expand-file-name "~/Docs/org/"))
   (org-startup-with-inline-images nil)
   (org-log-into-drawer t)
   (org-log-done 'time)
   (org-image-actual-width '(100))
-;;  (org-agenda-files '("Tasks.org" "Daily.org"))
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
   (org-capture-templates
    '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
      ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
-     ("a" "Assist" table-line (file+headline "eMoney.org" "eMoney")
+     ("a" "Assist" table-line (file+headline "aMoney.org" "aMoney")
       "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
      ("f" "FarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
   ;; Export settings
@@ -53,7 +51,7 @@
 ;;; org-agenda
 ;; ======================================
 (setq org-agenda-prefix-format
-      '((agenda . " %t %-12:c%?-12t% s")
+      '((agenda . " %t %s")  ;" %t %-12:c%?-12t% s"
         (timeline . "  % s")
         (todo . " %i %-12:c")
         (tags . " %i %-12:c")

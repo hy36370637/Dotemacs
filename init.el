@@ -45,7 +45,8 @@
 ;; ======================================
 ;;; 외양
 ;; ======================================
-(tool-bar-mode -1)  ; 도구상자 비활성
+(tool-bar-mode -1)                            ; 도구상자 비활성
+;; (menu-bar-mode -1)
 (toggle-scroll-bar -1)
 (setq inhibit-startup-message t)     ;시작 메시지  안나오게
 (setq visible-bell t )                             ; 경로 벨 대신 시각적인 벨로 표시
@@ -128,17 +129,17 @@
 ;;     (add-to-list 'load-path "~/Dropbox/emacs/lisp/")
 ;;   (add-to-list 'load-path "~/emacs/lisp/"))
 (add-to-list 'load-path "~/emacs/lisp/")
-(require 'my-org-custom)               ;org-mode
-(require 'my-org-latex-custom)     ;org export pdf
-(require 'my-dired-custom)            ;dired
-(require 'my-reading-mode-custom)   ;reading mode
-(require 'my-play-streaming)        ;radio 청취
-(require 'my-emacs-super-keys)  ; minor. super key
+(require 'my-org-custom)                       ; org-mode
+(require 'my-org-latex-custom)            ; org export pdf
+(require 'my-dired-custom)                    ; dired
+(require 'my-reading-mode-custom)   ; reading mode
+(require 'my-play-streaming)                 ; radio 청취
+(require 'my-emacs-super-keys)            ; minor. super key
 
 ;; ======================================
 ;;; Keyboard for MacOS
 ;; ======================================
-;; (when (equal system-type 'darwin)
+;; (when my-mactop-p
 ;; ;;(when (string= system-name "MacBookAir.local")
 ;;   (setq mac-option-modifier 'super)
 ;;   (setq mac-command-modifier 'meta))
@@ -148,39 +149,26 @@
 ;; ======================================
 (global-unset-key [f11])  ;remove toggle-frame-fullscreen/MacOS
 (global-unset-key (kbd "C-x o"))  ;remove  'other-window
-(global-unset-key (kbd "s-t"))      ;remove set font
-(global-unset-key (kbd "s-c"))     ;remove Copy
-(global-unset-key (kbd "s-f"))     ;remove I-search forward
-(global-unset-key (kbd "s-g"))    ;  
-;; (global-unset-key (kbd "s-v"))     ;remove Paste. alfred paste 
 ;; (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
-(global-set-key (kbd "M-o") 'other-window)
-;; ======================================
-(defvar-keymap my-prefix-map
-  :doc "my prefix map."
-  "p" 'my-popmark
-;;  "g" 'consult-grep
-  "e" 'eshell
-;;  "k" 'keycast-mode-line-mode
-  "l" 'my-org-latex-custom
-  "m" 'modus-themes-toggle
-;;  "f" 'toggle-frame-fullscreen
-  "r" 'toggle-my-reading-mode
-  ;;  "s" 'toggle-streaming)
-  )
+;; (global-set-key (kbd "M-o") 'other-window)
+;; ---------------------------------
+;; (defvar-keymap my-prefix-map
+;;   :doc "my prefix map."
+;;   "p" 'my-popmark
+;;   "m" 'modus-themes-toggle
+;;   "r" 'toggle-my-reading-mode
+;;   )
 
-(keymap-set global-map "s-m" my-prefix-map)
+;; (keymap-set global-map "s-m" my-prefix-map)
 ;; --------------------------------------------------------
+(defun my-popmark (choice)
 ;; base-dir 변수 사용하여 Mac 여부에 따라 기본 디렉토리 선택
 ;; 중복 코드 회피, my-open-directory 및 my-open-file 함수 사용
-(defun my-popmark (choice)
   "Choices for faverite directories and files."
-  (interactive "c\[O]org(Dir) | [E]macs(Dir) | [P]pdf(Dir) | [i]nit | [t]asks | [c]Notes | [d]aily | [f]arm")
+  (interactive "c\ [P]pdf(Dir) | [i]nit | [t]asks | [c]Notes | [d]aily | [f]arm")
   (let ((base-dir "~/"))
 ;;    (let ((base-dir (if my-mactop-p "~/Dropbox/" "~/")))
     (cond
-     ((eq choice ?E) (my-open-directory "emacs"))
-     ((eq choice ?O) (my-open-directory "Docs/org"))
      ((eq choice ?P) (my-open-directory "Docs/pdf"))
      ((eq choice ?i) (my-open-file "emacs/init.el"))
      ((eq choice ?t) (my-open-file "Docs/org/Tasks.org"))
@@ -197,7 +185,7 @@
   "Open a file based on the platform and given file path."
   (find-file (concat base-dir file))
   (message "Opened: %s" (buffer-name)))
-;;
+
 ;; ======================================
 ;;; 로케일, 한글
 ;; ======================================
@@ -277,7 +265,6 @@
 ;; ======================================
 ;;; marginalia
 ;; ======================================
-;; annotations in the minibuffer
 (use-package marginalia
   :ensure t
   :custom
@@ -314,8 +301,6 @@
    ("C-x b" . consult-buffer)
    ("C-x C-r" . consult-recent-file)
    ("C-c r b" . consult-bookmark)
-;;   ("C-c r d" . consult-dir)
-   ("C-c g" . consult-grep)
    ("C-c r o" . consult-outline)
    ("C-c r t" . consult-theme))
   :hook (completion-list-mode . consult-preview-at-point-mode))
@@ -325,10 +310,10 @@
 ;; ======================================
 ;; insert paths into minibuffer prompts in Emacs
 (use-package consult-dir
-  :ensure t
-  :bind (("C-c d" . consult-dir)
-         :map vertico-map
-         ("C-c d" . consult-dir)))
+  :ensure t)
+  ;; :bind (("C-c d" . consult-dir)
+  ;;        :map vertico-map
+  ;;        ("C-c d" . consult-dir)))
 
 ;; ======================================
 ;;; embark
@@ -431,10 +416,11 @@
   :config
 (add-hook 'dired-mode-hook 'nerd-icons-dired-mode))
 
-(use-package nerd-icons-completion
-  :after completion
-  :config
-  (add-hook 'completion-list-mode-hook 'nerd-icons-completion-mode))
+;; (use-package nerd-icons-completion
+;;   :after completion
+;;   :if (display-graphic-p)
+;;   :config
+;;   (add-hook 'completion-list-mode-hook 'nerd-icons-completion-mode))
 
 ;; ======================================
 ;;; eshell
@@ -527,4 +513,3 @@
    (list (completing-read "Select: "
                           '("red" "blue" "green" "yellow" "orange"))))
   (put-text-property (region-beginning) (region-end) 'font-lock-face `((foreground-color . ,color))))
-
