@@ -33,6 +33,7 @@
     "s-p" #'my-popmark    ;#'ns-print-buffer
     ;; "s-q" #'save-buffers-kill-emacs  ;quit
     "s-r" #'toggle-streaming
+    "s-z" #'repeat
     "s-/" #'undo-redo)
 
   (define-minor-mode my-emacs-super-keys-mode  ; minor-mode
