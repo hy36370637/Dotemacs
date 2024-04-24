@@ -22,7 +22,6 @@
   (setq org-structure-template-alist
         '(("s" . "src")
           ("e" . "src emacs-lisp")
-          ("x" . "example")
           ("v" . "verse")
           ("q" . "quote")))
   :custom
@@ -57,7 +56,7 @@
         (tags . " %i %-12:c")
         (search . " %i %-12:c")))
 (setq org-agenda-format-date "%Y-%m-%d (%a)")  ; 날자 포맷. 가독성 높힘
-
+(setq org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done)) ;완료항목 hidden
   ;; ;; Agenda view customizations
   ;; (org-agenda-custom-commands
   ;;   '(("d" "Custom agenda view"
@@ -89,6 +88,5 @@
    (t (message "err,, please enter 8, 9, or 0."))))
 
 (global-set-key (kbd "C-0") 'org-custom-action)
-
 
 (provide 'my-org-custom)
