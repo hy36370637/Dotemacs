@@ -43,6 +43,14 @@
 ;; (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
 ;; ======================================
+;;; MacOS keyboard
+;; ======================================
+;; (setq mac-option-modifier 'meta)
+;; (setq mac-command-modifier 'meta)
+;; (setq ns-right-command-modifier 'super)
+;; (setq mac-right-option-modifier 'control)
+
+;; ======================================
 ;;; 외양
 ;; ======================================
 (tool-bar-mode -1)                            ; 도구상자 비활성
@@ -149,8 +157,8 @@
 ;; ======================================
 (global-unset-key [f11])  ;remove toggle-frame-fullscreen/MacOS
 (global-unset-key (kbd "C-x o"))  ;remove  'other-window
-;; (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
-;; (global-set-key (kbd "M-o") 'other-window)
+(global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
+(global-set-key (kbd "M-o") 'other-window)
 ;; ---------------------------------
 ;; (defvar-keymap my-prefix-map
 ;;   :doc "my prefix map."
@@ -496,7 +504,7 @@
                (t (error "검색 엔진 err!")))))
     (browse-url url)))
 
-(defun my/today-custom-format (fm)
+(defun my/insert-today (fm)
   "Inserts today() at point in the specified format."
   (interactive
    (list (completing-read "Select: " '("dash" "dot"))))
@@ -513,3 +521,42 @@
    (list (completing-read "Select: "
                           '("red" "blue" "green" "yellow" "orange"))))
   (put-text-property (region-beginning) (region-end) 'font-lock-face `((foreground-color . ,color))))
+
+;;; 버퍼 전체 / 빈 줄 삭제
+;; (defun my/flush-lines-all()
+;;   "Delete blank lines and trailing whitespace."
+;;   (interactive)
+;;   (let ((choice (read-char-choice "Delete blank lines (b) or trailing whitespace (w)? " '(?b ?w))))
+;;     (cond
+;;      ((eq choice ?b) (flush-lines "^\\s-*$" (point-min) (point-max)))  ;줄 끝 공백 + 빈 줄
+;;      ((eq choice ?w) (flush-lines "^$" (point-min) (point-max)))         ;줄 끝 공백
+;;      (t (message "Invalid choice")))))
+
+;;; 선택한 범위내 / 빈 줄 삭제
+(defun my/flush-lines-region ()
+  "Delete blank lines and trailing whitespace within the region."
+  (interactive)
+  (let ((start (region-beginning))
+        (end (region-end)))
+    (save-excursion
+      (save-restriction
+        (narrow-to-region start end)
+        (let ((choice (read-char-choice "Delete blank lines (b) or trailing whitespace (w)? " '(?b ?w))))
+          (cond
+           ((eq choice ?b) (flush-lines "^\\s-*$" (point-min) (point-max)))  ;줄 끝 공백 + 빈 줄
+           ((eq choice ?w) (flush-lines "^$" (point-min) (point-max)))         ;줄 끝 공백
+           (t (message "Invalid choice"))))))))
+
+;;; 선택영역 내 화살표 기호 입력
+;; (defun replace-arrows-in-region (start end)
+;;   "Replace '->' with '→' and '=>' with '⇒' in the region
+;;   (interactive "r")
+;;   (save-excursion
+;;     (goto-char start)
+;;     (while (re-search-forward "->" end t)
+;;       (replace-match "→"))
+;;     (goto-char start)
+;;     (while (re-search-forward "=>" end t)
+;;       (replace-match "⇒"))))
+;; (global-set-key (kbd "C-c r") 'replace-arrows-in-region)
+

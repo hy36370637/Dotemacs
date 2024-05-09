@@ -1,7 +1,7 @@
+;;; -*- lexical-binding: t; -*-
 ;; ======================================
 ;;; org
 ;; ======================================
-;; org-mode를 사용한 일상기록 유지
 ;; /emacs/lisp/my-org-custom.el
 ;; Key bindings
 (use-package org
@@ -57,12 +57,6 @@
         (search . " %i %-12:c")))
 (setq org-agenda-format-date "%Y-%m-%d (%a)")  ; 날자 포맷. 가독성 높힘
 (setq org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done)) ;완료항목 hidden
-  ;; ;; Agenda view customizations
-  ;; (org-agenda-custom-commands
-  ;;   '(("d" "Custom agenda view"
-  ;;      ((agenda "" ((org-agenda-span 'week)
-  ;;                   (org-agenda-start-on-weekday 0)
-  ;;                   (org-agenda-format-date "%Y-%m-%d")))))))
 
 ;; ======================================
 ;;; org-bullets

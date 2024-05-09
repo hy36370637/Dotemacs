@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 ;; ======================================
 ;;; my-latex-custom-function/for org-mode
 ;; --------------------------------------
@@ -50,7 +51,7 @@
 
 ;;; 통합본
 (defun my-org-latex-custom(begin end)
-  "Custom function for Org export LaTeX. Text color, sub-Super Script, quote-verse Block"
+  "for Org export LaTeX. Text color, sub-Super Script, quote-verse Block"
   (interactive "r")
   (if (use-region-p)
       (let ((choice (read-char-choice "Select action: [c]글자색, [s]아래첨자, [S]위첨자: " '(?c ?s ?S))))
@@ -59,5 +60,5 @@
           (?s (latex-modify-text begin end "_"))
           (?S (latex-modify-text begin end "^")))
     (message "No region selected"))))
-
+(global-set-key (kbd "C-9") 'my-org-latex-custom)
 (provide 'my-org-latex-custom)

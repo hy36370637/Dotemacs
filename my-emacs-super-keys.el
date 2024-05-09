@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 ;;; 자주 사용 → Super key 할당 → minor mode
 ;;;  I was inspired by the https://protesilaos.com
 ;;; unset-super-key
@@ -6,6 +7,7 @@
 (global-unset-key (kbd "s-e"))    ; isearch-yank-kill
 (global-unset-key (kbd "s-f"))     ; I-search forward
 (global-unset-key (kbd "s-g"))    ;
+(global-unset-key (kbd "s-o"))    ;
 (global-unset-key (kbd "s-p"))    ; ns-print-buffer
 (global-unset-key (kbd "s-l"))     ; goto-line
 (global-unset-key (kbd "s-m"))     ; 
@@ -18,7 +20,7 @@
     :doc "Common command alternatives using the Super key."
     ;; "s-a" #'mark-whole-buffer
     "s-b" #'switch-to-buffer
-    "s-c" #'keycast-mode-line-mode
+    "s-c" #'org-capture; #'keycast-mode-line-mode
     "s-d" #'consult-dir
     "s-e" #'eshell
     "s-f" #'toggle-frame-fullscreen    
@@ -29,7 +31,7 @@
     "s-l" #'my-org-latex-custom  ;goto-line
     "s-m" #'modus-themes-toggle
     "s-n" #'find-file
-    "s-o" #'other-window
+    ;; "s-o" #'org-agenda
     "s-p" #'my-popmark    ;#'ns-print-buffer
     ;; "s-q" #'save-buffers-kill-emacs  ;quit
     "s-r" #'toggle-streaming
