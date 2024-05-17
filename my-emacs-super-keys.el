@@ -10,7 +10,7 @@
 (global-unset-key (kbd "s-o"))    ;
 (global-unset-key (kbd "s-p"))    ; ns-print-buffer
 (global-unset-key (kbd "s-l"))     ; goto-line
-(global-unset-key (kbd "s-m"))     ; 
+;; (global-unset-key (kbd "s-m"))     ; 
 (global-unset-key (kbd "s-n"))    ; make-frame
 (global-unset-key (kbd "s-x"))     ; kill-region
 (global-unset-key (kbd "s-z"))     ; undo(C-/, C-x u)
@@ -19,7 +19,7 @@
   (defvar-keymap my-emacs-super-keys-map
     :doc "Common command alternatives using the Super key."
     ;; "s-a" #'mark-whole-buffer
-    "s-b" #'switch-to-buffer
+    "s-b" #'consult-buffer
     "s-c" #'org-capture; #'keycast-mode-line-mode
     "s-d" #'consult-dir
     "s-e" #'eshell
@@ -29,7 +29,7 @@
     ;; "s-j" #'exchange-point-and-mark(C-x C-x)
     ;; "s-k" #'kill-current-buffer
     "s-l" #'my-org-latex-custom  ;goto-line
-    "s-m" #'modus-themes-toggle
+    ;; "s-m" #'modus-themes-toggle
     "s-n" #'find-file
     ;; "s-o" #'org-agenda
     "s-p" #'my-popmark    ;#'ns-print-buffer
