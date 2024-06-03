@@ -18,7 +18,7 @@
 ;; ======================================
 ;;; package source list
 ;;; ======================================
-(require 'package)
+;; (require 'package)
 (setq package-archives
       '(("melpa" . "https://melpa.org/packages/")
 	("gnu" . "https://elpa.gnu.org/packages/")))
@@ -143,6 +143,7 @@
 (require 'my-reading-mode-custom)   ; reading mode
 (require 'my-play-streaming)                 ; radio 청취
 (require 'my-emacs-super-keys)            ; minor. super key
+(require 'my-completion)                       ;completion
 
 ;; ======================================
 ;;; Keyboard for MacOS
@@ -198,7 +199,7 @@
 ;;; 로케일, 한글
 ;; ======================================
 (setenv "LANG" "ko_KR.UTF-8")
-(setenv "LC_COLLATE" "C")		  ;Dired 한글 파일명 정렬 macOS
+(setenv "LC_COLLATE" "C")	                	  ;Dired 한글 파일명 정렬 macOS
 (set-locale-environment "ko_KR.UTF-8")	  ;kbd 한글 S-SPC
 
 ;; ======================================
@@ -369,49 +370,6 @@
 ;; 	gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
 
 ;; =======================================
-;;; electric-pair-mode
-;; ======================================-
-(use-package electric
-  :ensure nil  ;built in
-  :config
-  (setq electric-pair-pairs '((?\" . ?\")
-                              (?\{ . ?\})
-                              (?\[ . ?\])
-                              (?\( . ?\))))
-  (electric-pair-mode t))
-(add-hook 'org-mode-hook (lambda ()   ; pair-mode '< '제외
-			   (setq-local electric-pair-inhibit-predicate
-				       `(lambda (c)
-					  (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
-
-;; =======================================
-;;; corfu
-;; ======================================-
-(setq completion-cycle-threshold 3
-      tab-always-indent 'complete)
-(use-package corfu
-  :ensure t
-  :bind (:map corfu-map
-         ("TAB" . corfu-next)
-         ([tab] . corfu-next)
-         ("S-TAB" . corfu-previous)
-         ("S-<return>" . corfu-insert))
-  :custom
-  (corfu-auto t)
-  (corfu-auto-delay 0.2)
-  (corfu-auto-prefix 0)
-  (corfu-cycle t)
-  (corfu-preselect 'prompt)
-  (corfu-echo-documentation 0.2)
-  (corfu-preview-current 'insert)
-  (corfu-separator ?\s)
-  (corfu-quit-no-match 'separator)
-  :init
-  (global-corfu-mode)
-  (corfu-history-mode)
-  (corfu-popupinfo-mode))
-
-;; =======================================
 ;;; all-the-icons
 ;; ======================================-
 (use-package nerd-icons
@@ -442,6 +400,7 @@
 ;;; modeline
 ;; ======================================
 ;; 단순 버젼 original
+;; (setq-default mode-line-format nil)
 (setq-default mode-line-format
 	      '("%e "
 		mode-line-front-space
@@ -492,17 +451,17 @@
 ;; ======================================
 ;;; etc my-custom-fuction
 ;; ======================================
-(defun search-web (engine query)
-  "검색 엔진, 검색"
-  (interactive
-   (list
-    (completing-read "검색 선택 (google/naver): " '("google" "naver"))
-    (read-string "검색어 입력: ")))
-  (let ((url (cond
-               ((string= engine "google") (concat "https://www.google.com/search?q=" (url-hexify-string query)))
-               ((string= engine "naver") (concat "https://search.naver.com/search.naver?query=" (url-hexify-string query)))
-               (t (error "검색 엔진 err!")))))
-    (browse-url url)))
+;; (defun search-web (engine query)
+;;   "검색 엔진, 검색"
+;;   (interactive
+;;    (list
+;;     (completing-read "검색 선택 (google/naver): " '("google" "naver"))
+;;     (read-string "검색어 입력: ")))
+;;   (let ((url (cond
+;;                ((string= engine "google") (concat "https://www.google.com/search?q=" (url-hexify-string query)))
+;;                ((string= engine "naver") (concat "https://search.naver.com/search.naver?query=" (url-hexify-string query)))
+;;                (t (error "검색 엔진 err!")))))
+;;     (browse-url url)))
 
 (defun my/insert-today (fm)
   "Inserts today() at point in the specified format."
@@ -515,12 +474,29 @@
           (t (error "Invalid date format specified")))))
     (insert (format-time-string format-string))))
 
-(defun my/region-colorful (color)
-  "선택 텍스트, 색상 COLOR 지정. 저장불가"
-  (interactive
-   (list (completing-read "Select: "
-                          '("red" "blue" "green" "yellow" "orange"))))
-  (put-text-property (region-beginning) (region-end) 'font-lock-face `((foreground-color . ,color))))
+;; ;; 배경 투명 toggle
+;; (defun set-transparency (&optional alpha-level)
+;;   "Set the transparency of the Emacs frame."
+;;   (interactive "P")
+;;   (setq alpha-level (if alpha-level
+;;                         (prefix-numeric-value alpha-level)
+;;                       75)) ;; 기본값 설정
+;;   (set-frame-parameter (selected-frame) 'alpha (cons alpha-level alpha-level)))
+
+;; (defun toggle-transparency ()
+;;   "Toggle transparency of the Emacs frame."
+;;   (interactive)
+;;   (let ((current-alpha (frame-parameter nil 'alpha)))
+;;     (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
+;;         (set-transparency 75)
+;;       (set-transparency 100))))
+
+;; (defun my/region-colorful (color)
+;;   "선택 텍스트, 색상 COLOR 지정. 저장불가"
+;;   (interactive
+;;    (list (completing-read "Select: "
+;;                           '("red" "blue" "green" "yellow" "orange"))))
+;;   (put-text-property (region-beginning) (region-end) 'font-lock-face `((foreground-color . ,color))))
 
 ;;; 버퍼 전체 / 빈 줄 삭제
 ;; (defun my/flush-lines-all()
@@ -533,21 +509,21 @@
 ;;      (t (message "Invalid choice")))))
 
 ;;; 선택한 범위내 / 빈 줄 삭제
-(defun my/flush-lines-region ()
-  "Delete blank lines and trailing whitespace within the region."
-  (interactive)
-  (let ((start (region-beginning))
-        (end (region-end)))
-    (save-excursion
-      (save-restriction
-        (narrow-to-region start end)
-        (let ((choice (read-char-choice "Delete blank lines (b) or trailing whitespace (w)? " '(?b ?w))))
-          (cond
-           ((eq choice ?b) (flush-lines "^\\s-*$" (point-min) (point-max)))  ;줄 끝 공백 + 빈 줄
-           ((eq choice ?w) (flush-lines "^$" (point-min) (point-max)))         ;줄 끝 공백
-           (t (message "Invalid choice"))))))))
+;; (defun my/flush-lines-region ()
+;;   "Delete blank lines and trailing whitespace within the region."
+;;   (interactive)
+;;   (let ((start (region-beginning))
+;;         (end (region-end)))
+;;     (save-excursion
+;;       (save-restriction
+;;         (narrow-to-region start end)
+;;         (let ((choice (read-char-choice "Delete blank lines (b) or trailing whitespace (w)? " '(?b ?w))))
+;;           (cond
+;;            ((eq choice ?b) (flush-lines "^\\s-*$" (point-min) (point-max)))  ;줄 끝 공백 + 빈 줄
+;;            ((eq choice ?w) (flush-lines "^$" (point-min) (point-max)))         ;줄 끝 공백
+;;            (t (message "Invalid choice"))))))))
 
-;;; 선택영역 내 화살표 기호 입력
+;;; 선택영역 내 특수문자 치환
 ;; (defun replace-arrows-in-region (start end)
 ;;   "Replace '->' with '→' and '=>' with '⇒' in the region
 ;;   (interactive "r")
@@ -559,4 +535,3 @@
 ;;     (while (re-search-forward "=>" end t)
 ;;       (replace-match "⇒"))))
 ;; (global-set-key (kbd "C-c r") 'replace-arrows-in-region)
-
