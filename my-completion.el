@@ -50,19 +50,19 @@
 ;; https://protesilaos.com/codelog/2024-02-03-emacs-abbrev-mode/
 (use-package abbrev
   :ensure nil
-;;  :hook ((text-mode prog-mode) . abbrev-mode)
   :config
-  ;; 전역적 abbrev 모드 활성화
   (setq-default abbrev-mode t)
   (setq save-abbrevs 'silently)        ;; save abbrevs when files are saved
   (abbrev-table-put global-abbrev-table :regexp "\\(?:^\\|[\t\s]+\\)\\(?1:[:;_].*\\|.*\\)")
   ;; 약어 정의
   (define-abbrev-table 'global-abbrev-table 
-    '( (":arrR"      "→")
-       (":lrgg"       "「」")
-       (":pitC"       "·")
-       ("ldot"        " ……")
-       (":bill"         "※")
+    '( ("ldot"        " ……")
+       ("notosans"     "Noto Sans CJK KR")
+       ("notosansmono"  "Noto Sans Mono CJK KR" )
+       ("notoserif"    "Noto Serif CJK KR")
+       ("hcrbatang"  "HCRBatangLVT")
+       ("sectionroman"   "\renewcommand*{\thesection}{\Roman{section}")
+       ("subsectionarabic"  "\renewcommand*{\thesubsection}{\arabic{subsection}")
        )))
   
 
