@@ -1,4 +1,5 @@
 ;; 완성completion 도움
+;; emacs/lisp/my-completion.el
 
 ;; =======================================
 ;;; electric-pair-mode
@@ -46,18 +47,25 @@
 ;; =======================================
 ;;; abbrev
 ;; ======================================-
+;; https://protesilaos.com/codelog/2024-02-03-emacs-abbrev-mode/
 (use-package abbrev
   :ensure nil
-  :hook ((text-mode) . abbrev-mode)
+;;  :hook ((text-mode prog-mode) . abbrev-mode)
   :config
-  (setq only-global-abbrevs nil)
+  ;; 전역적 abbrev 모드 활성화
+  (setq-default abbrev-mode t)
+  (setq save-abbrevs 'silently)        ;; save abbrevs when files are saved
+  (abbrev-table-put global-abbrev-table :regexp "\\(?:^\\|[\t\s]+\\)\\(?1:[:;_].*\\|.*\\)")
   ;; 약어 정의
-(define-abbrev-table 'text-mode-abbrev-table '(    ;global-abbrev-table
-    ;; 일반적인 약어
-    ("arrR"      "→")
-    ("lrgg"       "「」")
-    ("pitC"       "·"))))
+  (define-abbrev-table 'global-abbrev-table 
+    '( (":arrR"      "→")
+       (":lrgg"       "「」")
+       (":pitC"       "·")
+       ("ldot"        " ……")
+       (":bill"         "※")
+       )))
   
 
 
 (provide 'my-completion)
+
