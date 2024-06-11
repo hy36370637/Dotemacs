@@ -57,6 +57,7 @@
         (search . " %i %-12:c")))
 (setq org-agenda-format-date "%Y-%m-%d (%a)")  ; 날자 포맷. 가독성 높힘
 (setq org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done)) ;완료항목 hidden
+(setq org-agenda-include-diary t)	;holidays 포함
 
 ;; ======================================
 ;;; org-bullets
