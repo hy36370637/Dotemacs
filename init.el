@@ -170,30 +170,30 @@
 
 ;; (keymap-set global-map "s-m" my-prefix-map)
 ;; --------------------------------------------------------
-(defun my-popmark (choice)
-;; base-dir 변수 사용하여 Mac 여부에 따라 기본 디렉토리 선택
-;; 중복 코드 회피, my-open-directory 및 my-open-file 함수 사용
-  "Choices for faverite directories and files."
-  (interactive "c\ [P]pdf(Dir) | [i]nit | [t]asks | [c]Notes | [d]aily | [f]arm")
-  (let ((base-dir "~/"))
-;;    (let ((base-dir (if my-mactop-p "~/Dropbox/" "~/")))
-    (cond
-     ((eq choice ?P) (my-open-directory "Docs/pdf"))
-     ((eq choice ?i) (my-open-file "emacs/init.el"))
-     ((eq choice ?t) (my-open-file "Docs/org/Tasks.org"))
-     ((eq choice ?c) (my-open-file "Docs/org/cNotes.org"))
-     ((eq choice ?d) (my-open-file "Docs/org/Daily.org"))
-     ((eq choice ?f) (my-open-file "Docs/org/dFarmNote.org"))
-     (t (message "Quit")))))
+;; (defun my-popmark (choice)
+;; ;; base-dir 변수 사용하여 Mac 여부에 따라 기본 디렉토리 선택
+;; ;; 중복 코드 회피, my-open-directory 및 my-open-file 함수 사용
+;;   "Choices for faverite directories and files."
+;;   (interactive "c\ [P]pdf(Dir) | [i]nit | [t]asks | [c]Notes | [d]aily | [f]arm")
+;;   (let ((base-dir "~/"))
+;; ;;    (let ((base-dir (if my-mactop-p "~/Dropbox/" "~/")))
+;;     (cond
+;;      ((eq choice ?P) (my-open-directory "Docs/pdf"))
+;;      ((eq choice ?i) (my-open-file "emacs/init.el"))
+;;      ((eq choice ?t) (my-open-file "Docs/org/Tasks.org"))
+;;      ((eq choice ?c) (my-open-file "Docs/org/cNotes.org"))
+;;      ((eq choice ?d) (my-open-file "Docs/org/Daily.org"))
+;;      ((eq choice ?f) (my-open-file "Docs/org/dFarmNote.org"))
+;;      (t (message "Quit")))))
 
-(defun my-open-directory (dir)
-  "Open a directory based on the platform and given subdirectory."
-  (dired (concat base-dir dir)))
+;; (defun my-open-directory (dir)
+;;   "Open a directory based on the platform and given subdirectory."
+;;   (dired (concat base-dir dir)))
 
-(defun my-open-file (file)
-  "Open a file based on the platform and given file path."
-  (find-file (concat base-dir file))
-  (message "Opened: %s" (buffer-name)))
+;; (defun my-open-file (file)
+;;   "Open a file based on the platform and given file path."
+;;   (find-file (concat base-dir file))
+;;   (message "Opened: %s" (buffer-name)))
 
 ;; ======================================
 ;;; 로케일, 한글
@@ -201,6 +201,8 @@
 (setenv "LANG" "ko_KR.UTF-8")
 (setenv "LC_COLLATE" "C")	                	  ;Dired 한글 파일명 정렬 macOS
 (set-locale-environment "ko_KR.UTF-8")	  ;kbd 한글 S-SPC
+(setq input-method-verbose-flag nil)
+(setq input-method-highlight-flag nil)          ;입력 글자 밑줄방지
 
 ;; ======================================
 ;;; 글꼴 fonts
@@ -224,12 +226,64 @@
   (setq calendar-week-start-day 0
 	calendar-day-name-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
 ;;	calendar-day-header-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
-        calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월" "10월" "11월" "12월"]))
-;;
+        calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월" "10월" "11월" "12월"])
+
 ;;; calendar layout 보정. D2coding size
 (defun cal-fixLayout ()
-  (face-remap-add-relative 'default '(:family "Noto Sans Mono CJK KR" :height 150)))           
+  (face-remap-add-relative 'default '(:family "Noto Sans Mono CJK KR" :height 160)))           
 (add-hook 'calendar-mode-hook 'cal-fixLayout)
+
+;; ======================================
+;;; holidays
+;; ======================================
+(use-package holidays
+  :config
+  (setq my-holidays			;공휴일+생일
+	'((holiday-fixed 1 1 "새해첫날")
+	  (holiday-chinese  1  1 "설날")
+	  (holiday-fixed 1 10 "딸 생일")
+	  (holiday-fixed 3 1 "삼일절")
+	  (holiday-fixed 3 19 "결혼일")
+	  (holiday-fixed 5 5 "어린이날")
+	  (holiday-fixed 6 6 "현충일")
+	  (holiday-fixed 6 10 "아들생일")
+	  (holiday-fixed 7 17 "제헌절")
+	  (holiday-fixed 8 15 "광복절")
+	  (holiday-chinese  8 15 "추석")
+	  (holiday-fixed 10 3 "개천절")
+	  (holiday-fixed 10 9 "한글날")
+	  (holiday-fixed 12 25 "성탄절")))
+  
+(setq 24solar-holidays			;24절기
+	'((holiday-fixed 2 4 "입춘")
+	  (holiday-fixed 2 19 "우수")
+	  (holiday-fixed 3 5 "경칩")
+	  (holiday-fixed 3 20 "춘분")
+	  (holiday-fixed 4 5 "청명")
+	  (holiday-fixed 4 20 "곡우")
+	  (holiday-fixed 5 5 "입하")
+	  (holiday-fixed 5 21 "소만")
+	  (holiday-fixed 6 6 "망종")
+	  (holiday-fixed 6 21 "하지")
+	  (holiday-fixed 7 7 "소서")
+	  (holiday-fixed 7 22 "대서")
+	  (holiday-fixed 8 7 "입추")
+	  (holiday-fixed 8 23 "처서")
+	  (holiday-fixed 9 7 "백로")
+	  (holiday-fixed 9 22 "추분")
+	  (holiday-fixed 10 8 "한로")
+	  (holiday-fixed 10 23 "상강")
+	  (holiday-fixed 11 7 "입동")
+	  (holiday-fixed 11 22 "소설")
+	  (holiday-fixed 12 7 "대설")
+	  (holiday-fixed 12 22 "동지")
+	  (holiday-fixed 1 5 "소한")
+	  (holiday-fixed 1 20 "대한")))
+(setq calendar-mark-holidays-flag t))	;holiday display
+(setq calendar-holidays (append my-holidays 24solar-holidays)))
+
+(custom-set-faces
+  '(holiday ((t (:foreground "red" :weight bold)))))
 
 ;; ======================================
 ;;; helpful
@@ -523,15 +577,3 @@
 ;;            ((eq choice ?w) (flush-lines "^$" (point-min) (point-max)))         ;줄 끝 공백
 ;;            (t (message "Invalid choice"))))))))
 
-;;; 선택영역 내 특수문자 치환
-;; (defun replace-arrows-in-region (start end)
-;;   "Replace '->' with '→' and '=>' with '⇒' in the region
-;;   (interactive "r")
-;;   (save-excursion
-;;     (goto-char start)
-;;     (while (re-search-forward "->" end t)
-;;       (replace-match "→"))
-;;     (goto-char start)
-;;     (while (re-search-forward "=>" end t)
-;;       (replace-match "⇒"))))
-;; (global-set-key (kbd "C-c r") 'replace-arrows-in-region)
