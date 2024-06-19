@@ -99,7 +99,7 @@
         ;; modus-themes-to-toggle '(modus-operandi-tritanopia modus-vivendi-tritanopia)
   (setq modus-themes-italic-constructs t
         modus-themes-bold-constructs nil
-	modus-themes-mixed-fonts t
+	modus-themes-mixed-fonts nil	;default nil
 	modus-themes-variable-pitch-ui nil
 	modus-themes-custom-auto-reload t
 	modus-themes-disable-other-themes t))
@@ -239,11 +239,12 @@
 (use-package holidays
   :config
   (setq my-holidays			;공휴일+생일
-	'((holiday-fixed 1 1 "새해첫날")
+	'((holiday-fixed 1 1 "새해")
 	  (holiday-chinese  1  1 "설날")
 	  (holiday-fixed 1 10 "딸 생일")
 	  (holiday-fixed 3 1 "삼일절")
 	  (holiday-fixed 3 19 "결혼일")
+	  (holiday-chinese  4  8 "석탄일")
 	  (holiday-fixed 5 5 "어린이날")
 	  (holiday-fixed 6 6 "현충일")
 	  (holiday-fixed 6 10 "아들생일")
@@ -255,27 +256,27 @@
 	  (holiday-fixed 12 25 "성탄절")))
   
 (setq 24solar-holidays			;24절기
-	'((holiday-fixed 2 4 "입춘")
-	  (holiday-fixed 2 19 "우수")
-	  (holiday-fixed 3 5 "경칩")
-	  (holiday-fixed 3 20 "춘분")
+	'((holiday-fixed 2 4 "입춘(새봄)")
+	  (holiday-fixed 2 19 "우수(눈녹음)")
+	  (holiday-fixed 3 5 "경칩(겨울잠 깸)")
+	  (holiday-fixed 3 20 "춘분(낮 길어짐)")
 	  (holiday-fixed 4 5 "청명")
-	  (holiday-fixed 4 20 "곡우")
+	  (holiday-fixed 4 20 "곡우(봄비)")
 	  (holiday-fixed 5 5 "입하")
-	  (holiday-fixed 5 21 "소만")
-	  (holiday-fixed 6 6 "망종")
+	  (holiday-fixed 5 21 "소만(볕 잘듬)")
+	  (holiday-fixed 6 6 "망종(씨앗)")
 	  (holiday-fixed 6 21 "하지")
-	  (holiday-fixed 7 7 "소서")
-	  (holiday-fixed 7 22 "대서")
+	  (holiday-fixed 7 7 "소서(더위 시작)")
+	  (holiday-fixed 7 22 "대서(가장 더움)")
 	  (holiday-fixed 8 7 "입추")
-	  (holiday-fixed 8 23 "처서")
-	  (holiday-fixed 9 7 "백로")
-	  (holiday-fixed 9 22 "추분")
-	  (holiday-fixed 10 8 "한로")
-	  (holiday-fixed 10 23 "상강")
+	  (holiday-fixed 8 23 "처서(가을바람)")
+	  (holiday-fixed 9 7 "백로(이슬)")
+	  (holiday-fixed 9 22 "추분(밤 길이)")
+	  (holiday-fixed 10 8 "한로(이슬)")
+	  (holiday-fixed 10 23 "상강(서리)")
 	  (holiday-fixed 11 7 "입동")
-	  (holiday-fixed 11 22 "소설")
-	  (holiday-fixed 12 7 "대설")
+	  (holiday-fixed 11 22 "소설(눈 시작)")
+	  (holiday-fixed 12 7 "대설(눈 많음)")
 	  (holiday-fixed 12 22 "동지")
 	  (holiday-fixed 1 5 "소한")
 	  (holiday-fixed 1 20 "대한")))
@@ -309,7 +310,7 @@
 ;;; which-key
 ;; ======================================
 (use-package which-key
-  :ensure t
+  :ensure nil
   :init (which-key-mode)
   :config
   (setq which-key-idle-delay 0.2)
@@ -505,6 +506,24 @@
 ;; ======================================
 ;;; etc my-custom-fuction
 ;; ======================================
+(defun region-search-web (start end)
+  "Search selected text on Naver or Google.
+This function takes the selected region (from START to END)
+and uses it as a query for a search on either Naver or Google."
+  (interactive "r")
+  (let* ((query (buffer-substring-no-properties start end))
+         (search-engine (completing-read "Choose search engine: " '("Naver" "Google")))
+         (url (cond ((string-equal search-engine "Naver")
+                     (concat "https://search.naver.com/search.naver?query="
+                             (url-hexify-string query)))
+                    ((string-equal search-engine "Google")
+                     (concat "https://www.google.com/search?q="
+                             (url-hexify-string query))))))
+    (browse-url url)))
+
+;; Example key binding for the function
+(global-set-key (kbd "C-c s") 'region-search-web)
+
 ;; (defun search-web (engine query)
 ;;   "검색 엔진, 검색"
 ;;   (interactive
