@@ -160,15 +160,17 @@
 (global-unset-key (kbd "C-x o"))  ;remove  'other-window
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
-;; ---------------------------------
-;; (defvar-keymap my-prefix-map
-;;   :doc "my prefix map."
-;;   "p" 'my-popmark
-;;   "m" 'modus-themes-toggle
-;;   "r" 'toggle-my-reading-mode
-;;   )
+;;; 사용자 편의
+(defvar-keymap my-prefix-map
+  :doc "my prefix map."
+  "d" 'my/insert-today
+  "k" 'keycast-mode-line-mode
+  "m" 'modus-themes-toggle
+  "r" 'toggle-my-reading-mode
+  "s" 'my/region-search-web
+  "t" 'set-transparency)
 
-;; (keymap-set global-map "s-m" my-prefix-map)
+(keymap-set global-map "s-t" my-prefix-map)
 ;; --------------------------------------------------------
 ;; (defun my-popmark (choice)
 ;; ;; base-dir 변수 사용하여 Mac 여부에 따라 기본 디렉토리 선택
@@ -374,10 +376,10 @@
 ;; ======================================
 ;; insert paths into minibuffer prompts in Emacs
 (use-package consult-dir
-  :ensure t)
-  ;; :bind (("C-c d" . consult-dir)
-  ;;        :map vertico-map
-  ;;        ("C-c d" . consult-dir)))
+  :ensure t
+  :bind (("C-c r d" . consult-dir)
+         :map vertico-map
+         ("C-c r d" . consult-dir)))
 
 ;; ======================================
 ;;; embark
@@ -506,10 +508,9 @@
 ;; ======================================
 ;;; etc my-custom-fuction
 ;; ======================================
-(defun region-search-web (start end)
-  "Search selected text on Naver or Google.
-This function takes the selected region (from START to END)
-and uses it as a query for a search on either Naver or Google."
+;;; 선택한 범위 문자열 → Web 검색(Naver, Google)
+(defun my/region-search-web (start end)
+  "Search selected text on Naver or Google."
   (interactive "r")
   (let* ((query (buffer-substring-no-properties start end))
          (search-engine (completing-read "Choose search engine: " '("Naver" "Google")))
@@ -521,9 +522,9 @@ and uses it as a query for a search on either Naver or Google."
                              (url-hexify-string query))))))
     (browse-url url)))
 
-;; Example key binding for the function
-(global-set-key (kbd "C-c s") 'region-search-web)
+;; (global-set-key (kbd "C-c s") 'my/region-search-web)
 
+;;;
 ;; (defun search-web (engine query)
 ;;   "검색 엔진, 검색"
 ;;   (interactive
@@ -548,21 +549,21 @@ and uses it as a query for a search on either Naver or Google."
     (insert (format-time-string format-string))))
 
 ;; ;; 배경 투명 toggle
-;; (defun set-transparency (&optional alpha-level)
-;;   "Set the transparency of the Emacs frame."
-;;   (interactive "P")
-;;   (setq alpha-level (if alpha-level
-;;                         (prefix-numeric-value alpha-level)
-;;                       75)) ;; 기본값 설정
-;;   (set-frame-parameter (selected-frame) 'alpha (cons alpha-level alpha-level)))
+(defun set-transparency (&optional alpha-level)
+  "Set the transparency of the Emacs frame."
+  (interactive "P")
+  (setq alpha-level (if alpha-level
+                        (prefix-numeric-value alpha-level)
+                      75)) ;; 기본값 설정
+  (set-frame-parameter (selected-frame) 'alpha (cons alpha-level alpha-level)))
 
-;; (defun toggle-transparency ()
-;;   "Toggle transparency of the Emacs frame."
-;;   (interactive)
-;;   (let ((current-alpha (frame-parameter nil 'alpha)))
-;;     (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
-;;         (set-transparency 75)
-;;       (set-transparency 100))))
+(defun toggle-transparency ()
+  "Toggle transparency of the Emacs frame."
+  (interactive)
+  (let ((current-alpha (frame-parameter nil 'alpha)))
+    (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
+        (set-transparency 75)
+      (set-transparency 100))))
 
 ;; (defun my/region-colorful (color)
 ;;   "선택 텍스트, 색상 COLOR 지정. 저장불가"
