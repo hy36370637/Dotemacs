@@ -61,6 +61,7 @@
 (setq initial-scratch-message nil)
 (setq use-dialog-box nil)
 (setq-default line-spacing 0.2)        ; 줄 간격 1.5
+(setq-default cursor-type 'bar)	       ;cursor type hbar,bar,box
 ;; (setq frame-title-format "| dole's Emacs | %b |")
 
 ;; ======================================
@@ -504,15 +505,6 @@
   :config
   (setq pdf-view-display-size 'fit-width) ; Set the default zoom level
   (pdf-tools-install))
-
-;; ======================================
-;;; avy
-;; ======================================
-;; 탐색
-(use-package avy
-  :ensure nil
-  :bind ("M-s" . avy-goto-char)
-  )
 
 ;; ======================================
 ;;; etc my-custom-fuction
