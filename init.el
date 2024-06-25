@@ -149,14 +149,14 @@
 ;;; Keyboard for MacOS
 ;; ======================================
 ;; (when my-mactop-p
-;; ;;(when (string= system-name "MacBookAir.local")
-;;   (setq mac-option-modifier 'super)
-;;   (setq mac-command-modifier 'meta))
+;;     (setq mac-option-modifier 'super)
+;;     (setq mac-command-modifier 'meta)
+;;   )
 
 ;; ======================================
 ;;; 단축키 prefix key
 ;; ======================================
-(global-unset-key [f11])  ;remove toggle-frame-fullscreen/MacOS
+(global-unset-key [f11])  ; able expose
 (global-unset-key (kbd "C-x o"))  ;remove  'other-window
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
@@ -306,7 +306,7 @@
   :init
   (recentf-mode 1)
   :custom
-  (recentf-max-saved-items 50))
+  (recentf-max-saved-items 30))
 
 ;; ======================================
 ;;; which-key
@@ -506,6 +506,15 @@
   (pdf-tools-install))
 
 ;; ======================================
+;;; avy
+;; ======================================
+;; 탐색
+(use-package avy
+  :ensure nil
+  :bind ("M-s" . avy-goto-char)
+  )
+
+;; ======================================
 ;;; etc my-custom-fuction
 ;; ======================================
 ;;; 선택한 범위 문자열 → Web 검색(Naver, Google)
@@ -521,21 +530,6 @@
                      (concat "https://www.google.com/search?q="
                              (url-hexify-string query))))))
     (browse-url url)))
-
-;; (global-set-key (kbd "C-c s") 'my/region-search-web)
-
-;;;
-;; (defun search-web (engine query)
-;;   "검색 엔진, 검색"
-;;   (interactive
-;;    (list
-;;     (completing-read "검색 선택 (google/naver): " '("google" "naver"))
-;;     (read-string "검색어 입력: ")))
-;;   (let ((url (cond
-;;                ((string= engine "google") (concat "https://www.google.com/search?q=" (url-hexify-string query)))
-;;                ((string= engine "naver") (concat "https://search.naver.com/search.naver?query=" (url-hexify-string query)))
-;;                (t (error "검색 엔진 err!")))))
-;;     (browse-url url)))
 
 (defun my/insert-today (fm)
   "Inserts today() at point in the specified format."
@@ -564,36 +558,3 @@
     (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
         (set-transparency 75)
       (set-transparency 100))))
-
-;; (defun my/region-colorful (color)
-;;   "선택 텍스트, 색상 COLOR 지정. 저장불가"
-;;   (interactive
-;;    (list (completing-read "Select: "
-;;                           '("red" "blue" "green" "yellow" "orange"))))
-;;   (put-text-property (region-beginning) (region-end) 'font-lock-face `((foreground-color . ,color))))
-
-;;; 버퍼 전체 / 빈 줄 삭제
-;; (defun my/flush-lines-all()
-;;   "Delete blank lines and trailing whitespace."
-;;   (interactive)
-;;   (let ((choice (read-char-choice "Delete blank lines (b) or trailing whitespace (w)? " '(?b ?w))))
-;;     (cond
-;;      ((eq choice ?b) (flush-lines "^\\s-*$" (point-min) (point-max)))  ;줄 끝 공백 + 빈 줄
-;;      ((eq choice ?w) (flush-lines "^$" (point-min) (point-max)))         ;줄 끝 공백
-;;      (t (message "Invalid choice")))))
-
-;;; 선택한 범위내 / 빈 줄 삭제
-;; (defun my/flush-lines-region ()
-;;   "Delete blank lines and trailing whitespace within the region."
-;;   (interactive)
-;;   (let ((start (region-beginning))
-;;         (end (region-end)))
-;;     (save-excursion
-;;       (save-restriction
-;;         (narrow-to-region start end)
-;;         (let ((choice (read-char-choice "Delete blank lines (b) or trailing whitespace (w)? " '(?b ?w))))
-;;           (cond
-;;            ((eq choice ?b) (flush-lines "^\\s-*$" (point-min) (point-max)))  ;줄 끝 공백 + 빈 줄
-;;            ((eq choice ?w) (flush-lines "^$" (point-min) (point-max)))         ;줄 끝 공백
-;;            (t (message "Invalid choice"))))))))
-
