@@ -6,9 +6,9 @@
 (require 'dom)
 
 (defun naver-weather-search ()
-  "도시명 입력 → 네이버 날씨 정보 표시."
+  "사용자로부터 도시명을 입력받아 네이버 날씨 정보를 검색합니다."
   (interactive)
-  (let* ((city (read-string "도시명 입력: "))
+  (let* ((city (read-string "도시명을 입력하세요: "))
          (encoded-city (url-hexify-string city)))
     (url-retrieve
      (format "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%s%%20날씨" encoded-city)
@@ -23,34 +23,42 @@
                     (summary-elem (dom-by-class dom "summary"))
                     (summary (when summary-elem
                                (replace-regexp-in-string "[ \n]" "" (dom-texts (car summary-elem)))))
-                    (dust-elem (dom-by-class dom "item_today"))
-                    (dust-info (when dust-elem
-                                 (split-string (dom-texts (car dust-elem)) "\n" t " ")))
+                    (weather-elem (dom-by-class dom "weather before_slash"))
+                    (weather (when weather-elem
+                               (replace-regexp-in-string "[ \n]" "" (dom-texts (car weather-elem)))))
+                    (dust-elems (dom-by-class dom "today_chart_list"))
+                    (dust-info (when dust-elems
+                                 (cl-remove-duplicates
+                                  (mapcar (lambda (elem)
+                                            (cons (dom-texts (dom-by-class elem "title"))
+                                                  (dom-texts (dom-by-class elem "txt"))))
+                                          dust-elems)
+                                  :test #'equal)))
                     (weekly-forecast (dom-by-class dom "week_item"))
                     (weekly-info (mapcar (lambda (day)
                                            (list (dom-texts (dom-by-class day "date"))
                                                  (dom-texts (dom-by-class day "weather"))
-                                                 (dom-texts (dom-by-class day "temperature_low"))
-                                                 (dom-texts (dom-by-class day "temperature_high"))))
+                                                 (replace-regexp-in-string "최저기온" "" (dom-texts (dom-by-class day "lowest")))
+                                                 (replace-regexp-in-string "최고기온" "" (dom-texts (dom-by-class day "highest")))))
                                          weekly-forecast)))
                (with-current-buffer (get-buffer-create (format "*%s 날씨*" city))
                  (erase-buffer)
-                 (insert (format "%s 날씨 정보:\n\n온도: %s\n날씨: %s\n미세먼지: %s\n초미세먼지: %s\n\n"
+                 (insert (format "%s 날씨 정보:\n\n온도: %s\n날씨: %s … %s\n"
                                  city
                                  (or temperature "정보 없음")
                                  (or summary "정보 없음")
-                                 (or (nth 0 dust-info) "정보 없음")
-                                 (or (nth 1 dust-info) "정보 없음")))
-                 (insert "주간 날씨:\n")
+                                 (or weather "정보 없음")))
+                 (dolist (dust dust-info)
+                   (insert (format "%s: %s\n" (car dust) (cdr dust))))
+                 (insert "\n주간 날씨:\n")
                  (dolist (day weekly-info)
                    (insert (format "%s: %s, 기온 %s/%s\n"
                                    (nth 0 day) (nth 1 day) (nth 2 day) (nth 3 day))))
-		 (goto-char (point-min)) ; 버퍼의 첫 부분으로 이동
                  (local-set-key (kbd "q") 'quit-window)
                  (pop-to-buffer (current-buffer))))
            (error
             (message "날씨 데이터 파싱 중 오류 발생: %s" err)))))
-     (list city)  ; city 변수를 람다 함수의 인자로 전달
+     (list city)
      t)))
 
 ;; ======================================
