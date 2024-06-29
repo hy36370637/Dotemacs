@@ -6,7 +6,7 @@
 (require 'dom)
 
 (defun naver-weather-search ()
-  "사용자로부터 도시명을 입력받아 네이버 날씨 정보를 검색합니다."
+  "도시명 입력 → 네이버 날씨 정보 표시."
   (interactive)
   (let* ((city (read-string "도시명 입력: "))
          (encoded-city (url-hexify-string city)))
@@ -45,6 +45,7 @@
                  (dolist (day weekly-info)
                    (insert (format "%s: %s, 기온 %s/%s\n"
                                    (nth 0 day) (nth 1 day) (nth 2 day) (nth 3 day))))
+		 (goto-char (point-min)) ; 버퍼의 첫 부분으로 이동
                  (local-set-key (kbd "q") 'quit-window)
                  (pop-to-buffer (current-buffer))))
            (error
