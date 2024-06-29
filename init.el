@@ -67,15 +67,16 @@
 ;; ======================================
 ;;; 작은 설정 들
 ;; ======================================
-;; defult-directory
-;; (setq default-directory (if my-mactop-p "~/Dropbox/Docs/org/" "~/Docs/org/")
-;;       temporary-file-directory (if my-mactop-p "~/Dropbox/Docs/tmpdir/" "~/Docs/tmpdir/"))
 (setq default-directory  "~/Docs/org/")
 (setq temporary-file-directory "~/Docs/tmpdir/")
 (setq make-backup-files nil)
 (setq kill-whole-line 1)
 (setq search-highlight t)
 ;;      display-time-format "%b-%d(%a) %H:%M")
+;;; Scroll setting
+(setq scroll-margin 7)
+(setq scroll-preserve-screen-position t)
+(setq scroll-conservatively 101)
 
 ;; ======================================
 ;;; 자잘한 필수 모드
@@ -145,6 +146,7 @@
 (require 'my-play-streaming)                 ; radio 청취
 (require 'my-emacs-super-keys)            ; minor. super key
 (require 'my-completion)                       ;completion
+(require 'my-web-search)
 
 ;; ======================================
 ;;; Keyboard for MacOS
@@ -169,7 +171,8 @@
   "m" 'modus-themes-toggle
   "r" 'toggle-my-reading-mode
   "s" 'my/region-search-web
-  "t" 'set-transparency)
+  "t" 'set-transparency
+  "w" 'naver-weather-search)
 
 (keymap-set global-map "s-t" my-prefix-map)
 ;; --------------------------------------------------------
@@ -283,6 +286,15 @@
 	  (holiday-fixed 12 22 "동지")
 	  (holiday-fixed 1 5 "소한")
 	  (holiday-fixed 1 20 "대한")))
+;; 기본 휴일 설정 초기화
+(setq holiday-general-holidays nil)
+(setq holiday-local-holidays nil)
+(setq holiday-other-holidays nil)
+(setq holiday-christian-holidays nil)
+(setq holiday-hebrew-holidays nil)
+(setq holiday-islamic-holidays nil)
+(setq holiday-bahai-holidays nil)
+(setq holiday-oriental-holidays nil)
 (setq calendar-mark-holidays-flag t))	;holiday display
 (setq calendar-holidays (append my-holidays 24solar-holidays)))
 
@@ -316,8 +328,8 @@
   :ensure nil
   :init (which-key-mode)
   :config
-  (setq which-key-idle-delay 0.2)
-  (which-key-setup-side-window-right))
+  (setq which-key-idle-delay 0.2))
+;;   (which-key-setup-side-window-right))
 
 ;; ======================================
 ;;; vertico
@@ -509,20 +521,6 @@
 ;; ======================================
 ;;; etc my-custom-fuction
 ;; ======================================
-;;; 선택한 범위 문자열 → Web 검색(Naver, Google)
-(defun my/region-search-web (start end)
-  "Search selected text on Naver or Google."
-  (interactive "r")
-  (let* ((query (buffer-substring-no-properties start end))
-         (search-engine (completing-read "Choose search engine: " '("Naver" "Google")))
-         (url (cond ((string-equal search-engine "Naver")
-                     (concat "https://search.naver.com/search.naver?query="
-                             (url-hexify-string query)))
-                    ((string-equal search-engine "Google")
-                     (concat "https://www.google.com/search?q="
-                             (url-hexify-string query))))))
-    (browse-url url)))
-
 (defun my/insert-today (fm)
   "Inserts today() at point in the specified format."
   (interactive
