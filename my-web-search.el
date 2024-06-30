@@ -8,7 +8,7 @@
 (defun naver-weather-search ()
   "사용자로부터 도시명을 입력받아 네이버 날씨 정보를 검색합니다."
   (interactive)
-  (let* ((city (read-string "도시명을 입력하세요: "))
+  (let* ((city (read-string "도시명 입력하세요: "))
          (encoded-city (url-hexify-string city)))
     (url-retrieve
      (format "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%s%%20날씨" encoded-city)
@@ -34,6 +34,11 @@
                                                   (dom-texts (dom-by-class elem "txt"))))
                                           dust-elems)
                                   :test #'equal)))
+                    (sunset-elem (dom-by-class dom "item_today type_sun"))
+                    (sunset-info (when sunset-elem
+                                   (format "%s %s"
+                                           (dom-texts (dom-by-class sunset-elem "title"))
+                                           (dom-texts (dom-by-class sunset-elem "txt")))))
                     (weekly-forecast (dom-by-class dom "week_item"))
                     (weekly-info (mapcar (lambda (day)
                                            (list (dom-texts (dom-by-class day "date"))
@@ -48,12 +53,15 @@
                                  (or temperature "정보 없음")
                                  (or summary "정보 없음")
                                  (or weather "정보 없음")))
+                 (when sunset-info
+                   (insert (format "%s\n" sunset-info)))
                  (dolist (dust dust-info)
                    (insert (format "%s: %s\n" (car dust) (cdr dust))))
                  (insert "\n주간 날씨:\n")
                  (dolist (day weekly-info)
-                   (insert (format "%s: %s, 기온 %s/%s\n"
+                   (insert (format "%s: %s 기온 %s/%s\n"
                                    (nth 0 day) (nth 1 day) (nth 2 day) (nth 3 day))))
+		 (goto-char (point-min)) ; 버퍼의 첫 부분으로 이동
                  (local-set-key (kbd "q") 'quit-window)
                  (pop-to-buffer (current-buffer))))
            (error
