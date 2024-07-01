@@ -328,8 +328,8 @@
   :ensure nil
   :init (which-key-mode)
   :config
-  (setq which-key-idle-delay 0.2))
-;;   (which-key-setup-side-window-right))
+  (setq which-key-idle-delay 0.2)
+  (which-key-setup-side-window-right))
 
 ;; ======================================
 ;;; vertico
