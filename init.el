@@ -163,9 +163,10 @@
 (global-unset-key (kbd "C-x o"))  ;remove  'other-window
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "M-o") 'other-window)
-;;; 사용자 편의
+;;; 
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
+  "c" 'select-special-character
   "d" 'my/insert-today
   "k" 'keycast-mode-line-mode
   "m" 'modus-themes-toggle
@@ -328,8 +329,8 @@
   :ensure nil
   :init (which-key-mode)
   :config
-  (setq which-key-idle-delay 0.2)
-  (which-key-setup-side-window-right))
+  (setq which-key-idle-delay 0.2))
+;;  (which-key-setup-side-window-right))
 
 ;; ======================================
 ;;; vertico
