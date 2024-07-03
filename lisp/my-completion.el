@@ -83,10 +83,12 @@
 ;;; Hunspell 설정
 ;; ======================================-
 ;; 한글 맞춤법
-(setq ispell-program-name "hunspell")
-(setq ispell-local-dictionary "ko_KR")
-(setq ispell-local-dictionary-alist
-      '(("ko_KR" "[가-힣]" "[^가-힣]" "[-']" nil ("-d" "ko_KR") nil utf-8)))
+(when (equal (system-name) "MacBookAir.local")
+  ;; Hunspell 설정
+  (setq ispell-program-name "hunspell")
+  (setq ispell-local-dictionary "ko_KR")
+  (setq ispell-local-dictionary-alist
+        '(("ko_KR" "[가-힣]" "[^가-힣]" "[-']" nil ("-d" "ko_KR") nil utf-8))))
 
 ;; 맞춤법 검사 함수 정의 - 수동 검사
 (defun my-hunspell-check ()
