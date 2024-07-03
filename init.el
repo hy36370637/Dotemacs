@@ -168,6 +168,7 @@
   :doc "my prefix map."
   "c" 'select-special-character
   "d" 'my/insert-today
+  "h" 'my-hunspell-check
   "k" 'keycast-mode-line-mode
   "m" 'modus-themes-toggle
   "r" 'toggle-my-reading-mode
