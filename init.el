@@ -225,83 +225,6 @@
   (set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")))
 
 ;; ======================================
-;;; korean calendar
-;; ======================================
-(use-package calendar
-  :config  
-  (setq calendar-week-start-day 0
-	calendar-day-name-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
-;;	calendar-day-header-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
-        calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월" "10월" "11월" "12월"])
-
-;;; calendar layout 보정. D2coding size
-(defun cal-fixLayout ()
-  (face-remap-add-relative 'default '(:family "Noto Sans Mono CJK KR" :height 160)))           
-(add-hook 'calendar-mode-hook 'cal-fixLayout)
-
-;; ======================================
-;;; holidays
-;; ======================================
-(use-package holidays
-  :config
-  (setq my-holidays			;공휴일+생일
-	'((holiday-fixed 1 1 "새해")
-	  (holiday-chinese  1  1 "설날")
-	  (holiday-fixed 1 10 "딸 생일")
-	  (holiday-fixed 3 1 "삼일절")
-	  (holiday-fixed 3 19 "결혼일")
-	  (holiday-chinese  4  8 "석탄일")
-	  (holiday-fixed 5 5 "어린이날")
-	  (holiday-fixed 6 6 "현충일")
-	  (holiday-fixed 6 10 "아들생일")
-	  (holiday-fixed 7 17 "제헌절")
-	  (holiday-fixed 8 15 "광복절")
-	  (holiday-chinese  8 15 "추석")
-	  (holiday-fixed 10 3 "개천절")
-	  (holiday-fixed 10 9 "한글날")
-	  (holiday-fixed 12 25 "성탄절")))
-  
-(setq 24solar-holidays			;24절기
-	'((holiday-fixed 2 4 "입춘(새봄)")
-	  (holiday-fixed 2 19 "우수(눈녹음)")
-	  (holiday-fixed 3 5 "경칩(겨울잠 깸)")
-	  (holiday-fixed 3 20 "춘분(낮 길어짐)")
-	  (holiday-fixed 4 5 "청명")
-	  (holiday-fixed 4 20 "곡우(봄비)")
-	  (holiday-fixed 5 5 "입하")
-	  (holiday-fixed 5 21 "소만(볕 잘듬)")
-	  (holiday-fixed 6 6 "망종(씨앗)")
-	  (holiday-fixed 6 21 "하지")
-	  (holiday-fixed 7 7 "소서(더위 시작)")
-	  (holiday-fixed 7 22 "대서(가장 더움)")
-	  (holiday-fixed 8 7 "입추")
-	  (holiday-fixed 8 23 "처서(가을바람)")
-	  (holiday-fixed 9 7 "백로(이슬)")
-	  (holiday-fixed 9 22 "추분(밤 길이)")
-	  (holiday-fixed 10 8 "한로(이슬)")
-	  (holiday-fixed 10 23 "상강(서리)")
-	  (holiday-fixed 11 7 "입동")
-	  (holiday-fixed 11 22 "소설(눈 시작)")
-	  (holiday-fixed 12 7 "대설(눈 많음)")
-	  (holiday-fixed 12 22 "동지")
-	  (holiday-fixed 1 5 "소한")
-	  (holiday-fixed 1 20 "대한")))
-;; 기본 휴일 설정 초기화
-(setq holiday-general-holidays nil)
-(setq holiday-local-holidays nil)
-(setq holiday-other-holidays nil)
-(setq holiday-christian-holidays nil)
-(setq holiday-hebrew-holidays nil)
-(setq holiday-islamic-holidays nil)
-(setq holiday-bahai-holidays nil)
-(setq holiday-oriental-holidays nil)
-(setq calendar-mark-holidays-flag t))	;holiday display
-(setq calendar-holidays (append my-holidays 24solar-holidays)))
-
-(custom-set-faces
-  '(holiday ((t (:foreground "red" :weight bold)))))
-
-;; ======================================
 ;;; helpful
 ;; ======================================
 (use-package helpful
@@ -392,8 +315,8 @@
 (use-package consult-dir
   :ensure t
   :bind (("C-c r d" . consult-dir)
-         :map vertico-map
-         ("C-c r d" . consult-dir)))
+  :map vertico-map
+  ("C-c r d" . consult-dir)))
 
 ;; ======================================
 ;;; embark
@@ -549,3 +472,4 @@
     (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
         (set-transparency 75)
       (set-transparency 100))))
+
