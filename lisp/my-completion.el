@@ -60,8 +60,7 @@
   (setq save-abbrevs 'silently)        ;; save abbrevs when files are saved
   (abbrev-table-put global-abbrev-table :regexp "\\(?:^\\|[\t\s]+\\)\\(?1:[:;_].*\\|.*\\)")
   (define-abbrev-table 'global-abbrev-table 
-    '( ("ldot"        " ……")
-       ("notosans"     "Noto Sans CJK KR")
+    '(("notosans"     "Noto Sans CJK KR")
        ("notosansmono"   "Noto Sans Mono CJK KR" )
        ("notoserif"      "Noto Serif CJK KR")
        ("hcrbatang"    "HCRBatangLVT")
@@ -71,12 +70,14 @@
        ("e_q" "#+end_quote")
        )))
 
+;; =======================================
+;;; 특수문자 입력
+;; ======================================-
 (defun select-special-character ()
   "Prompt the user to select a special character and insert it at point."
   (interactive)
-  (let ((characters '("·" "→" "「」" "※")))
-    (insert (completing-read "Select special character: " characters))))
-
+  (let ((ch '("·" "→" "「」" "※" "…" "―")))
+    (insert (completing-read "문자 선택: " ch))))
 
 
 

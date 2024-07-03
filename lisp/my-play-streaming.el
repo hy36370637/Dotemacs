@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 ;; ======================================
 ;;; stream Radio
 ;; --------------------------------------
@@ -7,6 +8,7 @@
 ;; I'm using the Lubuntu distribution.
 ;; I used ChatGPT, and distribution is free.
 ;; /emacs/lisp/my-play-streaming.el
+
 (defvar stream-process nil
   "Variable to store the VLC process.")
 
@@ -16,8 +18,7 @@
 (defun get-mmslist-file-path ()
   "Get the file path for the mmslist.txt file."
   (if my-mactop-p
-      "~/Dropbox/emacs/mmslist.txt"
-    "~/emacs/mmslist.txt"))
+      "~/Dropbox/emacs/lisp/mmslist.txt"))
 
 (defun toggle-streaming ()
   "Toggle streaming on/off."

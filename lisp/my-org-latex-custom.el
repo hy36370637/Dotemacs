@@ -4,6 +4,7 @@
 ;; --------------------------------------
 ;; org-mode export → LaTeX, PDF
 ;; emacs/lisp/my-org-latex-custom.el
+
 (defun latex-text-color (text color)
   "Return LaTeX text with specified color."
   (format "\\textcolor{%s}{%s}" color text))

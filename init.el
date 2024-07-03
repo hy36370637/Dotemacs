@@ -216,14 +216,12 @@
 ;; ======================================
 (when (display-graphic-p)
 ;;(set-frame-font "Noto Sans Mono CJK KR")
-(set-face-attribute 'default nil
-		    :family "Noto Sans CJK KR"    ;Hack, Menlo;Noto Sans CJK KR
-		    :height 160)
-(set-face-attribute 'fixed-pitch nil
-		    :family "Noto Sans Mono CJK KR")
-(set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
-;;(when (display-graphic-p)
-(set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")))
+  (set-face-attribute 'default nil
+		      :family "Noto Sans CJK KR"    ;Hack, Menlo;Noto Sans CJK KR
+		      :height 160)
+  (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
+  (set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
+  (set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")))
 
 ;; ======================================
 ;;; korean calendar
@@ -327,10 +325,11 @@
 ;; ======================================
 (use-package which-key
   :ensure nil
-  :init (which-key-mode)
+  :init
+  (which-key-mode)
   :config
+  ;; (which-key-setup-side-window-right)
   (setq which-key-idle-delay 0.2))
-;;  (which-key-setup-side-window-right))
 
 ;; ======================================
 ;;; vertico

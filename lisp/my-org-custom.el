@@ -5,15 +5,14 @@
 ;; /emacs/lisp/my-org-custom.el
 ;; Key bindings
 (use-package org
+  :ensure nil
   :bind
   (("M-n" . outline-next-visible-heading)
    ("M-p" . outline-previous-visible-heading)
    ("C-c l" . org-store-link)
-   ("C-c a" . org-agenda)
    ("C-c c" . org-capture))
   :config
   (setq org-directory (expand-file-name "~/Docs/org/"))
-  (setq org-agenda-files '("Tasks.org" "Daily.org"))
   ;;  (setq org-startup-indented nil)                 ;indent-mode enable
   ;; hard indent
   (setq org-adapt-indentation t)		;heading 이하 들여쓰기
@@ -49,15 +48,21 @@
 ;; ======================================
 ;;; org-agenda
 ;; ======================================
-(setq org-agenda-prefix-format
-      '((agenda . " %t %s")  ;" %t %-12:c%?-12t% s"
-        (timeline . "  % s")
-        (todo . " %i %-12:c")
-        (tags . " %i %-12:c")
-        (search . " %i %-12:c")))
-(setq org-agenda-format-date "%Y-%m-%d (%a)")  ; 날자 포맷. 가독성 높힘
-(setq org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done)) ;완료항목 hidden
-(setq org-agenda-include-diary t)	;holidays 포함
+(use-package org
+  :ensure nil
+  :bind
+  ("C-c a" . org-agenda)
+  :config
+  (setq org-agenda-files '("Tasks.org" "Daily.org"))
+  (setq org-agenda-prefix-format
+	'((agenda . " %t %s")  ;" %t %-12:c%?-12t% s"
+          (timeline . "  % s")
+          (todo . " %i %-12:c")
+          (tags . " %i %-12:c")
+          (search . " %i %-12:c")))
+  (setq org-agenda-format-date "%Y-%m-%d (%a)")  ; 날자 포맷. 가독성 높힘
+  (setq org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done)) ;완료항목 hidden
+  (setq org-agenda-include-diary t))	;holidays 포함
 
 ;; ======================================
 ;;; org-bullets
@@ -84,4 +89,7 @@
 
 (global-set-key (kbd "C-0") 'org-custom-action)
 
+
+
+;;; end here
 (provide 'my-org-custom)

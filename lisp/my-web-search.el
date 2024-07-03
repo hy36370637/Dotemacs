@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t; -*-
+1;;; -*- lexical-binding: t; -*-
 ;; =======================================
 ;;; Naver 날씨정보
 ;; ======================================-
@@ -48,7 +48,7 @@
                                          weekly-forecast)))
                (with-current-buffer (get-buffer-create (format "*%s 날씨*" city))
                  (erase-buffer)
-                 (insert (format "%s 날씨 정보:\n\n온도: %s\n날씨: %s … %s\n"
+                 (insert (format "%s 날씨 정보\n -----\n온도: %s\n날씨: %s … %s\n"
                                  city
                                  (or temperature "정보 없음")
                                  (or summary "정보 없음")
@@ -57,7 +57,7 @@
                    (insert (format "%s\n" sunset-info)))
                  (dolist (dust dust-info)
                    (insert (format "%s: %s\n" (car dust) (cdr dust))))
-                 (insert "\n주간 날씨:\n")
+                 (insert "\n주간 날씨 :\n")
                  (dolist (day weekly-info)
                    (insert (format "%s: %s 기온 %s/%s\n"
                                    (nth 0 day) (nth 1 day) (nth 2 day) (nth 3 day))))
@@ -84,6 +84,7 @@
                      (concat "https://www.google.com/search?q="
                              (url-hexify-string query))))))
     (browse-url url)))
+
 
 
 
