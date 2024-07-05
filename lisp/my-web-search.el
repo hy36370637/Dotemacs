@@ -85,6 +85,19 @@
                              (url-hexify-string query))))))
     (browse-url url)))
 
+;; ======================================
+;;; 골프 명언
+;; ======================================
+(defun show-random-golf-quote ()
+  "Display a random 골프 명언"
+  (interactive)
+  (let* ((file-path "~/Dropbox/emacs/lisp/gQuote.txt") ;골프 명언 파일
+         (quotes (with-temp-buffer
+                   (insert-file-contents file-path)
+                   (split-string (buffer-string) "\n" t)))
+         (random-quote (nth (random (length quotes)) quotes)))
+;;    (setq frame-title-format random-quote) ;display title bar 
+    (message "%s" random-quote))) ; display minibuffer
 
 
 
