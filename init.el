@@ -168,7 +168,8 @@
   :doc "my prefix map."
   "c" 'select-special-character
   "d" 'my/insert-today
-  "h" 'my-hunspell-check
+  "g" 'show-random-golf-quote   ;골프 명언
+  "h" 'my-hunspell-check	;맞춤법
   "k" 'keycast-mode-line-mode
   "m" 'modus-themes-toggle
   "r" 'toggle-my-reading-mode
