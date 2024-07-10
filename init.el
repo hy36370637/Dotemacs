@@ -140,12 +140,12 @@
 ;;   (add-to-list 'load-path "~/emacs/lisp/"))
 (add-to-list 'load-path "~/emacs/lisp/")
 (require 'my-org-custom)                       ; org-mode
-(require 'my-org-latex-custom)            ; org export pdf
+;; (require 'my-org-latex-custom)            ; org export pdf
 (require 'my-dired-custom)                    ; dired
 (require 'my-reading-mode-custom)   ; reading mode
 (require 'my-play-streaming)                 ; radio 청취
 (require 'my-emacs-super-keys)            ; minor. super key
-(require 'my-completion)                       ;completion
+(require 'my-completion)                        ; completion
 (require 'my-web-search)
 
 ;; ======================================
@@ -168,13 +168,13 @@
   :doc "my prefix map."
   "c" 'select-special-character
   "d" 'my/insert-today
-  "g" 'show-random-golf-quote   ;골프 명언
+  ;; "g" 'show-random-golf-quote   ;골프 명언
   "h" 'my-hunspell-check	;맞춤법
   "k" 'keycast-mode-line-mode
   "m" 'modus-themes-toggle
   "r" 'toggle-my-reading-mode
   "s" 'my/region-search-web
-  "t" 'set-transparency
+  ;; "t" 'set-transparency
   "w" 'naver-weather-search)
 
 (keymap-set global-map "s-t" my-prefix-map)
@@ -435,13 +435,13 @@
 ;;; pdf-view, tools
 ;; ======================================
 ;; only linux
-(use-package pdf-tools
-  :ensure nil
-  :if my-laptop-p 
-  :mode ("\\.pdf\\'" . pdf-view-mode) ; Automatically open PDFs in pdf-view-mode
-  :config
-  (setq pdf-view-display-size 'fit-width) ; Set the default zoom level
-  (pdf-tools-install))
+;; (use-package pdf-tools
+;;   :ensure nil
+;;   :if my-laptop-p 
+;;   :mode ("\\.pdf\\'" . pdf-view-mode) ; Automatically open PDFs in pdf-view-mode
+;;   :config
+;;   (setq pdf-view-display-size 'fit-width) ; Set the default zoom level
+;;   (pdf-tools-install))
 
 ;; ======================================
 ;;; etc my-custom-fuction
@@ -458,19 +458,19 @@
     (insert (format-time-string format-string))))
 
 ;; ;; 배경 투명 toggle
-(defun set-transparency (&optional alpha-level)
-  "Set the transparency of the Emacs frame."
-  (interactive "P")
-  (setq alpha-level (if alpha-level
-                        (prefix-numeric-value alpha-level)
-                      75)) ;; 기본값 설정
-  (set-frame-parameter (selected-frame) 'alpha (cons alpha-level alpha-level)))
+;; (defun set-transparency (&optional alpha-level)
+;;   "Set the transparency of the Emacs frame."
+;;   (interactive "P")
+;;   (setq alpha-level (if alpha-level
+;;                         (prefix-numeric-value alpha-level)
+;;                       75)) ;; 기본값 설정
+;;   (set-frame-parameter (selected-frame) 'alpha (cons alpha-level alpha-level)))
 
-(defun toggle-transparency ()
-  "Toggle transparency of the Emacs frame."
-  (interactive)
-  (let ((current-alpha (frame-parameter nil 'alpha)))
-    (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
-        (set-transparency 75)
-      (set-transparency 100))))
+;; (defun toggle-transparency ()
+;;   "Toggle transparency of the Emacs frame."
+;;   (interactive)
+;;   (let ((current-alpha (frame-parameter nil 'alpha)))
+;;     (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
+;;         (set-transparency 75)
+;;       (set-transparency 100))))
 
