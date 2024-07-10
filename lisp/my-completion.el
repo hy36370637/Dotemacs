@@ -83,8 +83,9 @@
 ;;; Hunspell 설정
 ;; ======================================-
 ;; 한글 맞춤법
-(when (equal (system-name) "MacBookAir.local")
-  ;; Hunspell 설정
+(use-package ispell
+  :if my-mactop-p
+  :config
   (setq ispell-program-name "hunspell")
   (setq ispell-local-dictionary "ko_KR")
   (setq ispell-local-dictionary-alist
