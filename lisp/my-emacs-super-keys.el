@@ -2,18 +2,18 @@
 ;;; 자주 사용 → Super key 할당 → minor mode
 ;;;  I was inspired by the https://protesilaos.com
 ;;; unset-super-key
-(global-unset-key (kbd "s-t"))    ; set font
+;; (global-unset-key (kbd "s-t"))    ; set font
 ;; (global-unset-key (kbd "s-c"))    ; Copy
-(global-unset-key (kbd "s-e"))    ; isearch-yank-kill
-(global-unset-key (kbd "s-f"))     ; I-search forward
-(global-unset-key (kbd "s-g"))    ;
-(global-unset-key (kbd "s-o"))    ;
+;; (global-unset-key (kbd "s-e"))    ; isearch-yank-kill
+;; (global-unset-key (kbd "s-f"))     ; I-search forward
+;; (global-unset-key (kbd "s-g"))    ;
+;; (global-unset-key (kbd "s-o"))    ;
 ;; (global-unset-key (kbd "s-p"))    ; ns-print-buffer
-(global-unset-key (kbd "s-l"))     ; goto-line
+;; (global-unset-key (kbd "s-l"))     ; goto-line
 ;; (global-unset-key (kbd "s-m"))     ; 
-(global-unset-key (kbd "s-n"))    ; make-frame
+;; (global-unset-key (kbd "s-n"))    ; make-frame
 ;; (global-unset-key (kbd "s-x"))     ; kill-region
-(global-unset-key (kbd "s-z"))     ; undo(C-/, C-x u)
+;; (global-unset-key (kbd "s-z"))     ; undo(C-/, C-x u)
 ;;; 본래 할당키 목록
 ;; "s-w" delete-frame, "s-q" save-buffers-kill-emacs, "s-t" unbind, "s-y" ns-paste-secondary, "s-u" revert-buffer, "s-i" unbind, "s-o" other-window, "s-p" ns-print-buffer, "s-a" mark-whole-buffer, "s-s" save-buffer, "s-d" consult-dir, "s-f" toggle-frame-fullscreen, "s-g" consult-grep, "s-;" unbind, "s-'" next-window-any-frame, "s-z" unbind, "s-x" unbind,  "s-v" yank, "s-b" switch-to-buffer, "s-n" make-frame, "s-m" my-prefix-map, "s-," unbind, "s-." unbind, "s-/" undo-redo
 
