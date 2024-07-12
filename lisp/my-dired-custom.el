@@ -80,12 +80,12 @@
 ;;; dired-narrow
 ;; --------------------------------------
 ;; Dired 모드에서 파일 목록 필터링
-;; (use-package dired-narrowA
-;;   :ensure t
-;;   :after dired
-;;   :bind
-;;   (:map dired-mode-map
-;;         ("/" . dired-narrow)))
+(use-package dired-narrowA
+  :ensure t
+  :after dired
+  :bind
+  (:map dired-mode-map
+        ("/" . dired-narrow)))
 
 ;; ======================================
 ;; dired-subtree
