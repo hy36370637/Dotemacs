@@ -140,7 +140,6 @@
 ;;   (add-to-list 'load-path "~/emacs/lisp/"))
 (add-to-list 'load-path "~/emacs/lisp/")
 (require 'my-org-custom)                       ; org-mode
-;; (require 'my-org-latex-custom)            ; org export pdf
 (require 'my-dired-custom)                    ; dired
 (require 'my-reading-mode-custom)   ; reading mode
 (require 'my-play-streaming)                 ; radio 청취
@@ -159,15 +158,16 @@
 ;; ======================================
 ;;; 단축키 prefix key
 ;; ======================================
-(global-unset-key [f11])  ; able expose
+(global-unset-key [f11])  ; able expose / MacOS
 (global-unset-key (kbd "C-x o"))  ;remove  'other-window
 (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
+(global-set-key (kbd "C-x C-r") 'restart-emacs)  ;emacs 29
 (global-set-key (kbd "M-o") 'other-window)
 ;;; 
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
   "c" 'select-special-character
-  "d" 'my/insert-today
+  ;; "d" 'my/insert-today
   ;; "g" 'show-random-golf-quote   ;골프 명언
   "h" 'my-hunspell-check	;맞춤법
   "k" 'keycast-mode-line-mode
@@ -216,14 +216,15 @@
 ;; ======================================
 ;;; 글꼴 fonts
 ;; ======================================
-(when (display-graphic-p)
-;;(set-frame-font "Noto Sans Mono CJK KR")
+;; (when (display-graphic-p)
+;;; (set-frame-font "Noto Sans Mono CJK KR")
   (set-face-attribute 'default nil
 		      :family "Noto Sans CJK KR"    ;Hack, Menlo;Noto Sans CJK KR
 		      :height 160)
   (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
   (set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
-  (set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")))
+(set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR"))
+;; )
 
 ;; ======================================
 ;;; helpful
@@ -249,7 +250,7 @@
 ;;; which-key
 ;; ======================================
 (use-package which-key
-  :ensure nil
+  :ensure nil   ; built into Emacs 30
   :init
   (which-key-mode)
   :config
@@ -303,7 +304,7 @@
   :bind
   (("C-s" . consult-line)
    ("C-x b" . consult-buffer)
-   ("C-x C-r" . consult-recent-file)
+;;   ("C-x C-r" . consult-recent-file)
    ("C-c r b" . consult-bookmark)
    ("C-c r o" . consult-outline)
    ("C-c r t" . consult-theme))
@@ -374,8 +375,8 @@
 (use-package nerd-icons-dired
   :after dired
   :if (display-graphic-p)
-  :config
-(add-hook 'dired-mode-hook 'nerd-icons-dired-mode))
+  :hook
+  (dired-mode . nerd-icons-dired-mode))
 
 ;; (use-package nerd-icons-completion
 ;;   :after completion
@@ -396,22 +397,26 @@
 ;; ======================================
 ;; 단순 버젼 original
 ;; (setq-default mode-line-format nil)
-(setq-default mode-line-format
-	      '("%e "
-		mode-line-front-space
-		(:eval (if (string= current-input-method "korean-hangul")
-				       "KO"
-				     "EN"))
-		" Ⓗ "
-		mode-line-buffer-identification       
-		mode-line-frame-identification
-		" Ⓨ "
-		mode-line-modes
-		mode-line-format-right-align  ;; emacs 30
-		mode-line-position
-		"Ⓚ "
-		mode-line-misc-info))
-
+(use-package emacs
+  :init
+  ;; (setq mode-line-compact nil) ; Emacs 28
+  ;; (setq mode-line-right-align-edge 'right-margin) ; Emacs 30
+  (setq-default mode-line-format
+		'("%e "
+		  mode-line-front-space
+		  (:eval (if (string= current-input-method "korean-hangul")
+			     "KO"
+			   "EN"))
+		  " Ⓗ "
+		  mode-line-buffer-identification       
+		  mode-line-frame-identification
+		  " Ⓨ "
+		  mode-line-modes
+		  mode-line-format-right-align  ;; emacs 30
+		  mode-line-position
+		  "Ⓚ "
+		  mode-line-misc-info))
+ )
 ;; ======================================
 ;;; keycast
 ;; ======================================
@@ -444,18 +449,25 @@
 ;;   (pdf-tools-install))
 
 ;; ======================================
+;;; balnced- windows
+;; ======================================
+(use-package balanced-windows)  ; C-x +
+  ;; :config
+  ;; (balanced-windows-mode))
+
+;; ======================================
 ;;; etc my-custom-fuction
 ;; ======================================
-(defun my/insert-today (fm)
-  "Inserts today() at point in the specified format."
-  (interactive
-   (list (completing-read "Select: " '("dash" "dot"))))
-  (let ((format-string
-         (cond
-          ((string= fm "dash") "%Y-%m-%d")
-          ((string= fm "dot") "%Y.%m.%d")
-          (t (error "Invalid date format specified")))))
-    (insert (format-time-string format-string))))
+;; (defun my/insert-today (fm)
+;;   "Inserts today() at point in the specified format."
+;;   (interactive
+;;    (list (completing-read "Select: " '("dash" "dot"))))
+;;   (let ((format-string
+;;          (cond
+;;           ((string= fm "dash") "%Y-%m-%d")
+;;           ((string= fm "dot") "%Y.%m.%d")
+;;           (t (error "Invalid date format specified")))))
+;;     (insert (format-time-string format-string))))
 
 ;; ;; 배경 투명 toggle
 ;; (defun set-transparency (&optional alpha-level)
@@ -474,3 +486,4 @@
 ;;         (set-transparency 75)
 ;;       (set-transparency 100))))
 
+;;;;
