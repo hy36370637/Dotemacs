@@ -40,7 +40,7 @@
 ;; ======================================
 (defvar my-laptop-p (eq system-type 'gnu/linux))
 (defvar my-mactop-p (eq system-type 'darwin))
-;; (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
+(defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
 ;; ======================================
 ;;; MacOS keyboard
@@ -402,21 +402,21 @@
   ;; (setq mode-line-compact nil) ; Emacs 28
   ;; (setq mode-line-right-align-edge 'right-margin) ; Emacs 30
   (setq-default mode-line-format
-		'("%e "
-		  mode-line-front-space
-		  (:eval (if (string= current-input-method "korean-hangul")
-			     "KO"
-			   "EN"))
-		  " Ⓗ "
-		  mode-line-buffer-identification       
-		  mode-line-frame-identification
-		  " Ⓨ "
-		  mode-line-modes
-		  mode-line-format-right-align  ;; emacs 30
-		  mode-line-position
-		  "Ⓚ "
-		  mode-line-misc-info))
- )
+	      '("%e "
+		mode-line-front-space
+		(:eval (if (string= current-input-method "korean-hangul")
+			   "KO"
+			 "EN"))
+		" Ⓗ "
+		mode-line-buffer-identification       
+		mode-line-frame-identification
+		" Ⓨ "
+		mode-line-modes
+		mode-line-format-right-align  ;; emacs 30
+		mode-line-position
+		" Ⓚ "
+		mode-line-misc-info)))
+
 ;; ======================================
 ;;; keycast
 ;; ======================================
@@ -454,6 +454,17 @@
 (use-package balanced-windows)  ; C-x +
   ;; :config
   ;; (balanced-windows-mode))
+
+;; ======================================
+;;; battery display
+;; ======================================
+(use-package battery
+  :ensure nil 				;built in
+  :if  my-Macbook-p
+  :config
+  (setq battery-status-function 'battery-pmset) ;battery 정보
+  (setq battery-mode-line-format "🅑%p%%  ")
+  (display-battery-mode 1))
 
 ;; ======================================
 ;;; etc my-custom-fuction
