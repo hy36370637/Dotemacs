@@ -22,9 +22,8 @@
   ;; "s-a" #'mark-whole-buffer
     "s-b" #'consult-buffer
     ;; "s-c" #'org-capture
-    ;; "s-d" #'consult-dir
+    "s-d" #'consult-dir
     "s-e" #'eshell
-    "s-f" #'toggle-frame-fullscreen
     "s-g" #'consult-grep
     ;; "s-h" #'ns-do-hide-emacs   ;창 숨기기
     ;; "s-j" #'exchange-point-and-mark(C-x C-x)
@@ -35,8 +34,8 @@
     ;; "s-p" #'my-popmark    ;#'ns-print-buffer
     ;; "s-q" #'save-buffers-kill-emacs  ;quit
     "s-r" #'toggle-streaming
-    ;; "s-t" #'my-prefix-map
     "s-z" #'repeat
+    "s-<return>" #'toggle-frame-fullscreen
     "s-/" #'undo-redo)
 
   (define-minor-mode my-emacs-super-keys-mode  ; minor-mode
