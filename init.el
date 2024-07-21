@@ -174,7 +174,7 @@
   "m" 'modus-themes-toggle
   "r" 'toggle-my-reading-mode
   "s" 'my/region-search-web
-  ;; "t" 'set-transparency
+  "t" 'toggle-transparency
   "w" 'naver-weather-search)
 
 (keymap-set global-map "s-t" my-prefix-map)
@@ -395,17 +395,15 @@
 ;; ======================================
 ;;; modeline
 ;; ======================================
-;; 단순 버젼 original
-;; (setq-default mode-line-format nil)
 (use-package emacs
   :init
   ;; (setq mode-line-compact nil) ; Emacs 28
-  ;; (setq mode-line-right-align-edge 'right-margin) ; Emacs 30
+  (setq mode-line-right-align-edge 'right-margin) ; Emacs 30
   (setq-default mode-line-format
 	      '("%e "
 		mode-line-front-space
 		(:eval (if (string= current-input-method "korean-hangul")
-			   "KO"
+			   "KO" 
 			 "EN"))
 		" Ⓗ "
 		mode-line-buffer-identification       
@@ -449,21 +447,14 @@
 ;;   (pdf-tools-install))
 
 ;; ======================================
-;;; balnced- windows
-;; ======================================
-(use-package balanced-windows)  ; C-x +
-  ;; :config
-  ;; (balanced-windows-mode))
-
-;; ======================================
 ;;; battery display
 ;; ======================================
 (use-package battery
   :ensure nil 				;built in
   :if  my-Macbook-p
-  :config
+  :config 
   (setq battery-status-function 'battery-pmset) ;battery 정보
-  (setq battery-mode-line-format "🅑%p%%  ")
+  (setq battery-mode-line-format "Ⓑ %p%%  ") 
   (display-battery-mode 1))
 
 ;; ======================================
@@ -480,21 +471,21 @@
 ;;           (t (error "Invalid date format specified")))))
 ;;     (insert (format-time-string format-string))))
 
-;; ;; 배경 투명 toggle
-;; (defun set-transparency (&optional alpha-level)
-;;   "Set the transparency of the Emacs frame."
-;;   (interactive "P")
-;;   (setq alpha-level (if alpha-level
-;;                         (prefix-numeric-value alpha-level)
-;;                       75)) ;; 기본값 설정
-;;   (set-frame-parameter (selected-frame) 'alpha (cons alpha-level alpha-level)))
+;;; --------------------------------------------------------
+;;; 배경 투명 toggle
+;;; --------------------------------------------------------
+(defun set-transparency (&optional alpha-level)
+  "Set the transparency of the Emacs frame."
+  (interactive "P")
+  (setq alpha-level (if alpha-level
+                        (prefix-numeric-value alpha-level)
+                      75)) ;; 기본값 설정
+  (set-frame-parameter (selected-frame) 'alpha (cons alpha-level alpha-level)))
 
-;; (defun toggle-transparency ()
-;;   "Toggle transparency of the Emacs frame."
-;;   (interactive)
-;;   (let ((current-alpha (frame-parameter nil 'alpha)))
-;;     (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
-;;         (set-transparency 75)
-;;       (set-transparency 100))))
-
-;;;;
+(defun toggle-transparency ()
+  "Toggle transparency of the Emacs frame."
+  (interactive)
+  (let ((current-alpha (frame-parameter nil 'alpha)))
+    (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
+        (set-transparency 75)
+      (set-transparency 100))))
