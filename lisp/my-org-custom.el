@@ -8,8 +8,7 @@
   :bind
   (("M-n" . outline-next-visible-heading)
    ("M-p" . outline-previous-visible-heading)
-   ("C-c l" . org-store-link)
-   ("C-c c" . org-capture))
+   ("C-c l" . org-store-link))
   :config
   (setq org-directory (expand-file-name "~/Docs/org/"))
   ;;  (setq org-startup-indented nil)                 ;indent-mode enable
@@ -19,7 +18,8 @@
   (setq org-src-preserve-indentation t)
   (setq org-structure-template-alist
         '(("s" . "src")
-          ("e" . "src emacs-lisp")
+          ("S" . "src emacs-lisp")
+	  ("C" . "comment")		; export 제외
           ("v" . "verse")
           ("q" . "quote")))
   :custom
@@ -28,12 +28,6 @@
   (org-log-done 'time)
   (org-image-actual-width '(100))
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
-  (org-capture-templates
-   '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
-     ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
-     ("a" "Assist" table-line (file+headline "aMoney.org" "aMoney")
-      "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
-     ("f" "FarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
   ;; Export settings
   (org-latex-title-command "\\maketitle \\newpage")
   (org-latex-toc-command "\\tableofcontents \\newpage")
@@ -42,6 +36,21 @@
    '("xelatex -interaction nonstopmode -output-directory %o %f"
      "xelatex -interaction nonstopmode -output-directory %o %f"
      "xelatex -interaction nonstopmode -output-directory %o %f")))
+
+;; ======================================
+;;; org-capture
+;; ======================================
+(use-package org-capture
+  :ensure nil
+  :bind ("C-c c" . org-capture)
+  :config
+  (setq org-capture-templates
+   '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
+     ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
+     ("a" "Assist" table-line (file+headline "aMoney.org" "aMoney")
+      "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
+     ("f" "FarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
+  )
 
 ;; ======================================
 ;;; org-agenda
@@ -214,8 +223,8 @@
 ;;       (message "No region selected"))))
 
 ;;; 통합본
-(defun my-org-latex-custom(begin end)
-  "for Org export LaTeX. Text color, sub-Super Script, quote-verse Block"
+(defun my-fonts-latex-custom(begin end)
+  "for export LaTeX. 글자색, 아래·위 첨자"
   (interactive "r")
   (if (use-region-p)
       (let ((choice (read-char-choice "Select action: [c]글자색, [s]아래첨자, [S]위첨자: " '(?c ?s ?S))))
@@ -224,7 +233,30 @@
           (?s (latex-modify-text begin end "_"))
           (?S (latex-modify-text begin end "^")))
     (message "No region selected"))))
-(global-set-key (kbd "C-9") 'my-org-latex-custom)
+(global-set-key (kbd "C-9") 'my-fonts-latex-custom)
+
+;;;;------------------------------------------------------------
+;; 버퍼내 변환 . _ 또는 ^
+;;;;=================
+(defun my-buffer-parens2sub ()
+  "현재 버퍼에서 모든 괄호 쌍을 찾아 변환합니다."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (search-forward "(" nil t)
+      (backward-char 1)
+      ;; 현재 괄호 위치 강조
+      (highlight-regexp (regexp-quote (char-to-string (char-after))))
+      (sit-for 1)  ;; 강조 표시를 1초 동안 유지
+      (unhighlight-regexp (regexp-quote (char-to-string (char-after))))
+      (recenter)  ;; 현재 괄호가 화면의 중앙에 오도록 스크롤
+      (if (y-or-n-p "Transform this parenthesis?")
+          (progn
+            (insert "_{")
+            (forward-sexp 1)
+            (insert "}"))
+        ;; 다음 괄호를 찾기 위해 커서를 앞으로 이동
+        (forward-char 1)))))
 
 
 
