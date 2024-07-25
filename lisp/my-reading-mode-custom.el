@@ -2,7 +2,7 @@
 ;; ======================================
 ;;; view-mode
 ;; ======================================
-;; 읽기 편하게 글씨 확대하고 편집 보호
+;; 글씨 확대, 편집 보호
 ;; /emacs/lisp/my-reading-mode-custom.el
 
 (use-package view
@@ -11,8 +11,8 @@
   (setq view-read-only t)
   :bind
   (:map view-mode-map
-        ("n" . View-scroll-line-forward)
-        ("p" . View-scroll-line-backward)))
+        ("j" . View-scroll-line-forward)
+        ("k" . View-scroll-line-backward)))
 
 ;; ======================================
 ;;; my-reading(view)-mode
