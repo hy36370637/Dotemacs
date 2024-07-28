@@ -12,14 +12,14 @@
   :config
   (setq org-directory (expand-file-name "~/Docs/org/"))
   ;;  (setq org-startup-indented nil)                 ;indent-mode enable
-  ;; hard indent
+  ;;; hard indent
   (setq org-adapt-indentation t)		;heading 이하 들여쓰기
   (setq org-hide-leading-stars t)
   (setq org-src-preserve-indentation t)
   (setq org-structure-template-alist
         '(("s" . "src")
           ("S" . "src emacs-lisp")
-	  ("C" . "comment")		; export 제외
+	  ("C" . "comment")
           ("v" . "verse")
           ("q" . "quote")))
   :custom
@@ -47,8 +47,8 @@
   (setq org-capture-templates
    '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
      ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
-     ("a" "Assist" table-line (file+headline "aMoney.org" "aMoney")
-      "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
+     ;; ("a" "Assist" table-line (file+headline "aMoney.org" "aMoney")
+     ;;  "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
      ("f" "FarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
   )
 
@@ -57,8 +57,7 @@
 ;; ======================================
 (use-package org
   :ensure nil
-  :bind
-  ("C-c a" . org-agenda)
+  :bind ("C-c a" . org-agenda)
   :config
   (setq org-agenda-files '("Tasks.org" "Daily.org"))
   (setq org-agenda-prefix-format
@@ -67,7 +66,7 @@
           (todo . " %i %-12:c")
           (tags . " %i %-12:c")
           (search . " %i %-12:c")))
-  (setq org-agenda-format-date "%Y-%m-%d (%a)")  ; 날자 포맷. 가독성 높힘
+  (setq org-agenda-format-date "%Y-%m-%d (%a)")  ; 날자 포맷. 가독성
   (setq org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done)) ;완료항목 hidden
   (setq org-agenda-include-diary t))	;holidays 포함
 
@@ -79,22 +78,6 @@
   :hook (org-mode . org-bullets-mode)
   :config
   (setq org-bullets-bullet-list '("◉" "◎" "●" "○" "●" "○" "●")))
-
-;; ======================================
-;;; for org edit/custom function
-;; --------------------------------------
-(defun org-custom-action (at)
-  "Perform custom org-mode action based on the numeric ACTION.
-   8: new line, 9: new org-heading, 0: paragraph & org-cycle"
-  (interactive "nEnter action (8: new line, 9: heading, 0: new paragraph): ")
-  (end-of-line)
-  (cond
-   ((= at 8) (newline-and-indent))
-   ((= at 9) (org-insert-heading))
-   ((= at 0) (progn (newline-and-indent) (next-line) (org-cycle)))
-   (t (message "err,, please enter 8, 9, or 0."))))
-
-(global-set-key (kbd "C-0") 'org-custom-action)
 
 ;; ======================================
 ;;; korean calendar
@@ -174,89 +157,82 @@
  '(holiday ((t (:foreground "red" :weight bold)))))
 
 ;; ======================================
-;;; my-latex-custom-function/for org-mode
+;;; for org edit/custom function
 ;; --------------------------------------
+(with-eval-after-load 'org		;in org-mode
+  (global-set-key (kbd "C-0") (lambda () 
+				(interactive)
+				(newline-and-indent)
+				(next-line)
+				(org-cycle)))
+
+  (global-set-key (kbd "C-9") (lambda () 
+				(interactive)
+				(newline-and-indent)))
+
+  (global-set-key (kbd "C-8") (lambda () 
+				(interactive)
+				(org-insert-heading))))
+
+
 ;; org-mode export → LaTeX, PDF
-(defun latex-text-color (text color)
-  "Return LaTeX text with specified color."
-  (format "\\textcolor{%s}{%s}" color text))
+;; (defun latex-text-color (text color)
+;;   "Return LaTeX text with specified color."
+;;   (format "\\textcolor{%s}{%s}" color text))
 
-(defun insert-latex-text-color (begin end)
-  "latex. selected-text color change"
-  (if (use-region-p)
-      (let ((selected-text (buffer-substring-no-properties begin end))
-            (color (read-string "Enter color: ")))
-        (delete-region begin end)
-        (insert (latex-text-color selected-text color)))
-    (message "No region selected")))
+;; (defun insert-latex-text-color (begin end)
+;;   "latex. selected-text color change"
+;;   (if (use-region-p)
+;;       (let ((selected-text (buffer-substring-no-properties begin end))
+;;             (color (read-string "Enter color: ")))
+;;         (delete-region begin end)
+;;         (insert (latex-text-color selected-text color)))
+;;     (message "No region selected")))
 
-(defun latex-modify-text (begin end modifier)
-  "Modify selected text, '_ for subscript and '^ for superscript."
-  (if (use-region-p)
-      (let ((selected-text (buffer-substring-no-properties begin end)))
-        (delete-region begin end)
-        (setq selected-text (concat modifier "{" selected-text "}"))
-        (insert selected-text))
-    (message "No region selected")))
+;; (defun latex-modify-text (begin end modifier)
+;;   "Modify selected text, '_ for subscript and '^ for superscript."
+;;   (if (use-region-p)
+;;       (let ((selected-text (buffer-substring-no-properties begin end)))
+;;         (delete-region begin end)
+;;         (setq selected-text (concat modifier "{" selected-text "}"))
+;;         (insert selected-text))
+;;     (message "No region selected")))
 
-;; 단락으로 분명하게 구분된 영역만 사용
-;; C-c C-, org-insert-structure-template 사용 권장
-;; (defun my-latex-insert-block () ;; ver 0.2.1
-;;   "Inserts `#+begin_block`, `#+end_block`. selected region."
-;;   (let ((block-type (completing-read "Choose block type: " '("quote" "verse"))))
-;;     (if (use-region-p)
-;;         (let ((beg (region-beginning))
-;;               (end (region-end))
-;;               (indent ""))
-;;           ;; Determine the current indentation level
-;;           (save-excursion
-;;             (goto-char beg)
-;;             (skip-chars-forward "[:space:]")
-;;             (setq indent (concat (make-string (current-column) ?\s))))
-;;           (save-excursion
-;;             (goto-char beg)
-;;             (insert (format "%s#+begin_%s\n" indent block-type))
-;;             ;; Apply the same indentation to the end of the block
-;;             (goto-char end)
-;;             (end-of-line)
-;;             (insert-before-markers (format "\n%s#+end_%s" indent block-type))))
-;;       (message "No region selected"))))
-
-;;; 통합본
-(defun my-fonts-latex-custom(begin end)
-  "for export LaTeX. 글자색, 아래·위 첨자"
-  (interactive "r")
-  (if (use-region-p)
-      (let ((choice (read-char-choice "Select action: [c]글자색, [s]아래첨자, [S]위첨자: " '(?c ?s ?S))))
-        (pcase choice
-          (?c (insert-latex-text-color begin end))
-          (?s (latex-modify-text begin end "_"))
-          (?S (latex-modify-text begin end "^")))
-    (message "No region selected"))))
-(global-set-key (kbd "C-9") 'my-fonts-latex-custom)
+;; ;;; 통합본
+;; (defun my-fonts-latex-custom(begin end)
+;;   "for export LaTeX. 글자색, 아래·위 첨자"
+;;   (interactive "r")
+;;   (if (use-region-p)
+;;       (let ((choice (read-char-choice "Select action: [c]글자색, [s]아래첨자, [S]위첨자: " '(?c ?s ?S))))
+;;         (pcase choice
+;;           (?c (insert-latex-text-color begin end))
+;;           (?s (latex-modify-text begin end "_"))
+;;           (?S (latex-modify-text begin end "^")))
+;;     (message "No region selected"))))
+;; (global-set-key (kbd "C-9") 'my-fonts-latex-custom)
 
 ;;;;------------------------------------------------------------
 ;; 버퍼내 변환 . _ 또는 ^
 ;;;;=================
-(defun my-buffer-parens2sub ()
-  "현재 버퍼에서 모든 괄호 쌍을 찾아 변환합니다."
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (while (search-forward "(" nil t)
-      (backward-char 1)
-      ;; 현재 괄호 위치 강조
-      (highlight-regexp (regexp-quote (char-to-string (char-after))))
-      (sit-for 1)  ;; 강조 표시를 1초 동안 유지
-      (unhighlight-regexp (regexp-quote (char-to-string (char-after))))
-      (recenter)  ;; 현재 괄호가 화면의 중앙에 오도록 스크롤
-      (if (y-or-n-p "Transform this parenthesis?")
-          (progn
-            (insert "_{")
-            (forward-sexp 1)
-            (insert "}"))
-        ;; 다음 괄호를 찾기 위해 커서를 앞으로 이동
-        (forward-char 1)))))
+;; (defun my-buffer-parens2sub ()
+;;   "현재 버퍼에서 모든 괄호 쌍을 찾아 변환합니다."
+;;   (interactive)
+;;   (save-excursion
+;;     (goto-char (point-min))
+;;     (while (search-forward "(" nil t)
+;;       (backward-char 1)
+;;       ;; 현재 괄호 위치 강조
+;;       (highlight-regexp (regexp-quote (char-to-string (char-after))))
+;;       (sit-for 1)  ;; 강조 표시를 1초 동안 유지
+;;       (unhighlight-regexp (regexp-quote (char-to-string (char-after))))
+;;       (recenter)  ;; 현재 괄호가 화면의 중앙에 오도록 스크롤
+;;       (if (y-or-n-p "Transform this parenthesis?")
+;;           (progn
+;;             (insert "_{")
+;;             (forward-sexp 1)
+;;             (insert "}"))
+;;         ;; 다음 괄호를 찾기 위해 커서를 앞으로 이동
+;;         (forward-char 1)))))
 
 
 
