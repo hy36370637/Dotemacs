@@ -175,67 +175,6 @@
 				(org-insert-heading))))
 
 
-;; org-mode export → LaTeX, PDF
-;; (defun latex-text-color (text color)
-;;   "Return LaTeX text with specified color."
-;;   (format "\\textcolor{%s}{%s}" color text))
-
-;; (defun insert-latex-text-color (begin end)
-;;   "latex. selected-text color change"
-;;   (if (use-region-p)
-;;       (let ((selected-text (buffer-substring-no-properties begin end))
-;;             (color (read-string "Enter color: ")))
-;;         (delete-region begin end)
-;;         (insert (latex-text-color selected-text color)))
-;;     (message "No region selected")))
-
-;; (defun latex-modify-text (begin end modifier)
-;;   "Modify selected text, '_ for subscript and '^ for superscript."
-;;   (if (use-region-p)
-;;       (let ((selected-text (buffer-substring-no-properties begin end)))
-;;         (delete-region begin end)
-;;         (setq selected-text (concat modifier "{" selected-text "}"))
-;;         (insert selected-text))
-;;     (message "No region selected")))
-
-;; ;;; 통합본
-;; (defun my-fonts-latex-custom(begin end)
-;;   "for export LaTeX. 글자색, 아래·위 첨자"
-;;   (interactive "r")
-;;   (if (use-region-p)
-;;       (let ((choice (read-char-choice "Select action: [c]글자색, [s]아래첨자, [S]위첨자: " '(?c ?s ?S))))
-;;         (pcase choice
-;;           (?c (insert-latex-text-color begin end))
-;;           (?s (latex-modify-text begin end "_"))
-;;           (?S (latex-modify-text begin end "^")))
-;;     (message "No region selected"))))
-;; (global-set-key (kbd "C-9") 'my-fonts-latex-custom)
-
-;;;;------------------------------------------------------------
-;; 버퍼내 변환 . _ 또는 ^
-;;;;=================
-;; (defun my-buffer-parens2sub ()
-;;   "현재 버퍼에서 모든 괄호 쌍을 찾아 변환합니다."
-;;   (interactive)
-;;   (save-excursion
-;;     (goto-char (point-min))
-;;     (while (search-forward "(" nil t)
-;;       (backward-char 1)
-;;       ;; 현재 괄호 위치 강조
-;;       (highlight-regexp (regexp-quote (char-to-string (char-after))))
-;;       (sit-for 1)  ;; 강조 표시를 1초 동안 유지
-;;       (unhighlight-regexp (regexp-quote (char-to-string (char-after))))
-;;       (recenter)  ;; 현재 괄호가 화면의 중앙에 오도록 스크롤
-;;       (if (y-or-n-p "Transform this parenthesis?")
-;;           (progn
-;;             (insert "_{")
-;;             (forward-sexp 1)
-;;             (insert "}"))
-;;         ;; 다음 괄호를 찾기 위해 커서를 앞으로 이동
-;;         (forward-char 1)))))
-
-
-
 
 
 ;;; end here
