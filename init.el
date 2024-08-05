@@ -51,6 +51,13 @@
 ;; (setq mac-right-option-modifier 'control)
 
 ;; ======================================
+;;; defalias
+;; ======================================
+(defalias 'linum-rel 'menu-bar--display-line-numbers-mode-relative)
+(defalias 'linum-abs 'menu-bar--display-line-numbers-mode-absolute)
+(defalias 'linum-none 'menu-bar--display-line-numbers-mode-none)
+
+;; ======================================
 ;;; 외양
 ;; ======================================
 (tool-bar-mode -1)                            ; 도구상자 비활성
@@ -160,7 +167,7 @@
 ;; ======================================
 (global-unset-key [f11])  ; able expose / MacOS
 (global-unset-key (kbd "C-x o"))  ;remove  'other-window
-(global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
+;; (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "C-x C-r") 'restart-emacs)  ;emacs 29
 (global-set-key (kbd "M-o") 'other-window)
 ;;; 
@@ -170,43 +177,18 @@
   ;; "d" 'my/insert-today
   ;; "g" 'show-random-golf-quote   ;골프 명언
   "h" 'my-hunspell-check	;맞춤법
-  "k" 'keycast-mode-line-mode
   "m" 'modus-themes-toggle
   "r" 'toggle-my-reading-mode
   "s" 'my/region-search-web
-  "t" 'toggle-transparency
-  "w" 'naver-weather-search)
+;;  "t" 'toggle-transparency
+  "w" 'my/naver-weather-search)
 
 (keymap-set global-map "s-t" my-prefix-map)
-;; --------------------------------------------------------
-;; (defun my-popmark (choice)
-;; ;; base-dir 변수 사용하여 Mac 여부에 따라 기본 디렉토리 선택
-;; ;; 중복 코드 회피, my-open-directory 및 my-open-file 함수 사용
-;;   "Choices for faverite directories and files."
-;;   (interactive "c\ [P]pdf(Dir) | [i]nit | [t]asks | [c]Notes | [d]aily | [f]arm")
-;;   (let ((base-dir "~/"))
-;; ;;    (let ((base-dir (if my-mactop-p "~/Dropbox/" "~/")))
-;;     (cond
-;;      ((eq choice ?P) (my-open-directory "Docs/pdf"))
-;;      ((eq choice ?i) (my-open-file "emacs/init.el"))
-;;      ((eq choice ?t) (my-open-file "Docs/org/Tasks.org"))
-;;      ((eq choice ?c) (my-open-file "Docs/org/cNotes.org"))
-;;      ((eq choice ?d) (my-open-file "Docs/org/Daily.org"))
-;;      ((eq choice ?f) (my-open-file "Docs/org/dFarmNote.org"))
-;;      (t (message "Quit")))))
-
-;; (defun my-open-directory (dir)
-;;   "Open a directory based on the platform and given subdirectory."
-;;   (dired (concat base-dir dir)))
-
-;; (defun my-open-file (file)
-;;   "Open a file based on the platform and given file path."
-;;   (find-file (concat base-dir file))
-;;   (message "Opened: %s" (buffer-name)))
 
 ;; ======================================
 ;;; 로케일, 한글
 ;; ======================================
+(set-language-environment "Korean")
 (setenv "LANG" "ko_KR.UTF-8")
 (setenv "LC_COLLATE" "C")	                	  ;Dired 한글 파일명 정렬 macOS
 (set-locale-environment "ko_KR.UTF-8")	  ;kbd 한글 S-SPC
@@ -339,32 +321,6 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-;; ======================================
-;;; gnus
-;; ======================================
-;; (use-package gnus
-;;   :ensure nil
-;;   :if my-Macbook-p
-;;   :config
-;;   (setq user-mail-address "under9@icloud.com"
-;; 	user-full-name "Ho-Young")
-;;   (setq gnus-select-method
-;; 	'(nnimap "icloud"
-;; 		 (nnimap-address "imap.mail.me.com")
-;; 		 (nnimap-server-port 993)
-;; 		 (nnimap-stream ssl)
-;; 		 (nnir-search-engine imap)
-;; 		 (nnmail-expiry-target "nnimap+icloud:Deleted Messages")
-;; 		 (nnimap-authinfo-file "~/.authinfo")))
-;;   (setq message-send-mail-function 'smtpmail-send-it
-;; 	smtpmail-default-smtp-server "smtp.mail.me.com"
-;; 	smtpmail-smtp-server "smtp.mail.me.com"
-;; 	smtpmail-smtp-service 587
-;; 	smtpmail-stream-type 'starttls
-;; 	smtpmail-smtp-user "under9@icloud.com"
-;; 	smtpmail-debug-info t
-;; 	gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]"))
-
 ;; =======================================
 ;;; all-the-icons
 ;; ======================================-
@@ -403,7 +359,7 @@
 	      '("%e "
 		mode-line-front-space
 		(:eval (if (string= current-input-method "korean-hangul")
-			   "KO" 
+			   "KO"
 			 "EN"))
 		" Ⓗ "
 		mode-line-buffer-identification       
@@ -474,18 +430,18 @@
 ;;; --------------------------------------------------------
 ;;; 배경 투명 toggle
 ;;; --------------------------------------------------------
-(defun set-transparency (&optional alpha-level)
-  "Set the transparency of the Emacs frame."
-  (interactive "P")
-  (setq alpha-level (if alpha-level
-                        (prefix-numeric-value alpha-level)
-                      75)) ;; 기본값 설정
-  (set-frame-parameter (selected-frame) 'alpha (cons alpha-level alpha-level)))
+;; (defun set-transparency (&optional alpha-level)
+;;   "Set the transparency of the Emacs frame."
+;;   (interactive "P")
+;;   (setq alpha-level (if alpha-level
+;;                         (prefix-numeric-value alpha-level)
+;;                       75)) ;; 기본값 설정
+;;   (set-frame-parameter (selected-frame) 'alpha (cons alpha-level alpha-level)))
 
-(defun toggle-transparency ()
-  "Toggle transparency of the Emacs frame."
-  (interactive)
-  (let ((current-alpha (frame-parameter nil 'alpha)))
-    (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
-        (set-transparency 75)
-      (set-transparency 100))))
+;; (defun toggle-transparency ()
+;;   "Toggle transparency of the Emacs frame."
+;;   (interactive)
+;;   (let ((current-alpha (frame-parameter nil 'alpha)))
+;;     (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
+;;         (set-transparency 75)
+;;       (set-transparency 100))))
