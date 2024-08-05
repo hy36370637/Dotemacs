@@ -11,8 +11,8 @@
   (setq view-read-only t)
   :bind
   (:map view-mode-map
-        ("j" . View-scroll-line-forward)
-        ("k" . View-scroll-line-backward)))
+        ("n" . View-scroll-line-forward)
+        ("p" . View-scroll-line-backward)))
 
 ;; ======================================
 ;;; my-reading(view)-mode
