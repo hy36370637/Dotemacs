@@ -99,7 +99,7 @@
 ;; ======================================
 (use-package holidays
   :config
-  (setq my-holidays			;공휴일+생일
+  (setq my-holidays			;공휴일+음력기념일
 	'((holiday-fixed 1 1 "새해")
 	  (holiday-chinese  1  1 "설날")
 	  (holiday-fixed 1 10 "딸 생일")
@@ -110,10 +110,15 @@
 	  (holiday-fixed 6 6 "현충일")
 	  (holiday-fixed 6 10 "아들생일")
 	  (holiday-fixed 7 17 "제헌절")
+	  (holiday-chinese  7  21 "장인제")
+	  (holiday-chinese  8  4 "조부제")
 	  (holiday-fixed 8 15 "광복절")
 	  (holiday-chinese  8 15 "추석")
+	  (holiday-chinese  9  3 "母생신")
+	  (holiday-chinese  9  5 "父제")
 	  (holiday-fixed 10 3 "개천절")
 	  (holiday-fixed 10 9 "한글날")
+	  (holiday-chinese  11  9 "장모생신")
 	  (holiday-fixed 12 25 "성탄절")))
   
   (setq 24solar-holidays			;24절기
@@ -162,14 +167,17 @@
 (with-eval-after-load 'org  ; in org-mode
   (define-key org-mode-map (kbd "C-0") (lambda () 
                                          (interactive)
+					 (end-of-line)
                                          (newline-and-indent)
                                          (next-line)
                                          (org-cycle)))
   (define-key org-mode-map (kbd "C-9") (lambda () 
                                          (interactive)
+					 (end-of-line)
                                          (newline-and-indent)))
   (define-key org-mode-map (kbd "C-8") (lambda () 
                                          (interactive)
+					 (end-of-line)
                                          (org-insert-heading))))
 
 
