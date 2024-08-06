@@ -67,6 +67,7 @@
           (tags . " %i %-12:c")
           (search . " %i %-12:c")))
   (setq org-agenda-format-date "%Y-%m-%d (%a)")  ; 날자 포맷. 가독성
+  (setq org-agenda-current-time-string "← now ────────")
   (setq org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done)) ;완료항목 hidden
   (setq org-agenda-include-diary t))	;holidays 포함
 
@@ -171,11 +172,11 @@
                                          (newline-and-indent)
                                          (next-line)
                                          (org-cycle)))
-  (define-key org-mode-map (kbd "C-9") (lambda () 
+  (define-key org-mode-map (kbd "C-8") (lambda () 
                                          (interactive)
 					 (end-of-line)
                                          (newline-and-indent)))
-  (define-key org-mode-map (kbd "C-8") (lambda () 
+  (define-key org-mode-map (kbd "C-9") (lambda () 
                                          (interactive)
 					 (end-of-line)
                                          (org-insert-heading))))
