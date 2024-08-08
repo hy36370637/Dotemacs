@@ -70,31 +70,29 @@
      t)))
 
 ;; ======================================
-;;; 선택한 범위 문자열 → Web 검색(Naver, Google)
+;;; selected TEXT → Naver, Google, Namuwiki, mac Dictionary
 ;; ======================================
-(defun my/region-search-web (start end)
-  "Search selected text on Naver or Google."
+(defun my/search-selected-text (start end)
+  "Search selected text in macOS Dictionary, Naver, Google, or Namuwiki."
   (interactive "r")
   (let* ((query (buffer-substring-no-properties start end))
-         (search-engine (completing-read "Choose search engine: " '("Naver" "Google")))
-         (url (cond ((string-equal search-engine "Naver")
-                     (concat "https://search.naver.com/search.naver?query="
-                             (url-hexify-string query)))
-                    ((string-equal search-engine "Google")
-                     (concat "https://www.google.com/search?q="
-                             (url-hexify-string query))))))
-    (browse-url url)))
+         (search-option (completing-read "Choose search option: " 
+                                         '("macOS Dictionary" "Naver" "Google" "Namuwiki")))
+         (url (cond 
+               ((string-equal search-option "macOS Dictionary")
+                (concat "dict://" (url-hexify-string query)))
+               ((string-equal search-option "Naver")
+                (concat "https://search.naver.com/search.naver?query="
+                        (url-hexify-string query)))
+               ((string-equal search-option "Google")
+                (concat "https://www.google.com/search?q="
+                        (url-hexify-string query)))
+               ((string-equal search-option "Namuwiki")
+                (concat "https://namu.wiki/w/" (url-hexify-string query))))))
+    (if (string-equal search-option "macOS Dictionary")
+        (call-process "open" nil 0 nil url)
+      (browse-url url))))
 
-;; ======================================
-;;; 선택 문자 → macOS 사전앱 검색 
-;; ======================================
-(defun search-macos-dictionary (start end)
-  "Search the selected text in macOS Dictionary.app"
-  (interactive "r")
-  (let ((text (buffer-substring-no-properties start end)))
-    (call-process "open" nil 0 nil
-                  (concat "dict://" (url-hexify-string text)))))
- 
 ;; (defun my/region-search-web-new-frame (start end)
 ;;   "Search selected text on Naver or Google in a new frame using xwidget-webkit."
 ;;   (interactive "r")
