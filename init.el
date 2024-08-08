@@ -159,8 +159,7 @@
 ;; ======================================
 ;; (when my-mactop-p
 ;;     (setq mac-option-modifier 'super)
-;;     (setq mac-command-modifier 'meta)
-;;   )
+;;     (setq mac-command-modifier 'meta) )
 
 ;; ======================================
 ;;; 단축키 prefix key
@@ -170,42 +169,30 @@
 ;; (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
 (global-set-key (kbd "C-x C-r") 'restart-emacs)  ;emacs 29
 (global-set-key (kbd "M-o") 'other-window)
-;;; 
-(defvar-keymap my-prefix-map
-  :doc "my prefix map."
-  "c" 'select-special-character
-  ;; "g" 'show-random-golf-quote   ;골프 명언
-  ;; "h" 'my-hunspell-check	;맞춤법
-  "m" 'modus-themes-toggle
-  "r" 'toggle-my-reading-mode
-  "s" 'my/search-selected-text
-;;  "t" 'toggle-transparency
-  "w" 'my/naver-weather-search)
-
-(keymap-set global-map "s-t" my-prefix-map)
 
 ;; ======================================
 ;;; 로케일, 한글
 ;; ======================================
 (set-language-environment "Korean")
+(set-locale-environment "ko_KR.UTF-8")	  ;kbd 한글 S-SPC
 (setenv "LANG" "ko_KR.UTF-8")
 (setenv "LC_COLLATE" "C")	                	  ;Dired 한글 파일명 정렬 macOS
-(set-locale-environment "ko_KR.UTF-8")	  ;kbd 한글 S-SPC
 (setq input-method-verbose-flag nil)
 (setq input-method-highlight-flag nil)          ;입력 글자 밑줄방지
 
 ;; ======================================
 ;;; 글꼴 fonts
 ;; ======================================
-;; (when (display-graphic-p)
-;;; (set-frame-font "Noto Sans Mono CJK KR")
-(set-face-attribute 'default nil
-		    :family "Noto Sans CJK KR"    ;Hack, Menlo;Noto Sans CJK KR
-		    :height 160)
-(set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
-(set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
-(set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR"))
-;; )
+(if (display-graphic-p)
+    (progn
+      ;;(set-frame-font "Noto Sans Mono CJK KR")
+      (set-face-attribute 'default nil
+                          :family "Noto Sans CJK KR"    ;Hack, Menlo;Noto Sans CJK KR
+                          :height 160)
+      (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
+      (set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
+      (set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")))
+  (set-fontset-font t 'hangul (font-spec :name "NanumGothicCoding")))
 
 ;; ======================================
 ;;; helpful
