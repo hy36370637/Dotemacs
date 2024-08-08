@@ -174,12 +174,11 @@
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
   "c" 'select-special-character
-  "d" 'search-macos-dictionary
   ;; "g" 'show-random-golf-quote   ;골프 명언
   ;; "h" 'my-hunspell-check	;맞춤법
   "m" 'modus-themes-toggle
   "r" 'toggle-my-reading-mode
-  "s" 'my/region-search-web
+  "s" 'my/search-selected-text
 ;;  "t" 'toggle-transparency
   "w" 'my/naver-weather-search)
 
