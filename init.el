@@ -53,9 +53,9 @@
 ;; ======================================
 ;;; defalias
 ;; ======================================
-(defalias 'linum-rel 'menu-bar--display-line-numbers-mode-relative)
-(defalias 'linum-abs 'menu-bar--display-line-numbers-mode-absolute)
-(defalias 'linum-none 'menu-bar--display-line-numbers-mode-none)
+;; (defalias 'linum-rel 'menu-bar--display-line-numbers-mode-relative)
+;; (defalias 'linum-abs 'menu-bar--display-line-numbers-mode-absolute)
+;; (defalias 'linum-none 'menu-bar--display-line-numbers-mode-none)
 
 ;; ======================================
 ;;; 외양
@@ -68,7 +68,7 @@
 (setq initial-scratch-message nil)
 (setq use-dialog-box nil)
 (setq-default line-spacing 0.2)        ; 줄 간격 1.5
-(setq-default cursor-type 'bar)	       ;cursor type hbar,bar,box
+;; (setq-default cursor-type 'bar)	       ;cursor type hbar,bar,box
 ;; (setq frame-title-format "| dole's Emacs | %b |")
 
 ;; ======================================
@@ -121,14 +121,14 @@
 ;;; start emacs (load theme by time)
 ;; ======================================
 ;; display-time-mode 사용.
-(defun set-theme-by-time ()
-  "set theme by time, loading emacs"
-  (let ((current-hour (string-to-number (substring (current-time-string) 11 13))))
-    (if (and (>= current-hour 9) (< current-hour 17))  ; 9시부터 17시까지
-        (load-theme 'modus-operandi)
-      (load-theme 'modus-vivendi))))
-(set-theme-by-time)
-
+;; (defun set-theme-by-time ()
+;;   "set theme by time, loading emacs"
+;;   (let ((current-hour (string-to-number (substring (current-time-string) 11 13))))
+;;     (if (and (>= current-hour 9) (< current-hour 17))  ; 9시부터 17시까지
+;;         (load-theme 'modus-operandi)
+;;       (load-theme 'modus-vivendi))))
+;; (set-theme-by-time)
+(load-theme 'modus-operandi)
 ;; ======================================
 ;;; exec-path-from-shell
 ;; ======================================
@@ -174,9 +174,9 @@
 (defvar-keymap my-prefix-map
   :doc "my prefix map."
   "c" 'select-special-character
-  ;; "d" 'my/insert-today
+  "d" 'search-macos-dictionary
   ;; "g" 'show-random-golf-quote   ;골프 명언
-  "h" 'my-hunspell-check	;맞춤법
+  ;; "h" 'my-hunspell-check	;맞춤법
   "m" 'modus-themes-toggle
   "r" 'toggle-my-reading-mode
   "s" 'my/region-search-web
@@ -200,11 +200,11 @@
 ;; ======================================
 ;; (when (display-graphic-p)
 ;;; (set-frame-font "Noto Sans Mono CJK KR")
-  (set-face-attribute 'default nil
-		      :family "Noto Sans CJK KR"    ;Hack, Menlo;Noto Sans CJK KR
-		      :height 160)
-  (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
-  (set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
+(set-face-attribute 'default nil
+		    :family "Noto Sans CJK KR"    ;Hack, Menlo;Noto Sans CJK KR
+		    :height 160)
+(set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
+(set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
 (set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR"))
 ;; )
 
@@ -232,7 +232,7 @@
 ;;; which-key
 ;; ======================================
 (use-package which-key
-  :ensure nil   ; built into Emacs 30
+  :ensure nil   ; built in Emacs 30
   :init
   (which-key-mode)
   :config
