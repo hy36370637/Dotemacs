@@ -5,7 +5,7 @@
 (require 'url)
 (require 'dom)
 
-(defun naver-weather-search ()
+(defun my/naver-weather-search ()
   "사용자로부터 도시명을 입력받아 네이버 날씨 정보를 검색합니다."
   (interactive)
   (let* ((city (read-string "도시명 입력하세요: "))
@@ -86,20 +86,73 @@
     (browse-url url)))
 
 ;; ======================================
+;;; 선택 문자 → macOS 사전앱 검색 
+;; ======================================
+(defun search-macos-dictionary (start end)
+  "Search the selected text in macOS Dictionary.app"
+  (interactive "r")
+  (let ((text (buffer-substring-no-properties start end)))
+    (call-process "open" nil 0 nil
+                  (concat "dict://" (url-hexify-string text)))))
+ 
+;; (defun my/region-search-web-new-frame (start end)
+;;   "Search selected text on Naver or Google in a new frame using xwidget-webkit."
+;;   (interactive "r")
+;;   (let* ((query (buffer-substring-no-properties start end))
+;;          (search-engine (completing-read "Choose search engine: " '("Naver" "Google")))
+;;          (url (cond ((string-equal search-engine "Naver")
+;;                      (concat "https://search.naver.com/search.naver?query="
+;;                              (url-hexify-string query)))
+;;                     ((string-equal search-engine "Google")
+;;                      (concat "https://www.google.com/search?q="
+;;                              (url-hexify-string query))))))
+;;     (let ((new-frame (make-frame '((width . 100) (height . 30)))))
+;;       (select-frame-set-input-focus new-frame)
+;;       (with-selected-frame new-frame
+;;         (let ((xwidget-buffer (generate-new-buffer "*xwidget-webkit-search*")))
+;;           (with-current-buffer xwidget-buffer
+;;             (require 'xwidget)
+;;             (xwidget-webkit-mode)
+;;             (xwidget-webkit-browse-url url)
+;;             (let ((xwidget (xwidget-at (point-min))))
+;;               (when xwidget
+;;                 (xwidget-webkit-goto-url xwidget url))))
+;;           (switch-to-buffer xwidget-buffer))))))
+
+;; ======================================
+;;; webkit-browse
+;; ======================================
+;; (defun my-xwidget-webkit-browse-url-new-frame (url)
+;;   "browse URL using xwidget-webkit in it."
+;;   (interactive (list (read-string "URL: ")))
+;;   (let ((new-frame (make-frame '((width . 80) (height . 25)))))
+;;     (select-frame-set-input-focus new-frame)
+;;     (with-selected-frame new-frame
+;;       (let ((xwidget-buffer (generate-new-buffer "*xwidget-webkit*")))
+;;         (with-current-buffer xwidget-buffer
+;;           (require 'xwidget)
+;;           (xwidget-webkit-mode)
+;;           (xwidget-webkit-browse-url url)
+;;           (let ((xwidget (xwidget-at (point-min))))
+;;             (when xwidget
+;;               (xwidget-webkit-goto-url xwidget url))))
+;;         (switch-to-buffer xwidget-buffer)))))
+
+;; ======================================
 ;;; 골프 명언
 ;; ======================================
-(defun show-random-golf-quote ()
-  "Display a random 골프 명언"
-  (interactive)
-  (let* ((file-path "~/Dropbox/emacs/lisp/gQuote.txt") ;골프 명언 파일
-         (quotes (with-temp-buffer
-                   (insert-file-contents file-path)
-                   (split-string (buffer-string) "\n" t)))
-         (random-quote (nth (random (length quotes)) quotes)))
-;;    (setq frame-title-format random-quote) ;display title bar 
-    (message "%s" random-quote))) ; display minibuffer
-
-
+;; (defun show-random-golf-quote ()
+;;   "Display a random 골프 명언"
+;;   (interactive)
+;;   (let* ((file-path "~/Dropbox/emacs/lisp/gQuote.txt") ;골프 명언 파일
+;;          (quotes (with-temp-buffer
+;;                    (insert-file-contents file-path)
+;;                    (split-string (buffer-string) "\n" t)))
+;;          (random-quote (nth (random (length quotes)) quotes)))
+;;     (setq frame-title-format random-quote))) ;display title bar 
+;; ;;    (message "%s" random-quote))) ; display minibuffer
+;; ;; (add-hook 'auto-save-hook 'show-random-golf-quote)
+;;
 
 
 ;; end here
