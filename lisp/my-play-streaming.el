@@ -18,7 +18,7 @@
 (defun get-mmslist-file-path ()
   "Get the file path for the mmslist.txt file."
   (if my-mactop-p
-      "~/Dropbox/emacs/lisp/mmslist.txt"))
+      "~/.emacs.d/lisp/mmslist.txt"))
 
 (defun toggle-streaming ()
   "Toggle streaming on/off."
@@ -30,7 +30,7 @@
 (defun play-start-streaming (url)
   "Start streaming audio from a given URL using VLC."
 ;;  (interactive "sURL: ")
-  (let* ((vlc-command (if (eq system-type 'darwin)
+  (let* ((vlc-command (if (eq system-type 'darwin) ;  ,
                           "/Applications/VLC.app/Contents/MacOS/VLC" ; for macOS
                         "vlc")))
     (if (not (executable-find vlc-command))
