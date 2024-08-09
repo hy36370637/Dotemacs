@@ -10,7 +10,7 @@
    ("M-p" . outline-previous-visible-heading)
    ("C-c l" . org-store-link))
   :config
-  (setq org-directory (expand-file-name "~/Docs/org/"))
+  (setq org-directory (expand-file-name "~/Dropbox/Docs/org/"))
   ;;  (setq org-startup-indented nil)                 ;indent-mode enable
   ;;; hard indent
   (setq org-adapt-indentation t)		;heading 이하 들여쓰기
@@ -28,7 +28,7 @@
   (org-log-done 'time)
   (org-image-actual-width '(100))
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
-  ;; Export settings
+  ;;; Export settings
   (org-latex-title-command "\\maketitle \\newpage")
   (org-latex-toc-command "\\tableofcontents \\newpage")
   (org-latex-compiler "xelatex")
@@ -84,6 +84,7 @@
 ;;; korean calendar
 ;; ======================================
 (use-package calendar
+  :hook (calendar-mode . cal-fixLayout)
   :config  
   (setq calendar-week-start-day 0
 	calendar-day-name-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
@@ -93,7 +94,6 @@
 ;;; calendar layout 보정. D2coding size
 (defun cal-fixLayout ()
   (face-remap-add-relative 'default '(:family "Noto Sans Mono CJK KR" :height 160)))           
-(add-hook 'calendar-mode-hook 'cal-fixLayout)
 
 ;; ======================================
 ;;; holidays
@@ -120,8 +120,7 @@
 	  (holiday-fixed 10 3 "개천절")
 	  (holiday-fixed 10 9 "한글날")
 	  (holiday-chinese  11  9 "장모생신")
-	  (holiday-fixed 12 25 "성탄절")))
-  
+	  (holiday-fixed 12 25 "성탄절")))  
   (setq 24solar-holidays			;24절기
 	'((holiday-fixed 2 4 "입춘(새봄)")
 	  (holiday-fixed 2 19 "우수(눈녹음)")
@@ -147,7 +146,7 @@
 	  (holiday-fixed 12 22 "동지")
 	  (holiday-fixed 1 5 "소한")
 	  (holiday-fixed 1 20 "대한")))
-;; 기본 휴일 설정 초기화
+;; 원치않는 휴일 초기화
   (setq holiday-general-holidays nil)
   (setq holiday-local-holidays nil)
   (setq holiday-other-holidays nil)
