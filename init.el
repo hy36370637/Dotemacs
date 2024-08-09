@@ -43,6 +43,28 @@
 (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
 ;; ======================================
+;;; exec-path-from-shell
+;; ======================================
+;; MacOS PATH 설정
+(use-package exec-path-from-shell
+  :ensure t
+  :if my-mactop-p
+  :init
+  (exec-path-from-shell-initialize))
+
+;; ======================================
+;;; load-my-custom-package
+;; ======================================
+(add-to-list 'load-path "~/Dropbox/emacs/lisp/")
+(require 'my-org-custom)                       ; org-mode
+(require 'my-dired-custom)                    ; dired
+(require 'my-reading-mode-custom)   ; reading mode
+(require 'my-play-streaming)                 ; radio 청취
+(require 'my-emacs-super-keys)            ; minor. super key
+(require 'my-completion)                        ; completion
+(require 'my-web-search)
+
+;; ======================================
 ;;; MacOS keyboard
 ;; ======================================
 ;; (setq mac-option-modifier 'meta)
@@ -74,8 +96,8 @@
 ;; ======================================
 ;;; 작은 설정 들
 ;; ======================================
-(setq default-directory  "~/Docs/org/")
-(setq temporary-file-directory "~/Docs/tmpdir/")
+(setq default-directory  "~/Dropbox/Docs/org/")
+(setq temporary-file-directory "~/Dropbox/Docs/tmpdir/")
 (setq make-backup-files nil)
 (setq kill-whole-line 1)
 (setq search-highlight t)
@@ -129,37 +151,6 @@
 ;;       (load-theme 'modus-vivendi))))
 ;; (set-theme-by-time)
 (load-theme 'modus-operandi)
-;; ======================================
-;;; exec-path-from-shell
-;; ======================================
-;; MacOS PATH 설정
-(use-package exec-path-from-shell
-  :ensure t
-  :if my-mactop-p
-  :init
-  (exec-path-from-shell-initialize))
-
-;; ======================================
-;;; load-my-package
-;; ======================================
-;; (if my-mactop-p
-;;     (add-to-list 'load-path "~/Dropbox/emacs/lisp/")
-;;   (add-to-list 'load-path "~/emacs/lisp/"))
-(add-to-list 'load-path "~/emacs/lisp/")
-(require 'my-org-custom)                       ; org-mode
-(require 'my-dired-custom)                    ; dired
-(require 'my-reading-mode-custom)   ; reading mode
-(require 'my-play-streaming)                 ; radio 청취
-(require 'my-emacs-super-keys)            ; minor. super key
-(require 'my-completion)                        ; completion
-(require 'my-web-search)
-
-;; ======================================
-;;; Keyboard for MacOS
-;; ======================================
-;; (when my-mactop-p
-;;     (setq mac-option-modifier 'super)
-;;     (setq mac-command-modifier 'meta) )
 
 ;; ======================================
 ;;; 단축키 prefix key
@@ -183,16 +174,16 @@
 ;; ======================================
 ;;; 글꼴 fonts
 ;; ======================================
-(if (display-graphic-p)
-    (progn
-      ;;(set-frame-font "Noto Sans Mono CJK KR")
+;; (if (display-graphic-p)
+;;     (progn
+;;       ;;(set-frame-font "Noto Sans Mono CJK KR")
       (set-face-attribute 'default nil
                           :family "Noto Sans CJK KR"    ;Hack, Menlo;Noto Sans CJK KR
                           :height 160)
       (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
       (set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
-      (set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")))
-  (set-fontset-font t 'hangul (font-spec :name "NanumGothicCoding")))
+      (set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")) ;)
+;;  (set-fontset-font t 'hangul (font-spec :name "NanumGothicCoding")))
 
 ;; ======================================
 ;;; helpful
@@ -272,10 +263,17 @@
   :bind
   (("C-s" . consult-line)
    ("C-x b" . consult-buffer)
-;;   ("C-x C-r" . consult-recent-file)
-   ("C-c r b" . consult-bookmark)
-   ("C-c r o" . consult-outline)
-   ("C-c r t" . consult-theme))
+   ("C-x r x" . consult-register)
+   ("C-x r b" . consult-bookmark)
+   ("C-c k" . consult-kmacro)
+   ;;   ("C-x C-r" . consult-recent-file)
+   ("M-g o" . consult-outline)
+   ("M-g h" . consult-org-heading)
+   ("M-g a" . consult-org-agenda)
+   ("M-g m" . consult-mark)
+   ("M-s f" . consult-find)
+   ("M-s g" . consult-grep)
+   ("M-s t" . consult-theme))
   :hook (completion-list-mode . consult-preview-at-point-mode))
 
 ;; ======================================
@@ -367,14 +365,6 @@
   (setq keycast-mode-line-window-predicate 'mode-line-window-selected-p)
   (setq keycast-mode-line-remove-tail-elements nil)
   (keycast-mode-line-mode -1))
-
-;; ======================================
-;;; rainbow-delimiters
-;; ======================================
-;; 괄호, 중괄호, 각종 쌍을 시각적(무지개색) 구분
-(use-package rainbow-delimiters
-  :ensure t
-  :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; ======================================
 ;;; pdf-view, tools
