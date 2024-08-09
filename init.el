@@ -55,7 +55,7 @@
 ;; ======================================
 ;;; load-my-custom-package
 ;; ======================================
-(add-to-list 'load-path "~/Dropbox/emacs/lisp/")
+(add-to-list 'load-path "~/.emacs.d/lisp/")
 (require 'my-org-custom)                       ; org-mode
 (require 'my-dired-custom)                    ; dired
 (require 'my-reading-mode-custom)   ; reading mode
