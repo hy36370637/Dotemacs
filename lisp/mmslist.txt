@@ -1,0 +1,6 @@
+1.cbsMusic|http://aac.cbs.co.kr/cbs939/cbs939.stream/playlist.m3u8
+2.bbsRadio|http://bbslive.clouducs.com:1935/bbsradio-live/livestream/playlist.m3u8
+3.kbsHappyFM|http://serpent0.duckdns.org:8088/kbs2radio.pls
+4.kbsClassic|http://serpent0.duckdns.org:8088/kbsfm.pls
+5.bbsWoolimFM|rtmp://btn.nowcdn.co.kr/btn_ch4st/live.stream
+6.BBSTV|http://bbstv.clouducs.com:1935/bbstv-live/livestream/playlist.m3u8

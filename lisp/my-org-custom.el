@@ -161,6 +161,7 @@
 (custom-set-faces
  '(holiday ((t (:foreground "red" :weight bold)))))
 
+
 ;; ======================================
 ;;; for org edit/custom function
 ;; --------------------------------------

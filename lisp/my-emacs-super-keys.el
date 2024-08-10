@@ -11,18 +11,15 @@
     "s-r" #'toggle-streaming
     "s-z" #'repeat
     "s-/" #'undo
-    "s-<return>" #'toggle-frame-fullscreen
     "C-s-/" #'undo-redo
-    "C-s-k" #'keycast-mode-line-mode
-    "C-s-r" #'toggle-my-reading-mode
-    "C-s-s" #'my/region-search-web
-    "C-s-w" #'my/naver-weather-search
     "s-t c"  #'select-special-character
+    "s-t k" #'keycast-mode-line-mode
     "s-t m" #'modus-themes-toggle
     "s-t n" #'find-file
     "s-t r" #'toggle-my-reading-mode
     "s-t s" #'my/search-selected-text
     "s-t w" #'my/naver-weather-search
+    "s-<return>" #'toggle-frame-fullscreen
     )
 
   (define-minor-mode my-emacs-super-keys-mode  ; minor-mode

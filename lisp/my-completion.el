@@ -14,13 +14,20 @@
                               (?\[ . ?\])
                               (?\( . ?\))))
   (electric-pair-mode t))
+;; (add-hook 'org-mode-hook (lambda ()
+;;                            (setq-local electric-pair-inhibit-predicate
+;;                                        (lambda (c)
+;;                                          (if (char-equal c ?<)
+;;                                              t
+;;                                            (funcall (default-value 'electric-pair-inhibit-predicate) c))))))
 
-(add-hook 'org-mode-hook (lambda ()
-                           (setq-local electric-pair-inhibit-predicate
-                                       (lambda (c)
-                                         (if (char-equal c ?<)
-                                             t
-                                           (funcall (default-value 'electric-pair-inhibit-predicate) c))))))
+;; ======================================
+;;; rainbow-delimiters
+;; ======================================
+;; 괄호, 중괄호, 각종 쌍을 시각적(무지개색) 구분
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; =======================================
 ;;; corfu
@@ -73,15 +80,13 @@
 ;; Org 모드 약어 테이블 설정
   ;; (with-eval-after-load 'org
   ;;   (define-abbrev-table 'org-mode-abbrev-table
-  ;;     '(("todo" "TODO")
-  ;; 	("sch" "SCHEDULED:")
-  ;; 	("dl" "DEADLINE:")
-  ;; 	("pr" "PROPERTIES:")
-  ;; 	("src" "#+BEGIN_SRC\n\n#+END_SRC")
-  ;; 	("quote" "#+BEGIN_QUOTE\n\n#+END_QUOTE")
-  ;;   )))
+  ;;     '(("dsc" "#+DESCRIPTION:")
+  ;; 	("doimg" "#+ATTR_LATEX: :width 0.4\\textwidth\n#+CAPTION: \n   [[.img/imgDir/.jpg]]")
+  ;; 	("setupfile" "#+SETUPFILE: setLTH/Header.org")
+  ;; 	("mktitle" "#+begin_src emacs-lisp :exports results :results none :eval export\n(make-variable-buffer-local 'org-latex-title-command)\n (setq org-latex-title-command(concat\n\"\\\\begin{titlepage}\\n\"\n\"\\\\includegraphics[width=14.7cm]{./img/imgCover/}\\n\"\n\"\\\\end{titlepage}\\n\"))\n#+end_src\n")
+  ;;     )))
 )
-  
+
 ;; =======================================
 ;;; 특수문자 입력
 ;; ======================================-
@@ -103,12 +108,6 @@
   (setq ispell-local-dictionary "ko_KR")
   (setq ispell-local-dictionary-alist
         '(("ko_KR" "[가-힣]" "[^가-힣]" "[-']" nil ("-d" "ko_KR") nil utf-8))))
-
-;; ;; 맞춤법 검사 함수 정의 - 수동 검사
-;; (defun my-hunspell-check ()
-;;   "Run Hunspell spell check on the current buffer."
-;;   (interactive)
-;;   (ispell-buffer))
 
 
 

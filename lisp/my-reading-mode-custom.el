@@ -4,15 +4,12 @@
 ;; ======================================
 ;; 글씨 확대, 편집 보호
 ;; /emacs/lisp/my-reading-mode-custom.el
-
 (use-package view
   :ensure nil    ;built-in
-  :init
-  (setq view-read-only t)
-  :bind
-  (:map view-mode-map
-        ("n" . View-scroll-line-forward)
-        ("p" . View-scroll-line-backward)))
+  :init  (setq view-read-only t)
+  :bind(:map view-mode-map
+             ("n" . View-scroll-line-forward)
+             ("p" . View-scroll-line-backward)))
 
 ;; ======================================
 ;;; my-reading(view)-mode
