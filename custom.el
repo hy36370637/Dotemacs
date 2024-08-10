@@ -6,7 +6,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    '(consult-dir corfu dired-narrow embark-consult exec-path-from-shell
-		 helpful keycast marginalia nerd-icons
+		 helpful keycast magit marginalia
 		 nerd-icons-completion orderless org-bullets
 		 rainbow-delimiters vertico)))
 (custom-set-faces

@@ -393,7 +393,7 @@
 ;;; Magit
 ;; ======================================
 ;; 1. 파일 추가 및 커밋:
-;;    1) 파일 추가 (스테이징):
+;;    1) 파일 추가 (스테이징)
 ;;        - magit-status 화면에서 's'를 눌러 변경된 파일을 스테이징. 특정 파일을 선택한 후 's'를 눌러 해당 파일만 스테이징 가능.
 ;;    2)커밋 작성:
 ;;        - 스테이징된 파일을 커밋하려면 'c'를 눌러 커밋 옵션 선택 → 'c'를 다시 눌러 커밋 메시지 작성
@@ -410,20 +410,6 @@
     "Run `magit-status` in the `~/.emacs.d/` directory."
     (interactive)
     (magit-status "~/.emacs.d/"))) ;; 디렉토리 지정
-
-;; ======================================
-;;; etc my-custom-fuction
-;; ======================================
-;; (defun my/insert-today (fm)
-;;   "Inserts today() at point in the specified format."
-;;   (interactive
-;;    (list (completing-read "Select: " '("dash" "dot"))))
-;;   (let ((format-string
-;;          (cond
-;;           ((string= fm "dash") "%Y-%m-%d")
-;;           ((string= fm "dot") "%Y.%m.%d")
-;;           (t (error "Invalid date format specified")))))
-;;     (insert (format-time-string format-string))))
 
 ;;; --------------------------------------------------------
 ;;; 배경 투명 toggle
