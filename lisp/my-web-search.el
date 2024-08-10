@@ -1,15 +1,39 @@
 ;;; -*- lexical-binding: t; -*-
-;; =======================================
-;;; Naver 날씨정보
-;; ======================================-
+
+;; ======================================
+;;; 검색: 선택한 문자 or 사용자 입력 도시명
+;; ======================================
+(defun my/search-selected-text (start end)
+  "Search selected text in macOS Dictionary, Naver, Google, or Namuwiki.
+If the selected text includes '날씨', perform a weather search using my/naver-weather-search."
+  (interactive "r")
+  (let* ((query (buffer-substring-no-properties start end))
+         (search-option (completing-read "Choose option: " 
+                                         '("macOS Dictionary" "Naver" "Google" "Namuwiki" "날씨 검색")))
+         (url (cond 
+               ((string-equal search-option "macOS Dictionary")
+                (concat "dict://" (url-hexify-string query)))
+               ((string-equal search-option "Naver")
+                (concat "https://search.naver.com/search.naver?query="
+                        (url-hexify-string query)))
+               ((string-equal search-option "Google")
+                (concat "https://www.google.com/search?q="
+                        (url-hexify-string query)))
+               ((string-equal search-option "Namuwiki")
+                (concat "https://namu.wiki/w/" (url-hexify-string query))))))
+    (if (string-equal search-option "날씨 검색")
+        (let ((city (read-string "도시명을 입력하세요: ")))
+          (my/naver-weather-search city))
+      (if (string-equal search-option "macOS Dictionary")
+          (call-process "open" nil 0 nil url)
+        (browse-url url)))))
+
+;;; Naver 날씨 조회
 (require 'url)
 (require 'dom)
-
-(defun my/naver-weather-search ()
-  "사용자로부터 도시명을 입력받아 네이버 날씨 정보를 검색합니다."
-  (interactive)
-  (let* ((city (read-string "도시명 입력하세요: "))
-         (encoded-city (url-hexify-string city)))
+(defun my/naver-weather-search (city)
+  "Search Naver weather information for the given CITY."
+  (let* ((encoded-city (url-hexify-string city)))
     (url-retrieve
      (format "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%s%%20날씨" encoded-city)
      (lambda (status city)
@@ -60,39 +84,7 @@
                  (insert "\n주간 날씨 :\n")
                  (dolist (day weekly-info)
                    (insert (format "%s: %s 기온 %s/%s\n"
-                                   (nth 0 day) (nth 1 day) (nth 2 day) (nth 3 day))))
-		 (goto-char (point-min)) ; 버퍼의 첫 부분으로 이동
-                 (local-set-key (kbd "q") 'quit-window)
-                 (pop-to-buffer (current-buffer))))
-           (error
-            (message "날씨 데이터 파싱 중 오류 발생: %s" err)))))
-     (list city)
-     t)))
-
-;; ======================================
-;;; selected TEXT → Naver, Google, Namuwiki, mac Dictionary
-;; ======================================
-(defun my/search-selected-text (start end)
-  "Search selected text in macOS Dictionary, Naver, Google, or Namuwiki."
-  (interactive "r")
-  (let* ((query (buffer-substring-no-properties start end))
-         (search-option (completing-read "Choose search option: " 
-                                         '("macOS Dictionary" "Naver" "Google" "Namuwiki")))
-         (url (cond 
-               ((string-equal search-option "macOS Dictionary")
-                (concat "dict://" (url-hexify-string query)))
-               ((string-equal search-option "Naver")
-                (concat "https://search.naver.com/search.naver?query="
-                        (url-hexify-string query)))
-               ((string-equal search-option "Google")
-                (concat "https://www.google.com/search?q="
-                        (url-hexify-string query)))
-               ((string-equal search-option "Namuwiki")
-                (concat "https://namu.wiki/w/" (url-hexify-string query))))))
-    (if (string-equal search-option "macOS Dictionary")
-        (call-process "open" nil 0 nil url)
-      (browse-url url))))
-
+        
 ;; ======================================
 ;;; webkit-browse
 ;; ======================================

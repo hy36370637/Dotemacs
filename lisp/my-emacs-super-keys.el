@@ -5,7 +5,7 @@
   :doc "Common command alternatives using the Super key."
     "s-b" #'consult-buffer
     "s-d" #'consult-dir
-    "s-e" #'eshell
+    "s-e" #'eval-buffer
     "s-g" #'consult-grep
     "s-r" #'toggle-streaming
     "s-z" #'repeat
@@ -18,7 +18,6 @@
     "s-t m" #'modus-themes-toggle
     "s-t r" #'toggle-my-reading-mode
     "s-t s" #'my/search-selected-text
-    "s-t w" #'my/naver-weather-search
     "s-<return>" #'toggle-frame-fullscreen
     )
 
