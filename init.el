@@ -393,15 +393,26 @@
 ;;; Magit
 ;; ======================================
 ;; 1. 파일 추가 및 커밋:
-;;    1) 파일 추가 (스테이징)
-;;        - magit-status 화면에서 's'를 눌러 변경된 파일을 스테이징. 특정 파일을 선택한 후 's'를 눌러 해당 파일만 스테이징 가능.
-;;    2)커밋 작성:
-;;        - 스테이징된 파일을 커밋하려면 'c'를 눌러 커밋 옵션 선택 → 'c'를 다시 눌러 커밋 메시지 작성
-;;        - 커밋 메시지를 작성한 후 'C-c C-c'를 눌러 커밋 완료
+;;  1) 파일 추가 (스테이징)
+;;    - magit-status 화면에서 's'를 눌러 변경된 파일을 스테이징. 특정 파일을 선택한 후 's'를 눌러 해당 파일만 스테이징 가능.
+;;  2)커밋 작성:
+;;    - 스테이징된 파일을 커밋하려면 'c'를 눌러 커밋 옵션 선택 → 'c'를 다시 눌러 커밋 메시지 작성
+;;    - 커밋 메시지를 작성한 후 'C-c C-c'를 눌러 커밋 완료
 ;; 2. 변경 사항 푸시:
 ;;    - magit-status 화면에서 'P' 눌러 푸시 옵션 선택. 기본적으로 'P'를 누른 후 'u'를 눌러 origin/main으로 푸시
 ;; 3.  변경 사항 가져오기 (Pull):
-;;    - 원격 저장소에서 최신 변경 사항을 가져오려면 'F'를 눌러 Pull 옵션 선택. 기본적으로 'F' 누른 후 'u'를 눌러 origin/main에서 Pull을 실행
+;;   - 원격 저장소에서 최신 변경 사항 가져오려면 'F'를 눌러 Pull 옵션 선택. 기본적으로 'F' 누른 후 'u'를 눌러 origin/main에서 Pull을 실행
+;; ※ Git의 캐시에서 elpa/ 폴더를 제거 예제:local과는 달리 github.com에는 반영안될 때
+;;   git rm -r --cached elpa/
+;; 이 명령은 로컬 파일 시스템에서 실제 폴더를 삭제하지 않고, Git의 추적 목록에서만 제거
+;; .gitignore 파일에 elpa/ 폴더를 명시적으로 추가합니다. 파일을 열어 다음 줄을 추가:
+;;   elpa/
+;; 변경사항을 커밋합니다:
+;;   git add .gitignore
+;;   git commit -m "Remove elpa/ directory from git and update .gitignore"
+;; 변경사항을 GitHub에 푸시합니다:
+;;   git push origin main
+
 (use-package magit
   :ensure t
   :bind (("C-x g" . my/magit-status-emacs-d))
