@@ -318,11 +318,11 @@
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
-;; (use-package nerd-icons-completion
-;;   :after completion
-;;   :if (display-graphic-p)
-;;   :config
-;;   (add-hook 'completion-list-mode-hook 'nerd-icons-completion-mode))
+(use-package nerd-icons-completion
+  :ensure t
+  :if (display-graphic-p)
+  :config
+  (nerd-icons-completion-mode))
 
 ;; ======================================
 ;;; eshell

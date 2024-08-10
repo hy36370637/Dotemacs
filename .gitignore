@@ -1,6 +1,6 @@
 # 디렉토리 제외
-elpa/        # logs 디렉토리와 그 하위 모든 파일 및 디렉토리 제외
-auto-save-list/        # temp 디렉토리와 그 하위 모든 파일 및 디렉토리 제외
+elpa/                   # elpa 디렉토리와 그 하위 모든 파일 및 디렉토리 제외
+auto-save-list/       
 org-persist/
 
 # 특정 파일 제외
