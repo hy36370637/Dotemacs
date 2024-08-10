@@ -7,15 +7,15 @@
     "s-d" #'consult-dir
     "s-e" #'eshell
     "s-g" #'consult-grep
-    "s-o" #'org-insert-structure-template
     "s-r" #'toggle-streaming
     "s-z" #'repeat
     "s-/" #'undo
     "C-s-/" #'undo-redo
+    "s-o o" #'org-insert-structure-template
+    "s-o s" #'org-save-all-org-buffers
     "s-t c"  #'select-special-character
     "s-t k" #'keycast-mode-line-mode
     "s-t m" #'modus-themes-toggle
-    "s-t n" #'find-file
     "s-t r" #'toggle-my-reading-mode
     "s-t s" #'my/search-selected-text
     "s-t w" #'my/naver-weather-search
