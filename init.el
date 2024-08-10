@@ -390,6 +390,18 @@
   (display-battery-mode 1))
 
 ;; ======================================
+;;; Magit
+;; ======================================
+(use-package magit
+  :ensure t
+  :bind (("C-x g" . my/magit-status-emacs-d))
+  :config
+  (defun my/magit-status-emacs-d ()
+    "Run `magit-status` in the `~/.emacs.d/` directory."
+    (interactive)
+    (magit-status "~/.emacs.d/"))) ;; 디렉토리 지정
+
+;; ======================================
 ;;; etc my-custom-fuction
 ;; ======================================
 ;; (defun my/insert-today (fm)
@@ -421,3 +433,4 @@
 ;;     (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
 ;;         (set-transparency 75)
 ;;       (set-transparency 100))))
+
