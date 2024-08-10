@@ -7,7 +7,7 @@
 ;; The streaming source is mmslist.txt, and it's in the format of title/address.
 ;; I'm using the Lubuntu distribution.
 ;; I used ChatGPT, and distribution is free.
-;; /emacs/lisp/my-play-streaming.el
+;; /.emacs.d/lisp/my-play-streaming.el
 
 (defvar stream-process nil
   "Variable to store the VLC process.")
@@ -80,4 +80,5 @@
                 (cadr (split-string chosen-item "|")))))
     url))
 
+;; end here
 (provide 'my-play-streaming)

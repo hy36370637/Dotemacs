@@ -3,7 +3,7 @@
 ;;; view-mode
 ;; ======================================
 ;; 글씨 확대, 편집 보호
-;; /emacs/lisp/my-reading-mode-custom.el
+;; /.emacs.d/lisp/my-reading-mode-custom.el
 (use-package view
   :ensure nil    ;built-in
   :init  (setq view-read-only t)

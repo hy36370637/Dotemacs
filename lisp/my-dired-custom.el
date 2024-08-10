@@ -3,7 +3,7 @@
 ;;; dired
 ;; --------------------------------------
 ;; dired 관련 lisp 모음
-;; /emacs/lisp/my-dired-custom.el
+;; /.emacs.d/lisp/my-dired-custom.el
 ;; directory 우선/한글파일명 정렬불가(macOS) → 해결(setenv "LC_COLLATE" "C")
 (use-package dired
   :ensure nil  ;; dired는 기본으로 포함된 패키지이므로 :ensure nil 사용

@@ -93,30 +93,6 @@
         (call-process "open" nil 0 nil url)
       (browse-url url))))
 
-;; (defun my/region-search-web-new-frame (start end)
-;;   "Search selected text on Naver or Google in a new frame using xwidget-webkit."
-;;   (interactive "r")
-;;   (let* ((query (buffer-substring-no-properties start end))
-;;          (search-engine (completing-read "Choose search engine: " '("Naver" "Google")))
-;;          (url (cond ((string-equal search-engine "Naver")
-;;                      (concat "https://search.naver.com/search.naver?query="
-;;                              (url-hexify-string query)))
-;;                     ((string-equal search-engine "Google")
-;;                      (concat "https://www.google.com/search?q="
-;;                              (url-hexify-string query))))))
-;;     (let ((new-frame (make-frame '((width . 100) (height . 30)))))
-;;       (select-frame-set-input-focus new-frame)
-;;       (with-selected-frame new-frame
-;;         (let ((xwidget-buffer (generate-new-buffer "*xwidget-webkit-search*")))
-;;           (with-current-buffer xwidget-buffer
-;;             (require 'xwidget)
-;;             (xwidget-webkit-mode)
-;;             (xwidget-webkit-browse-url url)
-;;             (let ((xwidget (xwidget-at (point-min))))
-;;               (when xwidget
-;;                 (xwidget-webkit-goto-url xwidget url))))
-;;           (switch-to-buffer xwidget-buffer))))))
-
 ;; ======================================
 ;;; webkit-browse
 ;; ======================================
@@ -142,7 +118,7 @@
 ;; (defun show-random-golf-quote ()
 ;;   "Display a random 골프 명언"
 ;;   (interactive)
-;;   (let* ((file-path "~/Dropbox/emacs/lisp/gQuote.txt") ;골프 명언 파일
+;;   (let* ((file-path "~/.emacs.d/lisp/gQuote.txt") ;골프 명언 파일
 ;;          (quotes (with-temp-buffer
 ;;                    (insert-file-contents file-path)
 ;;                    (split-string (buffer-string) "\n" t)))

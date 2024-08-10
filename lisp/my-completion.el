@@ -1,5 +1,5 @@
 ;; 완성completion 도움
-;; emacs/lisp/my-completion.el
+;; .emacs.d/lisp/my-completion.el
 
 ;; =======================================
 ;;; electric-pair-mode

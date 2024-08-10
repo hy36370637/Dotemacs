@@ -2,7 +2,7 @@
 ;; ======================================
 ;;; org
 ;; ======================================
-;; /emacs/lisp/my-org-custom.el
+;; /.emacs.d/lisp/my-org-custom.el
 (use-package org
   :ensure nil
   :bind
@@ -88,7 +88,6 @@
   :config  
   (setq calendar-week-start-day 0
 	calendar-day-name-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
-;;	calendar-day-header-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
         calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월" "10월" "11월" "12월"])
 
 ;;; calendar layout 보정. D2coding size

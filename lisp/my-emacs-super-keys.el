@@ -1,5 +1,5 @@
 ;;; -*- lexical-binding: t; -*-
-;;; 자주 사용 → Super key 할당 → minor mode
+;;; Super key  → minor mode
 ;;;  I was inspired by the https://protesilaos.com
 (defvar-keymap my-emacs-super-keys-map
   :doc "Common command alternatives using the Super key."
