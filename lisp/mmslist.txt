@@ -3,5 +3,5 @@
 3.kbsHappyFM|http://serpent0.duckdns.org:8088/kbs2radio.pls
 4.kbsClassic|http://serpent0.duckdns.org:8088/kbsfm.pls
 5.bbsWoolimFM|rtmp://btn.nowcdn.co.kr/btn_ch4st/live.stream
-6.BBSTV|http://bbstv.clouducs.com:1935/bbstv-live/livestream/playlist.m3u8
-7.PIANO WORSHIP|http://s.ruworship.ru:8190/stream
+6.Sunshine radio|http://ec1.yesstreaming.net:1380/stream
+7.cbsFM|https://aac.cbs.co.kr/cbs981/_definst_/cbs981.stream/playlist.m3u8

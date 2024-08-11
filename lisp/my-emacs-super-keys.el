@@ -11,6 +11,7 @@
     "s-z" #'repeat
     "s-/" #'undo
     "C-s-/" #'undo-redo
+    "s-o e" #'org-emphasize 
     "s-o o" #'org-insert-structure-template
     "s-o s" #'org-save-all-org-buffers
     "s-t c"  #'select-special-character

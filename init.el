@@ -190,10 +190,13 @@
 ;; ======================================
 (use-package helpful
   :ensure t
-  :bind(("C-h k" . helpful-key)
-	("C-c C-d" . helpful-at-point)
-	("C-h C" . helpful-command)
-	("C-h o" . helpful-symbol)))
+  :bind
+  (("C-h f" . helpful-callable)
+   ("C-h v" . helpful-variable)
+   ("C-h k" . helpful-key)
+   ("C-c C-d" . helpful-at-point)
+   ("C-h F" . helpful-function)
+   ("C-h C" . helpful-command)))
 
 ;; ======================================
 ;;; recentF
@@ -394,7 +397,7 @@
 ;; ======================================
 ;; 1. 파일 추가 및 커밋:
 ;;  1) 파일 추가 (스테이징)
-;;    - magit-status 화면에서 's'를 눌러 변경된 파일을 스테이징. 특정 파일을 선택한 후 's'를 눌러 해당 파일만 스테이징 가능.
+;;    - magit-status 화면에서 'S'를 눌러 변경된 전체파일 스테이징. 특정 파일 선택한 후 's'를 눌러 해당 파일만 스테이징
 ;;  2)커밋 작성:
 ;;    - 스테이징된 파일을 커밋하려면 'c'를 눌러 커밋 옵션 선택 → 'c'를 다시 눌러 커밋 메시지 작성
 ;;    - 커밋 메시지를 작성한 후 'C-c C-c'를 눌러 커밋 완료
@@ -412,15 +415,20 @@
 ;;   git commit -m "Remove elpa/ directory from git and update .gitignore"
 ;; 변경사항을 GitHub에 푸시합니다:
 ;;   git push origin main
-
 (use-package magit
   :ensure t
-  :bind (("C-x g" . my/magit-status-emacs-d))
+  :bind (("C-x g" . magit-status))
   :config
-  (defun my/magit-status-emacs-d ()
-    "Run `magit-status` in the `~/.emacs.d/` directory."
-    (interactive)
-    (magit-status "~/.emacs.d/"))) ;; 디렉토리 지정
+  (setq magit-auto-revert-mode t))
+;;; ------------------
+;; (use-package magit
+;;   :ensure t
+;;   :bind (("C-x g" . my/magit-status-emacs-d))
+;;   :config
+;;   (defun my/magit-status-emacs-d ()
+;;     "Run `magit-status` in the `~/.emacs.d/` directory."
+;;     (interactive)
+;;     (magit-status "~/.emacs.d/"))) ;; 디렉토리 지정
 
 ;;; --------------------------------------------------------
 ;;; 배경 투명 toggle

@@ -37,19 +37,21 @@
 (use-package corfu
   :ensure t
   :bind (:map corfu-map
-         ("TAB" . corfu-next)
-         ([tab] . corfu-next)
-         ("S-TAB" . corfu-previous)
-         ("S-<return>" . corfu-insert))
+	      ("M-d" . corfu-info-documentation)  ; eldoc 정보 표시
+              ("M-l" . corfu-info-location)
+              ("TAB" . corfu-next)
+              ([tab] . corfu-next)
+              ("S-TAB" . corfu-previous)
+              ("S-<return>" . corfu-insert))
   :custom
-  (corfu-auto t)                   ;enable auto completion
+  (corfu-auto t)
   ;; (corfu-auto-delay 0.2)
   ;; (corfu-auto-prefix 0)
   (corfu-cycle t)			
   ;; (corfu-preselect 'prompt)
   ;; (corfu-echo-documentation 0.2)
   (corfu-preview-current 'insert)
-  (corfu-separator ?\s)			;orderless field separator
+  (corfu-separator ?\s)			        ;orderless field separator
   (corfu-quit-no-match 'separator)	;Automatically quit if there is no match
   :init
   (global-corfu-mode)
@@ -58,6 +60,15 @@
   :hook (eshell-mode . (lambda ()
                          (setq-local corfu-auto t)
                          (corfu-mode 1))))
+
+;; =======================================
+;;; eldoc
+;; ======================================-
+;; 현재 커서 위치의 함수나 변수에 대한 문서를 실시간으로 표시
+(use-package eldoc
+  :ensure nil
+  :diminish eldoc-mode
+  :hook (emacs-lisp-mode . eldoc-mode))
 
 ;; =======================================
 ;;; abbrev
@@ -78,14 +89,14 @@
       ("cZ"   "○")   ("cQ"   "□")
       ))
 ;; Org 모드 약어 테이블 설정
-  ;; (with-eval-after-load 'org
-  ;;   (define-abbrev-table 'org-mode-abbrev-table
-  ;;     '(("dsc" "#+DESCRIPTION:")
-  ;; 	("doimg" "#+ATTR_LATEX: :width 0.4\\textwidth\n#+CAPTION: \n   [[.img/imgDir/.jpg]]")
-  ;; 	("setupfile" "#+SETUPFILE: setLTH/Header.org")
-  ;; 	("mktitle" "#+begin_src emacs-lisp :exports results :results none :eval export\n(make-variable-buffer-local 'org-latex-title-command)\n (setq org-latex-title-command(concat\n\"\\\\begin{titlepage}\\n\"\n\"\\\\includegraphics[width=14.7cm]{./img/imgCover/}\\n\"\n\"\\\\end{titlepage}\\n\"))\n#+end_src\n")
-  ;;     )))
-)
+  (with-eval-after-load 'org
+    (define-abbrev-table 'org-mode-abbrev-table
+      '(("dsc" "#+DESCRIPTION:")
+	("setupfile" "#+SETUPFILE: setLTH/Header.org")
+;;	("doimg" "#+ATTR_LATEX: :width 0.4\\textwidth\n#+CAPTION: \n   [[.img/imgDir/.jpg]]")
+;;	("mktitle" "#+begin_src emacs-lisp :exports results :results none :eval export\n(make-variable-buffer-local 'org-latex-title-command)\n (setq org-latex-title-command(concat\n\"\\\\begin{titlepage}\\n\"\n\"\\\\includegraphics[width=14.7cm]{./img/imgCover/}\\n\"\n\"\\\\end{titlepage}\\n\"))\n#+end_src\n")
+	)))
+  )
 
 ;; =======================================
 ;;; 특수문자 입력
