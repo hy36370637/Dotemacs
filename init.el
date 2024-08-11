@@ -420,15 +420,6 @@
   :bind (("C-x g" . magit-status))
   :config
   (setq magit-auto-revert-mode t))
-;;; ------------------
-;; (use-package magit
-;;   :ensure t
-;;   :bind (("C-x g" . my/magit-status-emacs-d))
-;;   :config
-;;   (defun my/magit-status-emacs-d ()
-;;     "Run `magit-status` in the `~/.emacs.d/` directory."
-;;     (interactive)
-;;     (magit-status "~/.emacs.d/"))) ;; 디렉토리 지정
 
 ;;; --------------------------------------------------------
 ;;; 배경 투명 toggle
