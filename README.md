@@ -1,4 +1,4 @@
-# emacs config 
+# EMACS config(설정) 
 ## 사용환경
 * Mac Mini(M2)
 * MacBookAir(M1)
