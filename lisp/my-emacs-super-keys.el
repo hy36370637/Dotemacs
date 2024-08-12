@@ -11,7 +11,9 @@
     "s-z" #'repeat
     "s-/" #'undo
     "C-s-/" #'undo-redo
-    "s-o e" #'org-emphasize 
+;; org-mode    
+    "s-o e" #'org-emphasize
+    "s-o f" #'org-footnote-action
     "s-o o" #'org-insert-structure-template
     "s-o s" #'org-save-all-org-buffers
     "s-t c"  #'select-special-character
@@ -28,4 +30,6 @@
     :init-value t
     :keymap my-emacs-super-keys-map)
 
+
+;; end here
 (provide 'my-emacs-super-keys)

@@ -388,7 +388,7 @@
   :ensure nil 				;built in
   :if  my-Macbook-p
   :config 
-  (setq battery-status-function 'battery-pmset) ;battery 정보
+  (setq battery-status-function 'battery-pmset)
   (setq battery-mode-line-format "Ⓑ %p%%  ") 
   (display-battery-mode 1))
 
@@ -404,8 +404,9 @@
 ;; 2. 변경 사항 푸시:
 ;;    - magit-status 화면에서 'P' 눌러 푸시 옵션 선택. 기본적으로 'P'를 누른 후 'u'를 눌러 origin/main으로 푸시
 ;; 3.  변경 사항 가져오기 (Pull):
-;;   - 원격 저장소에서 최신 변경 사항 가져오려면 'F'를 눌러 Pull 옵션 선택. 기본적으로 'F' 누른 후 'u'를 눌러 origin/main에서 Pull을 실행
-;; ※ Git의 캐시에서 elpa/ 폴더를 제거 예제:local과는 달리 github.com에는 반영안될 때
+;;   - 원격 저장소 최신 변경사항 가져오려면 'F'를 눌러 Pull 옵션 선택. 기본적으로 'F' 누른 후 'u'를 눌러 origin/main에서 Pull을 실행
+;;;
+;; ○  Git의 캐시에서 elpa/ 폴더를 제거 예제:local과는 달리 github.com에는 반영안될 때
 ;;   git rm -r --cached elpa/
 ;; 이 명령은 로컬 파일 시스템에서 실제 폴더를 삭제하지 않고, Git의 추적 목록에서만 제거
 ;; .gitignore 파일에 elpa/ 폴더를 명시적으로 추가합니다. 파일을 열어 다음 줄을 추가:
@@ -439,4 +440,3 @@
 ;;     (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
 ;;         (set-transparency 75)
 ;;       (set-transparency 100))))
-
