@@ -18,7 +18,7 @@
     "s-o s" #'org-save-all-org-buffers
     "s-t c"  #'select-special-character
     "s-t k" #'keycast-mode-line-mode
-    "s-t m" #'modus-themes-toggle
+    "s-t m" #'standard-themes-toggle        ;#'modus-themes-toggle
     "s-t r" #'toggle-my-reading-mode
     "s-t s" #'my/search-selected-text
     "s-<return>" #'toggle-frame-fullscreen

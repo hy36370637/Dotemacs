@@ -119,25 +119,32 @@
 (display-time-mode 1)
 
 ;; ======================================
-;;; modus theme
+;;; theme
 ;; ======================================
-(use-package emacs
-  :config
-  (require-theme 'modus-themes)
-  (setq modus-themes-to-toggle '(modus-operandi modus-vivendi))
-        ;; modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
-        ;; modus-themes-to-toggle '(modus-operandi-deuteranopia modus-vivendi-deuteranopia)
-        ;; modus-themes-to-toggle '(modus-operandi-tritanopia modus-vivendi-tritanopia)
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs nil
-	modus-themes-mixed-fonts nil	;default nil
-	modus-themes-variable-pitch-ui nil
-	modus-themes-custom-auto-reload t
-	modus-themes-disable-other-themes t))
-;; Remove the border
-(setq modus-themes-common-palette-overrides
-      '((border-mode-line-active unspecified)
-        (border-mode-line-inactive unspecified)))
+;;; STANDARD THEME
+;;  loading theme
+(require 'standard-themes)
+(setq standard-themes-bold-constructs t
+      standard-themes-italic-constructs t
+      standard-themes-disable-other-themes t
+      standard-themes-mixed-fonts t
+      standard-themes-variable-pitch-ui t
+      standard-themes-prompts '(extrabold italic)
+      standard-themes-headings
+      '((0 . (variable-pitch light 1.3))
+        (1 . (variable-pitch light 1.2))
+        (2 . (variable-pitch light 1.2))
+        (3 . (variable-pitch semilight 1.2))
+        (4 . (variable-pitch semilight 1.2))
+        (5 . (variable-pitch 1.2))
+        (6 . (variable-pitch 1.2))
+        (7 . (variable-pitch 1.2))
+        (agenda-date . (1.1))
+        (agenda-structure . (variable-pitch light 1.6))
+        (t . (variable-pitch 1.1))))
+
+;; (standard-themes-load-light)  ;; load-theme
+(standard-themes-load-dark)  ;; load-theme
 
 ;; ======================================
 ;;; start emacs (load theme by time)
@@ -147,10 +154,8 @@
 ;;   "set theme by time, loading emacs"
 ;;   (let ((current-hour (string-to-number (substring (current-time-string) 11 13))))
 ;;     (if (and (>= current-hour 9) (< current-hour 17))  ; 9시부터 17시까지
-;;         (load-theme 'modus-operandi)
 ;;       (load-theme 'modus-vivendi))))
 ;; (set-theme-by-time)
-(load-theme 'modus-operandi)
 
 ;; ======================================
 ;;; 단축키 prefix key
@@ -322,10 +327,10 @@
   (dired-mode . nerd-icons-dired-mode))
 
 (use-package nerd-icons-completion
-  :ensure t
-  :if (display-graphic-p)
+  :after marginalia
   :config
-  (nerd-icons-completion-mode))
+  (nerd-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 
 ;; ======================================
 ;;; eshell
@@ -370,18 +375,6 @@
   (keycast-mode-line-mode -1))
 
 ;; ======================================
-;;; pdf-view, tools
-;; ======================================
-;; only linux
-;; (use-package pdf-tools
-;;   :ensure nil
-;;   :if my-laptop-p 
-;;   :mode ("\\.pdf\\'" . pdf-view-mode) ; Automatically open PDFs in pdf-view-mode
-;;   :config
-;;   (setq pdf-view-display-size 'fit-width) ; Set the default zoom level
-;;   (pdf-tools-install))
-
-;; ======================================
 ;;; battery display
 ;; ======================================
 (use-package battery
@@ -421,22 +414,3 @@
   :bind (("C-x g" . magit-status))
   :config
   (setq magit-auto-revert-mode t))
-
-;;; --------------------------------------------------------
-;;; 배경 투명 toggle
-;;; --------------------------------------------------------
-;; (defun set-transparency (&optional alpha-level)
-;;   "Set the transparency of the Emacs frame."
-;;   (interactive "P")
-;;   (setq alpha-level (if alpha-level
-;;                         (prefix-numeric-value alpha-level)
-;;                       75)) ;; 기본값 설정
-;;   (set-frame-parameter (selected-frame) 'alpha (cons alpha-level alpha-level)))
-
-;; (defun toggle-transparency ()
-;;   "Toggle transparency of the Emacs frame."
-;;   (interactive)
-;;   (let ((current-alpha (frame-parameter nil 'alpha)))
-;;     (if (or (equal current-alpha '(0 . 0)) (equal current-alpha '(100 . 100)))
-;;         (set-transparency 75)
-;;       (set-transparency 100))))
