@@ -20,15 +20,11 @@
 (defvar-keymap my-emacs-super-keys-map
   :doc "Common command alternatives using the Super key."
   ;; Buffer operations
-  "s-b" '(("b" . consult-buffer)
-          ("e" . eval-buffer)
-          ("n" . next-buffer)
-          ("p" . previous-buffer))
-  ;;;; Other operations
-  ;; "s-b b" #'consult-buffer
-  ;; "s-b e" #'eval-buffer
-  ;; "s-b n" #'next-buffer
-  ;; "s-b p" #'previous-buffer
+  "s-b b" #'consult-buffer
+  "s-b e" #'eval-buffer
+  "s-b n" #'next-buffer
+  "s-b p" #'previous-buffer
+ ;; Other operations
   "s-d"   #'consult-dir
   "s-g"   #'consult-grep
   "s-z"   #'repeat
