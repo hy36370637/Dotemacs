@@ -61,6 +61,7 @@
 (require 'my-reading-mode-custom)   ; reading mode
 (require 'my-play-streaming)                 ; radio 청취
 (require 'my-emacs-super-keys)            ; minor. super key
+(require 'my-emacs-hyper-keys)            ; minor. hyper key
 (require 'my-completion)                        ; completion
 (require 'my-web-search)
 
@@ -69,8 +70,9 @@
 ;; ======================================
 ;; (setq mac-option-modifier 'meta)
 ;; (setq mac-command-modifier 'meta)
-;; (setq ns-right-command-modifier 'super)
+(setq ns-right-command-modifier 'hyper)
 ;; (setq mac-right-option-modifier 'control)
+;; (setq ns-function-modifier 'hyper)
 
 ;; ======================================
 ;;; defalias
@@ -275,6 +277,7 @@
    ("C-x r b" . consult-bookmark)
    ("C-c k" . consult-kmacro)
    ;;   ("C-x C-r" . consult-recent-file)
+   ("M-g d" . consult-dir)
    ("M-g o" . consult-outline)
    ("M-g h" . consult-org-heading)
    ("M-g a" . consult-org-agenda)
@@ -317,12 +320,12 @@
 ;;; all-the-icons
 ;; ======================================-
 (use-package nerd-icons
-  :ensure t
-  :if (display-graphic-p))
+  :ensure t)
+;;  :if (display-graphic-p))
 
 (use-package nerd-icons-dired
   :after dired
-  :if (display-graphic-p)
+;;  :if (display-graphic-p)
   :hook
   (dired-mode . nerd-icons-dired-mode))
 
@@ -335,10 +338,25 @@
 ;; ======================================
 ;;; eshell
 ;; ======================================
+;; (use-package eshell
+;;   :commands eshell
+;;   :config
+;;   (setq eshell-destroy-buffer-when-process-dies t))
 (use-package eshell
   :commands eshell
   :config
-  (setq eshell-destroy-buffer-when-process-dies t))
+  (setq eshell-destroy-buffer-when-process-dies t)  
+  (setq eshell-prompt-function
+        (lambda ()
+          (concat
+           (abbreviate-file-name (eshell/pwd))
+           (if (= (user-uid) 0) " # " " $"))))
+  (setq eshell-prompt-regexp "^[^#$\n]* [#$]")
+
+  ;; eshell 모드 후크에 프롬프트 관련 설정 추가
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (eshell-update-prompt))))
 
 ;; ======================================
 ;;; modeline
@@ -388,27 +406,6 @@
 ;; ======================================
 ;;; Magit
 ;; ======================================
-;; 1. 파일 추가 및 커밋:
-;;  1) 파일 추가 (스테이징)
-;;    - magit-status 화면에서 'S'를 눌러 변경된 전체파일 스테이징. 특정 파일 선택한 후 's'를 눌러 해당 파일만 스테이징
-;;  2)커밋 작성:
-;;    - 스테이징된 파일을 커밋하려면 'c'를 눌러 커밋 옵션 선택 → 'c'를 다시 눌러 커밋 메시지 작성
-;;    - 커밋 메시지를 작성한 후 'C-c C-c'를 눌러 커밋 완료
-;; 2. 변경 사항 푸시:
-;;    - magit-status 화면에서 'P' 눌러 푸시 옵션 선택. 기본적으로 'P'를 누른 후 'u'를 눌러 origin/main으로 푸시
-;; 3.  변경 사항 가져오기 (Pull):
-;;   - 원격 저장소 최신 변경사항 가져오려면 'F'를 눌러 Pull 옵션 선택. 기본적으로 'F' 누른 후 'u'를 눌러 origin/main에서 Pull을 실행
-;;;
-;; ○  Git의 캐시에서 elpa/ 폴더를 제거 예제:local과는 달리 github.com에는 반영안될 때
-;;   git rm -r --cached elpa/
-;; 이 명령은 로컬 파일 시스템에서 실제 폴더를 삭제하지 않고, Git의 추적 목록에서만 제거
-;; .gitignore 파일에 elpa/ 폴더를 명시적으로 추가합니다. 파일을 열어 다음 줄을 추가:
-;;   elpa/
-;; 변경사항을 커밋합니다:
-;;   git add .gitignore
-;;   git commit -m "Remove elpa/ directory from git and update .gitignore"
-;; 변경사항을 GitHub에 푸시합니다:
-;;   git push origin main
 (use-package magit
   :ensure t
   :bind (("C-x g" . magit-status))

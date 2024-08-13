@@ -3,11 +3,12 @@
 ;;;  I was inspired by the https://protesilaos.com
 (defvar-keymap my-emacs-super-keys-map
   :doc "Common command alternatives using the Super key."
-    "s-b" #'consult-buffer
+    "s-b b" #'consult-buffer
+    "s-b e" #'eval-buffer
+    "s-b n" #'next-buffer
+    "s-b p" #'previous-buffer
     "s-d" #'consult-dir
-    "s-e" #'eval-buffer
     "s-g" #'consult-grep
-    "s-r" #'toggle-streaming
     "s-z" #'repeat
     "s-/" #'undo
     "C-s-/" #'undo-redo
@@ -16,11 +17,13 @@
     "s-o f" #'org-footnote-action
     "s-o o" #'org-insert-structure-template
     "s-o s" #'org-save-all-org-buffers
+;;
     "s-t c"  #'select-special-character
     "s-t k" #'keycast-mode-line-mode
     "s-t m" #'standard-themes-toggle        ;#'modus-themes-toggle
-    "s-t r" #'toggle-my-reading-mode
+    "s-t r" #'toggle-streaming
     "s-t s" #'my/search-selected-text
+    "s-t v" #'toggle-my-reading-mode
     "s-<return>" #'toggle-frame-fullscreen
     )
 
