@@ -60,8 +60,6 @@
 (require 'my-dired-custom)                    ; dired
 (require 'my-reading-mode-custom)   ; reading mode
 (require 'my-play-streaming)                 ; radio 청취
-;; (require 'my-emacs-super-keys)            ; minor. super key
-;; (require 'my-emacs-hyper-keys)            ; minor. hyper key
 (require 'my-emacs-hyper-super-keys) 
 (require 'my-completion)                        ; completion
 (require 'my-web-search)
