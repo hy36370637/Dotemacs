@@ -47,14 +47,6 @@
   "s-<return>" #'toggle-frame-fullscreen
 )
 
-;; (define-minor-mode my-emacs-hyper-super-keys-mode
-;;   "Provide Hyper and Super key alternatives to Command."
-;;   :global t
-;;   :init-value t
-;;   :keymap (let ((map (make-sparse-keymap)))
-;;             (set-keymap-parent map my-emacs-hyper-keys-map)
-;;             (set-keymap-parent map my-emacs-super-keys-map)
-;;             map))
 (define-minor-mode my-emacs-hyper-super-keys-mode
   "Provide Hyper and Super key alternatives to Command."
   :global t
