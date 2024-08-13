@@ -70,9 +70,9 @@
 ;; ======================================
 ;; (setq mac-option-modifier 'meta)
 ;; (setq mac-command-modifier 'meta)
-(setq ns-right-command-modifier 'hyper)
+;; (setq ns-right-command-modifier 'hyper)
 ;; (setq mac-right-option-modifier 'control)
-;; (setq ns-function-modifier 'hyper)
+(setq ns-function-modifier 'hyper)
 
 ;; ======================================
 ;;; defalias
