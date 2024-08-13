@@ -3,10 +3,10 @@
 /elpa/**
 
 # 특정 파일과 디렉토리 포함
-!.gitignore
-!init.el
-!lisp/
-!lisp/**
+!#.gitignore
+#!init.el
+#!lisp/
+#!lisp/**
 
 # 나머지 모든 파일과 디렉토리 제외
 /*
