@@ -1,9 +1,15 @@
-# 제외하지 않을 파일과 디렉토리 패턴
-!init.el      # init.el 파일은 제외하지 않음
-!lisp/        # lisp 디렉토리와 그 하위 파일 및 디렉토리는 제외하지 않음
-!lisp/**
-
-# 모든 파일과 디렉토리를 기본적으로 제외
+# 특정 디렉토리 제외
 /elpa/
 /elpa/**
+
+# 특정 파일과 디렉토리 포함
+!.gitignore
+!init.el
+!lisp/
+!lisp/**
+
+# 나머지 모든 파일과 디렉토리 제외
 /*
+!.gitignore
+!init.el
+!/lisp/
