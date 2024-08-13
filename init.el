@@ -337,25 +337,10 @@
 ;; ======================================
 ;;; eshell
 ;; ======================================
-;; (use-package eshell
-;;   :commands eshell
-;;   :config
-;;   (setq eshell-destroy-buffer-when-process-dies t))
 (use-package eshell
   :commands eshell
   :config
-  (setq eshell-destroy-buffer-when-process-dies t)  
-  (setq eshell-prompt-function
-        (lambda ()
-          (concat
-           (abbreviate-file-name (eshell/pwd))
-           (if (= (user-uid) 0) " # " " $"))))
-  (setq eshell-prompt-regexp "^[^#$\n]* [#$]")
-
-  ;; eshell 모드 후크에 프롬프트 관련 설정 추가
-  (add-hook 'eshell-mode-hook
-            (lambda ()
-              (eshell-update-prompt))))
+  (setq eshell-destroy-buffer-when-process-dies t))
 
 ;; ======================================
 ;;; modeline
