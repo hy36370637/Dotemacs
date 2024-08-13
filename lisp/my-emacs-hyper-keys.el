@@ -17,10 +17,11 @@
     )
 
   (define-minor-mode my-emacs-hyper-keys-mode           ; minor-mode
-    "Provide Hyper key alternatives to common command."
+    "Provide Hyper key alternatives to Command."
     :global t
     :init-value t
     :keymap my-emacs-hyper-keys-map)
+
 
 
 ;; end here
