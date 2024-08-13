@@ -11,8 +11,8 @@
     "H-w +"  #'enlarge-window
     
     ;;; kmacro
-    "H-m ["  #'kmacro-start-macro
-    "H-m ]"  #'kmacro-end-macro
+    "H-k ["  #'kmacro-start-macro
+    "H-k ]"  #'kmacro-end-macro
     "H-'"   #'kmacro-end-and-call-macro  ;F4
     )
 
