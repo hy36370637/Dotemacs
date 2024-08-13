@@ -28,7 +28,7 @@
     )
 
   (define-minor-mode my-emacs-super-keys-mode  ; minor-mode
-    "Provide Super key alternatives to common command."
+    "Provide Super key alternatives to Command."
     :global t
     :init-value t
     :keymap my-emacs-super-keys-map)

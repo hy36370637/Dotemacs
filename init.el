@@ -38,7 +38,7 @@
 ;; ======================================
 ;;; system-info
 ;; ======================================
-(defvar my-laptop-p (eq system-type 'gnu/linux))
+;; (defvar my-laptop-p (eq system-type 'gnu/linux))
 (defvar my-mactop-p (eq system-type 'darwin))
 (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
@@ -60,8 +60,9 @@
 (require 'my-dired-custom)                    ; dired
 (require 'my-reading-mode-custom)   ; reading mode
 (require 'my-play-streaming)                 ; radio 청취
-(require 'my-emacs-super-keys)            ; minor. super key
-(require 'my-emacs-hyper-keys)            ; minor. hyper key
+;; (require 'my-emacs-super-keys)            ; minor. super key
+;; (require 'my-emacs-hyper-keys)            ; minor. hyper key
+(require 'my-emacs-hyper-super-keys) 
 (require 'my-completion)                        ; completion
 (require 'my-web-search)
 
