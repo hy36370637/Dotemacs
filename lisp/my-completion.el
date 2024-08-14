@@ -82,8 +82,8 @@
   ;; (setq save-abbrevs 'silently)        ;; save abbrevs when files are saved
   (abbrev-table-put global-abbrev-table :regexp "\\(?:^\\|[\t\s]+\\)\\(?1:[:;_].*\\|.*\\)")
   (define-abbrev-table 'global-abbrev-table 
-    '(("m2"  "㎡")   ("km"  "㎞")("lDot" "……") 
-      ("cX"    "×")   ("cB"   "※")
+    '(("m2"  "㎡")   ("km"  "㎞")  ("lDot" "……") 
+      ("cX"    "×")   ("cB"   "※")  ("lDash" "―")
       ("lG"    "「")   ("rG"    "」")
       ("llG"  "『")   ("rrG"   "』")
       ("cZ"   "○")   ("cQ"   "□")
