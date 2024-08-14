@@ -2,7 +2,7 @@
 ;;; Speed up emacs
 ;; ======================================
 ;; 가비지 수집 호출 횟수 줄이기
-(setq gc-cons-threshold 100000000)
+(setq gc-cons-threshold 800000)
 (add-hook 'emacs-startup-hook 'my/set-gc-threshold)
 (defun my/set-gc-threshold ()
   "Reset `gc-cons-threshold' to its default value."
@@ -123,7 +123,7 @@
 ;;; theme
 ;; ======================================
 ;;; STANDARD THEME
-;;  loading theme
+;;  loading theme. 시작 테마
 (require 'standard-themes)
 (setq standard-themes-bold-constructs t
       standard-themes-italic-constructs t
