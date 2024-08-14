@@ -91,11 +91,11 @@
 ;; Org 모드 약어 테이블 설정
   (with-eval-after-load 'org
     (define-abbrev-table 'org-mode-abbrev-table
-      '(("dsc" "#+DESCRIPTION: ")
-	("author" "#+AUTHOR: ")
-	("keyword" "#+KEYWORDS: ")
-	("setupfile" "#+SETUPFILE: setLTH/Header.org")
-	("option"  "#+OPTIONS: toc:2 num:2")
+      '(("Dsc" "#+DESCRIPTION: ")
+	("Author" "#+AUTHOR: ")
+	("Keyword" "#+KEYWORDS: ")
+	("Setupfile" "#+SETUPFILE: setLTH/Header.org")
+	("Option"  "#+OPTIONS: toc:2 num:2")
 ;;	("doimg" "#+ATTR_LATEX: :width 0.4\\textwidth\n#+CAPTION: \n   [[.img/imgDir/.jpg]]")
 ;;	("mktitle" "#+begin_src emacs-lisp :exports results :results none :eval export\n(make-variable-buffer-local 'org-latex-title-command)\n (setq org-latex-title-command(concat\n\"\\\\begin{titlepage}\\n\"\n\"\\\\includegraphics[width=14.7cm]{./img/imgCover/}\\n\"\n\"\\\\end{titlepage}\\n\"))\n#+end_src\n")
 	)))
