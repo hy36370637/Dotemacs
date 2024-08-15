@@ -56,12 +56,12 @@
 ;;; load-my-custom-package
 ;; ======================================
 (add-to-list 'load-path "~/.emacs.d/lisp/")
-(require 'my-org-custom)                       ; org-mode
-(require 'my-dired-custom)                    ; dired
-(require 'my-reading-mode-custom)   ; reading mode
-(require 'my-play-streaming)                 ; radio 청취
+(require 'my-org-custom)
+(require 'my-dired-custom)
+(require 'my-view-mode-custom) 
+(require 'my-play-streaming)
 (require 'my-emacs-hyper-super-keys) 
-(require 'my-completion)                        ; completion
+(require 'my-completion)
 (require 'my-web-search)
 
 ;; ======================================
