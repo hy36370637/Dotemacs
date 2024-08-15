@@ -94,8 +94,10 @@
       '(("Dsc" "#+DESCRIPTION: ")
 	("Author" "#+AUTHOR: ")
 	("Keyword" "#+KEYWORDS: ")
-	("Setupfile" "#+SETUPFILE: setLTH/Header.org")
+	("Setfile"   "#+SETUPFILE: setLTH/Header.org")
+	("SetfileQV"   "#+SETUPFILE: setLTH/Header_quote_verse.org")
 	("Option"  "#+OPTIONS: toc:2 num:2")
+	("Latex_header"  "#+LATEX_HEADER:")
 	)))
   )
 
@@ -107,6 +109,15 @@
   (interactive)
   (let ((choi '("·"  "→"  "⇒"  "「」"  "『』"  "※"  "…"  "―")))
     (insert (completing-read "선택: " choi))))
+
+;; =======================================
+;;; flush-line
+;; ======================================-
+;; M-x flush-lines RET ^\s-*$ RET 
+(defun flush-empty-lines-in-region (start end)
+  "Delete all empty or whitespace-only lines in the region."
+  (interactive "r")
+  (flush-lines "^\\s-*$" start end))
 
 ;; =======================================
 ;;; Hunspell 설정

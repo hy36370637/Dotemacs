@@ -174,6 +174,7 @@
 (set-locale-environment "ko_KR.UTF-8")	  ;kbd 한글 S-SPC
 (setenv "LANG" "ko_KR.UTF-8")
 (setenv "LC_COLLATE" "C")	                	  ;Dired 한글 파일명 정렬 macOS
+(setq default-input-method "korean-hangul")
 (setq input-method-verbose-flag nil)
 (setq input-method-highlight-flag nil)          ;입력 글자 밑줄방지
 
