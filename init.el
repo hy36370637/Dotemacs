@@ -1,8 +1,7 @@
 ;; ======================================
 ;;; Config for EMACS
 ;; ======================================
-;; by HO-YOUNG KIM
-;;
+;; by HO-YOUNG KIM(hy36370637)
 
 ;; ======================================
 ;;; Speed up emacs
@@ -16,10 +15,8 @@
   
   (defun my/set-gc-threshold ()
     "GC 임계값을 기본값으로 재설정합니다."
-    (setq gc-cons-threshold (* 1024 1024 2))) ; 2MB
-  
+    (setq gc-cons-threshold (* 1024 1024 2))) ; 2MB  
   (add-hook 'focus-out-hook #'garbage-collect)
-
   :config
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
   (unless (file-exists-p custom-file)
@@ -264,10 +261,10 @@
 ;;; consult-dir
 ;; ======================================
 (use-package consult-dir
-  :ensure t
-  :bind (("C-c r d" . consult-dir)
-         :map vertico-map
-         ("C-c r d" . consult-dir)))
+  :ensure t)
+  ;; :bind (("C-c r d" . consult-dir)
+  ;;        :map vertico-map
+  ;;        ("C-c r d" . consult-dir)))
 
 ;; ======================================
 ;;; embark
