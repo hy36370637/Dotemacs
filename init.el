@@ -2,42 +2,39 @@
 ;;; Config for EMACS
 ;; ======================================
 ;; by HO-YOUNG KIM
+;;
 
 ;; ======================================
 ;;; Speed up emacs
 ;; ======================================
-;; 가비지 수집 호출 횟수 줄이기
-;; 시작 시 GC 임계값을 높게 설정
-(setq gc-cons-threshold most-positive-fixnum)
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            ;; Emacs 시작 후 GC 임계값을 적절한 값으로 조정
-            (setq gc-cons-threshold (* 1024 1024 20)))) ; 20MB
+(use-package emacs
+  :init
+  (setq gc-cons-threshold most-positive-fixnum)
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (setq gc-cons-threshold (* 1024 1024 20)))) ; 20MB
+  
+  (defun my/set-gc-threshold ()
+    "GC 임계값을 기본값으로 재설정합니다."
+    (setq gc-cons-threshold (* 1024 1024 2))) ; 2MB
+  
+  (add-hook 'focus-out-hook #'garbage-collect)
 
-(defun my/set-gc-threshold ()
-  "GC 임계값을 기본값으로 재설정합니다."
-  (setq gc-cons-threshold (* 1024 1024 2))) ; 2MB
-;; 포커스를 잃었을 때 GC 실행
-(add-hook 'focus-out-hook #'garbage-collect)
-
-;; ======================================
-;;; custom file
-;; ======================================
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(unless (file-exists-p custom-file)
-  (write-region "" nil custom-file))
-(load custom-file nil t)
+  :config
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (unless (file-exists-p custom-file)
+    (write-region "" nil custom-file))
+  (load custom-file nil t))
 
 ;; ======================================
 ;;; package source list
-;;; ======================================
-;; (require 'package)
-(setq package-archives
-      '(("melpa" . "https://melpa.org/packages/")
-	("gnu" . "https://elpa.gnu.org/packages/")))
-;;	("org" . "https://orgmode.org/elpa/")
-;;	("nongnu" . "https://elpa.nongnu.org/nongnu/")))
-(package-initialize)
+;; ======================================
+(use-package package
+  :config
+  (setq package-archives
+        '(("melpa" . "https://melpa.org/packages/")
+          ("gnu" . "https://elpa.gnu.org/packages/")))
+  (package-initialize))
 
 ;; ======================================
 ;;; use-package
@@ -47,164 +44,129 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-;;(setq use-package-always-ensure t)
 
 ;; ======================================
 ;;; system-info
 ;; ======================================
-;; (defvar my-laptop-p (eq system-type 'gnu/linux))
 (defvar my-mactop-p (eq system-type 'darwin))
 (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
 ;; ======================================
 ;;; exec-path-from-shell
 ;; ======================================
-;; MacOS PATH 설정
 (use-package exec-path-from-shell
   :ensure t
   :if my-mactop-p
-  :init
+  :config
   (exec-path-from-shell-initialize))
 
 ;; ======================================
 ;;; load-my-custom-package
 ;; ======================================
-(add-to-list 'load-path "~/.emacs.d/lisp/")
-(require 'my-org-custom)
-(require 'my-dired-custom)
-(require 'my-view-mode-custom) 
-(require 'my-play-streaming)
-(require 'my-emacs-hyper-super-keys) 
-(require 'my-completion)
-(require 'my-web-search)
+(use-package load-dir
+  :ensure t
+  :config
+  (setq load-dir-recursive t)
+  (load-dir-one "~/.emacs.d/lisp/"))
 
 ;; ======================================
 ;;; MacOS keyboard
 ;; ======================================
-;; (setq mac-option-modifier 'meta)
-;; (setq mac-command-modifier 'meta)
-;; (setq ns-right-command-modifier 'hyper)
-;; (setq mac-right-option-modifier 'control)
-(setq ns-function-modifier 'hyper)
+(use-package emacs
+  :if my-mactop-p
+  :config
+  (setq ns-function-modifier 'hyper))
 
 ;; ======================================
-;;; defalias
+;;; Emacs UI and behavior
 ;; ======================================
-;; (defalias 'linum-rel 'menu-bar--display-line-numbers-mode-relative)
-;; (defalias 'linum-abs 'menu-bar--display-line-numbers-mode-absolute)
-;; (defalias 'linum-none 'menu-bar--display-line-numbers-mode-none)
-
-;; ======================================
-;;; 외양
-;; ======================================
-(tool-bar-mode -1)                            ; 도구상자 비활성
-;; (menu-bar-mode -1)
-(toggle-scroll-bar -1)
-(setq inhibit-startup-message t)     ;시작 메시지  안나오게
-(setq visible-bell t )                             ; 경로 벨 대신 시각적인 벨로 표시
-(setq initial-scratch-message nil)
-(setq use-dialog-box nil)
-(setq-default line-spacing 0.2)        ; 줄 간격 1.5
-;; (setq-default cursor-type 'bar)	       ;cursor type hbar,bar,box
-;; (setq frame-title-format "| dole's Emacs | %b |")
-
-;; ======================================
-;;; 작은 설정 들
-;; ======================================
-(setq default-directory  "~/Dropbox/Docs/org/")
-(setq temporary-file-directory "~/Dropbox/Docs/tmpdir/")
-(setq make-backup-files nil)
-(setq kill-whole-line 1)
-(setq search-highlight t)
-;;      display-time-format "%b-%d(%a) %H:%M")
-;;; Scroll setting
-(setq scroll-margin 7)
-(setq scroll-preserve-screen-position t)
-(setq scroll-conservatively 101)
-
-;; ======================================
-;;; 자잘한 필수 모드
-;; ======================================
-(save-place-mode 1)
-(global-font-lock-mode 1)
-(global-visual-line-mode t) ;word wrap
-(global-auto-revert-mode 1)
-(transient-mark-mode t)
-(column-number-mode t)
-(display-time-mode 1)
+(use-package emacs
+  :init
+  (setq inhibit-startup-message t
+        visible-bell t
+        initial-scratch-message nil
+        use-dialog-box nil
+        default-directory "~/Dropbox/Docs/org/"
+        temporary-file-directory "~/Dropbox/Docs/tmpdir/"
+        make-backup-files nil
+        kill-whole-line 1
+        search-highlight t
+        scroll-margin 7
+        scroll-preserve-screen-position t
+        scroll-conservatively 101)
+  :config
+  (tool-bar-mode -1)
+  (toggle-scroll-bar -1)
+  (setq-default line-spacing 0.2)
+  (save-place-mode 1)
+  (global-font-lock-mode 1)
+  (global-visual-line-mode t)
+  (global-auto-revert-mode 1)
+  (transient-mark-mode t)
+  (column-number-mode t)
+  (display-time-mode 1))
 
 ;; ======================================
 ;;; theme
 ;; ======================================
-;;; STANDARD THEME
-;;  loading theme. 시작 테마
-(require 'standard-themes)
-(setq standard-themes-bold-constructs t
-      standard-themes-italic-constructs t
-      standard-themes-disable-other-themes t
-      standard-themes-mixed-fonts t
-      standard-themes-variable-pitch-ui t
-      standard-themes-prompts '(extrabold italic)
-      standard-themes-headings
-      '((0 . (variable-pitch light 1.3))
-        (1 . (variable-pitch light 1.2))
-        (2 . (variable-pitch light 1.2))
-        (3 . (variable-pitch semilight 1.2))
-        (4 . (variable-pitch semilight 1.2))
-        (5 . (variable-pitch 1.2))
-        (6 . (variable-pitch 1.2))
-        (7 . (variable-pitch 1.2))
-        (agenda-date . (1.1))
-        (agenda-structure . (variable-pitch light 1.6))
-        (t . (variable-pitch 1.1))))
-
-;; (standard-themes-load-light)  ;; load-theme
-(standard-themes-load-dark)  ;; load-theme
+(use-package standard-themes
+  :ensure t
+  :config
+  (setq standard-themes-bold-constructs t
+        standard-themes-italic-constructs t
+        standard-themes-disable-other-themes t
+        standard-themes-mixed-fonts t
+        standard-themes-variable-pitch-ui t
+        standard-themes-prompts '(extrabold italic)
+        standard-themes-headings
+        '((0 . (variable-pitch light 1.3))
+          (1 . (variable-pitch light 1.2))
+          (2 . (variable-pitch light 1.2))
+          (3 . (variable-pitch semilight 1.2))
+          (4 . (variable-pitch semilight 1.2))
+          (5 . (variable-pitch 1.2))
+          (6 . (variable-pitch 1.2))
+          (7 . (variable-pitch 1.2))
+          (agenda-date . (1.1))
+          (agenda-structure . (variable-pitch light 1.6))
+          (t . (variable-pitch 1.1))))
+  (standard-themes-load-dark))
 
 ;; ======================================
-;;; start emacs (load theme by time)
+;;; Key bindings
 ;; ======================================
-;; display-time-mode 사용.
-;; (defun set-theme-by-time ()
-;;   "set theme by time, loading emacs"
-;;   (let ((current-hour (string-to-number (substring (current-time-string) 11 13))))
-;;     (if (and (>= current-hour 9) (< current-hour 17))  ; 9시부터 17시까지
-;;       (load-theme 'modus-vivendi))))
-;; (set-theme-by-time)
+(use-package emacs
+  :bind
+  (([f11] . nil)
+   ("C-x o" . nil)
+   ("C-x C-r" . restart-emacs)
+   ("M-o" . other-window)))
 
 ;; ======================================
-;;; 단축키 prefix key
+;;; Locale and Korean settings
 ;; ======================================
-(global-unset-key [f11])  ; able expose / MacOS
-(global-unset-key (kbd "C-x o"))  ;remove  'other-window
-;; (global-set-key (kbd "C-x C-m") 'execute-extended-command) ; M-x
-(global-set-key (kbd "C-x C-r") 'restart-emacs)  ;emacs 29
-(global-set-key (kbd "M-o") 'other-window)
+(use-package emacs
+  :config
+  (set-language-environment "Korean")
+  (set-locale-environment "ko_KR.UTF-8")
+  (setenv "LANG" "ko_KR.UTF-8")
+  (setenv "LC_COLLATE" "C")
+  (setq default-input-method "korean-hangul"
+        input-method-verbose-flag nil
+        input-method-highlight-flag nil))
 
 ;; ======================================
-;;; 로케일, 한글
+;;; Fonts
 ;; ======================================
-(set-language-environment "Korean")
-(set-locale-environment "ko_KR.UTF-8")	  ;kbd 한글 S-SPC
-(setenv "LANG" "ko_KR.UTF-8")
-(setenv "LC_COLLATE" "C")	                	  ;Dired 한글 파일명 정렬 macOS
-(setq default-input-method "korean-hangul")
-(setq input-method-verbose-flag nil)
-(setq input-method-highlight-flag nil)          ;입력 글자 밑줄방지
-
-;; ======================================
-;;; 글꼴 fonts
-;; ======================================
-;; (if (display-graphic-p)
-;;     (progn
-;;       ;;(set-frame-font "Noto Sans Mono CJK KR")
-      (set-face-attribute 'default nil
-                          :family "Noto Sans CJK KR"    ;Hack, Menlo;Noto Sans CJK KR
-                          :height 160)
-      (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
-      (set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
-      (set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")) ;)
-;;  (set-fontset-font t 'hangul (font-spec :name "NanumGothicCoding")))
+(use-package emacs
+  :if (display-graphic-p)
+  :config
+  (set-face-attribute 'default nil
+                      :family "Noto Sans CJK KR"
+                      :height 160)
+  (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
+  (set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
+  (set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")))
 
 ;; ======================================
 ;;; helpful
@@ -220,7 +182,7 @@
    ("C-h C" . helpful-command)))
 
 ;; ======================================
-;;; recentF
+;;; recentf
 ;; ======================================
 (use-package recentf
   :ensure t
@@ -233,11 +195,10 @@
 ;;; which-key
 ;; ======================================
 (use-package which-key
-  :ensure nil   ; built in Emacs 30
+  :ensure nil
   :init
   (which-key-mode)
   :config
-  ;; (which-key-setup-side-window-right)
   (setq which-key-idle-delay 0.2))
 
 ;; ======================================
@@ -247,8 +208,9 @@
   :ensure t
   :init
   (vertico-mode)
-  (setq vertico-resize t)
-  (setq vertico-cycle t))
+  :custom
+  (vertico-resize t)
+  (vertico-cycle t))
 
 ;; ======================================
 ;;; marginalia
@@ -271,7 +233,6 @@
 ;; ======================================
 ;;; orderless
 ;; ======================================
-;; advenced completion stlye
 (use-package orderless
   :ensure t
   :custom
@@ -281,7 +242,6 @@
 ;; ======================================
 ;;; consult
 ;; ======================================
-;; enhanced minibuffer commands, search
 (use-package consult
   :ensure t
   :bind
@@ -290,7 +250,6 @@
    ("C-x r x" . consult-register)
    ("C-x r b" . consult-bookmark)
    ("C-c k" . consult-kmacro)
-   ;;   ("C-x C-r" . consult-recent-file)
    ("M-g d" . consult-dir)
    ("M-g o" . consult-outline)
    ("M-g h" . consult-org-heading)
@@ -304,17 +263,15 @@
 ;; ======================================
 ;;; consult-dir
 ;; ======================================
-;; insert paths into minibuffer prompts in Emacs
 (use-package consult-dir
   :ensure t
   :bind (("C-c r d" . consult-dir)
-  :map vertico-map
-  ("C-c r d" . consult-dir)))
+         :map vertico-map
+         ("C-c r d" . consult-dir)))
 
 ;; ======================================
 ;;; embark
 ;; ======================================
-;; extended minibuffer actions and context menu
 (use-package embark
   :ensure t
   :bind
@@ -327,27 +284,28 @@
 ;; ======================================
 (use-package embark-consult
   :ensure t
+  :after (embark consult)
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-;; =======================================
-;;; all-the-icons
-;; ======================================-
+;; ======================================
+;;; Icons
+;; ======================================
 (use-package nerd-icons
   :ensure t)
-;;  :if (display-graphic-p))
 
 (use-package nerd-icons-dired
+  :ensure t
   :after dired
-;;  :if (display-graphic-p)
-  :hook
-  (dired-mode . nerd-icons-dired-mode))
+  :hook (dired-mode . nerd-icons-dired-mode))
 
 (use-package nerd-icons-completion
+  :ensure t
   :after marginalia
   :config
   (nerd-icons-completion-mode)
-  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+  :hook
+  (marginalia-mode . nerd-icons-completion-marginalia-setup))
 
 ;; ======================================
 ;;; eshell
@@ -362,23 +320,22 @@
 ;; ======================================
 (use-package emacs
   :init
-  ;; (setq mode-line-compact nil) ; Emacs 28
-  (setq mode-line-right-align-edge 'right-margin) ; Emacs 30
+  (setq mode-line-right-align-edge 'right-margin)
   (setq-default mode-line-format
-	      '("%e "
-		mode-line-front-space
-		(:eval (if (string= current-input-method "korean-hangul")
-			   "KO"
-			 "EN"))
-		" Ⓗ "
-		mode-line-buffer-identification       
-		mode-line-frame-identification
-		" Ⓨ "
-		mode-line-modes
-		mode-line-format-right-align  ;; emacs 30
-		mode-line-position
-		" Ⓚ "
-		mode-line-misc-info)))
+                '("%e "
+                  mode-line-front-space
+                  (:eval (if (string= current-input-method "korean-hangul")
+                             "KO"
+                           "EN"))
+                  " Ⓗ "
+                  mode-line-buffer-identification       
+                  mode-line-frame-identification
+                  " Ⓨ "
+                  mode-line-modes
+                  mode-line-format-right-align
+                  mode-line-position
+                  " Ⓚ "
+                  mode-line-misc-info)))
 
 ;; ======================================
 ;;; keycast
@@ -386,20 +343,19 @@
 (use-package keycast
   :ensure t
   :config
-  (setq keycast-mode-line-insert-after 'mode-line-modes)
-  (setq keycast-mode-line-window-predicate 'mode-line-window-selected-p)
-  (setq keycast-mode-line-remove-tail-elements nil)
+  (setq keycast-mode-line-insert-after 'mode-line-modes
+        keycast-mode-line-window-predicate 'mode-line-window-selected-p
+        keycast-mode-line-remove-tail-elements nil)
   (keycast-mode-line-mode -1))
 
 ;; ======================================
 ;;; battery display
 ;; ======================================
 (use-package battery
-  :ensure nil 				;built in
-  :if  my-Macbook-p
+  :if my-Macbook-p
   :config 
-  (setq battery-status-function 'battery-pmset)
-  (setq battery-mode-line-format "Ⓑ %p%%  ") 
+  (setq battery-status-function 'battery-pmset
+        battery-mode-line-format "Ⓑ %p%%  ")
   (display-battery-mode 1))
 
 ;; ======================================
