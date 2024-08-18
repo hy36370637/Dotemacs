@@ -1,19 +1,32 @@
 ;; ======================================
+;;; Config for EMACS
+;; ======================================
+;; by HO-YOUNG KIM
+
+;; ======================================
 ;;; Speed up emacs
 ;; ======================================
 ;; 가비지 수집 호출 횟수 줄이기
-(setq gc-cons-threshold 800000)
-(add-hook 'emacs-startup-hook 'my/set-gc-threshold)
+;; 시작 시 GC 임계값을 높게 설정
+(setq gc-cons-threshold most-positive-fixnum)
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            ;; Emacs 시작 후 GC 임계값을 적절한 값으로 조정
+            (setq gc-cons-threshold (* 1024 1024 20)))) ; 20MB
+
 (defun my/set-gc-threshold ()
-  "Reset `gc-cons-threshold' to its default value."
-  (setq gc-cons-threshold 800000))
+  "GC 임계값을 기본값으로 재설정합니다."
+  (setq gc-cons-threshold (* 1024 1024 2))) ; 2MB
+;; 포커스를 잃었을 때 GC 실행
+(add-hook 'focus-out-hook #'garbage-collect)
 
 ;; ======================================
 ;;; custom file
 ;; ======================================
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-;; (setq custom-file (concat user-emacs-directory "custom.el"))
-;; (when (file-exists-p custom-file) (load custom-file 't))
+(unless (file-exists-p custom-file)
+  (write-region "" nil custom-file))
+(load custom-file nil t)
 
 ;; ======================================
 ;;; package source list
@@ -29,11 +42,12 @@
 ;; ======================================
 ;;; use-package
 ;; ======================================
-(require 'use-package)
-;; (unless (package-installed-p 'use-package)
-;;   (package-refresh-contents)
-;;   (package-install 'use-package))
-;; ;; (setq use-package-always-ensure nil)
+(eval-when-compile
+  (require 'use-package))
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+;;(setq use-package-always-ensure t)
 
 ;; ======================================
 ;;; system-info

@@ -5,37 +5,41 @@
 ;; /.emacs.d/lisp/my-org-custom.el
 (use-package org
   :ensure nil
-  :bind
-  (("M-n" . outline-next-visible-heading)
-   ("M-p" . outline-previous-visible-heading)
-   ("C-c l" . org-store-link))
-  :config
-  (setq org-directory (expand-file-name "~/Dropbox/Docs/org/"))
-  ;;  (setq org-startup-indented nil)                 ;indent-mode enable
-  ;;; hard indent
-  (setq org-adapt-indentation t)		;heading 이하 들여쓰기
-  (setq org-hide-leading-stars t)
-  (setq org-src-preserve-indentation t)
-  (setq org-structure-template-alist
-        '(("s" . "src")
-          ("S" . "src emacs-lisp")
-	  ("C" . "comment")
-          ("v" . "verse")
-          ("q" . "quote")))
+  :bind (("M-n" . outline-next-visible-heading)
+         ("M-p" . outline-previous-visible-heading)
+         ("C-c l" . org-store-link))
   :custom
+  (org-directory (expand-file-name "~/Dropbox/Docs/org/"))
+  (org-adapt-indentation t)
+  (org-hide-leading-stars t)
+  (org-src-preserve-indentation t)
+  (org-structure-template-alist
+   '(("s" . "src")
+     ("S" . "src emacs-lisp")
+     ("C" . "comment")
+     ("v" . "verse")
+     ("q" . "quote")))
   (org-startup-with-inline-images nil)
   (org-log-into-drawer t)
   (org-log-done 'time)
   (org-image-actual-width '(100))
-  (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
-  ;;; Export settings
+  (org-todo-keywords '((sequence "TODO" "HOLD" "DONE"))))
+
+(use-package ox-latex
+  :ensure nil  ; ox-latex is part of org
+  :after org
+  :custom
   (org-latex-title-command "\\maketitle \\newpage")
   (org-latex-toc-command "\\tableofcontents \\newpage")
   (org-latex-compiler "xelatex")
   (org-latex-to-pdf-process
    '("xelatex -interaction nonstopmode -output-directory %o %f"
      "xelatex -interaction nonstopmode -output-directory %o %f"
-     "xelatex -interaction nonstopmode -output-directory %o %f")))
+     "xelatex -interaction nonstopmode -output-directory %o %f"))
+  ;; :config
+  ;; (add-to-list 'org-latex-packages-alist '("" "kotex" t))
+  ;; (add-to-list 'org-latex-packages-alist '("" "xcolor" t))
+  :hook (org-mode . (lambda () (require 'ox-latex))))
 
 ;; ======================================
 ;;; org-capture
