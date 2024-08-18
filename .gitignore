@@ -12,6 +12,7 @@ tramp
 bookmark
 custom.el
 history
+bookmarks
 
 # 특정 파일과 디렉토리 포함
 #!.gitignore
