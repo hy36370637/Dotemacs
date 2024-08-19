@@ -181,12 +181,12 @@
 ;; ======================================
 ;;; recentf
 ;; ======================================
-(use-package recentf
-  :ensure t
-  :init
-  (recentf-mode 1)
-  :custom
-  (recentf-max-saved-items 30))
+;; (use-package recentf
+;;   :ensure t
+;;   :init
+;;   (recentf-mode 1)
+;;   :custom
+;;   (recentf-max-saved-items 30))
 
 ;; ======================================
 ;;; which-key
@@ -363,3 +363,4 @@
   :bind (("C-x g" . magit-status))
   :config
   (setq magit-auto-revert-mode t))
+
