@@ -41,7 +41,7 @@
   ;; my Custom Prefix - 기존 사용하여 익숙했던 것
   "s-t c"  #'select-special-character
   "s-t k"  #'keycast-mode-line-mode
-  "s-t m"  #'standard-themes-toggle 
+  "s-t m"  #'my-mp3-player 
   "s-t r"  #'toggle-streaming
   "s-t s"  #'my/search-selected-text
   "s-t v"  #'toggle-my-view-mode

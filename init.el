@@ -53,7 +53,7 @@
 ;; ======================================
 (use-package exec-path-from-shell
   :ensure t
-  :if my-mactop-p
+;;  :if my-mactop-p
   :config
   (exec-path-from-shell-initialize))
 
@@ -70,7 +70,7 @@
 ;;; MacOS keyboard
 ;; ======================================
 (use-package emacs
-  :if my-mactop-p
+ ;; :if my-mactop-p
   :config
   (setq ns-function-modifier 'hyper))
 
@@ -156,7 +156,7 @@
 ;;; Fonts
 ;; ======================================
 (use-package emacs
-  :if (display-graphic-p)
+;;  :if (display-graphic-p)
   :config
   (set-face-attribute 'default nil
                       :family "Noto Sans CJK KR"
@@ -249,8 +249,8 @@
    ("C-c k" . consult-kmacro)
    ("M-g d" . consult-dir)
    ("M-g o" . consult-outline)
-   ("M-g h" . consult-org-heading)
-   ("M-g a" . consult-org-agenda)
+   ;; ("M-g h" . consult-org-heading)
+   ;; ("M-g a" . consult-org-agenda)
    ("M-g m" . consult-mark)
    ("M-s f" . consult-find)
    ("M-s g" . consult-grep)
