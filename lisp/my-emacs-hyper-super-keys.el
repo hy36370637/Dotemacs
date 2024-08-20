@@ -42,7 +42,7 @@
   "s-t c"  #'select-special-character
   "s-t k"  #'keycast-mode-line-mode
   "s-t m"  #'my-mp3-player 
-  "s-t r"  #'toggle-streaming
+  "s-t r"  #'my-streaming-toggle
   "s-t s"  #'my/search-selected-text
   "s-t v"  #'toggle-my-view-mode
   "s-<return>" #'toggle-frame-fullscreen
