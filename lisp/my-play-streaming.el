@@ -83,13 +83,7 @@
 ;; MP3 Player for Emacs
 ;; 이 플레이어는 macOS의 afplay 명령어를 사용하므로 macOS에서만 작동
 ;; MP3 파일만 지원합니다. 다른 형식의 오디오 파일은 TEST되지 않음
-
-;;; my-mp3-player.el --- A simple MP3 player for Emacs
-
-;;; Commentary:
 ;; This package provides a simple MP3 player interface for Emacs.
-
-;;; Code:
 
 (require 'cl-lib)
 
@@ -99,15 +93,17 @@
 (defvar *my-mp3-player-shuffle* nil "Whether shuffle mode is enabled.")
 (defvar *my-mp3-player-repeat* nil "Whether repeat mode is enabled.")
 (defvar *my-mp3-player-buffer-name* "*My MP3 Player*" "Name of the MP3 player buffer.")
+(defvar *my-mp3-player-default-directory* "~/Dropbox/MP3" "Default directory for MP3 files.")
 
-(defun my-mp3-player-load-directory (directory)
-  "Load MP3 files from the specified DIRECTORY."
+(defun my-mp3-player-load-directory (&optional directory)
+  "Load MP3 files from the specified DIRECTORY or from the default directory."
   (interactive "DChoose directory: ")
-  (setq *my-mp3-player-playlist* (directory-files-recursively directory "\\.mp3$"))
+  (setq directory (or directory *my-mp3-player-default-directory*))
+  (setq *my-mp3-player-playlist* (directory-files directory t "\\.mp3$"))
   (setq *my-mp3-player-index* 0)
   (when *my-mp3-player-shuffle*
     (setq *my-mp3-player-playlist* (my-mp3-player-shuffle-list *my-mp3-player-playlist*)))
-  (message "Loaded %d MP3 files" (length *my-mp3-player-playlist*))
+  (message "Loaded %d MP3 files from %s" (length *my-mp3-player-playlist*) directory)
   (my-mp3-player-update-buffer))
 
 (defun my-mp3-player-play-pause ()
@@ -263,9 +259,6 @@
     (define-key map (kbd "q") 'quit-window)
     (use-local-map map))
   (message "My MP3 Player started. Press 'q' to quit."))
-
-
-
 
 
 ;; end here
