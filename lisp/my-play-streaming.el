@@ -101,7 +101,7 @@
 (defconst my-mp3-player-buffer-name "*My MP3 Player*"
   "Name of the MP3 player buffer.")
 
-(defvar my-mp3-player-mode-map
+(defvar my-mp3-player-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "p") #'my-mp3-player-play-pause)
     (define-key map (kbd "s") #'my-mp3-player-stop)
@@ -110,20 +110,9 @@
     (define-key map (kbd "r") #'my-mp3-player-repeat-toggle)
     (define-key map (kbd "f") #'my-mp3-player-shuffle-toggle)
     (define-key map (kbd "l") #'my-mp3-player-load-directory)
-    (define-key map (kbd "q") #'quit-window)
+    (define-key map (kbd "q") #'my-mp3-player-quit)
     map)
-  "Keymap for `my-mp3-player-mode'.")
-
-(define-minor-mode my-mp3-player-mode
-  "Minor mode for MP3 player interface."
-  :lighter " MP3"
-  :keymap my-mp3-player-mode-map
-  (if my-mp3-player-mode
-      (progn
-        (when (null my-mp3-player-playlist)
-          (call-interactively #'my-mp3-player-load-directory))
-        (my-mp3-player-update-buffer))
-    (my-mp3-player-stop)))
+  "Keymap for MP3 player commands.")
 
 (defun my-mp3-player-load-directory (directory)
   "Load MP3 files from DIRECTORY."
@@ -263,18 +252,28 @@
                 "r - Toggle Repeat\n"
                 "f - Toggle Shuffle\n"
                 "l - Load Directory\n"
-                "q - Quit\n")))
-    (display-buffer buf)))
+                "q - Quit\n")
+        (use-local-map my-mp3-player-map)
+        (setq buffer-read-only t)))))
+
+(defun my-mp3-player-quit ()
+  "Quit the MP3 player."
+  (interactive)
+  (my-mp3-player-stop)
+  (kill-buffer my-mp3-player-buffer-name))
 
 (defun my-mp3-player ()
   "Start the MP3 player interface."
   (interactive)
   (let ((buf (get-buffer-create my-mp3-player-buffer-name)))
     (with-current-buffer buf
-      (my-mp3-player-mode 1))
-    (switch-to-buffer buf))
-  (message "My MP3 Player started. Press 'q' to quit."))
+      (when (null my-mp3-player-playlist)
+        (call-interactively #'my-mp3-player-load-directory))
+      (my-mp3-player-update-buffer)
+      (use-local-map my-mp3-player-map))
+    (switch-to-buffer-other-window buf))
+  (message "My MP3 Player started. Press 'p' to play/pause, 'q' to quit."))
+
+;;; ends here
 
 (provide 'my-play-streaming)
-
-;;; my-play-streaming.el ends here
