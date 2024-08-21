@@ -1,5 +1,5 @@
 ;;; my-play-streaming.el --- Streaming and MP3 player for Emacs -*- lexical-binding: t; -*-
-
+;; Ver 0.5
 ;;; Commentary:
 ;; This package provides streaming radio and MP3 player functionality for Emacs.
 ;; It includes VLC streaming capabilities and an MP3 player interface.
