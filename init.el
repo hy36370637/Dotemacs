@@ -317,22 +317,27 @@
 ;; ======================================
 (use-package emacs
   :init
-  (setq mode-line-right-align-edge 'right-margin)
-  (setq-default mode-line-format
-                '("%e "
-                  mode-line-front-space
-                  (:eval (if (string= current-input-method "korean-hangul")
-                             "KO"
-                           "EN"))
-                  " Ⓗ "
-                  mode-line-buffer-identification       
-                  mode-line-frame-identification
-                  " Ⓨ "
-                  mode-line-modes
-                  mode-line-format-right-align
-                  mode-line-position
-                  " Ⓚ "
-                  mode-line-misc-info)))
+(setq mode-line-right-align-edge 'right-margin)
+(setq-default mode-line-format
+              '("%e "
+                mode-line-front-space
+                (:eval (if (string= current-input-method "korean-hangul")
+                           "KO"
+                         "EN"))
+                " Ⓗ "
+                mode-line-buffer-identification       
+                mode-line-frame-identification
+                " Ⓨ "
+                mode-line-modes
+                (:eval (if my-streaming-playing
+                           my-streaming-status
+                         my-mp3-player-status))
+                mode-line-format-right-align
+                mode-line-position
+                " Ⓚ "
+                mode-line-misc-info))
+
+(force-mode-line-update t))  ;; 모드라인 업데이트 강제 적용
 
 ;; ======================================
 ;;; keycast
