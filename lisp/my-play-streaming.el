@@ -230,7 +230,7 @@
         (insert "My MP3 Player\n\n"
                 (format "Shuffle: %s\n" (if my-mp3-player-shuffle "On" "Off"))
                 (format "Repeat: %s\n\n" (if my-mp3-player-repeat "On" "Off")))
-        (if my-mp3-player-playlist
+(if my-mp3-player-playlist
             (let ((file (nth my-mp3-player-index my-mp3-player-playlist)))
               (insert (format "Now Playing: %s\n" (file-name-nondirectory file))
                       (format "Track: %d/%d\n\n" 
@@ -243,7 +243,7 @@
                                   (if (= i my-mp3-player-index) ">" " ")
                                   (1+ i)
                                   (file-name-nondirectory track))))))
-          (insert "No playlist loaded\n"))
+          (insert "No playlist loaded\n"))	
         (insert "\nControls:\n"
                 "p - Play/Pause\n"
                 "s - Stop\n"
@@ -252,7 +252,7 @@
                 "r - Toggle Repeat\n"
                 "f - Toggle Shuffle\n"
                 "l - Load Directory\n"
-                "q - Quit\n")
+                "q - Quit\n")	
         (use-local-map my-mp3-player-map)
         (setq buffer-read-only t)))))
 

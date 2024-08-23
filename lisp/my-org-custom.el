@@ -25,6 +25,13 @@
   (org-image-actual-width '(100))
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE"))))
 
+(use-package ox-md
+  :ensure org  ; org 패키지가 설치되어 있는지 확인합니다
+  :after org   ; org 모드가 로드된 후에 ox-md를 로드합니다
+  :config
+  (require 'ox-md)
+  (add-to-list 'org-export-backends 'md))
+
 (use-package ox-latex
   :ensure nil  ; ox-latex is part of org
   :after org
@@ -40,6 +47,7 @@
   ;; (add-to-list 'org-latex-packages-alist '("" "kotex" t))
   ;; (add-to-list 'org-latex-packages-alist '("" "xcolor" t))
   :hook (org-mode . (lambda () (require 'ox-latex))))
+
 
 ;; ======================================
 ;;; org-capture
