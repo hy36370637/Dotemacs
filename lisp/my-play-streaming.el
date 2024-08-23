@@ -1,5 +1,5 @@
 ;;; my-play-streaming.el --- Streaming and MP3 player for Emacs -*- lexical-binding: t; -*-
-;; Version: 1.1
+;; Version: 1.2
 ;; Package-Requires: ((emacs "25.1"))
 ;; Keywords: multimedia
 
@@ -90,8 +90,6 @@
   "Initialize the music player."
   (let ((buf (get-buffer-create my-mp3-player-buffer-name)))
     (with-current-buffer buf
-      (when (null my-mp3-player-playlist)
-        (call-interactively #'my-music-player-load-directory))
       (my-music-player-update-buffer)
       (use-local-map my-music-player-mode-map))
     (display-buffer buf)))
@@ -251,7 +249,7 @@
                         (format "Track: %d/%d\n\n" 
                                 (1+ my-mp3-player-index) 
                                 (length my-mp3-player-playlist))))
-            (insert "No playlist loaded\n")))
+            (insert "No playlist loaded. Use C-c m l to load a directory.\n")))
         (insert "\nControls:\n"
                 "C-c m p - Play/Pause\n"
                 "C-c m s - Stop\n"
