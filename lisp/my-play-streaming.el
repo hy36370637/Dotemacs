@@ -1,18 +1,18 @@
-;;; my-play-streaming.el --- Streaming and MP3 player for Emacs -*- lexical-binding: t; -*-
-;; Version: 1.6
+;;; my-play-streaming.el --- Streaming and MP3 player for Emacs using VLC -*- lexical-binding: t; -*-
+;; Version: 2.0
 ;; Package-Requires: ((emacs "25.1"))
 ;; Keywords: multimedia
 
 ;;; Commentary:
 ;; This package provides streaming radio and MP3 player functionality for Emacs.
-;; It includes VLC streaming capabilities and an MP3 player interface.
-;; The MP3 player is designed for macOS and uses the 'afplay' command.
-;; Features a minor mode that integrates all MP3 player and streaming radio functions.
+;; It uses VLC for both MP3 playback and streaming capabilities.
+;; Features a minor mode that integrates all player functions.
 
 (require 'cl-lib)
-(require 'which-key) ;Simplify which-key display
+(require 'which-key)
 
-;;; Streaming Radio
+;;; Code:
+
 (defgroup my-streaming nil
   "Streaming radio settings."
   :group 'multimedia)
@@ -52,7 +52,7 @@
   "Current index in the playlist.")
 
 (defvar my-mp3-player-process nil
-  "Current afplay process.")
+  "Current VLC process.")
 
 (defvar my-mp3-player-shuffle nil
   "Whether shuffle mode is enabled.")
@@ -63,10 +63,18 @@
 (defconst my-mp3-player-buffer-name "*My Music Player*"
   "Name of the music player buffer.")
 
+(defcustom my-music-player-vlc-command
+  (if (eq system-type 'darwin)
+      "/Applications/VLC.app/Contents/MacOS/VLC"
+    "vlc")
+  "Path to the VLC executable."
+  :type 'string
+  :group 'my-mp3-player)
+
 ;;; Integrated Music Player Minor Mode
 (defvar my-music-player-mode-map
   (let ((map (make-sparse-keymap)))
-   (define-key map (kbd "C-c m p") #'my-music-player-play-pause)
+    (define-key map (kbd "C-c m p") #'my-music-player-play-pause)
     (define-key map (kbd "C-c m s") #'my-music-player-stop)
     (define-key map (kbd "C-c m n") #'my-music-player-next)
     (define-key map (kbd "C-c m b") #'my-music-player-previous)
@@ -79,7 +87,7 @@
     (define-key map (kbd "C-c m q") #'my-music-player-quit)
     map)
   "Keymap for `my-music-player-mode'.")
-;; Simplify which-key display
+
 (with-eval-after-load 'which-key
   (push '((nil . "my-music-player-\\(.+\\)") . (nil . "\\1"))
         which-key-replacement-alist))
@@ -131,12 +139,13 @@
       (my-music-player-play))))
 
 (defun my-music-player-play ()
-  "Play the current MP3."
+  "Play the current MP3 using VLC."
   (interactive)
   (when my-mp3-player-playlist
     (let ((file (nth my-mp3-player-index my-mp3-player-playlist)))
       (setq my-mp3-player-process 
-            (start-process "afplay" nil "afplay" (expand-file-name file)))
+            (start-process "vlc" nil my-music-player-vlc-command 
+                           "--intf" "rc" "--play-and-exit" file))
       (set-process-sentinel my-mp3-player-process #'my-music-player-sentinel)
       (message "Now playing: %s" (file-name-nondirectory file))
       (my-music-player-update-buffer))))
@@ -146,7 +155,6 @@
   (interactive)
   (when my-mp3-player-process
     (interrupt-process my-mp3-player-process)
-    (setq my-mp3-player-process nil)
     (message "Paused")
     (my-music-player-update-buffer)))
 
@@ -323,16 +331,13 @@
 
 (defun my-streaming-start (url)
   "Start streaming audio from URL using VLC."
-  (let* ((vlc-command (if (eq system-type 'darwin)
-                          "/Applications/VLC.app/Contents/MacOS/VLC"
-                        "vlc"))
-         (chosen-title (my-streaming-get-title-for-url url)))
-    (if (not (executable-find vlc-command))
+  (let* ((chosen-title (my-streaming-get-title-for-url url)))
+    (if (not (executable-find my-music-player-vlc-command))
         (user-error "VLC is not installed")
       (when my-streaming-process
         (my-streaming-stop))
       (setq my-streaming-process
-            (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url))
+            (start-process "vlc" nil my-music-player-vlc-command "--intf" "rc" url))
       (set-process-query-on-exit-flag my-streaming-process nil)
       (setq my-streaming-playing t)
       (message "Playing: %s" chosen-title)
@@ -361,8 +366,6 @@
   (interactive)
   (my-music-player-mode -1))
 
-
-;;
 (provide 'my-play-streaming)
 
 ;;; my-play-streaming.el ends here
