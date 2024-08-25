@@ -9,8 +9,6 @@
 ;; The MP3 player is designed for macOS and uses the 'afplay' command.
 ;; Features a minor mode that integrates all MP3 player and streaming radio functions.
 
-;;; Code:
-
 (require 'cl-lib)
 
 ;;; Streaming Radio
@@ -67,17 +65,17 @@
 ;;; Integrated Music Player Minor Mode
 (defvar my-music-player-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c m p") #'my-music-player-play-pause)
-    (define-key map (kbd "C-c m s") #'my-music-player-stop)
-    (define-key map (kbd "C-c m n") #'my-music-player-next)
-    (define-key map (kbd "C-c m b") #'my-music-player-previous)
-    (define-key map (kbd "C-c m r") #'my-music-player-repeat-toggle)
-    (define-key map (kbd "C-c m f") #'my-music-player-shuffle-toggle)
-    (define-key map (kbd "C-c m l") #'my-music-player-load-directory)
-    (define-key map (kbd "C-c m i") #'my-music-player-show-current)
-    (define-key map (kbd "C-c m v") #'my-music-player-view-playlist)
-    (define-key map (kbd "C-c m t") #'my-music-player-toggle-streaming)
-    (define-key map (kbd "C-c m q") #'my-music-player-quit)
+    (define-key map (kbd "H-m p") #'my-music-player-play-pause)
+    (define-key map (kbd "H-m s") #'my-music-player-stop)
+    (define-key map (kbd "H-m n") #'my-music-player-next)
+    (define-key map (kbd "H-m b") #'my-music-player-previous)
+    (define-key map (kbd "H-m r") #'my-music-player-repeat-toggle)
+    (define-key map (kbd "H-m f") #'my-music-player-shuffle-toggle)
+    (define-key map (kbd "H-m l") #'my-music-player-load-directory)
+    (define-key map (kbd "H-m i") #'my-music-player-show-current)
+    (define-key map (kbd "H-m v") #'my-music-player-view-playlist)
+    (define-key map (kbd "H-m t") #'my-music-player-toggle-streaming)
+    (define-key map (kbd "H-m q") #'my-music-player-quit)
     map)
   "Keymap for `my-music-player-mode'.")
 
@@ -89,7 +87,7 @@
   (if my-music-player-mode
       (progn
         (my-music-player-initialize)
-        (message "Music Player mode enabled. Use C-c m to access commands."))
+        (message "Music Player mode enabled. Use H-m to access commands."))
     (my-music-player-cleanup)
     (message "Music Player mode disabled.")))
 
@@ -270,19 +268,19 @@
                         (format "Track: %d/%d\n\n" 
                                 (1+ my-mp3-player-index) 
                                 (length my-mp3-player-playlist))))
-            (insert "No playlist loaded. Use C-c m l to load a directory.\n")))
+            (insert "No playlist loaded. Use H-m l to load a directory.\n")))
         (insert "\nControls:\n"
-                "C-c m p - Play/Pause\n"
-                "C-c m s - Stop\n"
-                "C-c m n - Next Track\n"
-                "C-c m b - Previous Track\n"
-                "C-c m r - Toggle Repeat\n"
-                "C-c m f - Toggle Shuffle\n"
-                "C-c m l - Load Directory\n"
-                "C-c m i - Show Current Track\n"
-                "C-c m v - View Playlist\n"
-                "C-c m t - Toggle Streaming\n"
-                "C-c m q - Quit\n")    
+                "H-m p - Play/Pause\n"
+                "H-m s - Stop\n"
+                "H-m n - Next Track\n"
+                "H-m b - Previous Track\n"
+                "H-m r - Toggle Repeat\n"
+                "H-m f - Toggle Shuffle\n"
+                "H-m l - Load Directory\n"
+                "H-m i - Show Current Track\n"
+                "H-m v - View Playlist\n"
+                "H-m t - Toggle Streaming\n"
+                "H-m q - Quit\n")    
         (use-local-map my-music-player-mode-map)
         (setq buffer-read-only t)))))
 
