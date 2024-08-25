@@ -136,7 +136,6 @@
   :bind
   (([f11] . nil)
    ("C-x o" . nil)
-   ("C-x C-r" . restart-emacs)
    ("M-o" . other-window)))
 
 ;; ======================================
@@ -185,8 +184,10 @@
   :ensure t
   :init
   (recentf-mode 1)
+  :bind
+  ("C-x C-r" . recentf-open-files)
   :custom
-  (recentf-max-saved-items 30))
+  (recentf-max-saved-items 20))
 
 ;; ======================================
 ;;; which-key
@@ -321,9 +322,9 @@
 (setq-default mode-line-format
               '("%e "
                 mode-line-front-space
-                (:eval (if (string= current-input-method "korean-hangul")
-                           "KO"
-                         "EN"))
+		 (:eval (if (string= current-input-method "korean-hangul")
+                             (propertize "KO" 'face '(:foreground "orange"))
+                           "EN"))
                 " Ⓗ "
                 mode-line-buffer-identification       
                 mode-line-frame-identification

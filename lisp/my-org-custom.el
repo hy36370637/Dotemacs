@@ -43,9 +43,6 @@
    '("xelatex -interaction nonstopmode -output-directory %o %f"
      "xelatex -interaction nonstopmode -output-directory %o %f"
      "xelatex -interaction nonstopmode -output-directory %o %f"))
-  ;; :config
-  ;; (add-to-list 'org-latex-packages-alist '("" "kotex" t))
-  ;; (add-to-list 'org-latex-packages-alist '("" "xcolor" t))
   :hook (org-mode . (lambda () (require 'ox-latex))))
 
 

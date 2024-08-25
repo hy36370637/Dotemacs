@@ -1,5 +1,5 @@
 ;;; my-play-streaming.el --- Streaming and MP3 player for Emacs -*- lexical-binding: t; -*-
-;; Version: 1.2
+;; Version: 1.5
 ;; Package-Requires: ((emacs "25.1"))
 ;; Keywords: multimedia
 
@@ -10,6 +10,7 @@
 ;; Features a minor mode that integrates all MP3 player and streaming radio functions.
 
 ;;; Code:
+
 (require 'cl-lib)
 
 ;;; Streaming Radio
@@ -28,6 +29,12 @@
 
 (defvar my-streaming-playing nil
   "Flag indicating if streaming is currently playing.")
+
+(defvar my-streaming-urls nil
+  "List of streaming URLs.")
+
+(defvar my-streaming-index 0
+  "Current index in the streaming URL list.")
 
 ;;; MP3 Player
 (defgroup my-mp3-player nil
@@ -152,18 +159,30 @@
     (my-streaming-stop)))
 
 (defun my-music-player-next ()
-  "Play the next MP3 in the playlist."
+  "Play the next track (MP3 or streaming)."
   (interactive)
-  (my-music-player-stop)
-  (setq my-mp3-player-index (mod (1+ my-mp3-player-index) (length my-mp3-player-playlist)))
-  (my-music-player-play))
+  (if my-streaming-playing
+      (progn
+        (my-streaming-stop)
+        (setq my-streaming-index (mod (1+ my-streaming-index) (length my-streaming-urls)))
+        (my-streaming-start (nth my-streaming-index my-streaming-urls)))
+    (when my-mp3-player-playlist
+      (my-music-player-stop)
+      (setq my-mp3-player-index (mod (1+ my-mp3-player-index) (length my-mp3-player-playlist)))
+      (my-music-player-play))))
 
 (defun my-music-player-previous ()
-  "Play the previous MP3 in the playlist."
+  "Play the previous track (MP3 or streaming)."
   (interactive)
-  (my-music-player-stop)
-  (setq my-mp3-player-index (mod (1- my-mp3-player-index) (length my-mp3-player-playlist)))
-  (my-music-player-play))
+  (if my-streaming-playing
+      (progn
+        (my-streaming-stop)
+        (setq my-streaming-index (mod (1- my-streaming-index) (length my-streaming-urls)))
+        (my-streaming-start (nth my-streaming-index my-streaming-urls)))
+    (when my-mp3-player-playlist
+      (my-music-player-stop)
+      (setq my-mp3-player-index (mod (1- my-mp3-player-index) (length my-mp3-player-playlist)))
+      (my-music-player-play))))
 
 (defun my-music-player-shuffle-toggle ()
   "Toggle shuffle mode."
@@ -187,7 +206,8 @@
   "Show information about the current track or stream."
   (interactive)
   (if my-streaming-playing
-      (message "Currently streaming radio")
+      (message "Currently streaming: %s"
+               (my-streaming-get-title-for-url (nth my-streaming-index my-streaming-urls)))
     (if my-mp3-player-playlist
         (let ((file (nth my-mp3-player-index my-mp3-player-playlist)))
           (message "Current track: %s (%d/%d)"
@@ -242,7 +262,8 @@
                 (format "Shuffle: %s\n" (if my-mp3-player-shuffle "On" "Off"))
                 (format "Repeat: %s\n\n" (if my-mp3-player-repeat "On" "Off")))
         (if my-streaming-playing
-            (insert "Now Streaming Radio\n")
+            (insert (format "Now Streaming: %s\n" 
+                            (my-streaming-get-title-for-url (nth my-streaming-index my-streaming-urls))))
           (if my-mp3-player-playlist
               (let ((file (nth my-mp3-player-index my-mp3-player-playlist)))
                 (insert (format "Now Playing: %s\n" (file-name-nondirectory file))
@@ -268,29 +289,51 @@
 (defun my-music-player-toggle-streaming ()
   "Toggle streaming radio on/off."
   (interactive)
-  (my-streaming-toggle)
+  (if my-streaming-playing
+      (my-streaming-stop)
+    (if my-streaming-urls
+        (my-streaming-start (nth my-streaming-index my-streaming-urls))
+      (my-streaming-load-urls)))
   (my-music-player-update-buffer))
 
 (defun my-streaming-toggle ()
   "Toggle streaming on/off."
   (if my-streaming-playing
       (my-streaming-stop)
-    (my-streaming-start (my-streaming-read-url-from-file my-streaming-mmslist-file))))
+    (my-streaming-load-urls)))
+
+(defun my-streaming-load-urls ()
+  "Load streaming URLs from the mmslist file and let user choose initial station."
+  (interactive)
+  (let* ((items (with-temp-buffer
+                  (insert-file-contents my-streaming-mmslist-file)
+                  (split-string (buffer-string) "\n" t)))
+         (titles (mapcar (lambda (item) (car (split-string item "|"))) items))
+         (chosen-title (completing-read "Choose a station to play: " titles))
+         (chosen-item (seq-find (lambda (item) (string-prefix-p chosen-title item)) items)))
+    (when chosen-item
+      (setq my-streaming-urls
+            (mapcar (lambda (item) (cadr (split-string item "|"))) items))
+      (setq my-streaming-index
+            (seq-position items chosen-item #'string=))
+      (my-streaming-start (cadr (split-string chosen-item "|"))))))
 
 (defun my-streaming-start (url)
   "Start streaming audio from URL using VLC."
   (let* ((vlc-command (if (eq system-type 'darwin)
                           "/Applications/VLC.app/Contents/MacOS/VLC"
                         "vlc"))
-         (chosen-title (my-streaming-get-chosen-title my-streaming-mmslist-file)))
+         (chosen-title (my-streaming-get-title-for-url url)))
     (if (not (executable-find vlc-command))
         (user-error "VLC is not installed")
-      (unless my-streaming-process
-        (setq my-streaming-process
-              (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url))
-        (set-process-query-on-exit-flag my-streaming-process nil)
-        (setq my-streaming-playing t)
-        (message "Playing: %s" chosen-title)))))
+      (when my-streaming-process
+        (my-streaming-stop))
+      (setq my-streaming-process
+            (start-process "vlc" nil vlc-command "--no-video" "-I" "rc" url))
+      (set-process-query-on-exit-flag my-streaming-process nil)
+      (setq my-streaming-playing t)
+      (message "Playing: %s" chosen-title)
+      (my-music-player-update-buffer))))
 
 (defun my-streaming-stop ()
   "Stop the currently running VLC process."
@@ -298,26 +341,17 @@
     (delete-process my-streaming-process)
     (setq my-streaming-process nil
           my-streaming-playing nil)
-    (message "Streaming stopped.")))
+    (message "Streaming stopped.")
+    (my-music-player-update-buffer)))
 
-(defun my-streaming-get-chosen-title (file)
-  "Get the chosen title from the user using FILE."
-  (let* ((items (with-temp-buffer
-                  (insert-file-contents file)
-                  (split-string (buffer-string) "\n" t)))
-         (titles (mapcar (lambda (item) (car (split-string item "|"))) items)))
-    (completing-read "Choose a title to play: " titles)))
-
-(defun my-streaming-read-url-from-file (file)
-  "Read streaming URLs from FILE and return a URL chosen by the user."
-  (let* ((items (with-temp-buffer
-                  (insert-file-contents file)
-                  (split-string (buffer-string) "\n" t)))
-         (titles (mapcar (lambda (item) (car (split-string item "|"))) items))
-         (chosen-title (completing-read "Choose a title to play: " titles))
-         (chosen-item (seq-find (lambda (item) (string-prefix-p chosen-title item)) items)))
-    (when chosen-item
-      (cadr (split-string chosen-item "|")))))
+(defun my-streaming-get-title-for-url (url)
+  "Get the title for the given URL from the mmslist file."
+  (with-temp-buffer
+    (insert-file-contents my-streaming-mmslist-file)
+    (let ((line (seq-find (lambda (l) (string-match-p url l)) (split-string (buffer-string) "\n" t))))
+      (if line
+          (car (split-string line "|"))
+        "Unknown Station"))))
 
 (defun my-music-player-quit ()
   "Quit the music player."
@@ -325,8 +359,7 @@
   (my-music-player-mode -1))
 
 
-
+;;
+(provide 'my-play-streaming)
 
 ;;; my-play-streaming.el ends here
-
-(provide 'my-play-streaming)
