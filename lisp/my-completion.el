@@ -120,20 +120,18 @@
   (flush-lines "^\\s-*$" start end))
 
 ;; 지정된 범위 라인 끝 공백 제거
-;; (defun my/delete-trailing-whitespace-in-region (start end)
-;;   "지정된 영역 내에서 각 줄 끝의 공백과 탭을 제거
-;;     줄 끝의 공백만 제거하고 줄바꿈과 빈 줄을 그대로 유지."
-;;   (interactive "r")
-;;   (save-excursion
-;;     (save-restriction
-;;       (narrow-to-region start end)
-;;       (goto-char (point-min))
-;;       (while (re-search-forward "[ \t]+$" nil t)
-;;         (replace-match "")))))
+(defun my/delete-trailing-whitespace-region (start end)
+  "줄 끝의 공백과 탭을 제거,  줄바꿈과 빈 줄 그대로 유지."
+  (interactive "r")
+  (save-excursion
+    (save-restriction
+      (narrow-to-region start end)
+      (goto-char (point-min))
+      (while (re-search-forward "[ \t]+$" nil t)
+        (replace-match "")))))
 
-(defun my/remove-line-endings-keep-empty-lines (&optional start end)
-  "문장 끝의 줄바꿈을 공백으로 대체하고, 빈 줄은 유지
-    줄바꿈을 공백으로 바꾸어 문장을 연결, 연속된 빈 줄을 하나로 줄임."
+(defun my/delete-trailling-whitespace-line-join (&optional start end)
+  "줄끝의 줄바꿈을 공백으로 대체하고 줄(라인) 연결, 연속된 빈 줄을 하나로 줄여 유지"
  (interactive)
   (let* ((use-region (use-region-p))
          (start (if use-region (region-beginning) (point-min)))
