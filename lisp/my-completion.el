@@ -120,15 +120,33 @@
   (flush-lines "^\\s-*$" start end))
 
 ;; 지정된 범위 라인 끝 공백 제거
-(defun my/delete-trailing-whitespace-in-region (start end)
-  "Delete trailing whitespace in the region between START and END."
-  (interactive "r")
-  (save-excursion
-    (save-restriction
-      (narrow-to-region start end)
-      (goto-char (point-min))
-      (while (re-search-forward "[ \t]+$" nil t)
-        (replace-match "")))))
+;; (defun my/delete-trailing-whitespace-in-region (start end)
+;;   "지정된 영역 내에서 각 줄 끝의 공백과 탭을 제거
+;;     줄 끝의 공백만 제거하고 줄바꿈과 빈 줄을 그대로 유지."
+;;   (interactive "r")
+;;   (save-excursion
+;;     (save-restriction
+;;       (narrow-to-region start end)
+;;       (goto-char (point-min))
+;;       (while (re-search-forward "[ \t]+$" nil t)
+;;         (replace-match "")))))
+
+(defun my/remove-line-endings-keep-empty-lines (&optional start end)
+  "문장 끝의 줄바꿈을 공백으로 대체하고, 빈 줄은 유지
+    줄바꿈을 공백으로 바꾸어 문장을 연결, 연속된 빈 줄을 하나로 줄임."
+ (interactive)
+  (let* ((use-region (use-region-p))
+         (start (if use-region (region-beginning) (point-min)))
+         (end (if use-region (region-end) (point-max))))
+    (save-excursion
+      (save-restriction
+        (narrow-to-region start end)
+        (goto-char (point-min))
+        (while (re-search-forward "\\([^\n]\\)\\(\n\\)\\([^\n]\\)" nil t)
+          (replace-match "\\1 \\3"))
+        (goto-char (point-min))
+        (while (re-search-forward "\n\n+" nil t)
+          (replace-match "\n\n"))))))
 
 ;; =======================================
 ;;; Hunspell 설정

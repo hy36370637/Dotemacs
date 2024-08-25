@@ -88,6 +88,7 @@
     map)
   "Keymap for `my-music-player-mode'.")
 
+;; Simplify which-key display
 (with-eval-after-load 'which-key
   (push '((nil . "my-music-player-\\(.+\\)") . (nil . "\\1"))
         which-key-replacement-alist))
