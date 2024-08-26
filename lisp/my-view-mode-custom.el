@@ -27,13 +27,13 @@
   (if my-view-mode-enabled
       (progn
         (toggle-frame-fullscreen)
-        (text-scale-decrease 0.5)
+        (text-scale-decrease 0.8)
         (setq my-view-mode-enabled nil)
         (view-mode -1))
     (progn
       (unless (eq (frame-parameter nil 'fullscreen) 'fullboth)
         (toggle-frame-fullscreen))
-      (text-scale-increase 0.5)
+      (text-scale-increase 0.8)
       (setq my-view-mode-enabled t)
       (view-mode 1))))
 

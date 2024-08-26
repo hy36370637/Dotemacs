@@ -90,7 +90,8 @@
         search-highlight t
         scroll-margin 7
         scroll-preserve-screen-position t
-        scroll-conservatively 101)
+        scroll-conservatively 101
+	text-scale-mode-step 1.05)	;글자크기 비율 5% 단위. 기본값 1.20
   :config
   (tool-bar-mode -1)
   (toggle-scroll-bar -1)
