@@ -255,7 +255,7 @@
    ("M-g m" . consult-mark)
    ("M-s f" . consult-find)
    ("M-s g" . consult-grep)
-   ("M-s t" . consult-theme)
+   ("M-s t" . consult-theme))
   :hook (completion-list-mode . consult-preview-at-point-mode))
 
 ;; ======================================

@@ -157,18 +157,9 @@
           try-complete-file-name-partially
           try-complete-file-name))
 
-  ;; 특정 모드 무시 설정
+  ;; 특정 모드 무시 설정 (참고용으로만 유지, 실제로는 사용되지 않음)
   (setq hippie-expand-ignore-buffers
-        (mapcar (lambda (mode)
-                  (concat "\\`" (symbol-name mode) "\\'"))
-                '(archive-mode image-mode doc-view-mode pdf-view-mode tags-table-mode)))
-
-  ;; dabbrev 함수 재정의 - 무시할 버퍼 적용
-  (defadvice try-expand-dabbrev-all-buffers (around hippie-expand-ignore-buffers activate)
-    (let ((old-dabbrev-ignored-buffer-regexps dabbrev-ignored-buffer-regexps))
-      (setq dabbrev-ignored-buffer-regexps (append dabbrev-ignored-buffer-regexps hippie-expand-ignore-buffers))
-      ad-do-it
-      (setq dabbrev-ignored-buffer-regexps old-dabbrev-ignored-buffer-regexps)))
+        '(archive-mode image-mode doc-view-mode pdf-view-mode tags-table-mode))
 
   ;; Org-mode 특화 설정
   (defun try-expand-org-keyword (old)
@@ -186,8 +177,7 @@
                nil)
       (he-substitute-string (car he-expand-list))
       (setq he-expand-list (cdr he-expand-list))
-      t)))
-
+      t)))  
 ;; =======================================
 ;;; 특수문자 입력
 ;; ======================================-
