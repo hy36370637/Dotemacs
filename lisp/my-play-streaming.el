@@ -12,7 +12,6 @@
 (require 'which-key)
 
 ;;; Code:
-
 (defgroup my-streaming nil
   "Streaming radio settings."
   :group 'multimedia)
@@ -367,6 +366,7 @@
   (interactive)
   (my-music-player-mode -1))
 
-(provide 'my-play-streaming)
 
-;;; my-play-streaming.el ends here
+
+;;; ends here
+(provide 'my-play-streaming)

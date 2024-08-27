@@ -249,24 +249,25 @@
    ("C-x r x" . consult-register)
    ("C-x r b" . consult-bookmark)
    ("C-c k" . consult-kmacro)
-   ("M-g d" . consult-dir)
    ("M-g o" . consult-outline)
    ;; ("M-g h" . consult-org-heading)
    ;; ("M-g a" . consult-org-agenda)
    ("M-g m" . consult-mark)
    ("M-s f" . consult-find)
    ("M-s g" . consult-grep)
-   ("M-s t" . consult-theme))
+   ("M-s t" . consult-theme)
   :hook (completion-list-mode . consult-preview-at-point-mode))
 
 ;; ======================================
 ;;; consult-dir
 ;; ======================================
 (use-package consult-dir
-  :ensure t)
-  ;; :bind (("C-c r d" . consult-dir)
-  ;;        :map vertico-map
-  ;;        ("C-c r d" . consult-dir)))
+  :ensure t
+  :after vertico consult
+  :bind (("C-x c-d" . consult-dir)
+          :map vertico-map
+         ("C-x c-d" . consult-dir)
+	 ("C-x c-j" . consult-dir-jump-file)))
 
 ;; ======================================
 ;;; embark
@@ -365,4 +366,3 @@
   :bind (("C-x g" . magit-status))
   :config
   (setq magit-auto-revert-mode t))
-

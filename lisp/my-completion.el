@@ -102,6 +102,43 @@
   )
 
 ;; =======================================
+;;; dabbrev
+;; ======================================-
+;; 단어의 일부를 입력한 후 M-/ (Alt + /)
+(use-package dabbrev
+  :ensure nil  ; built in
+  :commands (dabbrev-expand dabbrev-completion)  ; 필요할 때 로드
+  :bind
+  ("C-;" . dabbrev-expand)  ; C-;를 dabbrev-expand
+  :hook
+  ((emacs-lisp-mode . (lambda ()
+                        (setq-local dabbrev-case-fold-search nil)
+                        (setq-local dabbrev-case-replace nil)
+                        (setq-local dabbrev-abbrev-skip-leading-regexp "[$*/=~']\\|-")))
+   (org-mode . (lambda ()
+                 (setq-local dabbrev-case-fold-search t)
+                 (setq-local dabbrev-case-replace t)
+                 (setq-local dabbrev-abbrev-char-regexp "\\sw\\|\\s_\\|[@#]"))))
+  :config
+  ;; 기본 설정
+  (setq dabbrev-abbrev-char-regexp "\\sw\\|\\s_")  ; 단어나 심볼 문자를 확장 대상으로 설정
+  (setq dabbrev-abbrev-skip-leading-regexp "[$*/=~']")  ; 이 문자로 시작하는 단어는 확장에서 제외
+  (setq dabbrev-backward-only nil)  ; 커서 앞뒤 모두 검색
+  (setq dabbrev-case-distinction 'case-replace)  ; 대소문자 구분을 case-replace 변수에 따라 결정
+  (setq dabbrev-case-fold-search nil)  ; 기본적으로 대소문자 구분하여 검색
+  (setq dabbrev-case-replace 'case-replace)  ; 완성된 단어의 대소문자 처리를 case-replace 변수에 따라 결정
+  (setq dabbrev-check-other-buffers t)  ; 다른 버퍼도 검색 대상에 포함
+  (setq dabbrev-eliminate-newlines t)  ; 여러 줄에 걸친 확장을 한 줄로 만듦
+  (setq dabbrev-upcase-means-case-search t)  ; 대문자로 시작하면 정확한 대소문자 일치 검색
+
+  ;; 특정 모드 무시 설정
+  (setq dabbrev-ignored-buffer-modes
+        '(archive-mode image-mode doc-view-mode pdf-view-mode tags-table-mode)))
+
+;; 키 바인딩 설정 (선택적) - 기본값  M-/
+ (global-set-key (kbd "C-;") 'dabbrev-expand) 
+
+;; =======================================
 ;;; 특수문자 입력
 ;; ======================================-
 (defun select-special-character ()
