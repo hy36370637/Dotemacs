@@ -105,38 +105,88 @@
 ;;; dabbrev
 ;; ======================================-
 ;; 단어의 일부를 입력한 후 M-/ (Alt + /)
-(use-package dabbrev
-  :ensure nil  ; built in
-  :commands (dabbrev-expand dabbrev-completion)  ; 필요할 때 로드
-  :bind
-  ("C-;" . dabbrev-expand)  ; C-;를 dabbrev-expand
-  :hook
-  ((emacs-lisp-mode . (lambda ()
-                        (setq-local dabbrev-case-fold-search nil)
-                        (setq-local dabbrev-case-replace nil)
-                        (setq-local dabbrev-abbrev-skip-leading-regexp "[$*/=~']\\|-")))
-   (org-mode . (lambda ()
-                 (setq-local dabbrev-case-fold-search t)
-                 (setq-local dabbrev-case-replace t)
-                 (setq-local dabbrev-abbrev-char-regexp "\\sw\\|\\s_\\|[@#]"))))
+;; (use-package dabbrev
+;;   :ensure nil  ; built in
+;;   :commands (dabbrev-expand dabbrev-completion)  ; 필요할 때 로드
+;;   :bind
+;;   ("M-/" . dabbrev-expand) 
+;;   :hook
+;;   ((emacs-lisp-mode . (lambda ()
+;;                         (setq-local dabbrev-case-fold-search nil)
+;;                         (setq-local dabbrev-case-replace nil)
+;;                         (setq-local dabbrev-abbrev-skip-leading-regexp "[$*/=~']\\|-")))
+;;    (org-mode . (lambda ()
+;;                  (setq-local dabbrev-case-fold-search t)
+;;                  (setq-local dabbrev-case-replace t)
+;;                  (setq-local dabbrev-abbrev-char-regexp "\\sw\\|\\s_\\|[@#]"))))
+;;   :config
+;;   ;; 기본 설정
+;;   (setq dabbrev-abbrev-char-regexp "\\sw\\|\\s_")  ; 단어나 심볼 문자를 확장 대상으로 설정
+;;   (setq dabbrev-abbrev-skip-leading-regexp "[$*/=~']")  ; 이 문자로 시작하는 단어는 확장에서 제외
+;;   (setq dabbrev-backward-only nil)  ; 커서 앞뒤 모두 검색
+;;   (setq dabbrev-case-distinction 'case-replace)  ; 대소문자 구분을 case-replace 변수에 따라 결정
+;;   (setq dabbrev-case-fold-search nil)  ; 기본적으로 대소문자 구분하여 검색
+;;   (setq dabbrev-case-replace 'case-replace)  ; 완성된 단어의 대소문자 처리를 case-replace 변수에 따라 결정
+;;   (setq dabbrev-check-other-buffers t)  ; 다른 버퍼도 검색 대상에 포함
+;;   (setq dabbrev-eliminate-newlines t)  ; 여러 줄에 걸친 확장을 한 줄로 만듦
+;;   (setq dabbrev-upcase-means-case-search t)  ; 대문자로 시작하면 정확한 대소문자 일치 검색
+
+;;   ;; 특정 모드 무시 설정
+;;   (setq dabbrev-ignored-buffer-modes
+;;         '(archive-mode image-mode doc-view-mode pdf-view-mode tags-table-mode)))
+
+;; =======================================
+;;; hippie-exp
+;; ======================================-
+(use-package hippie-exp
+  :ensure nil  ; built-in package
+  :bind ("C-;" . hippie-expand)
+  :hook (org-mode . (lambda ()
+                      (make-local-variable 'hippie-expand-try-functions-list)
+                      (add-to-list 'hippie-expand-try-functions-list 'try-expand-org-keyword t)))
   :config
-  ;; 기본 설정
-  (setq dabbrev-abbrev-char-regexp "\\sw\\|\\s_")  ; 단어나 심볼 문자를 확장 대상으로 설정
-  (setq dabbrev-abbrev-skip-leading-regexp "[$*/=~']")  ; 이 문자로 시작하는 단어는 확장에서 제외
-  (setq dabbrev-backward-only nil)  ; 커서 앞뒤 모두 검색
-  (setq dabbrev-case-distinction 'case-replace)  ; 대소문자 구분을 case-replace 변수에 따라 결정
-  (setq dabbrev-case-fold-search nil)  ; 기본적으로 대소문자 구분하여 검색
-  (setq dabbrev-case-replace 'case-replace)  ; 완성된 단어의 대소문자 처리를 case-replace 변수에 따라 결정
-  (setq dabbrev-check-other-buffers t)  ; 다른 버퍼도 검색 대상에 포함
-  (setq dabbrev-eliminate-newlines t)  ; 여러 줄에 걸친 확장을 한 줄로 만듦
-  (setq dabbrev-upcase-means-case-search t)  ; 대문자로 시작하면 정확한 대소문자 일치 검색
+  (setq hippie-expand-try-functions-list
+        '(try-expand-dabbrev
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill
+          try-complete-lisp-symbol-partially
+          try-complete-lisp-symbol
+          try-expand-whole-kill
+          try-expand-list
+          try-expand-line
+          try-complete-file-name-partially
+          try-complete-file-name))
 
   ;; 특정 모드 무시 설정
-  (setq dabbrev-ignored-buffer-modes
-        '(archive-mode image-mode doc-view-mode pdf-view-mode tags-table-mode)))
+  (setq hippie-expand-ignore-buffers
+        (mapcar (lambda (mode)
+                  (concat "\\`" (symbol-name mode) "\\'"))
+                '(archive-mode image-mode doc-view-mode pdf-view-mode tags-table-mode)))
 
-;; 키 바인딩 설정 (선택적) - 기본값  M-/
- (global-set-key (kbd "C-;") 'dabbrev-expand) 
+  ;; dabbrev 함수 재정의 - 무시할 버퍼 적용
+  (defadvice try-expand-dabbrev-all-buffers (around hippie-expand-ignore-buffers activate)
+    (let ((old-dabbrev-ignored-buffer-regexps dabbrev-ignored-buffer-regexps))
+      (setq dabbrev-ignored-buffer-regexps (append dabbrev-ignored-buffer-regexps hippie-expand-ignore-buffers))
+      ad-do-it
+      (setq dabbrev-ignored-buffer-regexps old-dabbrev-ignored-buffer-regexps)))
+
+  ;; Org-mode 특화 설정
+  (defun try-expand-org-keyword (old)
+    "Org-mode 키워드 완성 함수"
+    (unless old
+      (he-init-string (he-dabbrev-beg) (point))
+      (setq he-expand-list
+            (let ((completion-ignore-case t))
+              (all-completions he-search-string org-keywords))))
+    (while (and he-expand-list
+                (he-string-member (car he-expand-list) he-tried-table))
+      (setq he-expand-list (cdr he-expand-list)))
+    (if (null he-expand-list)
+        (progn (when old (he-reset-string))
+               nil)
+      (he-substitute-string (car he-expand-list))
+      (setq he-expand-list (cdr he-expand-list))
+      t)))
 
 ;; =======================================
 ;;; 특수문자 입력
