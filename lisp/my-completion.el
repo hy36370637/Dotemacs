@@ -75,7 +75,7 @@
 ;; ======================================-
 ;; https://protesilaos.com/codelog/2024-02-03-emacs-abbrev-mode/
 (use-package abbrev
-  :ensure nil
+  :ensure nil				;built-in
   :config
   (setq-default abbrev-mode t)
   (setq save-abbrevs nil)
@@ -126,7 +126,7 @@
   (setq hippie-expand-ignore-buffers
         '(archive-mode image-mode doc-view-mode pdf-view-mode tags-table-mode))
 
-  ;; Org-mode 특화 설정
+  ;; for org-mode 
   (defun try-expand-org-keyword (old)
     "Org-mode 키워드 완성 함수"
     (unless old

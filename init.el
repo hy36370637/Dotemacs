@@ -1,17 +1,13 @@
-;; ======================================
 ;;; Config for EMACS
-;; ======================================
-;; by HO-YOUNG KIM(hy36370637)
-
-;; ======================================
+;;  --------------------------------------------------------
 ;;; Speed up emacs
 ;; ======================================
 (use-package emacs
   :init
   (setq gc-cons-threshold most-positive-fixnum)
-  (add-hook 'emacs-startup-hook
-            (lambda ()
-              (setq gc-cons-threshold (* 1024 1024 20)))) ; 20MB
+  :hook
+  (emacs-startup . (lambda ()
+                     (setq gc-cons-threshold (* 1024 1024 20)))) ; 20MB
   
   (defun my/set-gc-threshold ()
     "GC 임계값을 기본값으로 재설정합니다."
@@ -84,7 +80,7 @@
         initial-scratch-message nil
         use-dialog-box nil
 	default-directory (expand-file-name "~/Dropbox/Docs/org")
-        temporary-file-directory "~/.emacs.d/tmpdir/"
+        temporary-file-directory  "~/tmpdir/"
         make-backup-files nil
         kill-whole-line 1
         search-highlight t
