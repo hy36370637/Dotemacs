@@ -100,7 +100,7 @@
 ;; ======================================-
 (use-package hippie-exp
   :ensure nil  ; built-in
-  :bind ("M-/" . hippie-expand) 
+  :bind ("s-;" . hippie-expand) 
   :hook (org-mode . (lambda ()
                       (make-local-variable 'hippie-expand-try-functions-list)
                       (add-to-list 'hippie-expand-try-functions-list 'try-expand-org-keyword t)))

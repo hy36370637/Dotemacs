@@ -1,15 +1,16 @@
 ;;; Config for EMACS
 ;;  --------------------------------------------------------
 ;;; Speed up emacs
+;; for macbook air(m1) 8G ram
 ;; ======================================
 (use-package emacs
   :init
-  (setq gc-cons-threshold most-positive-fixnum) 
+  (setq gc-cons-threshold most-positive-fixnum)
   :hook
   (emacs-startup . (lambda ()
-                     (setq gc-cons-threshold (* 1024 1024 20)))) ; 20MB
-  (focus-out . garbage-collect)
+                     (setq gc-cons-threshold (* 1024 1024 16)))) ; 16MB
   :config
+  (setq read-process-output-max (* 1024 1024)) ; 1MB
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
   (unless (file-exists-p custom-file)
     (write-region "" nil custom-file))
@@ -245,7 +246,7 @@
    ;; ("M-g a" . consult-org-agenda)
    ("M-g m" . consult-mark)
    ("M-s f" . consult-find)
-   ("M-s g" . consult-grep)
+   ;; ("M-s g" . consult-grep)
    ("M-s t" . consult-theme))
   :hook (completion-list-mode . consult-preview-at-point-mode))
 
@@ -253,12 +254,12 @@
 ;;; consult-dir
 ;; ======================================
 (use-package consult-dir
-  :ensure t
-  :after vertico consult
-  :bind (("C-x c-d" . consult-dir)
-          :map vertico-map
-         ("C-x c-d" . consult-dir)
-	 ("C-x c-j" . consult-dir-jump-file)))
+  :ensure t)
+  ;; :after vertico
+  ;; :bind (("C-x c-d" . consult-dir)
+  ;;         :map vertico-map
+  ;;        ("C-x c-d" . consult-dir)
+  ;; 	 ("C-x c-j" . consult-dir-jump-file)))
 
 ;; ======================================
 ;;; embark
