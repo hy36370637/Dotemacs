@@ -52,11 +52,10 @@
 ;; ======================================
 ;;; load-my-custom-package
 ;; ======================================
-(use-package load-dir
-  :ensure t
-  :config
-  (setq load-dir-recursive t)
-  (load-dir-one "~/.emacs.d/lisp/"))
+(dolist (file (directory-files "~/.emacs.d/lisp" t "\\.el$"))
+  (condition-case err
+      (load file)
+    (error (message "Error loading %s: %s" file err))))
 
 ;; ======================================
 ;;; MacOS keyboard

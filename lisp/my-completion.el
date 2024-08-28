@@ -14,12 +14,6 @@
                               (?\[ . ?\])
                               (?\( . ?\))))
   (electric-pair-mode t))
-;; (add-hook 'org-mode-hook (lambda ()
-;;                            (setq-local electric-pair-inhibit-predicate
-;;                                        (lambda (c)
-;;                                          (if (char-equal c ?<)
-;;                                              t
-;;                                            (funcall (default-value 'electric-pair-inhibit-predicate) c))))))
 
 ;; ======================================
 ;;; rainbow-delimiters
