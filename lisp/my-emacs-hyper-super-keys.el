@@ -30,6 +30,7 @@
   ;; Other operations
   "s-g"   #'consult-grep
   "s-z"   #'repeat
+;;  "s-;"   #'hippie-expand
   "s-/"   #'undo
   "C-s-/" #'undo-redo
   ;; org-mode    

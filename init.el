@@ -83,8 +83,8 @@
         visible-bell t
         initial-scratch-message nil
         use-dialog-box nil
-        default-directory "~/Dropbox/Docs/org/"
-        temporary-file-directory "~/Dropbox/Docs/tmpdir/"
+	default-directory (expand-file-name "~/Dropbox/Docs/org")
+        temporary-file-directory "~/.emacs.d/tmpdir/"
         make-backup-files nil
         kill-whole-line 1
         search-highlight t

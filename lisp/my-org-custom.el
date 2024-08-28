@@ -4,10 +4,9 @@
 ;; ======================================
 ;; /.emacs.d/lisp/my-org-custom.el
 (use-package org
-  :ensure nil
-  :bind (("M-n" . outline-next-visible-heading)
-         ("M-p" . outline-previous-visible-heading)
-         ("C-c l" . org-store-link))
+  :ensure nil				;built-in
+  ;; :bind (("M-n" . outline-next-visible-heading)    ; C-c C-n
+  ;;        ("M-p" . outline-previous-visible-heading))  ; C-c C-p
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org/"))
   (org-adapt-indentation t)
