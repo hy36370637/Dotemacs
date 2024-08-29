@@ -1,6 +1,96 @@
 ;; 완성completion 도움
 ;; .emacs.d/lisp/my-completion.el
 
+;; ======================================
+;;; which-key
+;; ======================================
+(use-package which-key
+  :ensure nil
+  :init
+  (which-key-mode)
+  :config
+  (setq which-key-idle-delay 0.2))
+
+;; ======================================
+;;; vertico
+;; ======================================
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode)
+  :custom
+  (vertico-resize t)
+  (vertico-cycle t))
+
+;; ======================================
+;;; marginalia
+;; ======================================
+(use-package marginalia
+  :ensure t
+  :custom
+  (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+  :init
+  (marginalia-mode))
+
+;; ======================================
+;;; orderless
+;; ======================================
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+
+;; ======================================
+;;; consult
+;; ======================================
+(use-package consult
+  :ensure t
+  :bind
+  (("C-c k s" . consult-line)
+   ("C-c k b" . consult-buffer)
+   ("C-c k d" . consult-dir)
+   ("C-c k r" . consult-register)
+   ("C-c k k" . consult-kmacro)
+   ("C-c k o" . consult-outline)
+   ("C-c k g" . consult-grep)
+   ("C-c k t" . consult-theme))
+  :config
+  (setq consult-buffer-sources
+        '(consult--source-buffer
+          consult--source-recent-file))
+  :hook (completion-list-mode . consult-preview-at-point-mode))
+
+;; ======================================
+;;; consult-dir
+;; ======================================
+(use-package consult-dir
+  :ensure t)
+  ;; :after vertico
+  ;; :bind (("C-x c-d" . consult-dir)
+  ;;         :map vertico-map
+  ;;        ("C-x c-d" . consult-dir)
+  ;; 	 ("C-x c-j" . consult-dir-jump-file)))
+
+;; ======================================
+;;; embark
+;; ======================================
+(use-package embark
+  :ensure t
+  :bind
+  (("C-." . embark-act))
+  :config
+  (setq prefix-help-command #'embark-prefix-help-command))
+
+;; ======================================
+;;; embark-consult
+;; ======================================
+(use-package embark-consult
+  :ensure t
+  :after (embark consult)
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
 ;; =======================================
 ;;; electric-pair-mode
 ;; ======================================-
