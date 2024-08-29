@@ -191,26 +191,45 @@
 ;; ======================================
 ;;; denote
 ;; ======================================
+;; Denote 설정
 (use-package denote
   :ensure t
   :custom
-  (denote-directory (expand-file-name "~/Notes/"))
-  (denote-file-type nil) ; org, markdown, text 중 선택 또는 nil
-  (denote-keyword-separator "_")
-  :bind
-  (("C-c n n" . denote-create-note)
-   ("C-c n f" . denote-open-or-create)
-   ("C-c n i" . denote-link-or-create))
+  (denote-directory (expand-file-name "~/Dropbox/Docs/org/denote"))
+  (denote-known-keywords '("work" "personal" "reading"))
+  (denote-infer-keywords t)
+  (denote-sort-keywords t)
+  (denote-file-type nil) ; 기본값으로 org 파일 사용
+  (denote-prompts '(title keywords))
   :config
-  (denote-rename-buffer-mode t))
+  (with-eval-after-load 'org-capture
+    (add-to-list 'org-capture-templates
+                 '("n" "New  Denote" plain
+                   (file denote-last-path)
+                   #'denote-org-capture
+                   :no-save t
+                   :immediate-finish nil
+                   :kill-buffer t
+                   :jump-to-captured t))))
 
+;; Consult-Denote 설정
 (use-package consult-denote
   :ensure t
   :after (consult denote)
   :bind
   (("C-c n s" . consult-denote)
-   ("C-c n b" . consult-denote-backlinks)))
-
+   ("C-c n f" . consult-denote-file-type)
+   ("C-c n b" . consult-denote-backlinks)
+   ("C-c n k" . consult-denote-keywords))
+  :custom
+  (consult-denote-default-file-type 'org)
+  :config
+  (defun my/global-consult-denote ()
+    "Run consult-denote from anywhere in Emacs."
+    (interactive)
+    (let ((default-directory denote-directory))
+      (call-interactively #'consult-denote)))
+;;  (global-set-key (kbd "C-c s") 'my/global-consult-denote))
 
 ;;; end here
 (provide 'my-org-custom)

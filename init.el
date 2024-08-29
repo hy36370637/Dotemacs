@@ -180,6 +180,7 @@
   :bind
   ("C-x C-r" . recentf-open-files)
   :custom
+  (recentf-exclude '("/tmp/" "/ssh:"))
   (recentf-max-saved-items 20))
 
 ;; ======================================
@@ -236,18 +237,18 @@
 (use-package consult
   :ensure t
   :bind
-  (("C-s" . consult-line)
-   ("C-x b" . consult-buffer)
-   ("C-x r x" . consult-register)
-   ("C-x r b" . consult-bookmark)
-   ("C-c k" . consult-kmacro)
-   ("M-g o" . consult-outline)
-   ;; ("M-g h" . consult-org-heading)
-   ;; ("M-g a" . consult-org-agenda)
-   ("M-g m" . consult-mark)
-   ("M-s f" . consult-find)
-   ;; ("M-s g" . consult-grep)
-   ("M-s t" . consult-theme))
+  (("C-c k s" . consult-line)
+   ("C-c k b" . consult-buffer)
+   ("C-c k r" . consult-register)
+   ("C-c k b" . consult-bookmark)
+   ("C-c k k" . consult-kmacro)
+   ("C-c k o" . consult-outline)
+   ("C-c k g" . consult-grep)
+   ("C-c k t" . consult-theme))
+  :config
+  (setq consult-buffer-sources
+        '(consult--source-buffer
+          consult--source-recent-file))
   :hook (completion-list-mode . consult-preview-at-point-mode))
 
 ;; ======================================
