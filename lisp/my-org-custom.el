@@ -5,8 +5,8 @@
 ;; /.emacs.d/lisp/my-org-custom.el
 (use-package org
   :ensure nil				;built-in
-  ;; :bind (("M-n" . outline-next-visible-heading)    ; C-c C-n
-  ;;        ("M-p" . outline-previous-visible-heading))  ; C-c C-p
+  ;; :bind (("s-o e" . org-emphasize)
+  ;; 	 ("s-o v" . org-toggle-inline-images))
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org/"))
   (org-adapt-indentation t)
@@ -188,7 +188,28 @@
 					 (end-of-line)
                                          (org-insert-heading))))
 
+;; ======================================
+;;; denote
+;; ======================================
+(use-package denote
+  :ensure t
+  :custom
+  (denote-directory (expand-file-name "~/Notes/"))
+  (denote-file-type nil) ; org, markdown, text 중 선택 또는 nil
+  (denote-keyword-separator "_")
+  :bind
+  (("C-c n n" . denote-create-note)
+   ("C-c n f" . denote-open-or-create)
+   ("C-c n i" . denote-link-or-create))
+  :config
+  (denote-rename-buffer-mode t))
 
+(use-package consult-denote
+  :ensure t
+  :after (consult denote)
+  :bind
+  (("C-c n s" . consult-denote)
+   ("C-c n b" . consult-denote-backlinks)))
 
 
 ;;; end here

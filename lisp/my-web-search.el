@@ -40,7 +40,6 @@ If the selected text includes '날씨', perform a weather search using my/naver-
           (call-process "open" nil 0 nil url)
         (browse-url url))))))
 
-
 (defun my/naver-weather-search (city)
   "Search Naver weather information for the given CITY."
   (let* ((encoded-city (url-hexify-string city)))
@@ -102,22 +101,6 @@ If the selected text includes '날씨', perform a weather search using my/naver-
             (message "날씨 데이터 파싱 중 오류 발생: %s" err)))))
      (list city)
      t)))
-
-;; ======================================
-;;; 골프 명언
-;; ======================================
-;; (defun show-random-golf-quote ()
-;;   "Display a random 골프 명언"
-;;   (interactive)
-;;   (let* ((file-path "~/.emacs.d/lisp/gQuote.txt") ;골프 명언 파일
-;;          (quotes (with-temp-buffer
-;;                    (insert-file-contents file-path)
-;;                    (split-string (buffer-string) "\n" t)))
-;;          (random-quote (nth (random (length quotes)) quotes)))
-;;     (setq frame-title-format random-quote))) ;display title bar 
-;; ;;    (message "%s" random-quote))) ; display minibuffer
-;; ;; (add-hook 'auto-save-hook 'show-random-golf-quote)
-;;
 
 
 
