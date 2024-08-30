@@ -100,8 +100,8 @@
 ;;; windmove
 ;; ======================================
 (when (fboundp 'windmove-default-keybindings)
-  ;; (windmove-default-keybindings)  ; shift +
-  (windmove-default-keybindings 'meta))
+  (windmove-default-keybindings))  ; shift +
+;;  (windmove-default-keybindings 'meta))
 
 ;; ======================================
 ;;; theme
@@ -135,6 +135,7 @@
 (use-package emacs
   :bind
   (([f11] . nil)
+   ("C-x f" . nil)
    ("C-x m". nil)
    ("C-x o" . nil)
    ("M-o" . other-window)))
@@ -181,15 +182,14 @@
 ;; ======================================
 ;;; recentf
 ;; ======================================
-(use-package recentf
-  :ensure t
-  :init
-  (recentf-mode 1)
-  :bind
-  ("C-x C-r" . recentf-open-files)
-  :custom
-  (recentf-exclude '("/tmp/" "/ssh:"))
-  (recentf-max-saved-items 20))
+;; (use-package recentf
+;;   :ensure t
+;;   :hook (after-init . recentf-mode)
+;;   :bind
+;;   ("C-x C-r" . recentf-open-files)
+;;   :custom
+;;   (recentf-exclude '("/tmp/" "/ssh:"))
+;;   (recentf-max-saved-items 20))
 
 ;; ======================================
 ;;; savehist
@@ -252,11 +252,12 @@
 ;;; keycast
 ;; ======================================
 (use-package keycast
-  :ensure t
+  :ensure nil
+  :bind("C-x m k" . keycast-mode-line-mode)
   :config
   (setq keycast-mode-line-insert-after 'mode-line-modes
         keycast-mode-line-window-predicate 'mode-line-window-selected-p
-        keycast-mode-line-remove-tail-elements nil)
+        keycast-mode-line-remove-tail-elemenets nil)
   (keycast-mode-line-mode -1))
 
 ;; ======================================

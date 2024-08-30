@@ -48,7 +48,7 @@
   :ensure t
   :bind
   (("C-c k s" . consult-line)
-   ("C-c k b" . consult-buffer)
+   ("C-x b" . consult-buffer)
    ("C-c k d" . consult-dir)
    ("C-c k r" . consult-register)
    ("C-c k k" . consult-kmacro)

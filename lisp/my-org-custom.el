@@ -194,6 +194,7 @@
 ;; Denote 설정
 (use-package denote
   :ensure t
+  :bind("C-c n n" . denote)
   :custom
   (denote-directory (expand-file-name "~/Dropbox/Docs/org/denote"))
   (denote-known-keywords '("work" "personal" "reading"))
@@ -218,18 +219,13 @@
   :after (consult denote)
   :bind
   (("C-c n s" . consult-denote)
+   ("C-c n g" . consult-grep)
    ("C-c n f" . consult-denote-file-type)
    ("C-c n b" . consult-denote-backlinks)
    ("C-c n k" . consult-denote-keywords))
   :custom
-  (consult-denote-default-file-type 'org)
-  :config
-  (defun my/global-consult-denote ()
-    "Run consult-denote from anywhere in Emacs."
-    (interactive)
-    (let ((default-directory denote-directory))
-      (call-interactively #'consult-denote)))
-;;  (global-set-key (kbd "C-c s") 'my/global-consult-denote))
+  (consult-denote-default-file-type 'org))
+
 
 ;;; end here
 (provide 'my-org-custom)
