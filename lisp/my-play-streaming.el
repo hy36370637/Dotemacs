@@ -1,11 +1,11 @@
-;;; my-play-streaming.el --- Streaming and MP3 player for Emacs using VLC -*- lexical-binding: t; -*-
-;; Version: 2.0
+;;; my-play-streaming.el --- Streaming and MP3 player for Emacs using MPV -*- lexical-binding: t; -*-
+;; Version: 2.1
 ;; Package-Requires: ((emacs "25.1"))
 ;; Keywords: multimedia
 
 ;;; Commentary:
 ;; This package provides streaming radio and MP3 player functionality for Emacs.
-;; It uses VLC for both MP3 playback and streaming capabilities.
+;; It uses MPV for both MP3 playback and streaming capabilities.
 ;; Features a minor mode that integrates all player functions.
 
 (require 'cl-lib)
@@ -23,7 +23,7 @@
   :group 'my-streaming)
 
 (defvar my-streaming-process nil
-  "VLC process for streaming.")
+  "MPV process for streaming.")
 
 (defvar my-streaming-playing nil
   "Flag indicating if streaming is currently playing.")
@@ -51,7 +51,7 @@
   "Current index in the playlist.")
 
 (defvar my-mp3-player-process nil
-  "Current VLC process.")
+  "Current MPV process.")
 
 (defvar my-mp3-player-shuffle nil
   "Whether shuffle mode is enabled.")
@@ -62,11 +62,8 @@
 (defconst my-mp3-player-buffer-name "*My Music Player*"
   "Name of the music player buffer.")
 
-(defcustom my-music-player-vlc-command
-  (if (eq system-type 'darwin)
-      "/Applications/VLC.app/Contents/MacOS/VLC"
-    "vlc")
-  "Path to the VLC executable."
+(defcustom my-music-player-mpv-command "mpv"
+  "Path to the MPV executable."
   :type 'string
   :group 'my-mp3-player)
 
@@ -139,13 +136,13 @@
       (my-music-player-play))))
 
 (defun my-music-player-play ()
-  "Play the current MP3 using VLC."
+  "Play the current MP3 using MPV."
   (interactive)
   (when my-mp3-player-playlist
     (let ((file (nth my-mp3-player-index my-mp3-player-playlist)))
       (setq my-mp3-player-process 
-            (start-process "vlc" nil my-music-player-vlc-command 
-                           "--intf" "rc" "--play-and-exit" file))
+            (start-process "mpv" nil my-music-player-mpv-command 
+                           "--no-video" "--no-terminal" file))
       (set-process-sentinel my-mp3-player-process #'my-music-player-sentinel)
       (message "Now playing: %s" (file-name-nondirectory file))
       (my-music-player-update-buffer))))
@@ -330,21 +327,21 @@
       (my-streaming-start (cadr (split-string chosen-item "|"))))))
 
 (defun my-streaming-start (url)
-  "Start streaming audio from URL using VLC."
+  "Start streaming audio from URL using MPV."
   (let* ((chosen-title (my-streaming-get-title-for-url url)))
-    (if (not (executable-find my-music-player-vlc-command))
-        (user-error "VLC is not installed")
+    (if (not (executable-find my-music-player-mpv-command))
+        (user-error "MPV is not installed")
       (when my-streaming-process
         (my-streaming-stop))
       (setq my-streaming-process
-            (start-process "vlc" nil my-music-player-vlc-command "--intf" "rc" url))
+            (start-process "mpv" nil my-music-player-mpv-command "--no-video" "--no-terminal" url))
       (set-process-query-on-exit-flag my-streaming-process nil)
       (setq my-streaming-playing t)
       (message "Playing: %s" chosen-title)
       (my-music-player-update-buffer))))
 
 (defun my-streaming-stop ()
-  "Stop the currently running VLC process."
+  "Stop the currently running MPV process."
   (when my-streaming-process
     (delete-process my-streaming-process)
     (setq my-streaming-process nil
@@ -368,5 +365,4 @@
 
 
 
-;;; ends here
 (provide 'my-play-streaming)

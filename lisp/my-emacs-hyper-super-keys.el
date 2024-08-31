@@ -19,6 +19,10 @@
 
 (defvar-keymap my-emacs-super-keys-map
   :doc "My command alternatives using the Super key."
+;;; tab-bar move
+ "s-1"  #'tab-bar-switch-to-prev-tab	;bab-bar move left
+ "s-2"  #'tab-bar-switch-to-next-tab	;tab-bar move right
+ 
 ;;; Other operations
   "s-z"   #'repeat
   "s-/"   #'undo

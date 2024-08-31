@@ -219,7 +219,7 @@
   :after (consult denote)
   :bind
   (("C-c n s" . consult-denote)
-   ("C-c n g" . consult-grep)
+   ("C-c n g" . consult-denote-grep)
    ("C-c n f" . consult-denote-file-type)
    ("C-c n b" . consult-denote-backlinks)
    ("C-c n k" . consult-denote-keywords))
