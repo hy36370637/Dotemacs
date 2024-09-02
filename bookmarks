@@ -2,10 +2,14 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("org" (filename . "~/Dropbox/Docs/org/")
-  (front-context-string . ".DS_Store\n  -rw-")
-  (rear-context-string . "11K  8 31 07:53 ") (position . 384)
-  (last-modified 26325 38375 256209 0))
+(("org-capture-last-stored" (filename . "~/Dropbox/Docs/org/Tasks.org")
+  (front-context-string . "** TODO 정례 브리핑\n ")
+  (rear-context-string . "00>\n   - 박인배 회원\n") (position . 10030)
+  (last-modified 26325 42305 440194 0))
+("org" (filename . "~/Dropbox/Docs/org/")
+ (front-context-string . ".DS_Store\n  -rw-")
+ (rear-context-string . "11K  8 31 07:53 ") (position . 384)
+ (last-modified 26325 38375 256209 0))
 ("hy36370637.github.io" (filename . "~/hy36370637.github.io/")
  (front-context-string) (rear-context-string . "13K  9  1 19:51 ")
  (position . 452) (last-modified 26325 38174 677360 0))
@@ -17,8 +21,4 @@
  (front-context-string . "init.el\n  -rw-r-")
  (rear-context-string . ".2K  9  2 17:18 ") (position . 895)
  (last-modified 26325 37746 898242 0))
-("org-capture-last-stored" (filename . "~/Dropbox/Docs/org/Daily.org")
- (front-context-string . "**** 동상 참기름준비\n  ")
- (rear-context-string . " '비용'이라고 말하는가?\"\n")
- (position . 129349) (last-modified 26325 15023 110570 0))
 )

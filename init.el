@@ -75,7 +75,7 @@
         visible-bell t
         initial-scratch-message nil
         use-dialog-box nil
-	default-directory (expand-file-name "~/Dropbox/Docs/org")
+        default-directory (expand-file-name "~/Dropbox/Docs/org")
         temporary-file-directory "~/tmpdir/"
         make-backup-files nil
         kill-whole-line 1
@@ -83,7 +83,10 @@
         scroll-margin 7
         scroll-preserve-screen-position t
         scroll-conservatively 101
-	text-scale-mode-step 1.05)	;글자크기 비율 5% 단위. 기본값 1.20
+        text-scale-mode-step 1.05)  ;글자크기 비율 5% 단위. 기본값 1.20
+  ;; 북마크 관련 설정
+  (setq bookmark-save-flag 1
+        bookmark-sort-flag nil)
   :config
   (tool-bar-mode -1)
   (toggle-scroll-bar -1)
@@ -94,14 +97,14 @@
   (global-auto-revert-mode 1)
   (transient-mark-mode t)
   (column-number-mode t)
-  (display-time-mode 1))
+  (display-time-mode 1)
+  ;; 북마크 자동 저장 함수 정의 및 적용
+  (defun my/bookmark-save-auto ()
+    "Save bookmarks automatically after setting a bookmark."
+    (when (boundp 'bookmark-alist)
+      (bookmark-save)))
 
-;; ======================================
-;;; windmove
-;; ======================================
-;; (when (fboundp 'windmove-default-keybindings)
-;; ;;  (windmove-default-keybindings))  ; shift +
-;;   (windmove-default-keybindings 'hyper))
+  (advice-add 'bookmark-set :after #'my/bookmark-save-auto))
 
 ;; ======================================
 ;;; theme
@@ -278,3 +281,5 @@
   :bind (("C-x g" . magit-status))
   :config
   (setq magit-auto-revert-mode t))
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
