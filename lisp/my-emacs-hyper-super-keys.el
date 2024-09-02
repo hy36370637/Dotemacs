@@ -34,6 +34,7 @@
   "s-o s" #'org-save-all-org-buffers
   "s-o v" #'org-toggle-inline-images
   ;; my Custom Prefix - 기존 사용하여 익숙했던 것
+  "s-t b" #'consult-bookmark
   "s-t c"  #'select-special-character
   "s-t m"  #'my-music-player-mode 
   "s-t s"  #'my/search-selected-text

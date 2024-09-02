@@ -7,6 +7,7 @@
 ;; This package provides streaming radio and MP3 player functionality for Emacs.
 ;; It uses MPV for both MP3 playback and streaming capabilities.
 ;; Features a minor mode that integrates all player functions.
+;; brew install mpv
 
 (require 'cl-lib)
 (require 'which-key)

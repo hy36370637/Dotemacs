@@ -99,9 +99,9 @@
 ;; ======================================
 ;;; windmove
 ;; ======================================
-(when (fboundp 'windmove-default-keybindings)
-  (windmove-default-keybindings))  ; shift +
-;;  (windmove-default-keybindings 'meta))
+;; (when (fboundp 'windmove-default-keybindings)
+;; ;;  (windmove-default-keybindings))  ; shift +
+;;   (windmove-default-keybindings 'hyper))
 
 ;; ======================================
 ;;; theme
@@ -160,11 +160,11 @@
 ;;  :if (display-graphic-p)
   :config
   (set-face-attribute 'default nil
-                      :family "Noto Sans CJK KR"
+                      :family "Noto Sans KR"
                       :height 160)
   (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
-  (set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR")
-  (set-fontset-font nil 'hangul (font-spec :family "Noto Sans CJK KR")))
+  (set-face-attribute 'variable-pitch nil :family "Noto Sans KR")
+  (set-fontset-font nil 'hangul (font-spec :family "Noto Sans KR")))
 
 ;; ======================================
 ;;; helpful
@@ -251,14 +251,14 @@
 ;; ======================================
 ;;; keycast
 ;; ======================================
-(use-package keycast
-  :ensure nil
-  :bind("C-x m k" . keycast-mode-line-mode)
-  :config
-  (setq keycast-mode-line-insert-after 'mode-line-modes
-        keycast-mode-line-window-predicate 'mode-line-window-selected-p
-        keycast-mode-line-remove-tail-elemenets nil)
-  (keycast-mode-line-mode -1))
+;; (use-package keycast
+;;   :ensure nil
+;;   :bind("C-x m k" . keycast-mode-line-mode)
+;;   :config
+;;   (setq keycast-mode-line-insert-after 'mode-line-modes
+;;         keycast-mode-line-window-predicate 'mode-line-window-selected-p
+;;         keycast-mode-line-remove-tail-elemenets nil)
+;;   (keycast-mode-line-mode -1))
 
 ;; ======================================
 ;;; battery display
