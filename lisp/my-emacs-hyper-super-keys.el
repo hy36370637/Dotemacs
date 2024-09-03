@@ -2,20 +2,20 @@
 ;;; Hyper and Super keys → minor mode
 ;;; I was inspired by the https://protesilaos.com
 
-(defvar-keymap my-emacs-hyper-keys-map
-  :doc "My command alternatives using the Hyper key."
-  ;; window
-  "H-w ]" #'enlarge-window-horizontally
-  "H-w [" #'shrink-window-horizontally
-  "H-w =" #'balance-windows
-  "H-w _" #'shrink-window
-  "H-w +" #'enlarge-window
+;; (defvar-keymap my-emacs-hyper-keys-map
+;;   :doc "My command alternatives using the Hyper key."
+;;   ;; window
+;;   "H-w ]" #'enlarge-window-horizontally
+;;   "H-w [" #'shrink-window-horizontally
+;;   "H-w =" #'balance-windows
+;;   "H-w _" #'shrink-window
+;;   "H-w +" #'enlarge-window
   
-  ;; kmacro
-  "H-k [" #'kmacro-start-macro
-  "H-k ]" #'kmacro-end-macro
-  "H-'"    #'kmacro-end-and-call-macro  ; F4
-)
+;;   ;; kmacro
+;;   "H-k [" #'kmacro-start-macro
+;;   "H-k ]" #'kmacro-end-macro
+;;   "H-'"    #'kmacro-end-and-call-macro  ; F4
+;; )
 
 (defvar-keymap my-emacs-super-keys-map
   :doc "My command alternatives using the Super key."
@@ -46,8 +46,9 @@
   "Provide Hyper and Super key alternatives to Command."
   :global t
   :init-value t
-  :keymap (make-composed-keymap (list my-emacs-hyper-keys-map
-                                      my-emacs-super-keys-map)))
+  ;; :keymap (make-composed-keymap (list my-emacs-hyper-keys-map
+  ;;                                     my-emacs-super-keys-map)))
+  :keymap my-emacs-super-keys-map)
 
 
 ;; end here

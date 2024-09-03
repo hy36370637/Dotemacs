@@ -61,10 +61,10 @@
 ;; ======================================
 ;;; MacOS keyboard
 ;; ======================================
-(use-package emacs
- ;; :if my-mactop-p
-  :config
-  (setq ns-function-modifier 'hyper))
+;; (use-package emacs
+;;  ;; :if my-mactop-p
+;;   :config
+;;   (setq ns-function-modifier 'hyper))
 
 ;; ======================================
 ;;; Emacs UI and behavior
@@ -84,9 +84,11 @@
         scroll-preserve-screen-position t
         scroll-conservatively 101
         text-scale-mode-step 1.05)  ;글자크기 비율 5% 단위. 기본값 1.20
+
   ;; 북마크 관련 설정
   (setq bookmark-save-flag 1
         bookmark-sort-flag nil)
+
   :config
   (tool-bar-mode -1)
   (toggle-scroll-bar -1)
@@ -98,14 +100,14 @@
   (transient-mark-mode t)
   (column-number-mode t)
   (display-time-mode 1)
+
   ;; 북마크 자동 저장 함수 정의 및 적용
-  (defun my/bookmark-save-auto ()
+  (defun my/bookmark-save-automatically (&rest _)
     "Save bookmarks automatically after setting a bookmark."
     (when (boundp 'bookmark-alist)
       (bookmark-save)))
 
-  (advice-add 'bookmark-set :after #'my/bookmark-save-auto))
-
+  (advice-add 'bookmark-set :after #'my/bookmark-save-automatically))
 ;; ======================================
 ;;; theme
 ;; ======================================
@@ -162,9 +164,7 @@
 (use-package emacs
 ;;  :if (display-graphic-p)
   :config
-  (set-face-attribute 'default nil
-                      :family "Noto Sans KR"
-                      :height 160)
+  (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
   (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
   (set-face-attribute 'variable-pitch nil :family "Noto Sans KR")
   (set-fontset-font nil 'hangul (font-spec :family "Noto Sans KR")))
@@ -181,18 +181,6 @@
    ("C-c C-d" . helpful-at-point)
    ("C-h F" . helpful-function)
    ("C-h C" . helpful-command)))
-
-;; ======================================
-;;; recentf
-;; ======================================
-;; (use-package recentf
-;;   :ensure t
-;;   :hook (after-init . recentf-mode)
-;;   :bind
-;;   ("C-x C-r" . recentf-open-files)
-;;   :custom
-;;   (recentf-exclude '("/tmp/" "/ssh:"))
-;;   (recentf-max-saved-items 20))
 
 ;; ======================================
 ;;; savehist
