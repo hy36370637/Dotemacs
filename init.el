@@ -61,10 +61,12 @@
 ;; ======================================
 ;;; MacOS keyboard
 ;; ======================================
-;; (use-package emacs
-;;  ;; :if my-mactop-p
-;;   :config
-;;   (setq ns-function-modifier 'hyper))
+(use-package emacs
+ ;; :if my-mactop-p
+  :config
+  ;;  (setq ns-function-modifier 'hyper))
+  (setq ns-command-modifier 'meta
+        ns-alternate-modifier 'super))
 
 ;; ======================================
 ;;; Emacs UI and behavior
@@ -150,13 +152,13 @@
 ;; ======================================
 (use-package emacs
   :config
-  (set-language-environment "Korean")
-  (set-locale-environment "ko_KR.UTF-8")
+;;  (set-language-environment "Korean")              ;built in hangul
+;;  (set-locale-environment "ko_KR.UTF-8")         ;built in hangul
   (setenv "LANG" "ko_KR.UTF-8")
-  (setenv "LC_COLLATE" "C")
-  (setq default-input-method "korean-hangul"
-        input-method-verbose-flag nil
-        input-method-highlight-flag nil))
+  (setenv "LC_COLLATE" "C"))
+;; (setq default-input-method "korean-hangul"  ;built in hangul
+;;       input-method-verbose-flag nil                        ;built in hangul
+;;       input-method-highlight-flag nil))                   ;built in hangul
 
 ;; ======================================
 ;;; Fonts
