@@ -27,14 +27,24 @@
   "s-z"   #'repeat
   "s-/"   #'undo
   "C-s-/" #'undo-redo
+  
+ ;;consult
+  "s-c d"  #'consult-dir
+  "s-c s"  #'consult-line
+   "s-c r"   #'consult-register
+   "s-c g"  #'consult-grep
+   "s-c t"  #'consult-theme
+   "s-c b"  #'consult-bookmark
+   "s-c M-b"  #'consult-bookmark-goto
+
   ;; org-mode    
   "s-o e" #'org-emphasize
   "s-o f" #'org-footnote-action
   "s-o o" #'org-insert-structure-template
   "s-o s" #'org-save-all-org-buffers
   "s-o v" #'org-toggle-inline-images
+
   ;; my Custom Prefix - 기존 사용하여 익숙했던 것
-  "s-t b" #'consult-bookmark
   "s-t c"  #'select-special-character
   "s-t m"  #'my-music-player-mode 
   "s-t s"  #'my/search-selected-text

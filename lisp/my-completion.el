@@ -47,19 +47,20 @@
 (use-package consult
   :ensure t
   :bind
-  (("C-c k s" . consult-line)
    ("C-x b" . consult-buffer)
-   ("C-c k b" . consult-bookmark)
-   ("C-c k d" . consult-dir)
-   ("C-c k r" . consult-register)
-   ("C-c k k" . consult-kmacro)
-   ("C-c k o" . consult-outline)
-   ("C-c k g" . consult-grep)
-   ("C-c k t" . consult-theme))
   :config
   (setq consult-buffer-sources
         '(consult--source-buffer
           consult--source-recent-file))
+  ;; 북마크 관련 추가 설정
+  (setq consult-bookmark-narrow
+        '((?b "Bookmarks" bookmark)
+          (?f "Files" file)
+          (?d "Directories" dir)))
+  ;; 북마크 미리보기 설정
+  (setq consult-preview-key 'any)
+  ;; 북마크 정렬 설정
+  (setq consult-sort-function #'consult--alpha-sort)
   :hook (completion-list-mode . consult-preview-at-point-mode))
 
 ;; ======================================
@@ -286,7 +287,6 @@
   (setq ispell-local-dictionary "ko_KR")
   (setq ispell-local-dictionary-alist
         '(("ko_KR" "[가-힣]" "[^가-힣]" "[-']" nil ("-d" "ko_KR") nil utf-8))))
-
 
 
 ;; end here
