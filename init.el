@@ -152,13 +152,13 @@
 ;; ======================================
 (use-package emacs
   :config
-;;  (set-language-environment "Korean")              ;built in hangul
-;;  (set-locale-environment "ko_KR.UTF-8")         ;built in hangul
+ (set-language-environment "Korean")              ;built in hangul
+ (set-locale-environment "ko_KR.UTF-8")         ;built in hangul
   (setenv "LANG" "ko_KR.UTF-8")
-  (setenv "LC_COLLATE" "C"))
-;; (setq default-input-method "korean-hangul"  ;built in hangul
-;;       input-method-verbose-flag nil                        ;built in hangul
-;;       input-method-highlight-flag nil))                   ;built in hangul
+  (setenv "LC_COLLATE" "C")
+(setq default-input-method "korean-hangul"  ;built in hangul
+      input-method-verbose-flag nil                        ;built in hangul
+      input-method-highlight-flag nil))                   ;built in hangul
 
 ;; ======================================
 ;;; Fonts

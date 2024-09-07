@@ -32,7 +32,7 @@
   "s-c d"  #'consult-dir
   "s-c s"  #'consult-line
    "s-c r"   #'consult-register
-   "s-c g"  #'consult-grep
+   "s-c g"  #'my-consult-grep-custom
    "s-c t"  #'consult-theme
    "s-c b"  #'consult-bookmark
    "s-c M-b"  #'consult-bookmark-goto

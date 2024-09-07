@@ -1,6 +1,6 @@
-;; 완성completion 도움
+;;; -*- lexical-binding: t; -*-
 ;; .emacs.d/lisp/my-completion.el
-
+;;
 ;; ======================================
 ;;; which-key
 ;; ======================================
@@ -53,15 +53,25 @@
         '(consult--source-buffer
           consult--source-recent-file))
   ;; 북마크 관련 추가 설정
-  (setq consult-bookmark-narrow
-        '((?b "Bookmarks" bookmark)
-          (?f "Files" file)
-          (?d "Directories" dir)))
+  ;; (setq consult-bookmark-narrow
+  ;;       '((?b "Bookmarks" bookmark)
+  ;;         (?f "Files" file)
+  ;;         (?d "Directories" dir)))
   ;; 북마크 미리보기 설정
   (setq consult-preview-key 'any)
   ;; 북마크 정렬 설정
   (setq consult-sort-function #'consult--alpha-sort)
   :hook (completion-list-mode . consult-preview-at-point-mode))
+;;;
+(defun my-consult-grep-custom ()
+  "Run consult-grep with option to use default directory or choose a new one."
+  (interactive)
+  (let* ((default-dir (or org-directory (expand-file-name "~/Dropbox/Docs/org/")))
+         (use-default (y-or-n-p (format "Use default directory (%s)? " default-dir)))
+         (dir (if use-default
+                  default-dir
+                (read-directory-name "Choose directory: " nil nil t))))
+    (consult-grep dir)))
 
 ;; ======================================
 ;;; consult-dir
@@ -214,7 +224,7 @@
 
   ;; for org-mode 
   (defun try-expand-org-keyword (old)
-    "Org-mode 키워드 완성 함수"
+    "Org-mode 키워드 자동완성 함수"
     (unless old
       (he-init-string (he-dabbrev-beg) (point))
       (setq he-expand-list
