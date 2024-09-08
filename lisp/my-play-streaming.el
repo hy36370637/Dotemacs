@@ -1,6 +1,6 @@
 ;;; my-play-streaming.el --- Streaming and MP3 player for Emacs using MPV -*- lexical-binding: t; -*-
-;; Version: 2.1
-;; Package-Requires: ((emacs "25.1"))
+;; Version: 2.2
+;; Package-Requires: ((emacs "27.0"))
 ;; Keywords: multimedia
 
 ;;; Commentary:
@@ -34,6 +34,9 @@
 
 (defvar my-streaming-index 0
   "Current index in the streaming URL list.")
+
+(defvar my-music-player-in-new-tab nil
+  "Flag indicating whether the music player was opened in a new tab.")
 
 ;;; MP3 Player
 (defgroup my-mp3-player nil
@@ -97,6 +100,14 @@
   :keymap my-music-player-mode-map
   (if my-music-player-mode
       (progn
+        (setq my-music-player-in-new-tab nil)  ; 초기화
+        (when (and (fboundp 'tab-bar-mode)
+                   (y-or-n-p "Open music player in a new tab? "))
+          (tab-bar-mode 1)
+          (tab-new)
+          (tab-rename "Music Player")
+          (switch-to-buffer (get-buffer-create my-mp3-player-buffer-name))
+          (setq my-music-player-in-new-tab t))  ; 새 탭에서 열렸음을 표시
         (my-music-player-initialize)
         (message "Music Player mode enabled. Use C-c m to access commands."))
     (my-music-player-cleanup)
@@ -360,9 +371,30 @@
         "Unknown Station"))))
 
 (defun my-music-player-quit ()
-  "Quit the music player."
+  "Quit the music player and close its tab if opened in a new tab."
   (interactive)
-  (my-music-player-mode -1))
+  (my-music-player-mode -1)
+  (when (and (fboundp 'tab-bar-mode) my-music-player-in-new-tab)
+    (let ((music-tab (my-music-player-find-tab "Music Player")))
+      (when music-tab
+        (if (= (length (tab-bar-tabs)) 1)
+            ;; 탭이 하나만 있는 경우, 탭을 삭제하지 않고 버퍼만 삭제
+            (progn
+              (kill-buffer my-mp3-player-buffer-name)
+              (switch-to-buffer (other-buffer)))
+          ;; 탭이 여러 개인 경우
+          (when (string= (alist-get 'name (tab-bar--current-tab)) "Music Player")
+            (tab-previous))
+          (tab-bar-close-tab (alist-get 'index music-tab))))))
+  (setq my-music-player-in-new-tab nil))  ; 플래그 초기화
+
+(defun my-music-player-find-tab (tab-name)
+  "Find a tab by its name."
+  (when (fboundp 'tab-bar-tabs)
+    (seq-find (lambda (tab)
+                (string= (alist-get 'name tab) tab-name))
+              (tab-bar-tabs))))
+
 
 
 

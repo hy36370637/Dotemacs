@@ -30,6 +30,7 @@
   
  ;;consult
   "s-c d"  #'consult-dir
+  "s-c f"  #'consult-find
   "s-c s"  #'consult-line
    "s-c r"   #'consult-register
    "s-c g"  #'my-consult-grep-custom
