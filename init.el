@@ -1,76 +1,53 @@
 ;;; Config for EMACS
 ;;  --------------------------------------------------------
-;;; Speed up emacs
-;; for macbook air(m1) 8G ram
-;; ======================================
-(use-package emacs
-  :init
-  (setq gc-cons-threshold most-positive-fixnum)
-  :hook
-  (emacs-startup . (lambda ()
-                     (setq gc-cons-threshold (* 1024 1024 16)))) ; 16MB
-  :config
-  (setq read-process-output-max (* 1024 1024)) ; 1MB
-  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-  (unless (file-exists-p custom-file)
-    (write-region "" nil custom-file))
-  (load custom-file nil t))
 
-;; ======================================
-;;; package source list
-;; ======================================
-(use-package package
-  :config
-  (setq package-archives
-        '(("melpa" . "https://melpa.org/packages/")
-          ("gnu" . "https://elpa.gnu.org/packages/")))
-  (package-initialize))
+;;; Speed up Emacs startup
+(setq gc-cons-threshold most-positive-fixnum)
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 1024 1024 16))))  ; 16MB
+;;; Increase process output reading
+(setq read-process-output-max (* 1024 1024))  ; 1MB
 
-;; ======================================
-;;; use-package
-;; ======================================
-(eval-when-compile
-  (require 'use-package))
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;;; Custom file
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(unless (file-exists-p custom-file)
+  (write-region "" nil custom-file))
+(load custom-file t t)
 
-;; ======================================
-;;; system-info
-;; ======================================
+;;; Package initialization
+(require 'package)
+(setq package-archives
+      '(("melpa" . "https://melpa.org/packages/")
+        ("gnu" . "https://elpa.gnu.org/packages/")))
+(package-initialize)
+
+;; Configure use-package
+(require 'use-package)			;emacs 27+
+(setq use-package-always-ensure t)	;emacs 29+
+
+;;; System info
 (defvar my-mactop-p (eq system-type 'darwin))
 (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
-;; ======================================
 ;;; exec-path-from-shell
-;; ======================================
 (use-package exec-path-from-shell
-  :ensure t
-;;  :if my-mactop-p
+  :if my-mactop-p
   :config
   (exec-path-from-shell-initialize))
 
-;; ======================================
-;;; load-my-custom-package
-;; ======================================
+;;; Load custom packages
 (dolist (file (directory-files "~/.emacs.d/lisp" t "\\.el$"))
   (condition-case err
       (load file)
     (error (message "Error loading %s: %s" file err))))
 
-;; ======================================
 ;;; MacOS keyboard
-;; ======================================
-(use-package emacs
- ;; :if my-mactop-p
-  :config
-  ;;  (setq ns-function-modifier 'hyper))
+(when my-mactop-p
   (setq ns-command-modifier 'meta
         ns-alternate-modifier 'super))
 
-;; ======================================
 ;;; Emacs UI and behavior
-;; ======================================
 (use-package emacs
   :init
   (setq inhibit-startup-message t
@@ -85,36 +62,72 @@
         scroll-margin 7
         scroll-preserve-screen-position t
         scroll-conservatively 101
-        text-scale-mode-step 1.05)  ;글자크기 비율 5% 단위. 기본값 1.20
-
-  ;; 북마크 관련 설정
-  (setq bookmark-save-flag 1
-        bookmark-sort-flag nil)
-
+        text-scale-mode-step 1.05)
   :config
   (tool-bar-mode -1)
   (toggle-scroll-bar -1)
   (setq-default line-spacing 0.2)
-  (save-place-mode 1)
   (global-font-lock-mode 1)
   (global-visual-line-mode t)
   (global-auto-revert-mode 1)
   (transient-mark-mode t)
   (column-number-mode t)
-  (display-time-mode 1)
+  (display-time-mode 1))
 
-  ;; 북마크 자동 저장 함수 정의 및 적용
+;;; Bookmark
+(use-package bookmark
+  :ensure nil
+  :init
+  (setq bookmark-save-flag 1
+        bookmark-sort-flag nil
+        bookmark-default-file "~/.emacs.d/bookmarks")
+  :config
   (defun my/bookmark-save-automatically (&rest _)
-    "Save bookmarks automatically after setting a bookmark."
     (when (boundp 'bookmark-alist)
       (bookmark-save)))
+  (advice-add 'bookmark-set :after #'my/bookmark-save-automatically)
+  :bind
+  (("C-x r m" . bookmark-set)
+   ("C-x r b" . bookmark-jump)
+   ("C-x r l" . bookmark-bmenu-list)))
 
-  (advice-add 'bookmark-set :after #'my/bookmark-save-automatically))
-;; ======================================
-;;; theme
-;; ======================================
+;;; Register
+(use-package register
+  :ensure nil
+  :config
+  (setq register-preview-delay 0
+        register-preview-function #'register-preview-default)
+  :bind
+  (("C-x r j" . jump-to-register)
+   ("C-x r s" . copy-to-register)
+   ("C-x r i" . insert-register)))
+(set-register ?i '(file . "~/.emacs.d/init.el"))
+
+;;; Key bindings
+(global-unset-key [f11])
+(global-unset-key (kbd "C-x f"))
+(global-unset-key (kbd "C-x m"))
+(global-unset-key (kbd "C-x o"))
+(global-set-key (kbd "M-o") 'other-window)
+
+;;; Locale and Korean settings
+(setenv "LANG" "ko_KR.UTF-8")
+(setenv "LC_COLLATE" "C")
+(set-language-environment "Korean")
+(set-locale-environment "ko_KR.UTF-8")
+(setq default-input-method "korean-hangul"
+      input-method-verbose-flag nil
+      input-method-highlight-flag nil)
+
+;;; Fonts
+(when (display-graphic-p)
+  (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
+  (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
+  (set-face-attribute 'variable-pitch nil :family "Noto Sans KR")
+  (set-fontset-font nil 'hangul (font-spec :family "Noto Sans KR")))
+
+;;; Theme
 (use-package standard-themes
-  :ensure t
   :config
   (setq standard-themes-bold-constructs t
         standard-themes-italic-constructs t
@@ -136,46 +149,8 @@
           (t . (variable-pitch 1.1))))
   (standard-themes-load-dark))
 
-;; ======================================
-;;; Key bindings
-;; ======================================
-(use-package emacs
-  :bind
-  (([f11] . nil)
-   ("C-x f" . nil)
-   ("C-x m". nil)
-   ("C-x o" . nil)
-   ("M-o" . other-window)))
-
-;; ======================================
-;;; Locale and Korean settings
-;; ======================================
-(use-package emacs
-  :config
- (set-language-environment "Korean")              ;built in hangul
- (set-locale-environment "ko_KR.UTF-8")         ;built in hangul
-  (setenv "LANG" "ko_KR.UTF-8")
-  (setenv "LC_COLLATE" "C")
-(setq default-input-method "korean-hangul"  ;built in hangul
-      input-method-verbose-flag nil                        ;built in hangul
-      input-method-highlight-flag nil))                   ;built in hangul
-
-;; ======================================
-;;; Fonts
-;; ======================================
-(use-package emacs
-;;  :if (display-graphic-p)
-  :config
-  (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
-  (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
-  (set-face-attribute 'variable-pitch nil :family "Noto Sans KR")
-  (set-fontset-font nil 'hangul (font-spec :family "Noto Sans KR")))
-
-;; ======================================
-;;; helpful
-;; ======================================
+;;; Helpful
 (use-package helpful
-  :ensure t
   :bind
   (("C-h f" . helpful-callable)
    ("C-h v" . helpful-variable)
@@ -184,92 +159,74 @@
    ("C-h F" . helpful-function)
    ("C-h C" . helpful-command)))
 
-;; ======================================
-;;; savehist
-;; ======================================
+;;; Session and Place Persistence
 (use-package savehist
-  :ensure t
-  :init
-  (savehist-mode))
+  :ensure nil
+  :init (savehist-mode 1))
 
-;; ======================================
+(use-package saveplace
+  :ensure nil
+  :config (save-place-mode 1))
+
 ;;; Icons
-;; ======================================
-(use-package nerd-icons
-  :ensure t)
+(use-package nerd-icons)
 
 (use-package nerd-icons-dired
-  :ensure t
   :after dired
   :hook (dired-mode . nerd-icons-dired-mode))
 
 (use-package nerd-icons-completion
-  :ensure t
   :after marginalia
   :config
   (nerd-icons-completion-mode)
-  :hook
-  (marginalia-mode . nerd-icons-completion-marginalia-setup))
+  :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
 
-;; ======================================
-;;; eshell
-;; ======================================
+;;; Eshell
 (use-package eshell
   :commands eshell
   :config
   (setq eshell-destroy-buffer-when-process-dies t))
 
-;; ======================================
-;;; modeline
-;; ======================================
-(use-package emacs
-  :init
+;;; Modeline
 (setq mode-line-right-align-edge 'right-margin)
 (setq-default mode-line-format
               '("%e "
                 mode-line-front-space
-		 (:eval (if (string= current-input-method "korean-hangul")
-                             (propertize "KO" 'face '(:foreground "orange"))
-                           "EN"))
+                (:eval (if (string= current-input-method "korean-hangul")
+                           (propertize "KO" 'face '(:foreground "orange"))
+                         "EN"))
                 " Ⓗ "
-                mode-line-buffer-identification       
+                mode-line-buffer-identification
                 mode-line-frame-identification
                 " Ⓨ "
                 mode-line-modes
                 mode-line-format-right-align
                 mode-line-position
                 " Ⓚ "
-                mode-line-misc-info)))
+                mode-line-misc-info))
 
-;; ======================================
-;;; keycast
-;; ======================================
-;; (use-package keycast
-;;   :ensure nil
-;;   :bind("C-x m k" . keycast-mode-line-mode)
-;;   :config
-;;   (setq keycast-mode-line-insert-after 'mode-line-modes
-;;         keycast-mode-line-window-predicate 'mode-line-window-selected-p
-;;         keycast-mode-line-remove-tail-elemenets nil)
-;;   (keycast-mode-line-mode -1))
+;;; Battery display
+(when my-Macbook-p
+  (use-package battery
+    :config
+    (setq battery-status-function 'battery-pmset
+          battery-mode-line-format "Ⓑ %p%%  ")
+    (display-battery-mode 1)))
 
-;; ======================================
-;;; battery display
-;; ======================================
-(use-package battery
-  :if my-Macbook-p
-  :config 
-  (setq battery-status-function 'battery-pmset
-        battery-mode-line-format "Ⓑ %p%%  ")
-  (display-battery-mode 1))
-
-;; ======================================
 ;;; Magit
-;; ======================================
 (use-package magit
-  :ensure t
   :bind (("C-x g" . magit-status))
   :config
   (setq magit-auto-revert-mode t))
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
+
+;;; Keycast
+(use-package keycast
+  :bind ("C-x m k" . keycast-mode-line-mode)
+  :config
+  (setq keycast-mode-line-insert-after 'mode-line-modes
+        keycast-mode-line-window-predicate 'mode-line-window-selected-p
+        keycast-mode-line-remove-tail-elemenets nil)
+  (keycast-mode-line-mode -1))
+
+;; (put 'upcase-region 'disabled nil)
+;; (put 'downcase-region 'disabled nil)
