@@ -5,7 +5,6 @@
 ;; dired 관련 lisp 모음
 ;; /.emacs.d/lisp/my-dired-custom.el
 ;; directory 우선/한글파일명 정렬불가(macOS) → 해결(setenv "LC_COLLATE" "C")
-;;; -*- lexical-binding: t; -*-
 
 (use-package dired
   :ensure nil
