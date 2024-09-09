@@ -32,7 +32,7 @@
 
 ;;; exec-path-from-shell
 (use-package exec-path-from-shell
-  :if my-mactop-p
+;;  :if my-mactop-p
   :config
   (exec-path-from-shell-initialize))
 
@@ -62,7 +62,7 @@
         scroll-margin 7
         scroll-preserve-screen-position t
         scroll-conservatively 101
-        text-scale-mode-step 1.05)
+        text-scale-mode-step 1.05)  	;글꼴 확대축소 비율 5% 단위
   :config
   (tool-bar-mode -1)
   (toggle-scroll-bar -1)
@@ -104,23 +104,29 @@
 (set-register ?i '(file . "~/.emacs.d/init.el"))
 
 ;;; Key bindings
-(global-unset-key [f11])
-(global-unset-key (kbd "C-x f"))
-(global-unset-key (kbd "C-x m"))
-(global-unset-key (kbd "C-x o"))
-(global-set-key (kbd "M-o") 'other-window)
+(use-package emacs
+  :bind
+  (([f11] . nil)
+   ("C-x f" . nil)
+   ("C-x m". nil)
+   ("C-x o" . nil)
+   ("M-o" . other-window)))
 
 ;;; Locale and Korean settings
-(setenv "LANG" "ko_KR.UTF-8")
-(setenv "LC_COLLATE" "C")
-(set-language-environment "Korean")
-(set-locale-environment "ko_KR.UTF-8")
-(setq default-input-method "korean-hangul"
-      input-method-verbose-flag nil
-      input-method-highlight-flag nil)
+(use-package emacs
+  :config
+  (setenv "LANG" "ko_KR.UTF-8")
+  (setenv "LC_COLLATE" "C")
+  (set-language-environment "Korean")
+  (set-locale-environment "ko_KR.UTF-8")
+  (setq default-input-method "korean-hangul"
+	input-method-verbose-flag nil
+	input-method-highlight-flag nil))
 
 ;;; Fonts
-(when (display-graphic-p)
+(use-package emacs
+;;  :if (display-graphic-p)
+  :config
   (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
   (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
   (set-face-attribute 'variable-pitch nil :family "Noto Sans KR")
