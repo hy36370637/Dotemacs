@@ -53,11 +53,11 @@
   :bind ("C-c c" . org-capture)
   :config
   (setq org-capture-templates
-   '(("d" "Daily" entry (file+datetree "Daily.org") "* %?")
-     ("t" "Tasks" entry (file+olp "Tasks.org" "Schedule") "* TODO %?")
+   '(("d" "Daily" entry (file+datetree "~/Dropbox/Docs/Person/Daily.org") "* %?")
+     ("t" "Tasks" entry (file+olp "~/Dropbox/Docs/Person/Tasks.org" "Schedule") "* TODO %?")
      ;; ("a" "Assist" table-line (file+headline "aMoney.org" "aMoney")
      ;;  "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
-     ("f" "FarmNote" entry (file+datetree "dFarmNote.org") "* %?")))
+     ("f" "FarmNote" entry (file+datetree "~/Dropbox/Docs/Person/dFarmNote.org") "* %?")))
   )
 
 ;; ======================================
@@ -67,7 +67,8 @@
   :ensure nil
   :bind ("C-c a" . org-agenda)
   :config
-  (setq org-agenda-files '("Tasks.org" "Daily.org"))
+  ;;  (setq org-agenda-files '("Tasks.org" "Daily.org"))
+  (setq org-agenda-files '("~/Dropbox/Docs/Person/Tasks.org"  "~/Dropbox/Docs/Person/Daily.org"))
   (setq org-agenda-prefix-format
 	'((agenda . " %t %s")  ;" %t %-12:c%?-12t% s"
           (timeline . "  % s")
@@ -105,7 +106,8 @@
 ;; ======================================
 ;;; holidays
 ;; ======================================
-(use-package holidays
+(use-package calendar
+  :ensure nil 				;built-in
   :config
   (setq my-holidays			;공휴일+음력기념일
 	'((holiday-fixed 1 1 "새해")
@@ -225,6 +227,7 @@
    ("C-c n k" . consult-denote-keywords))
   :custom
   (consult-denote-default-file-type 'org))
+
 
 
 ;;; end here
