@@ -28,24 +28,23 @@
   "s-/"   #'undo
   "C-s-/" #'undo-redo
   
- ;;consult
+ ;;;consult
   "s-c d"  #'consult-dir
-  "s-c f"  #'consult-find
-  "s-c s"  #'consult-line
+  "s-c f"   #'consult-find
+  "s-c s"   #'consult-line
    "s-c r"   #'consult-register
    "s-c g"  #'my-consult-grep-custom
-   "s-c t"  #'consult-theme
+   "s-c t"   #'consult-theme
    "s-c b"  #'consult-bookmark
-   "s-c M-b"  #'consult-bookmark-goto
 
-  ;; org-mode    
+  ;;; org-mode    
   "s-o e" #'org-emphasize
   "s-o f" #'org-footnote-action
   "s-o o" #'org-insert-structure-template
   "s-o s" #'org-save-all-org-buffers
   "s-o v" #'org-toggle-inline-images
 
-  ;; my Custom Prefix - 기존 사용하여 익숙했던 것
+  ;;; my Custom Prefix - 기존 사용하여 익숙했던 것
   "s-t c"  #'select-special-character
   "s-t s"  #'my/search-selected-text
   "s-t v"  #'toggle-my-view-mode

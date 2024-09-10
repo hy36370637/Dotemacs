@@ -1,53 +1,70 @@
 ;;; Config for EMACS
 ;;  --------------------------------------------------------
 
+;; ======================================
 ;;; Speed up Emacs startup
+;; ======================================
 (setq gc-cons-threshold most-positive-fixnum)
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq gc-cons-threshold (* 1024 1024 16))))  ; 16MB
-;;; Increase process output reading
 (setq read-process-output-max (* 1024 1024))  ; 1MB
 
+;; ======================================
 ;;; Custom file
+;; ======================================
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
 (load custom-file t t)
 
+;; ======================================
 ;;; Package initialization
+;; ======================================
 (require 'package)
 (setq package-archives
       '(("melpa" . "https://melpa.org/packages/")
         ("gnu" . "https://elpa.gnu.org/packages/")))
 (package-initialize)
 
+;; ======================================
 ;; Configure use-package
+;; ======================================
 (require 'use-package)			;emacs 27+
 (setq use-package-always-ensure t)	;emacs 29+
 
+;; ======================================
 ;;; System info
+;; ======================================
 (defvar my-mactop-p (eq system-type 'darwin))
 (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
+;; ======================================
 ;;; exec-path-from-shell
+;; ======================================
 (use-package exec-path-from-shell
 ;;  :if my-mactop-p
   :config
   (exec-path-from-shell-initialize))
 
+;; ======================================
 ;;; Load custom packages
+;; ======================================
 (dolist (file (directory-files "~/.emacs.d/lisp" t "\\.el$"))
   (condition-case err
       (load file)
     (error (message "Error loading %s: %s" file err))))
 
+;; ======================================
 ;;; MacOS keyboard
-(when my-mactop-p
-  (setq ns-command-modifier 'meta
-        ns-alternate-modifier 'super))
+;; ======================================
+;; (when my-mactop-p
+;;   (setq ns-command-modifier 'meta
+;;         ns-alternate-modifier 'super))
 
+;; ======================================
 ;;; Emacs UI and behavior
+;; ======================================
 (use-package emacs
   :init
   (setq inhibit-startup-message t
@@ -74,9 +91,11 @@
   (column-number-mode t)
   (display-time-mode 1))
 
+;; ======================================
 ;;; Bookmark
+;; ======================================
 (use-package bookmark
-  :ensure nil
+  :ensure nil				;built-in
   :init
   (setq bookmark-save-flag 1
         bookmark-sort-flag nil
@@ -91,9 +110,11 @@
    ("C-x r b" . bookmark-jump)
    ("C-x r l" . bookmark-bmenu-list)))
 
+;; ======================================
 ;;; Register
+;; ======================================
 (use-package register
-  :ensure nil
+  :ensure nil				;built-in
   :config
   (setq register-preview-delay 0
         register-preview-function #'register-preview-default)
@@ -103,7 +124,9 @@
    ("C-x r i" . insert-register)))
 (set-register ?i '(file . "~/.emacs.d/init.el"))
 
+;; ======================================
 ;;; Key bindings
+;; ======================================
 (use-package emacs
   :bind
   (([f11] . nil)
@@ -112,7 +135,9 @@
    ("C-x o" . nil)
    ("M-o" . other-window)))
 
+;; ======================================
 ;;; Locale and Korean settings
+;; ======================================
 (use-package emacs
   :config
   (setenv "LANG" "ko_KR.UTF-8")
@@ -123,7 +148,9 @@
 	input-method-verbose-flag nil
 	input-method-highlight-flag nil))
 
+;; ======================================
 ;;; Fonts
+;; ======================================
 (use-package emacs
 ;;  :if (display-graphic-p)
   :config
@@ -132,7 +159,9 @@
   (set-face-attribute 'variable-pitch nil :family "Noto Sans KR")
   (set-fontset-font nil 'hangul (font-spec :family "Noto Sans KR")))
 
+;; ======================================
 ;;; Theme
+;; ======================================
 (use-package standard-themes
   :config
   (setq standard-themes-bold-constructs t
@@ -155,7 +184,9 @@
           (t . (variable-pitch 1.1))))
   (standard-themes-load-dark))
 
+;; ======================================
 ;;; Helpful
+;; ======================================
 (use-package helpful
   :bind
   (("C-h f" . helpful-callable)
@@ -165,7 +196,9 @@
    ("C-h F" . helpful-function)
    ("C-h C" . helpful-command)))
 
+;; ======================================
 ;;; Session and Place Persistence
+;; ======================================
 (use-package savehist
   :ensure nil
   :init (savehist-mode 1))
@@ -174,7 +207,9 @@
   :ensure nil
   :config (save-place-mode 1))
 
+;; ======================================
 ;;; Icons
+;; ======================================
 (use-package nerd-icons)
 
 (use-package nerd-icons-dired
@@ -187,13 +222,17 @@
   (nerd-icons-completion-mode)
   :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
 
+;; ======================================
 ;;; Eshell
+;; ======================================
 (use-package eshell
   :commands eshell
   :config
   (setq eshell-destroy-buffer-when-process-dies t))
 
+;; ======================================
 ;;; Modeline
+;; ======================================
 (setq mode-line-right-align-edge 'right-margin)
 (setq-default mode-line-format
               '("%e "
@@ -211,7 +250,9 @@
                 " Ⓚ "
                 mode-line-misc-info))
 
+;; ======================================
 ;;; Battery display
+;; ======================================
 (when my-Macbook-p
   (use-package battery
     :config
@@ -219,20 +260,21 @@
           battery-mode-line-format "Ⓑ %p%%  ")
     (display-battery-mode 1)))
 
+;; ======================================
 ;;; Magit
+;; ======================================
 (use-package magit
   :bind (("C-x g" . magit-status))
   :config
   (setq magit-auto-revert-mode t))
 
+;; ======================================
 ;;; Keycast
-(use-package keycast
-  :bind ("C-x m k" . keycast-mode-line-mode)
-  :config
-  (setq keycast-mode-line-insert-after 'mode-line-modes
-        keycast-mode-line-window-predicate 'mode-line-window-selected-p
-        keycast-mode-line-remove-tail-elemenets nil)
-  (keycast-mode-line-mode -1))
-
-;; (put 'upcase-region 'disabled nil)
-;; (put 'downcase-region 'disabled nil)
+;; ======================================
+;; (use-package keycast
+;;   :bind ("C-x m k" . keycast-mode-line-mode)
+;;   :config
+;;   (setq keycast-mode-line-insert-after 'mode-line-modes
+;;         keycast-mode-line-window-predicate 'mode-line-window-selected-p
+;;         keycast-mode-line-remove-tail-elemenets nil)
+;;   (keycast-mode-line-mode -1))
