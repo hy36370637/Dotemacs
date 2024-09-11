@@ -53,11 +53,12 @@
   :bind ("C-c c" . org-capture)
   :config
   (setq org-capture-templates
-   '(("d" "Daily" entry (file+datetree "~/Dropbox/Docs/Person/Daily.org") "* %?")
-     ("t" "Tasks" entry (file+olp "~/Dropbox/Docs/Person/Tasks.org" "Schedule") "* TODO %?")
+	'(("d" "Daily" entry (file+datetree "~/Dropbox/Docs/Person/Daily.org") "* %?")
+	  ("t" "Tasks" entry (file "~/Dropbox/Docs/Person/Tasks.org") "* TODO %?")
+     ;; ("t" "Tasks" entry (file+olp "~/Dropbox/Docs/Person/Tasks.org" "Schedule") "* TODO %?")
      ;; ("a" "Assist" table-line (file+headline "aMoney.org" "aMoney")
      ;;  "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
-     ("f" "FarmNote" entry (file+datetree "~/Dropbox/Docs/Person/dFarmNote.org") "* %?")))
+	  ("f" "FarmNote" entry (file+datetree "~/Dropbox/Docs/Person/dFarmNote.org") "* %?")))
   )
 
 ;; ======================================
