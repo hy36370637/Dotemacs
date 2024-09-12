@@ -21,7 +21,7 @@
   (org-startup-with-inline-images nil)
   (org-log-into-drawer t)
   (org-log-done 'time)
-  (org-image-actual-width '(100))
+  (org-image-actual-width 300)
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE"))))
 
 (use-package ox-md
@@ -55,7 +55,7 @@
   (setq org-capture-templates
 	'(("d" "Daily" entry (file+datetree "~/Dropbox/Docs/Person/Daily.org") "* %?")
 	  ("t" "Tasks" entry (file "~/Dropbox/Docs/Person/Tasks.org") "* TODO %?")
-     ;; ("t" "Tasks" entry (file+olp "~/Dropbox/Docs/Person/Tasks.org" "Schedule") "* TODO %?")
+	  ("r" "Read" entry (file "~/Dropbox/Docs/Person/cReading.org") "* %?")
      ;; ("a" "Assist" table-line (file+headline "aMoney.org" "aMoney")
      ;;  "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
 	  ("f" "FarmNote" entry (file+datetree "~/Dropbox/Docs/Person/dFarmNote.org") "* %?")))
@@ -68,7 +68,6 @@
   :ensure nil
   :bind ("C-c a" . org-agenda)
   :config
-  ;;  (setq org-agenda-files '("Tasks.org" "Daily.org"))
   (setq org-agenda-files '("~/Dropbox/Docs/Person/Tasks.org"  "~/Dropbox/Docs/Person/Daily.org"))
   (setq org-agenda-prefix-format
 	'((agenda . " %t %s")  ;" %t %-12:c%?-12t% s"
@@ -76,10 +75,10 @@
           (todo . " %i %-12:c")
           (tags . " %i %-12:c")
           (search . " %i %-12:c")))
-  (setq org-agenda-format-date "%Y-%m-%d (%a)")  ; 날자 포맷. 가독성
+  (setq org-agenda-format-date "%Y-%m-%d (%a)")       ; 날자 포맷. 가독성
   (setq org-agenda-current-time-string "← now ───────")
-  (setq org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done)) ;완료항목 hidden
-  (setq org-agenda-include-diary t))	;holidays 포함
+  (setq org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))  ;완료항목 hidden
+  (setq org-agenda-include-diary t))              	;holidays 포함
 
 ;; ======================================
 ;;; org-bullets
@@ -102,7 +101,7 @@
 
 ;;; calendar layout 보정. D2coding size
 (defun cal-fixLayout ()
-  (face-remap-add-relative 'default '(:family "Noto Sans Mono CJK KR" :height 160)))           
+  (face-remap-add-relative 'default '(:family "D2Coding" :height 160))) 
 
 ;; ======================================
 ;;; holidays
@@ -171,7 +170,6 @@
 (custom-set-faces
  '(holiday ((t (:foreground "red" :weight bold)))))
 
-
 ;; ======================================
 ;;; for org edit/custom function
 ;; --------------------------------------
@@ -217,17 +215,17 @@
                    :jump-to-captured t))))
 
 ;; Consult-Denote 설정
-(use-package consult-denote
-  :ensure t
-  :after (consult denote)
-  :bind
-  (("C-c n s" . consult-denote)
-   ("C-c n g" . consult-denote-grep)
-   ("C-c n f" . consult-denote-file-type)
-   ("C-c n b" . consult-denote-backlinks)
-   ("C-c n k" . consult-denote-keywords))
-  :custom
-  (consult-denote-default-file-type 'org))
+;; (use-package consult-denote
+;;   :ensure t
+;;   :after (consult denote)
+;;   :bind
+;;   (("C-c n s" . consult-denote)
+;;    ("C-c n g" . consult-denote-grep)
+;;    ("C-c n f" . consult-denote-file-type)
+;;    ("C-c n b" . consult-denote-backlinks)
+;;    ("C-c n k" . consult-denote-keywords))
+;;   :custom
+;;   (consult-denote-default-file-type 'org))
 
 
 

@@ -58,9 +58,8 @@
 ;; ======================================
 ;;; MacOS keyboard
 ;; ======================================
-;; (when my-mactop-p
-;;   (setq ns-command-modifier 'meta
-;;         ns-alternate-modifier 'super))
+;;(when my-mactop-p
+;;  (setq ns-left-command-modifier nil))
 
 ;; ======================================
 ;;; Emacs UI and behavior
@@ -278,3 +277,52 @@
 ;;         keycast-mode-line-window-predicate 'mode-line-window-selected-p
 ;;         keycast-mode-line-remove-tail-elemenets nil)
 ;;   (keycast-mode-line-mode -1))
+
+;; ======================================
+;;; Dashboard
+;; ======================================
+(use-package dashboard
+  :ensure t
+  :init
+  ;;(setq dashboard-startup-banner 'logo)
+  ;; (setq dashboard-page-separator "\n")
+  (setq dashboard-icon-type 'all-the-icons)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-set-footer nil)
+  (setq dashboard-center-content t)
+  (setq dashboard-items '((agenda . 5)
+                          (bookmarks . 5)
+                          (registers . 5)))
+  :config
+  (dashboard-setup-startup-hook)
+  :custom
+  (dashboard-banner-logo-title (get-random-quote-from-creading))
+  :preface
+  (defun get-random-quote-from-creading ()
+    (with-temp-buffer
+      (insert-file-contents "~/Dropbox/Docs/Person/cReading.org")
+      (goto-char (point-min))
+      (let ((quotes '()))
+        (while (re-search-forward "^\\* \\(.+\\)" nil t)
+          (let* ((title (match-string 1))
+                 (content (string-trim
+                           (buffer-substring-no-properties 
+                            (point) 
+                            (save-excursion
+                              (if (re-search-forward "^\\* " nil t)
+                                  (match-beginning 0)
+                                (point-max)))))))
+            (push (cons title content) quotes)))
+        (if quotes
+            (let* ((quote (nth (random (length quotes)) quotes))
+                   (formatted-quote (format "* %s\n%s" (car quote) (cdr quote)))
+                   (wrapped-quote (with-temp-buffer
+                                    (insert formatted-quote)
+                                    (fill-region (point-min) (point-max) 140)
+                                    (buffer-string))))
+	      (format "%s" 
+                      (replace-regexp-in-string 
+                       "^" "  " 
+                       (replace-regexp-in-string "\n" "\n  " wrapped-quote))))
+          "No quotes found in cReading.org")))))
