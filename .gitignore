@@ -1,6 +1,4 @@
 # 특정 디렉토리 제외
-/elpa/
-/elpa/**
 /auto-save-list/
 /eshell/
 /org-persist/
@@ -12,6 +10,7 @@ tramp
 custom.el
 history
 bookmarks
+
 *~
 *#
 
@@ -20,3 +19,5 @@ bookmarks
 #!init.el
 !/lisp/
 !/lisp/**
+!/elpa/
+!/elpa/**

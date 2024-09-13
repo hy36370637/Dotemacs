@@ -240,51 +240,6 @@
       t)))
 
 ;; =======================================
-;;; 특수문자 입력
-;; ======================================-
-(defun select-special-character ()
-  "Prompt the user to select a special character and insert it at point."
-  (interactive)
-  (let ((choi '("·"  "→"  "⇒"  "「」"  "『』"  "※"  "…"  "―")))
-    (insert (completing-read "선택: " choi))))
-
-;; =======================================
-;;; flush-line
-;; ======================================-
-;; M-x flush-lines RET ^\s-*$ RET 
-(defun my/flush-empty-lines-in-region (start end)
-  "Delete all empty or whitespace-only lines in the region."
-  (interactive "r")
-  (flush-lines "^\\s-*$" start end))
-
-;; 지정된 범위 라인 끝 공백 제거
-(defun my/delete-trailing-whitespace-region (start end)
-  "줄 끝의 공백과 탭을 제거,  줄바꿈과 빈 줄 그대로 유지."
-  (interactive "r")
-  (save-excursion
-    (save-restriction
-      (narrow-to-region start end)
-      (goto-char (point-min))
-      (while (re-search-forward "[ \t]+$" nil t)
-        (replace-match "")))))
-
-(defun my/delete-trailling-whitespace-line-join (&optional start end)
-  "줄끝의 줄바꿈을 공백으로 대체하고 줄(라인) 연결, 연속된 빈 줄을 하나로 줄여 유지"
- (interactive)
-  (let* ((use-region (use-region-p))
-         (start (if use-region (region-beginning) (point-min)))
-         (end (if use-region (region-end) (point-max))))
-    (save-excursion
-      (save-restriction
-        (narrow-to-region start end)
-        (goto-char (point-min))
-        (while (re-search-forward "\\([^\n]\\)\\(\n\\)\\([^\n]\\)" nil t)
-          (replace-match "\\1 \\3"))
-        (goto-char (point-min))
-        (while (re-search-forward "\n\n+" nil t)
-          (replace-match "\n\n"))))))
-
-;; =======================================
 ;;; Hunspell 설정
 ;; ======================================-
 ;; 한글 맞춤법

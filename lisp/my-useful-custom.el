@@ -30,7 +30,7 @@
       (while (re-search-forward "[ \t]+$" nil t)
         (replace-match "")))))
 
-(defun my/delete-trailling-whitespace-line-join (&optional start end)
+(defun my/delete-trailing-whitespace-line-join (&optional start end)
   "줄끝의 줄바꿈을 공백으로 대체하고 줄(라인) 연결, 연속된 빈 줄을 하나로 줄여 유지"
  (interactive)
   (let* ((use-region (use-region-p))
@@ -99,4 +99,4 @@
 
 
 ;; end here
-(provide my-useful-custom)
+(provide 'my-useful-custom)
