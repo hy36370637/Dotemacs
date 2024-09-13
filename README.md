@@ -11,6 +11,7 @@
    - my-play-streaming.el: mp3, streaming
    - my-view-mode-custom.el: view-mode custom
    - my-web-search.el: 날씨, dic, google 등 검색 지원
+   - my-useful-custum.el: 소소한 것
 ## 사용환경
 * Mac Mini(M2)
 * MacBookAir(M1)
