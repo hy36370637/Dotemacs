@@ -32,6 +32,9 @@
   :custom
   (insert-directory-program "gls")
   (dired-listing-switches "-alh")
+  (dired-dwim-target t) 
+  (dired-recursive-copies 'always) 
+  (dired-recursive-deletes 'always)
   (dired-auto-revert-buffer t)
   (delete-by-moving-to-trash t)
 
@@ -39,6 +42,7 @@
               ("M-<up>" . my/dired-jump-to-top)
               ("M-<down>" . my/dired-jump-to-bottom)
               ("C-<return>" . dired-do-open)
+	      ("C-c C-o" . dired-open-in-finder)
               ("/" . dired-narrow))
 
   :hook (dired-after-readin . sof/dired-sort))
@@ -49,6 +53,19 @@
 (use-package dired-narrow
   :ensure t
   :after dired)
+
+;;  dired 버퍼 관리 단순화. 새 디렉토리로 이동할 때마다 새 버퍼 생성 대신, 하나의 버퍼 재사용
+(use-package dired-single
+  :ensure t
+  :after dired
+  :bind (:map dired-mode-map
+              ("f" . dired-single-buffer)
+              ("b" . dired-single-up-directory)))
+
+(defun dired-open-in-finder ()
+    "Open current directory in macOS Finder."
+    (interactive)
+    (shell-command (concat "open " (dired-current-directory))))
 
 
 ;; end here

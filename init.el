@@ -94,6 +94,7 @@
 ;; ======================================
 (use-package bookmark
   :ensure nil				;built-in
+  :commands (bookmark-set bookmark-jump bookmark-bmenu-list)
   :init
   (setq bookmark-save-flag 1
         bookmark-sort-flag nil
@@ -208,11 +209,19 @@
 ;; ======================================
 ;;; Icons
 ;; ======================================
-(use-package nerd-icons)
+(use-package nerd-icons
+  :ensure t)
 
 (use-package nerd-icons-dired
+  :ensure t
   :after dired
   :hook (dired-mode . nerd-icons-dired-mode))
+
+(use-package nerd-icons-corfu
+  :ensure t
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 (use-package nerd-icons-completion
   :after marginalia

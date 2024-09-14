@@ -1,4 +1,6 @@
 # 특정 디렉토리 제외
+/elpa/
+/elpa/**
 /auto-save-list/
 /eshell/
 /org-persist/
@@ -19,5 +21,3 @@ bookmarks
 #!init.el
 !/lisp/
 !/lisp/**
-!/elpa/
-!/elpa/**
