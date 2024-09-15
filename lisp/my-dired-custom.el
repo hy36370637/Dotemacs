@@ -1,14 +1,29 @@
 ;;; -*- lexical-binding: t; -*-
-;; ======================================
-;;; dired
-;; --------------------------------------
-;; dired 관련 lisp 모음
-;; /.emacs.d/lisp/my-dired-custom.el
-;; directory 우선/한글파일명 정렬불가(macOS) → 해결(setenv "LC_COLLATE" "C")
-
+;;;  /.emacs.d/lisp/my-dired-custom.el --- Custom Dired configuration
+;;; Commentary:
+;; dired 관련 설정 모음
+;; directory 우선/한글파일명 정렬 관련 문제 해결: (setenv "LC_COLLATE" "C")
+;;; Code:
 (use-package dired
   :ensure nil
-  :preface
+  :custom
+  (insert-directory-program "gls")
+  (dired-listing-switches "-alh")
+  (dired-dwim-target t) 
+  (dired-recursive-copies 'always) 
+  (dired-recursive-deletes 'always)
+  (dired-mouse-drag-files t)                  ; Emacs 29.1
+  (dired-free-space nil)		      ;Emacs 29.1
+  (dired-auto-revert-buffer t)
+  (delete-by-moving-to-trash t)
+  :bind (:map dired-mode-map
+              ("M-<up>" . my/dired-jump-to-top)
+              ("M-<down>" . my/dired-jump-to-bottom)
+              ("C-<return>" . dired-do-open)
+	      ("C-c C-o" . dired-open-in-finder)
+              ("/" . dired-narrow)
+              ("M-p" . dired-mpv-play-file))  ; mpv 재생 단축키 추가
+  :config
   (defun sof/dired-sort ()
     "Dired 정렬, 디렉토리를 우선으로."
     (save-excursion
@@ -29,44 +44,31 @@
     (goto-char (point-max))
     (dired-next-line -1))
 
-  :custom
-  (insert-directory-program "gls")
-  (dired-listing-switches "-alh")
-  (dired-dwim-target t) 
-  (dired-recursive-copies 'always) 
-  (dired-recursive-deletes 'always)
-  (dired-auto-revert-buffer t)
-  (delete-by-moving-to-trash t)
+  (defun dired-open-in-finder ()
+    "Open current directory in macOS Finder."
+    (interactive)
+    (shell-command (concat "open " (dired-current-directory))))
 
-  :bind (:map dired-mode-map
-              ("M-<up>" . my/dired-jump-to-top)
-              ("M-<down>" . my/dired-jump-to-bottom)
-              ("C-<return>" . dired-do-open)
-	      ("C-c C-o" . dired-open-in-finder)
-              ("/" . dired-narrow))
+  (defun dired-mpv-play-file ()
+    "Play the file at point with mpv."
+    (interactive)
+    (let ((file (dired-get-filename)))
+      (start-process "mpv" nil mpv-executable file)))
 
-  :hook (dired-after-readin . sof/dired-sort))
+  :hook ((dired-after-readin . sof/dired-sort)
+         (dired-mode . dired-hide-details-mode)))
 
-  ;; :config
-  ;; (setenv "LC_COLLATE" "C"))
+(use-package mpv
+  :ensure t
+  :after dired
+  :config
+  (setq mpv-executable "/opt/homebrew/bin/mpv"))
 
 (use-package dired-narrow
   :ensure t
   :after dired)
 
-;;  dired 버퍼 관리 단순화. 새 디렉토리로 이동할 때마다 새 버퍼 생성 대신, 하나의 버퍼 재사용
-(use-package dired-single
-  :ensure t
-  :after dired
-  :bind (:map dired-mode-map
-              ("f" . dired-single-buffer)
-              ("b" . dired-single-up-directory)))
-
-(defun dired-open-in-finder ()
-    "Open current directory in macOS Finder."
-    (interactive)
-    (shell-command (concat "open " (dired-current-directory))))
 
 
-;; end here
 (provide 'my-dired-custom)
+;;; my-dired-custom.el ends here

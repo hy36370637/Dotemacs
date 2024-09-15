@@ -97,6 +97,5 @@
 ;; (add-hook 'after-init-hook 'auto-display-random-quote)
 
 
-
 ;; end here
 (provide 'my-useful-custom)
