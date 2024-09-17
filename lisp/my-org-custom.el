@@ -41,6 +41,7 @@
 
 (use-package ox-latex
   :ensure nil  ; ox-latex is part of org
+  :defer t
   :after org
   :custom
   (org-latex-title-command "\\maketitle \\newpage")
@@ -50,8 +51,9 @@
    '("xelatex -interaction nonstopmode -output-directory %o %f"
      "xelatex -interaction nonstopmode -output-directory %o %f"
      "xelatex -interaction nonstopmode -output-directory %o %f"))
-  :hook (org-mode . (lambda () (require 'ox-latex))))
-
+  :init
+   (with-eval-after-load 'org
+    (add-to-list 'org-export-backends 'latex)))
 
 ;; ======================================
 ;;; org-capture
@@ -61,10 +63,6 @@
   :bind ("C-c c" . org-capture)
   :config
    (setq org-capture-templates
-  ;; 	'(("d" "Daily" entry (file+datetree "~/Dropbox/Docs/Person/Daily.org") "* %?")
-  ;; 	  ("t" "Tasks" entry (file "~/Dropbox/Docs/Person/Tasks.org") "* TODO %?")
-  ;;         ("r" "Read" entry (file "~/Dropbox/Docs/Person/cReading.org") "* %?")
-  ;; 	  ("f" "FarmNote" entry (file+datetree "~/Dropbox/Docs/Person/dFarmNote.org") "* %?"))))
 	 `(("d" "Daily" entry (file+datetree ,(my-org-person-file-path "Daily.org")) "* %?")
            ("t" "Tasks" entry (file ,(my-org-person-file-path "Tasks.org")) "* TODO %?")
            ("r" "Read" entry (file ,(my-org-person-file-path "cReading.org")) "* %?")
