@@ -1,7 +1,6 @@
 ;;; -*- lexical-binding: t; -*-
 ;;;  /.emacs.d/lisp/my-dired-custom.el --- Custom Dired configuration
 ;;; Commentary:
-;; dired 관련 설정 모음
 ;; directory 우선/한글파일명 정렬 관련 문제 해결: (setenv "LC_COLLATE" "C")
 ;;; Code:
 (use-package dired
@@ -13,7 +12,7 @@
   (dired-recursive-copies 'always) 
   (dired-recursive-deletes 'always)
   (dired-mouse-drag-files t)                  ; Emacs 29.1
-  (dired-free-space nil)		      ;Emacs 29.1
+;;  (dired-free-space nil)         	      ;Emacs 29.1
   (dired-auto-revert-buffer t)
   (delete-by-moving-to-trash t)
   :bind (:map dired-mode-map
@@ -55,8 +54,8 @@
     (let ((file (dired-get-filename)))
       (start-process "mpv" nil mpv-executable file)))
 
-  :hook ((dired-after-readin . sof/dired-sort)
-         (dired-mode . dired-hide-details-mode)))
+  :hook ((dired-after-readin . sof/dired-sort)))
+;;         (dired-mode . dired-hide-details-mode)))  ;Dired mode 상세정보 숨김
 
 (use-package mpv
   :ensure t

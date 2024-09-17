@@ -3,6 +3,14 @@
 ;;; org
 ;; ======================================
 ;; /.emacs.d/lisp/my-org-custom.el
+;; CODE
+(defvar my/org-person-dir "~/Dropbox/Docs/Person/"
+  "Directory for personal org files.")
+
+(defun my-org-person-file-path (filename)
+  "Construct the full path for a personal org file."
+  (expand-file-name filename my/org-person-dir))
+
 (use-package org
   :ensure nil				;built-in
   ;; :bind (("s-o e" . org-emphasize)
@@ -52,14 +60,15 @@
   :ensure nil
   :bind ("C-c c" . org-capture)
   :config
-  (setq org-capture-templates
-	'(("d" "Daily" entry (file+datetree "~/Dropbox/Docs/Person/Daily.org") "* %?")
-	  ("t" "Tasks" entry (file "~/Dropbox/Docs/Person/Tasks.org") "* TODO %?")
-	  ("r" "Read" entry (file "~/Dropbox/Docs/Person/cReading.org") "* %?")
-     ;; ("a" "Assist" table-line (file+headline "aMoney.org" "aMoney")
-     ;;  "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
-	  ("f" "FarmNote" entry (file+datetree "~/Dropbox/Docs/Person/dFarmNote.org") "* %?")))
-  )
+   (setq org-capture-templates
+  ;; 	'(("d" "Daily" entry (file+datetree "~/Dropbox/Docs/Person/Daily.org") "* %?")
+  ;; 	  ("t" "Tasks" entry (file "~/Dropbox/Docs/Person/Tasks.org") "* TODO %?")
+  ;;         ("r" "Read" entry (file "~/Dropbox/Docs/Person/cReading.org") "* %?")
+  ;; 	  ("f" "FarmNote" entry (file+datetree "~/Dropbox/Docs/Person/dFarmNote.org") "* %?"))))
+	 `(("d" "Daily" entry (file+datetree ,(my-org-person-file-path "Daily.org")) "* %?")
+           ("t" "Tasks" entry (file ,(my-org-person-file-path "Tasks.org")) "* TODO %?")
+           ("r" "Read" entry (file ,(my-org-person-file-path "cReading.org")) "* %?")
+           ("f" "FarmNote" entry (file+datetree ,(my-org-person-file-path "dFarmNote.org")) "* %?"))))
 
 ;; ======================================
 ;;; org-agenda
@@ -68,7 +77,9 @@
   :ensure nil
   :bind ("C-c a" . org-agenda)
   :config
-  (setq org-agenda-files '("~/Dropbox/Docs/Person/Tasks.org"  "~/Dropbox/Docs/Person/Daily.org"))
+;;  (setq org-agenda-files '("~/Dropbox/Docs/Person/Tasks.org"  "~/Dropbox/Docs/Person/Daily.org"))
+   (setq org-agenda-files (list (my-org-person-file-path "Tasks.org")
+                               (my-org-person-file-path "Daily.org")))
   (setq org-agenda-prefix-format
 	'((agenda . " %t %s")  ;" %t %-12:c%?-12t% s"
           (timeline . "  % s")

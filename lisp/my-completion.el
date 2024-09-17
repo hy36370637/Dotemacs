@@ -129,32 +129,25 @@
 ;; ======================================-
 (setq completion-cycle-threshold 3
       tab-always-indent 'complete)
+
 (use-package corfu
   :ensure t
   :bind (:map corfu-map
 	      ("M-d" . corfu-info-documentation)  ; eldoc 정보 표시
               ("M-l" . corfu-info-location)
-              ("TAB" . corfu-next)
-              ([tab] . corfu-next)
-              ("S-TAB" . corfu-previous)
-              ("S-<return>" . corfu-insert))
+	      ("TAB" . corfu-insert))
   :custom
   (corfu-auto t)
-  ;; (corfu-auto-delay 0.2)
-  ;; (corfu-auto-prefix 0)
   (corfu-cycle t)			
-  ;; (corfu-preselect 'prompt)
-  ;; (corfu-echo-documentation 0.2)
+  (corfu-preselect 'prompt)
+  (corfu-echo-documentation 0.2)
   (corfu-preview-current 'insert)
   (corfu-separator ?\s)			        ;orderless field separator
   (corfu-quit-no-match 'separator)	;Automatically quit if there is no match
-  :init
-  (global-corfu-mode)
-  ;; (corfu-history-mode)
-  ;; (corfu-popupinfo-mode)
-  :hook (eshell-mode . (lambda ()
-                         (setq-local corfu-auto t)
-                         (corfu-mode 1))))
+  :config
+  (corfu-history-mode 1)
+  (corfu-popupinfo-mode 1)
+  :hook (emacs-lisp-mode . corfu-mode))
 
 ;; =======================================
 ;;; eldoc
@@ -193,8 +186,7 @@
 	("SetfileQV"   "#+SETUPFILE: setLTH/Header_quote_verse.org")
 	("Option"  "#+OPTIONS: toc:2 num:2")
 	("Latex_header"  "#+LATEX_HEADER:")
-	)))
-  )
+	))))
 
 ;; =======================================
 ;;; hippie-exp

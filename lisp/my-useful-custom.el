@@ -14,10 +14,10 @@
 ;;; flush-line
 ;; ======================================-
 ;; M-x flush-lines RET ^\s-*$ RET 
-(defun my/flush-empty-lines-in-region (start end)
-  "Delete all empty or whitespace-only lines in the region."
-  (interactive "r")
-  (flush-lines "^\\s-*$" start end))
+;; (defun my/flush-empty-lines-in-region (start end)
+;;   "Delete all empty or whitespace-only lines in the region."
+;;   (interactive "r")
+;;   (flush-lines "^\\s-*$" start end))
 
 ;; 지정된 범위 라인 끝 공백 제거
 (defun my/delete-trailing-whitespace-region (start end)
