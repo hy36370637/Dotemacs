@@ -85,6 +85,7 @@
   (global-font-lock-mode 1)
   (global-visual-line-mode t)
   (global-auto-revert-mode 1)
+  (delete-selection-mode t)
   (transient-mark-mode t)
   (column-number-mode t)
   (display-time-mode 1))
@@ -244,9 +245,10 @@
 (setq-default mode-line-format
               '("%e "
                 mode-line-front-space
-                (:eval (if (string= current-input-method "korean-hangul")
-                           (propertize "KO" 'face '(:foreground "orange"))
-                         "EN"))
+		(:eval (propertize
+                        (if (string= current-input-method "korean-hangul")
+                            "KO" "EN")
+                        'face '(:foreground "orange")))
                 " Ⓗ "
                 mode-line-buffer-identification
                 mode-line-frame-identification

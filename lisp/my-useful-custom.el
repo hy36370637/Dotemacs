@@ -96,6 +96,16 @@
 ;; ;; Add the auto-display function to the after-init-hook
 ;; (add-hook 'after-init-hook 'auto-display-random-quote)
 
+(use-package hl-line
+  :ensure nil
+  :custom
+  (hl-line-sticky-flag nil)
+  :hook
+  (dired-mode . hl-line-mode)
+  (text-mode . hl-line-mode)
+  (emacs-lisp-mode . hl-line-mode)) 
+
+
 
 ;; end here
 (provide 'my-useful-custom)
