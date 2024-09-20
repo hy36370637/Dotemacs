@@ -116,7 +116,7 @@
   :pin manual
   :config
   (pdf-tools-install)
-  (setq-default pdf-view-display-size 'fit-page)
+;;  (setq-default pdf-view-display-size 'fit-page)  ;default  'fit-width
   (setq pdf-annot-activate-created-annotations t)
   (setq pdf-view-resize-factor 1.1)
   (setq pdf-view-continuous t)
@@ -139,10 +139,12 @@
   :custom
   (pdf-view-use-scaling t)
   (pdf-view-use-imagemagick nil)
-:bind (:map pdf-view-mode-map
+  :bind (:map pdf-view-mode-map
               ;; 네비게이션
-              ("n" . pdf-view-next-page-command)
-              ("p" . pdf-view-previous-page-command)
+              ("C-n" . pdf-view-next-page-command)
+              ("C-p" . pdf-view-previous-page-command)
+              ("n" . next-line)
+              ("p" . previous-line)
               ("g" . pdf-view-first-page)
               ("G" . pdf-view-last-page)
               ;; 줌
@@ -156,8 +158,8 @@
               ;; 주석
               ("h" . pdf-annot-add-highlight-markup-annotation)
               ("u" . pdf-annot-add-underline-markup-annotation)
-              ("s" . pdf-annot-add-squiggly-markup-annotation)
-              ("d" . pdf-annot-add-strikeout-markup-annotation)
+              ("d" . pdf-annot-add-squiggly-markup-annotation)
+              ("s" . pdf-annot-add-strikeout-markup-annotation)
               ("t" . pdf-annot-add-text-annotation)
               ("D" . pdf-annot-delete)
               ;; 기타

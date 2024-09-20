@@ -100,27 +100,12 @@
   (setq org-bullets-bullet-list '("◉" "◎" "●" "○" "●" "○" "●")))
 
 ;; ======================================
-;;; korean calendar
+;;; holidays/calendar
 ;; ======================================
-(use-package calendar
-  :hook (calendar-mode . cal-fixLayout)
-  :config  
-  (setq calendar-week-start-day 0
-	calendar-day-name-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
-        calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월" "10월" "11월" "12월"])
-
-;;; calendar layout 보정. D2coding size
-(defun cal-fixLayout ()
-  (face-remap-add-relative 'default '(:family "D2Coding" :height 160))) 
-
-;; ======================================
-;;; holidays
-;; ======================================
-(use-package calendar
-  :ensure nil 				;built-in
-  :config
-  (setq my-holidays			;공휴일+음력기념일
-	'((holiday-fixed 1 1 "새해")
+(defun my/setup-calendar-holidays ()
+  "Set up custom holidays and solar terms for the calendar."
+(setq my-holidays
+        '((holiday-fixed 1 1 "새해")
 	  (holiday-chinese  1  1 "설날")
 	  (holiday-fixed 1 10 "딸 생일")
 	  (holiday-fixed 3 1 "삼일절")
@@ -139,9 +124,10 @@
 	  (holiday-fixed 10 3 "개천절")
 	  (holiday-fixed 10 9 "한글날")
 	  (holiday-chinese  11  9 "장모생신")
-	  (holiday-fixed 12 25 "성탄절")))  
-  (setq 24solar-holidays			;24절기
-	'((holiday-fixed 2 4 "입춘(새봄)")
+	  (holiday-fixed 12 25 "성탄절")))
+  ;; 24절기 설정
+  (setq 24solar-holidays
+        '((holiday-fixed 2 4 "입춘(새봄)")
 	  (holiday-fixed 2 19 "우수(눈녹음)")
 	  (holiday-fixed 3 5 "경칩(겨울잠 깸)")
 	  (holiday-fixed 3 20 "춘분(낮 길어짐)")
@@ -165,20 +151,34 @@
 	  (holiday-fixed 12 22 "동지")
 	  (holiday-fixed 1 5 "소한")
 	  (holiday-fixed 1 20 "대한")))
-;; 원치않는 휴일 초기화
-  (setq holiday-general-holidays nil)
-  (setq holiday-local-holidays nil)
-  (setq holiday-other-holidays nil)
-  (setq holiday-christian-holidays nil)
-  (setq holiday-hebrew-holidays nil)
-  (setq holiday-islamic-holidays nil)
-  (setq holiday-bahai-holidays nil)
-  (setq holiday-oriental-holidays nil)
-  (setq calendar-mark-holidays-flag t))	;holiday display
+  ;; 휴일 설정 초기화 및 적용
+  (setq holiday-general-holidays nil
+        holiday-local-holidays nil
+        holiday-other-holidays nil
+        holiday-christian-holidays nil
+        holiday-hebrew-holidays nil
+        holiday-islamic-holidays nil
+        holiday-bahai-holidays nil
+        holiday-oriental-holidays nil
+        calendar-mark-holidays-flag t)
   (setq calendar-holidays (append my-holidays 24solar-holidays)))
 
-(custom-set-faces
- '(holiday ((t (:foreground "red" :weight bold)))))
+(defun cal-fixLayout ()
+  "Adjust calendar layout for D2Coding font."
+  (face-remap-add-relative 'default '(:family "D2Coding" :height 160)))
+
+(use-package calendar
+  :ensure nil
+  :hook ((calendar-mode . cal-fixLayout)
+         (calendar-mode . my/setup-calendar-holidays))
+  :config
+  (setq calendar-week-start-day 0
+        calendar-day-name-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
+        calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월" "10월" "11월" "12월"]))
+
+(with-eval-after-load 'calendar
+  (custom-set-faces
+   '(holiday ((t (:foreground "red" :weight bold))))))
 
 ;; ======================================
 ;;; for org edit/custom function
