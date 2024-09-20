@@ -4,6 +4,7 @@
 ;; ======================================
 ;; /.emacs.d/lisp/my-org-custom.el
 ;; CODE
+
 (defvar my/org-person-dir "~/Dropbox/Docs/Person/"
   "Directory for personal org files.")
 

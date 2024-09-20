@@ -119,13 +119,52 @@
   (setq-default pdf-view-display-size 'fit-page)
   (setq pdf-annot-activate-created-annotations t)
   (setq pdf-view-resize-factor 1.1)
+  (setq pdf-view-continuous t)
+  (setq pdf-outline-imenu-use-flat-menus t)
+  (setq pdf-view-max-image-width 2048)
+  (setq pdf-annot-default-annotation-properties
+      '((highlight
+         (color . "yellow"))
+        (underline
+         (color . "blue"))
+        (squiggly
+         (color . "orange"))
+        (strike-out
+         (color . "red"))
+        (text
+         (color . "blue")
+         (icon . "note"))))
+  ;; 야간 모드 색상 설정 (수동으로 전환 가능)
+  (setq pdf-view-midnight-colors '("#839496" . "#002b36"))
   :custom
   (pdf-view-use-scaling t)
   (pdf-view-use-imagemagick nil)
-  :bind (:map pdf-view-mode-map
+:bind (:map pdf-view-mode-map
+              ;; 네비게이션
+              ("n" . pdf-view-next-page-command)
+              ("p" . pdf-view-previous-page-command)
+              ("g" . pdf-view-first-page)
+              ("G" . pdf-view-last-page)
+              ;; 줌
+              ("+" . pdf-view-enlarge)
+              ("-" . pdf-view-shrink)
+              ("0" . pdf-view-scale-reset)
+              ;; 검색
               ("C-s" . isearch-forward)
-              ("/" . isearch-forward)	      
-              ("C-r" . isearch-backward))
+              ("/" . isearch-forward)
+              ("C-r" . isearch-backward)
+              ;; 주석
+              ("h" . pdf-annot-add-highlight-markup-annotation)
+              ("u" . pdf-annot-add-underline-markup-annotation)
+              ("s" . pdf-annot-add-squiggly-markup-annotation)
+              ("d" . pdf-annot-add-strikeout-markup-annotation)
+              ("t" . pdf-annot-add-text-annotation)
+              ("D" . pdf-annot-delete)
+              ;; 기타
+              ("C-c n" . pdf-view-midnight-minor-mode)  ; 야간 모드 토글
+              ("C-c t" . pdf-view-themed-minor-mode)    ; 테마 모드 토글
+              ("C-c i" . pdf-view-auto-slice-minor-mode) ; 자동 슬라이스 모드
+              ("C-c o" . pdf-outline))   
   :mode ("\\.pdf\\'" . pdf-view-mode))
 
 
