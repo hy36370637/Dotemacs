@@ -67,7 +67,8 @@
 	 `(("d" "Daily" entry (file+datetree ,(my-org-person-file-path "Daily.org")) "* %?")
            ("t" "Tasks" entry (file ,(my-org-person-file-path "Tasks.org")) "* TODO %?")
            ("r" "Read" entry (file ,(my-org-person-file-path "cReading.org")) "* %?")
-           ("f" "FarmNote" entry (file+datetree ,(my-org-person-file-path "dFarmNote.org")) "* %?"))))
+	   ("D" "동강fNote" entry (file+datetree ,(my-org-person-file-path "DG_fNote.org")) "* %?")
+           ("G" "금산fNote" entry (file+datetree ,(my-org-person-file-path "GS_fNote.org")) "* %?"))))
 
 ;; ======================================
 ;;; org-agenda
@@ -76,8 +77,7 @@
   :ensure nil
   :bind ("C-c a" . org-agenda)
   :config
-;;  (setq org-agenda-files '("~/Dropbox/Docs/Person/Tasks.org"  "~/Dropbox/Docs/Person/Daily.org"))
-   (setq org-agenda-files (list (my-org-person-file-path "Tasks.org")
+  (setq org-agenda-files (list (my-org-person-file-path "Tasks.org")
                                (my-org-person-file-path "Daily.org")))
   (setq org-agenda-prefix-format
 	'((agenda . " %t %s")  ;" %t %-12:c%?-12t% s"
@@ -223,18 +223,6 @@
                    :immediate-finish nil
                    :kill-buffer t
                    :jump-to-captured t))))
-
-;; Consult-Denote 설정
-;; (use-package consult-denote
-;;   :ensure t
-;;   :after (consult denote)
-;;   :bind
-;;   (("C-c n s" . consult-denote)
-;;    ("C-c n g" . consult-denote-grep)
-;;    ("C-c n f" . consult-denote-file-type)
-;;    ("C-c n b" . consult-denote-backlinks)
-;;    ("C-c n k" . consult-denote-keywords))
-;;   :custom
 ;;   (consult-denote-default-file-type 'org))
 
 
