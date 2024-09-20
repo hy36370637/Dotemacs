@@ -41,9 +41,9 @@
   (add-to-list 'org-export-backends 'md))
 
 (use-package ox-latex
-  :ensure nil  ; ox-latex is part of org
-  :defer t
+  :ensure nil  ; built in
   :after org
+  :commands (org-latex-export-to-latex org-latex-export-to-pdf)
   :custom
   (org-latex-title-command "\\maketitle \\newpage")
   (org-latex-toc-command "\\tableofcontents \\newpage")
@@ -52,9 +52,8 @@
    '("xelatex -interaction nonstopmode -output-directory %o %f"
      "xelatex -interaction nonstopmode -output-directory %o %f"
      "xelatex -interaction nonstopmode -output-directory %o %f"))
-  :init
-   (with-eval-after-load 'org
-    (add-to-list 'org-export-backends 'latex)))
+  :config
+  (add-to-list 'org-export-backends 'latex))
 
 ;; ======================================
 ;;; org-capture
