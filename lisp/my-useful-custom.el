@@ -103,7 +103,31 @@
   :hook
   (dired-mode . hl-line-mode)
   (text-mode . hl-line-mode)
-  (emacs-lisp-mode . hl-line-mode)) 
+  (emacs-lisp-mode . hl-line-mode))
+
+;;;; pdf-viewer
+;; 페이지에 맞추기: 0,  너비에 맞추기: W,  높이에 맞추기: H
+;; 아웃라인 열기: o,  아웃라인에서 항목 선택: RET
+;; 텍스트 주석 추가: C-c C-a t,  하이라이트 주석 추가: C-c C-a h,  주석 목록 보기: C-c C-a l
+;; 메타데이터 보기: D,  90도 회전: R,  슬라이스 모드 (여백 자르기): s s
+;; PDF에서 소스로 이동: C-c C-g,  소스에서 PDF로 이동: C-c C-g (AUCTeX에서)
+(use-package pdf-tools
+  :ensure t
+  :pin manual
+  :config
+  (pdf-tools-install)
+  (setq-default pdf-view-display-size 'fit-page)
+  (setq pdf-annot-activate-created-annotations t)
+  (setq pdf-view-resize-factor 1.1)
+  :custom
+  (pdf-view-use-scaling t)
+  (pdf-view-use-imagemagick nil)
+  :bind (:map pdf-view-mode-map
+              ("C-s" . isearch-forward)
+              ("/" . isearch-forward)	      
+              ("C-r" . isearch-backward))
+  :mode ("\\.pdf\\'" . pdf-view-mode))
+
 
 
 
