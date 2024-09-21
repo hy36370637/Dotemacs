@@ -183,7 +183,7 @@
 	("Author" "#+AUTHOR: ")
 	("Keyword" "#+KEYWORDS: ")
 	("Setfile"   "#+SETUPFILE: setLTH/Header.org")
-	("SetfileQV"   "#+SETUPFILE: setLTH/Header_quote_verse.org")
+	("SetfileQV"   "#+SETUPFILE: setLTH/HeaderQV.org")
 	("Option"  "#+OPTIONS: toc:2 num:2")
 	("Latex_header"  "#+LATEX_HEADER:")
 	))))
@@ -231,18 +231,6 @@
       (setq he-expand-list (cdr he-expand-list))
       t)))
 
-;; =======================================
-;;; Hunspell 설정
-;; ======================================-
-;; 한글 맞춤법
-(use-package ispell
-  :if my-mactop-p
-  :hook (text-mode . flyspell-mode)
-  :config
-  (setq ispell-program-name "hunspell")
-  (setq ispell-local-dictionary "ko_KR")
-  (setq ispell-local-dictionary-alist
-        '(("ko_KR" "[가-힣]" "[^가-힣]" "[-']" nil ("-d" "ko_KR") nil utf-8))))
 
 
 ;; end here

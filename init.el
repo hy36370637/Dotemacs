@@ -29,8 +29,9 @@
 ;; ======================================
 ;; Configure use-package
 ;; ======================================
-(require 'use-package)			;emacs 27+
-(setq use-package-always-ensure t)	;emacs 29+
+(setq package-install-upgrade-built-in nil)         ; Prevent upgrading built-in packages
+(require 'use-package)			                        ;emacs 27+
+(setq use-package-always-ensure nil)	                ;emacs 29+
 
 ;; ======================================
 ;;; System info
