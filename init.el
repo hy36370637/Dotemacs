@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 ;;; Config for EMACS
 
 ;; ======================================
