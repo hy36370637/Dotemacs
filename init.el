@@ -231,6 +231,18 @@
   (nerd-icons-completion-mode)
   :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
 
+;; =======================================
+;;; hi-line
+;; ======================================-
+(use-package hl-line
+  :ensure nil
+  :custom
+  (hl-line-sticky-flag nil)
+  :hook
+  (dired-mode . hl-line-mode)
+  (text-mode . hl-line-mode)
+  (emacs-lisp-mode . hl-line-mode))
+
 ;; ======================================
 ;;; Eshell
 ;; ======================================

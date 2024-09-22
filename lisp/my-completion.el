@@ -180,6 +180,7 @@
   (with-eval-after-load 'org
     (define-abbrev-table 'org-mode-abbrev-table
       '(("Dsc" "#+DESCRIPTION: ")
+	("Title"   "#+TITLE:")
 	("Author" "#+AUTHOR: ")
 	("Keyword" "#+KEYWORDS: ")
 	("Setfile"   "#+SETUPFILE: setLTH/Header.org")
