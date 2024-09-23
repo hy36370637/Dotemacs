@@ -144,7 +144,7 @@
   :config
   (setenv "LANG" "ko_KR.UTF-8")
   (setenv "LC_COLLATE" "C")
-  (set-language-environment "Korean")
+;;  (set-language-environment "Korean")    ;for linux
   (set-locale-environment "ko_KR.UTF-8")
   (setq default-input-method "korean-hangul"
 	input-method-verbose-flag nil
@@ -154,7 +154,6 @@
 ;;; Fonts
 ;; ======================================
 (use-package emacs
-;;  :if (display-graphic-p)
   :config
   (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
   (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
@@ -164,27 +163,14 @@
 ;; ======================================
 ;;; Theme
 ;; ======================================
-(use-package standard-themes
+(use-package emacs
   :config
-  (setq standard-themes-bold-constructs t
-        standard-themes-italic-constructs t
-        standard-themes-disable-other-themes t
-        standard-themes-mixed-fonts t
-        standard-themes-variable-pitch-ui t
-        standard-themes-prompts '(extrabold italic)
-        standard-themes-headings
-        '((0 . (variable-pitch light 1.3))
-          (1 . (variable-pitch light 1.2))
-          (2 . (variable-pitch light 1.2))
-          (3 . (variable-pitch semilight 1.2))
-          (4 . (variable-pitch semilight 1.2))
-          (5 . (variable-pitch 1.2))
-          (6 . (variable-pitch 1.2))
-          (7 . (variable-pitch 1.2))
-          (agenda-date . (1.1))
-          (agenda-structure . (variable-pitch light 1.6))
-          (t . (variable-pitch 1.1))))
-  (standard-themes-load-dark))
+  (require-theme 'modus-themes)
+  (setq modus-themes-italic-constructs t
+        modus-themes-bold-constructs nil)
+  (setq modus-themes-common-palette-overrides
+        modus-themes-preset-overrides-intense)
+  (load-theme 'modus-operandi-tinted))
 
 ;; ======================================
 ;;; Helpful
@@ -261,8 +247,7 @@
                 mode-line-front-space
 		(:eval (propertize
                         (if (string= current-input-method "korean-hangul")
-                            "KO" "EN")
-                        'face '(:foreground "orange")))
+                            "KO" "EN")))
                 " Ⓗ "
                 mode-line-buffer-identification
                 mode-line-frame-identification

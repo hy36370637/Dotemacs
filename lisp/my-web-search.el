@@ -96,7 +96,7 @@ If the selected text includes '날씨', perform a weather search using my/naver-
            (error
             (message "날씨 데이터 파싱 중 오류 발생: %s" err)))))
      (list city)
-     t))))
+     t)))
 
 
 ;;end here
