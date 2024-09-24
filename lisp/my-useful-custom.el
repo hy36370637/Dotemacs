@@ -44,7 +44,48 @@
          (car (auth-source-search :host "openai.com" :user "api_key"))
          :secret)))
 
+;; =======================================
+;;; fancy-startup-screen
+;; ======================================-
+(defun get-random-quote-from-creading ()
+  "Extract a random quote from the cReading.org file."
+  (with-temp-buffer
+    (insert-file-contents (my-org-person-file-path "cReading.org"))
+    (goto-char (point-min))
+    (let ((quotes '()))
+      (while (re-search-forward "^\\* \\(.+\\)" nil t)
+        (let* ((title (match-string 1))
+               (content (string-trim
+                         (buffer-substring-no-properties 
+                          (point) 
+                          (save-excursion
+                            (if (re-search-forward "^\\* " nil t)
+                                (match-beginning 0)
+                              (point-max)))))))
+          (push (cons title content) quotes)))
+      (if quotes
+          (let* ((quote (nth (random (length quotes)) quotes))
+                 (formatted-quote (format "▷ %s\n\n%s" (car quote) (cdr quote))))
+            formatted-quote)
+        "No quotes found in cReading.org"))))
 
+(defun my-fancy-startup-screen ()
+  "Customized startup screen with default logo and modified text in a new buffer."
+  (let ((buffer-name "*Startup Screen*"))
+    (with-current-buffer (get-buffer-create buffer-name)
+      (let ((inhibit-read-only t)
+            (left-margin "    "))  ;; 4칸 공백 정의
+        (erase-buffer)  ;; 현재 버퍼의 내용을 지움
+        (fancy-splash-head)	     ;기본 로고 
+        ;; 로고 아래에 표시할 메시지 추가
+        (insert (concat left-margin "Welcome to GNU Emacs, Copyright © 1996-2024 Free Software Foundation, Inc..\n\n"))
+        ;; 랜덤 인용문에 여백 추가
+        (let ((quote (get-random-quote-from-creading)))
+          (insert (replace-regexp-in-string "^" left-margin quote))))
+      ;; 위에서 4번째 줄로 커서 이동
+      (goto-line 4)
+      (beginning-of-line)
+      (switch-to-buffer buffer-name))))
 
 
 ;; end here
