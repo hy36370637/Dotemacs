@@ -74,16 +74,20 @@
   (let ((buffer-name "*Startup Screen*"))
     (with-current-buffer (get-buffer-create buffer-name)
       (let ((inhibit-read-only t)
-            (left-margin "    "))  ;; 4칸 공백 정의
+            (left-margin "    "))       ; 4칸 공백 정의
         (erase-buffer)  ;; 현재 버퍼의 내용을 지움
         (fancy-splash-head)	     ;기본 로고 
-        ;; 로고 아래에 표시할 메시지 추가
+        ;; 로고 아래에 표시할 메시지
         (insert (concat left-margin "Welcome to GNU Emacs, Copyright © 1996-2024 Free Software Foundation, Inc..\n\n"))
         ;; 랜덤 인용문에 여백 추가
         (let ((quote (get-random-quote-from-creading)))
           (insert (replace-regexp-in-string "^" left-margin quote))))
-      ;; 위에서 4번째 줄로 커서 이동
-      (goto-line 4)
+      ;; line break
+      (goto-char (point-min))
+      (let ((fill-column 110))  ; Set a reasonable line width
+        (fill-region (point-min) (point-max)))
+      ;; 위에서 2번째 줄로 커서 이동
+      (goto-line 2)
       (beginning-of-line)
       (switch-to-buffer buffer-name))))
 
