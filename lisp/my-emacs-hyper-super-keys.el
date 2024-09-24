@@ -29,13 +29,13 @@
   "C-s-/" #'undo-redo
   
  ;;;consult
-  "s-c d"  #'consult-dir
-  "s-c f"   #'consult-find
-  "s-c s"   #'consult-line
-   "s-c r"   #'consult-register
-   "s-c g"  #'my-consult-grep-custom
-   "s-c t"   #'consult-theme
-   "s-c b"  #'consult-bookmark
+  ;; "s-c d"  #'consult-dir
+  ;; "s-c f"   #'consult-find
+  ;; "s-c s"   #'consult-line
+  ;;  "s-c r"   #'consult-register
+  ;;  "s-c g"  #'my-consult-grep-custom
+  ;;  "s-c t"   #'consult-theme
+  ;;  "s-c b"  #'consult-bookmark
 
   ;;; org-mode    
   "s-o e" #'org-emphasize

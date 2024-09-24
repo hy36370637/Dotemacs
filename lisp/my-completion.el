@@ -46,7 +46,13 @@
 ;; ======================================
 (use-package consult
   :ensure t
-  :bind (("C-x b" . consult-buffer))
+  :bind (("C-x b" . consult-buffer)
+	 ("C-x c b" . consult-bookmark)
+	 ("C-x c d" . consult-dir)
+	 ("C-x c f" . consult-find)
+	 ("C-x c g" . my-consult-grep-custom)
+	 ("C-x c l" . consult-line)
+	 ("C-x c r" . consult-register))
   :init
   (defun my-consult-grep-custom ()
     "Run consult-grep with option to use default directory or choose a new one."
@@ -210,11 +216,7 @@
           try-expand-line
           try-complete-file-name-partially
           try-complete-file-name))
-  ;; 특정 모드 무시 설정 (참고용으로만 유지, 실제로는 사용되지 않음)
-  (setq hippie-expand-ignore-buffers
-        '(archive-mode image-mode doc-view-mode pdf-view-mode tags-table-mode))
 
-  ;; for org-mode 
   (defun try-expand-org-keyword (old)
     "Org-mode 키워드 자동완성 함수"
     (unless old

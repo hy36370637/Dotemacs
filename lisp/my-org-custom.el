@@ -34,7 +34,6 @@
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE"))))
 
 (use-package ox-md
-  :ensure org  ; org 패키지가 설치되어 있는지 확인
   :after org   ; org 모드가 로드된 후에 ox-md를 로드
   :config
   (require 'ox-md)

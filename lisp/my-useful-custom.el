@@ -15,6 +15,7 @@
 ;; ======================================-
 (use-package ispell
   :if my-mactop-p
+  :commands (my-enable-korean-spell-check)
   :config
   (setq ispell-program-name "hunspell")
   (setq ispell-local-dictionary "ko_KR")
@@ -34,15 +35,15 @@
 ;; ======================================-
 (use-package gptel
   :ensure nil
+  :if my-Macbook-p
+  :bind ("C-c G" . gptel)
   :config
-  ;;  (setq gptel-model "gpt-4")
-  ;; GPT-4-turbo 모델 사용
-  (setq gptel-model "gpt-4-turbo")
+  (setq gptel-model "gpt-4-turbo")	;GPT-4o-mini
   (setq gptel-api-key
         (plist-get
          (car (auth-source-search :host "openai.com" :user "api_key"))
          :secret)))
-(global-set-key (kbd "C-c G") 'gptel)
+
 
 
 
