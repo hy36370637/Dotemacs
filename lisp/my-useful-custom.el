@@ -28,8 +28,6 @@
     (setq ispell-local-dictionary "ko_KR")
     (flyspell-mode 1))
 
-;;  (global-set-key (kbd "C-c s") 'my-enable-korean-spell-check))
-
 ;; =======================================
 ;;; gptel
 ;; ======================================-
@@ -70,15 +68,16 @@
         "No quotes found in cReading.org"))))
 
 (defun my-fancy-startup-screen ()
-  "Customized startup screen with default logo and modified text in a new buffer."
+  "Customized startup screen with default logo and randon quote in a new buffer."
   (let ((buffer-name "*Startup Screen*"))
     (with-current-buffer (get-buffer-create buffer-name)
       (let ((inhibit-read-only t)
             (left-margin "    "))       ; 4칸 공백 정의
-        (erase-buffer)  ;; 현재 버퍼의 내용을 지움
+        (erase-buffer)                   ; 현재 버퍼 내용 지움
         (fancy-splash-head)	     ;기본 로고 
         ;; 로고 아래에 표시할 메시지
-        (insert (concat left-margin "Welcome to GNU Emacs, Copyright © 1996-2024 Free Software Foundation, Inc..\n\n"))
+	(insert (concat left-margin 
+                (format "💕  Welcome to GNU Emacs %s, Copyright © 1996-2024 Free Software Foundation, Inc..\n\n" emacs-version)))
         ;; 랜덤 인용문에 여백 추가
         (let ((quote (get-random-quote-from-creading)))
           (insert (replace-regexp-in-string "^" left-margin quote))))
