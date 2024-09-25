@@ -228,9 +228,7 @@
   :custom
   (hl-line-sticky-flag nil)
   :hook
-  (dired-mode . hl-line-mode)
-  (text-mode . hl-line-mode)
-  (emacs-lisp-mode . hl-line-mode))
+  ((dired-mode text-mode emacs-lisp-mode) . hl-line-mode))
 
 ;; ======================================
 ;;; Eshell
@@ -269,22 +267,3 @@
     (setq battery-status-function 'battery-pmset
           battery-mode-line-format "Ⓑ %p%%  ")
     (display-battery-mode 1)))
-
-;; ======================================
-;;; Magit
-;; ======================================
-(use-package magit
-  :bind (("C-x g" . magit-status))
-  :config
-  (setq magit-auto-revert-mode t))
-
-;; ======================================
-;;; Keycast
-;; ======================================
-;; (use-package keycast
-;;   :bind ("C-x m k" . keycast-mode-line-mode)
-;;   :config
-;;   (setq keycast-mode-line-insert-after 'mode-line-modes
-;;         keycast-mode-line-window-predicate 'mode-line-window-selected-p
-;;         keycast-mode-line-remove-tail-elemenets nil)
-;;   (keycast-mode-line-mode -1))

@@ -97,7 +97,6 @@
       (beginning-of-line)
       (switch-to-buffer buffer-name))))
 
-
 ;; =======================================
 ;;; spacious-padding
 ;; ======================================-
@@ -109,6 +108,16 @@
   (setq spacious-padding-widths
         '( :left-fringe-width 20
            :right-fringe-width 20)))
+
+;; ======================================
+;;; Magit
+;; ======================================
+(use-package magit
+  :bind (("C-x g" . magit-status))
+  :config
+  (setq magit-auto-revert-mode t))
+
+
 
 
 ;; end here
