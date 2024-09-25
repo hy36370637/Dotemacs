@@ -102,53 +102,53 @@
 ;; ======================================
 (defun my/setup-calendar-holidays ()
   "Set up custom holidays and solar terms for the calendar."
-(setq my-holidays
+  (setq my-holidays
         '((holiday-fixed 1 1 "새해")
-	  (holiday-chinese  1  1 "설날")
-	  (holiday-fixed 1 10 "딸 생일")
-	  (holiday-fixed 3 1 "삼일절")
-	  (holiday-fixed 3 19 "결혼일")
-	  (holiday-chinese  4  8 "석탄일")
-	  (holiday-fixed 5 5 "어린이날")
-	  (holiday-fixed 6 6 "현충일")
-	  (holiday-fixed 6 10 "아들생일")
-	  (holiday-fixed 7 17 "제헌절")
-	  (holiday-chinese  7  21 "장인제")
-	  (holiday-chinese  8  4 "조부제")
-	  (holiday-fixed 8 15 "광복절")
-	  (holiday-chinese  8 15 "추석")
-	  (holiday-chinese  9  3 "母생신")
-	  (holiday-chinese  9  5 "父제")
-	  (holiday-fixed 10 3 "개천절")
-	  (holiday-fixed 10 9 "한글날")
-	  (holiday-chinese  11  9 "장모생신")
-	  (holiday-fixed 12 25 "성탄절")))
+          (holiday-chinese  1  1 "설날")
+          (holiday-fixed 1 10 "딸 생일")
+          (holiday-fixed 3 1 "삼일절")
+          (holiday-fixed 3 19 "결혼일")
+          (holiday-chinese  4  8 "석탄일")
+          (holiday-fixed 5 5 "어린이날")
+          (holiday-fixed 6 6 "현충일")
+          (holiday-fixed 6 10 "아들생일")
+          (holiday-fixed 7 17 "제헌절")
+          (holiday-chinese  7  21 "장인제")
+          (holiday-chinese  8  4 "조부제")
+          (holiday-fixed 8 15 "광복절")
+          (holiday-chinese  8 15 "추석")
+          (holiday-chinese  9  3 "母생신")
+          (holiday-chinese  9  5 "父제")
+          (holiday-fixed 10 3 "개천절")
+          (holiday-fixed 10 9 "한글날")
+          (holiday-chinese  11  9 "장모생신")
+          (holiday-fixed 12 25 "성탄절")))
   ;; 24절기 설정
   (setq 24solar-holidays
         '((holiday-fixed 2 4 "입춘(새봄)")
-	  (holiday-fixed 2 19 "우수(눈녹음)")
-	  (holiday-fixed 3 5 "경칩(겨울잠 깸)")
-	  (holiday-fixed 3 20 "춘분(낮 길어짐)")
-	  (holiday-fixed 4 5 "청명")
-	  (holiday-fixed 4 20 "곡우(봄비)")
-	  (holiday-fixed 5 5 "입하")
-	  (holiday-fixed 5 21 "소만(볕 잘듬)")
-	  (holiday-fixed 6 6 "망종(씨앗)")
-	  (holiday-fixed 6 21 "하지")
-	  (holiday-fixed 7 7 "소서(더위 시작)")
-	  (holiday-fixed 7 22 "대서(가장 더움)")
-	  (holiday-fixed 8 7 "입추")
-	  (holiday-fixed 8 23 "처서(가을바람)")
-	  (holiday-fixed 9 7 "백로(이슬)")
-	  (holiday-fixed 9 22 "추분(밤 길이)")
-	  (holiday-fixed 10 8 "한로(이슬)")
-	  (holiday-fixed 10 23 "상강(서리)")
-	  (holiday-fixed 11 7 "입동")
-	  (holiday-fixed 11 22 "소설(눈 시작)")
-	  (holiday-fixed 12 7 "대설(눈 많음)")
-	  (holiday-fixed 12 22 "동지")
-	  (holiday-fixed 1 5 "소한")
-	  (holiday-fixed 1 20 "대한")))
+          (holiday-fixed 2 19 "우수(눈녹음)")
+          (holiday-fixed 3 5 "경칩(겨울잠 깸)")
+          (holiday-fixed 3 20 "춘분(낮 길어짐)")
+          (holiday-fixed 4 5 "청명")
+          (holiday-fixed 4 20 "곡우(봄비)")
+          (holiday-fixed 5 5 "입하")
+          (holiday-fixed 5 21 "소만(볕 잘듬)")
+          (holiday-fixed 6 6 "망종(씨앗)")
+          (holiday-fixed 6 21 "하지")
+          (holiday-fixed 7 7 "소서(더위 시작)")
+          (holiday-fixed 7 22 "대서(가장 더움)")
+          (holiday-fixed 8 7 "입추")
+          (holiday-fixed 8 23 "처서(가을바람)")
+          (holiday-fixed 9 7 "백로(이슬)")
+          (holiday-fixed 9 22 "추분(밤 길이)")
+          (holiday-fixed 10 8 "한로(이슬)")
+          (holiday-fixed 10 23 "상강(서리)")
+          (holiday-fixed 11 7 "입동")
+          (holiday-fixed 11 22 "소설(눈 시작)")
+          (holiday-fixed 12 7 "대설(눈 많음)")
+          (holiday-fixed 12 22 "동지")
+          (holiday-fixed 1 5 "소한")
+          (holiday-fixed 1 20 "대한")))
   ;; 휴일 설정 초기화 및 적용
   (setq holiday-general-holidays nil
         holiday-local-holidays nil
@@ -165,10 +165,12 @@
   "Adjust calendar layout for D2Coding font."
   (face-remap-add-relative 'default '(:family "D2Coding" :height 160)))
 
+;; Call my/setup-calendar-holidays immediately
+(my/setup-calendar-holidays)
+
 (use-package calendar
   :ensure nil
-  :hook ((calendar-mode . cal-fixLayout)
-         (calendar-mode . my/setup-calendar-holidays))
+  :hook ((calendar-mode . cal-fixLayout))
   :config
   (setq calendar-week-start-day 0
         calendar-day-name-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
@@ -177,6 +179,9 @@
 (with-eval-after-load 'calendar
   (custom-set-faces
    '(holiday ((t (:foreground "red" :weight bold))))))
+;; Ensure org-agenda uses the custom holidays
+(with-eval-after-load 'org-agenda
+  (my/setup-calendar-holidays))
 
 ;; ======================================
 ;;; for org edit/custom function
