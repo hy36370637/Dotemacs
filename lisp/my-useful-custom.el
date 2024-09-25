@@ -67,6 +67,11 @@
             formatted-quote)
         "No quotes found in cReading.org"))))
 
+(defun my-emacs-copyright ()
+  "Return the copyright information for Emacs, including the current year."
+  (let ((current-year (format-time-string "%Y")))
+    (format "Copyright © 1996-%s Free Software Foundation, Inc." current-year)))
+
 (defun my-fancy-startup-screen ()
   "Customized startup screen with default logo and randon quote in a new buffer."
   (let ((buffer-name "*Startup Screen*"))
@@ -77,7 +82,9 @@
         (fancy-splash-head)	     ;기본 로고 
         ;; 로고 아래에 표시할 메시지
 	(insert (concat left-margin 
-                (format "💕  Welcome to GNU Emacs %s, Copyright © 1996-2024 Free Software Foundation, Inc..\n\n" emacs-version)))
+                (format "💕 Welcome to GNU Emacs %s, %s.\n\n"
+                        emacs-version
+                        (my-emacs-copyright))))
         ;; 랜덤 인용문에 여백 추가
         (let ((quote (get-random-quote-from-creading)))
           (insert (replace-regexp-in-string "^" left-margin quote))))
@@ -89,6 +96,19 @@
       (goto-line 2)
       (beginning-of-line)
       (switch-to-buffer buffer-name))))
+
+
+;; =======================================
+;;; spacious-padding
+;; ======================================-
+(use-package spacious-padding
+  :ensure nil
+  :if (display-graphic-p)
+  :bind ("<f4>" . spacious-padding-mode)
+  :init
+  (setq spacious-padding-widths
+        '( :left-fringe-width 20
+           :right-fringe-width 20)))
 
 
 ;; end here
