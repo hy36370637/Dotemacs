@@ -7,7 +7,7 @@
 (defun select-special-character ()
   "Prompt the user to select a special character and insert it at point."
   (interactive)
-  (let ((choi '("·"  "→"  "⇒"  "「」"  "『』"  "※"  "…"  "―")))
+  (let ((choi '("·"  "→"  "⇒"  "「」"  "『』"  "※"  "…"  "―" "《》")))
     (insert (completing-read "선택: " choi))))
 
 ;; =======================================
@@ -103,7 +103,7 @@
 (use-package spacious-padding
   :ensure nil
   :if (display-graphic-p)
-  :bind ("<f4>" . spacious-padding-mode)
+  :bind ("C-x c p" . spacious-padding-mode)
   :init
   (setq spacious-padding-widths
         '( :left-fringe-width 20
@@ -116,6 +116,27 @@
   :bind (("C-x g" . magit-status))
   :config
   (setq magit-auto-revert-mode t))
+
+;; ======================================
+;;; Move to beginning of line
+;; ======================================
+;; from https://sachachua.com/dotemacs/index.html#move-to-beginning-of-line
+(defun my-smarter-move-beginning-of-line (arg)
+  "줄의 시작 부분 문자로 이동(공백 제외)
+      ARG가 nil이 아니거나 1이 아니면, 먼저 ARG - 1 줄 앞으로 이동. 포인트가 버퍼의 시작이나 끝에 도달하면 그곳에서 멈춤."
+  (interactive "^p")
+  (setq arg (or arg 1))
+  ;; Move lines first
+  (when (/= arg 1)
+    (let ((line-move-visual nil))
+      (forward-line (1- arg))))
+  (let ((orig-point (point)))
+    (back-to-indentation)
+    (when (= orig-point (point))
+      (move-beginning-of-line 1))))
+;; remap C-a to `smarter-move-beginning-of-line'
+(global-set-key [remap move-beginning-of-line]
+                'my-smarter-move-beginning-of-line)
 
 
 
