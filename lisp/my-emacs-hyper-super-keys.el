@@ -45,9 +45,9 @@
   "s-o v" #'org-toggle-inline-images
 
   ;;; my Custom Prefix - 기존 사용하여 익숙했던 것
-  "s-t c"  #'select-special-character
+;;  "s-t c"  #'select-special-character
 ;;  "s-t s"  #'my/search-selected-text
-  "s-t v"  #'toggle-my-view-mode
+;;  "s-t v"  #'toggle-my-view-mode
   "s-<return>" #'toggle-frame-fullscreen
 )
 
