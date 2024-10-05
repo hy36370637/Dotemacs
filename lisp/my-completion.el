@@ -47,12 +47,12 @@
 (use-package consult
   :ensure t
   :bind (("C-x b" . consult-buffer)
-	 ("C-c SPC c b" . consult-bookmark)
-	 ("C-c SPC c d" . consult-dir)
-	 ("C-c SPC c f" . consult-find)
-	 ("C-c SPC c g" . my-consult-grep-custom)
-	 ("C-c SPC c l" . consult-line)
-	 ("C-c SPC c r" . consult-register))
+	 ("C-c SPC b" . consult-bookmark)
+	 ("C-c SPC d" . consult-dir)
+	 ("C-c SPC f" . consult-find)
+	 ("C-c SPC g" . my-consult-grep-custom)
+	 ("C-c SPC l" . consult-line)
+	 ("C-c SPC r" . consult-register))
   :init
   (defun my-consult-grep-custom ()
     "Run consult-grep with option to use default directory or choose a new one."

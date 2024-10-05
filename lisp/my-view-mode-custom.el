@@ -36,7 +36,7 @@
       (text-scale-increase 0.8)
       (setq my-view-mode-enabled t)
       (view-mode 1))))
-(global-set-key (kbd "C-c SPC SPC v") 'toggle-my-view-mode)
+(global-set-key (kbd "C-c SPC V") 'toggle-my-view-mode)
 
 
 ;; end here

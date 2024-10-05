@@ -9,7 +9,7 @@
   (interactive)
   (let ((choi '("·"  "→"  "⇒"  "「」"  "『』"  "※"  "…"  "―" "《》")))
     (insert (completing-read "선택: " choi))))
-(global-set-key (kbd "C-c SPC SPC c") 'select-special-character)
+(global-set-key (kbd "C-c SPC C") 'select-special-character)
 
 ;; =======================================
 ;;; Hunspell 설정
@@ -104,7 +104,7 @@
 (use-package spacious-padding
   :ensure nil
   :if (display-graphic-p)
-  :bind ("C-c SPC SPC p" . spacious-padding-mode)
+  :bind ("C-c SPC P" . spacious-padding-mode)
   :init
   (setq spacious-padding-widths
         '( :left-fringe-width 20
