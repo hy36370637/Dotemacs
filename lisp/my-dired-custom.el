@@ -54,8 +54,8 @@
     (let ((file (dired-get-filename)))
       (start-process "mpv" nil mpv-executable file)))
 
-  :hook ((dired-after-readin . sof/dired-sort)))
-;;         (dired-mode . dired-hide-details-mode)))  ;Dired mode 상세정보 숨김
+  :hook ((dired-after-readin . sof/dired-sort))
+         (dired-mode . dired-hide-details-mode))  ;Dired mode 상세정보 숨김
 
 (use-package mpv
   :ensure t

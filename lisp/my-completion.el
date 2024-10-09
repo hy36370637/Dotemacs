@@ -47,6 +47,7 @@
 (use-package consult
   :ensure t
   :bind (("C-x b" . consult-buffer)
+	 ("C-x C-r" . consult-recent-file)
 	 ("C-c SPC b" . consult-bookmark)
 	 ("C-c SPC d" . consult-dir)
 	 ("C-c SPC f" . consult-find)
@@ -67,11 +68,11 @@
   (setq consult-buffer-sources
         '(consult--source-buffer
           consult--source-recent-file))
-  ;; 북마크 관련 추가 설정
-  (setq consult-bookmark-narrow
-        '((?b "Bookmarks" bookmark)
-          (?f "Files" file)
-          (?d "Directories" dir)))
+  ;; ;; 북마크 관련 추가 설정
+  ;; (setq consult-bookmark-narrow
+  ;;       '((?b "Bookmarks" bookmark)
+  ;;         (?f "Files" file)
+  ;;         (?d "Directories" dir)))
   ;; 북마크 미리보기 설정
   (setq consult-preview-key 'any)
   ;; 북마크 정렬 설정

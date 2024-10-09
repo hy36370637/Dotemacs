@@ -201,7 +201,7 @@
 ;; Denote 설정
 (use-package denote
   :ensure t
-  :bind("C-c n n" . denote)
+  :bind("C-c SPC n" . denote)
   :custom
   (denote-directory (expand-file-name "~/Dropbox/Docs/org/denote"))
   (denote-known-keywords '("work" "personal" "reading"))

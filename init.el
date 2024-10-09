@@ -66,7 +66,7 @@
 ;;; Emacs UI and behavior
 ;; ======================================
 (use-package emacs
-  :hook (emacs-startup . my-fancy-startup-screen) ;my-useful-custom.el
+;;  :hook (emacs-startup . my-fancy-startup-screen) ;my-useful-custom.el
   :init
   (setq inhibit-startup-message t
         visible-bell t
@@ -82,6 +82,7 @@
         scroll-conservatively 101
         text-scale-mode-step 1.05)  	;글꼴 확대축소 비율 5% 단위
   :config
+  (menu-bar-mode -1)
   (tool-bar-mode -1)
   (toggle-scroll-bar -1)
   (setq-default line-spacing 0.2)
@@ -122,11 +123,14 @@
   :config
   (setq register-preview-delay 0
         register-preview-function #'register-preview-default)
+  (set-register ?i '(file . "~/.emacs.d/init.el"))
+  (set-register ?r '(file . "~/Dropbox/Docs/Person/cReading.org"))
+  (set-register ?d '(file . "~/Dropbox/Docs/Person/Daily.org"))
+  (set-register ?n '(file . "~/Dropbox/Docs/Person/cNotes.org"))
   :bind
   (("C-x r j" . jump-to-register)
 ;;   ("C-x r s" . copy-to-register)
    ("C-x r i" . insert-register)))
-(set-register ?i '(file . "~/.emacs.d/init.el"))
 
 ;; ======================================
 ;;; Key bindings
@@ -191,7 +195,9 @@
 ;; ======================================
 (use-package savehist
   :ensure nil
-  :init (savehist-mode 1))
+  :init (savehist-mode 1)
+  :config
+  (setq history-length 10))
 
 (use-package saveplace
   :ensure nil
@@ -220,6 +226,16 @@
   (nerd-icons-completion-mode)
   :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
 
+;; =======================================
+;;; recenfF
+;; ======================================-
+(use-package recentf
+  :ensure t
+  :config
+  (recentf-mode 1)
+  (setq recentf-max-menu-items 25)
+  (setq recentf-max-saved-items 25))
+  
 ;; =======================================
 ;;; hi-line
 ;; ======================================-

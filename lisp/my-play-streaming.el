@@ -113,7 +113,7 @@
         (message "Music Player mode enabled. Use C-c m to access commands."))
     (my-music-player-cleanup)
     (message "Music Player mode disabled.")))
-(global-set-key (kbd "C-c m") 'my-music-player-mode)
+(global-set-key (kbd "C-c SPC M") 'my-music-player-mode)
 
 (defun my-music-player-initialize ()
   "Initialize the music player."
