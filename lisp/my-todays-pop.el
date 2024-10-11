@@ -19,21 +19,21 @@
           (push (cons title content) quotes)))
       (if quotes
           (let* ((quote (nth (random (length quotes)) quotes))
-                 (formatted-quote (format "☉ %s\n%s" (car quote) (cdr quote))))
+                 (formatted-quote (format "%s\n%s" (car quote) (cdr quote))))
             formatted-quote)
         "No quotes found in cReading.org"))))
 
 (defun my-emacs-copyright ()
   "Return the copyright information for Emacs, including the current year."
   (let ((current-year (format-time-string "%Y")))
-    (format "Copyright © 1996-%s  Free Software Foundation, Inc." current-year)))
+    (format "Copyright © 1996-%s,  Free Software Foundation, Inc." current-year)))
 
 (defun my-Ddays ()
   "Calculate the number of days until 2024-12-31."
   (let* ((today (current-time))
          (target-date (encode-time 0 0 0 31 12 2024))
          (diff-days (floor (/ (float-time (time-subtract target-date today)) 86400))))
-    (format "/ D-day %d日" diff-days)))
+    (format "/ D-day %d日前" diff-days)))
 
 (defun my-todays-pop ()
   "오늘의 정보. 일자, 일정 등"
