@@ -83,7 +83,7 @@
     (define-key map (kbd "C-c m l") #'my-music-player-load-directory)
     (define-key map (kbd "C-c m i") #'my-music-player-show-current)
     (define-key map (kbd "C-c m v") #'my-music-player-view-playlist)
-    (define-key map (kbd "C-c m t") #'my-music-player-toggle-streaming)
+    (define-key map (kbd "C-c m SPC") #'my-music-player-toggle-streaming)
     (define-key map (kbd "C-c m q") #'my-music-player-quit)
     map)
   "Keymap for `my-music-player-mode'.")
@@ -303,7 +303,7 @@
                 "C-c m l - Load Directory\n"
                 "C-c m i - Show Current Track\n"
                 "C-c m v - View Playlist\n"
-                "C-c m t - Toggle Streaming\n"
+                "C-c m SPC - Toggle Streaming\n"
                 "C-c m q - Quit\n")    
         (use-local-map my-music-player-mode-map)
         (setq buffer-read-only t)))))

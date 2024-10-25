@@ -66,7 +66,10 @@
            ("t" "Tasks" entry (file ,(my-org-person-file-path "Tasks.org")) "* TODO %?")
            ("r" "Read" entry (file ,(my-org-person-file-path "cReading.org")) "* %?")
 	   ("D" "동강fNote" entry (file+datetree ,(my-org-person-file-path "DG_fNote.org")) "* %?")
-           ("G" "금산fNote" entry (file+datetree ,(my-org-person-file-path "GS_fNote.org")) "* %?"))))
+           ("G" "금산fNote" entry (file+datetree ,(my-org-person-file-path "GS_fNote.org")) "* %?")
+	   ("m" "경조사" table-line (file, (my-org-person-file-path "aMoney.org")) "| %^{구분} | %^t | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |" :prepend nil)))
+;;	   ("m" "경조사" table-line (file, (my-org-person-file-path "aMoney.org")) "| %^{구분} | %^t | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |" :prepend t)))
+   )
 
 ;; ======================================
 ;;; org-agenda
@@ -162,16 +165,16 @@
   (setq calendar-holidays (append my-holidays 24solar-holidays)))
 
 (defun cal-fixLayout ()
-  "Adjust calendar layout for D2Coding font."
-  (face-remap-add-relative 'default '(:family "D2Coding" :height 160)))
-
+  "calendar layout for D2Coding font. 고정폭 깨짐방지"
+;;  (face-remap-add-relative 'default '(:family "D2Coding" :height 160)))
+  (face-remap-add-relative 'default '(:family "Noto Sans Mono CJK KR" :height 160)))
 (use-package calendar
   :ensure nil
   :hook ((calendar-mode . cal-fixLayout)
          ((calendar-mode org-agenda-mode) . my/setup-calendar-holidays))
   :config
-  (setq calendar-week-start-day 0
-        calendar-day-name-array ["Sun" "Mon" "Tue" "Wed" "Thu" "Fri" "Sat"]
+  (setq calendar-week-start-day 0	;일요일부터 시작
+	calendar-day-header-array ["일" "월" "화" "수" "목" "금" "토"]
         calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월" "10월" "11월" "12월"])
   (custom-set-faces
    '(holiday ((t (:foreground "red" :weight bold))))))

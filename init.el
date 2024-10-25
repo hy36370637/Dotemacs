@@ -161,10 +161,9 @@
 ;; ======================================
 (use-package emacs
   :config
+;;  (set-face-attribute 'default nil :family "D2Coding" :height 160)
   (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
-  (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
-  (set-face-attribute 'variable-pitch nil :family "Noto Sans KR")
-  (set-fontset-font nil 'hangul (font-spec :family "Noto Sans KR")))
+  (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR"))
 
 ;; ======================================
 ;;; Theme
