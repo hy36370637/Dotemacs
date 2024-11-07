@@ -46,14 +46,14 @@
 ;; =======================================
 ;;; spacious-padding
 ;; ======================================-
-(use-package spacious-padding
-  :ensure nil
-  :if (display-graphic-p)
-  :bind ("C-c SPC P" . spacious-padding-mode)
-  :init
-  (setq spacious-padding-widths
-        '( :left-fringe-width 20
-           :right-fringe-width 20)))
+;; (use-package spacious-padding
+;;   :ensure nil
+;;   :if (display-graphic-p)
+;;   :bind ("C-c SPC P" . spacious-padding-mode)
+;;   :init
+;;   (setq spacious-padding-widths
+;;         '( :left-fringe-width 20
+;;            :right-fringe-width 20)))
 
 ;; ======================================
 ;;; Magit

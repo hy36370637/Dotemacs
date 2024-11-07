@@ -67,9 +67,7 @@
            ("r" "Read" entry (file ,(my-org-person-file-path "cReading.org")) "* %?")
 	   ("D" "동강fNote" entry (file+datetree ,(my-org-person-file-path "DG_fNote.org")) "* %?")
            ("G" "금산fNote" entry (file+datetree ,(my-org-person-file-path "GS_fNote.org")) "* %?")
-	   ("m" "경조사" table-line (file, (my-org-person-file-path "aMoney.org")) "| %^{구분} | %^t | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |" :prepend nil)))
-;;	   ("m" "경조사" table-line (file, (my-org-person-file-path "aMoney.org")) "| %^{구분} | %^t | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |" :prepend t)))
-   )
+	   ("m" "경조사" table-line (file, (my-org-person-file-path "aMoney.org")) "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |" :prepend nil))))
 
 ;; ======================================
 ;;; org-agenda
@@ -168,6 +166,7 @@
   "calendar layout for D2Coding font. 고정폭 깨짐방지"
 ;;  (face-remap-add-relative 'default '(:family "D2Coding" :height 160)))
   (face-remap-add-relative 'default '(:family "Noto Sans Mono CJK KR" :height 160)))
+
 (use-package calendar
   :ensure nil
   :hook ((calendar-mode . cal-fixLayout)

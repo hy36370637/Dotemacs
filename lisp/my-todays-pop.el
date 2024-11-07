@@ -24,9 +24,12 @@
         "No quotes found in cReading.org"))))
 
 (defun my-emacs-copyright ()
-  "Return the copyright information for Emacs, including the current year."
+  "Return the version･copyright information for Emacs, including the current year."
   (let ((current-year (format-time-string "%Y")))
     (format "Copyright © 1996-%s,  Free Software Foundation, Inc." current-year)))
+  ;; (let ((current-year (format-time-string "%Y"))
+  ;;       (emacs-version (emacs-version)))
+  ;;   (format "%s\, Copyright © 1996-%s, Free Software Foundation, Inc." emacs-version current-year)))
 
 (defun my-Ddays ()
   "Calculate the number of days until 2024-12-31."
