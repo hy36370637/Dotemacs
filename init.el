@@ -256,6 +256,12 @@
 ;;; Modeline
 ;; ======================================
 (setq mode-line-right-align-edge 'right-margin)
+(setq-default mode-line-misc-info
+                 (list (concat " " (propertize
+                                    (format-time-string "%y/%m/%d(%a) %H:%M")
+                                    'face 'mode-line)
+                               " ")))
+
 (setq-default mode-line-format
               '("%e "
                 mode-line-front-space
@@ -265,12 +271,13 @@
                 " Ⓗ "
                 mode-line-buffer-identification
                 mode-line-frame-identification
-                " Ⓨ "
+;                " Ⓨ "
                 mode-line-modes
                 mode-line-format-right-align
                 mode-line-position
-                " Ⓚ "
-                mode-line-misc-info))
+		" Ⓨ "
+                mode-line-misc-info
+		(:eval (if (bound-and-true-p battery-mode-line-string) battery-mode-line-string))))
 
 ;; ======================================
 ;;; Battery display
