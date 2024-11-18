@@ -154,7 +154,10 @@
   :config
   (corfu-history-mode 1)
   (corfu-popupinfo-mode 1)
-  :hook (emacs-lisp-mode . corfu-mode))
+  :hook ((prog-mode . corfu-mode)
+	 (eshell-mode . corfu-mode)
+	 (shell-mode . corfu-mode)))
+
 
 ;; =======================================
 ;;; eldoc
@@ -194,6 +197,7 @@
 	("SetfileQV"   "#+SETUPFILE: setLTH/HeaderQV.org")
 	("Option"  "#+OPTIONS: toc:2 num:2")
 	("Latex_header"  "#+LATEX_HEADER:")
+	 ("Inimg" "#+attr_latex: :width 0.4\\textwidth\n#+CAPTION: \n[[../org/img/imgDaily/fileName]]")
 	))))
 
 ;; =======================================
