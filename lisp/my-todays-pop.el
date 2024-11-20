@@ -47,17 +47,17 @@
         (agenda-string (with-temp-buffer
                          (org-agenda-list 3)   ;; 3일 간의 일정 가져오기
                          (goto-char (point-min)) ;; 버퍼의 맨 처음으로 이동
-                         (forward-line 1)        ;; 첫 번째 줄을 건너뜀
+                         (forward-line 1)           ;; 첫 번째 줄을 건너뜀
 			 (replace-regexp-in-string "^" "- " (buffer-substring-no-properties (point) (point-max)))))
 ;;                         (buffer-substring-no-properties (point) (point-max))))  ;; 나머지 일정을 문자열로 변환
         (random-quote (get-random-quote-from-creading))  ;; 무작위 인용구 가져오기
-        (left-margin "    ")                    ;; 왼쪽 여백을 위한 변수
+        (left-margin "    ")                        ;; 왼쪽 여백을 위한 변수
         (quote-margin "        "))              ;; 왼쪽 여백을 위한 변수(인용문)
     (with-current-buffer buffer
-      (erase-buffer)                             ;; 기존 내용을 지우고
-      (fancy-splash-head)                        ;; 기본 로고 출력
+      (erase-buffer)                                 ;; 기존 내용을 지우고
+      (fancy-splash-head)                     ;; 기본 로고 출력
       (insert quote-margin (my-emacs-copyright)) ;; Copyright 출력
-      (insert "\n")                              ;; 줄 바꿈 추가
+      (insert "\n")                                   ;; 줄 바꿈 추가
       (insert left-margin current-date d-day)    ;; 날짜 삽입
       (insert (format "\n%s● 일정\n" left-margin))
       (insert (replace-regexp-in-string "^" quote-margin agenda-string))  ;; 일정 삽입 (각 줄마다 여백 추가)
@@ -65,7 +65,11 @@
       (insert (replace-regexp-in-string "^" quote-margin random-quote))  ;; 인용구 삽입 (각 줄마다 여백 추가)
       (goto-char (point-min))                    ;; 커서를 버퍼의 맨 처음으로 이동
       (goto-line 2)
-      (beginning-of-line))
+      (beginning-of-line)
+;; Set up a local keymap with 'q' to close the buffer
+      (let ((map (make-sparse-keymap)))
+        (define-key map (kbd "q") (lambda () (interactive) (kill-this-buffer)))
+        (use-local-map map)))
     (switch-to-buffer buffer)))  ;; 버퍼 전환
 
 (global-set-key (kbd "s-3") 'my-todays-pop)

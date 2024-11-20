@@ -44,6 +44,19 @@
          :secret)))
 
 ;; =======================================
+;;; writerroom
+;; ======================================-
+(use-package writeroom-mode
+  :ensure nil
+;;  :hook (org-mode . writeroom-mode) ; Org mode에서 writeroom-mode 자동 활성화
+  :init
+  (setq writeroom-width 100)                    ; 글쓰기 너비 설정
+;;  (setq writeroom-mode-line t)                  ; 모드라인 표시 여부
+;;  (setq writeroom-global-effects '(writeroom-toggle-fullscreen
+;;                                   writeroom-toggle-alpha)) ; 전역 효과 설정
+  :bind ("C-c w" . writeroom-mode))             ; writeroom-mode 토글 단축키
+
+;; =======================================
 ;;; spacious-padding
 ;; ======================================-
 ;; (use-package spacious-padding
