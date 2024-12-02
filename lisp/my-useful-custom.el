@@ -37,7 +37,8 @@
   :if my-Macbook-p
   :bind ("C-c G" . gptel)
   :config
-  (setq gptel-model "gpt-4-turbo")	;GPT-4o-mini
+  (setq gptel-model "o1-preview")	;GPT-4o-mini
+;;  (setq gptel-model "gpt-4-turbo")	;GPT-4o-mini
   (setq gptel-api-key
         (plist-get
          (car (auth-source-search :host "openai.com" :user "api_key"))

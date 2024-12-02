@@ -171,7 +171,8 @@
   :config
   (require-theme 'modus-themes)
   (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs nil)
+        modus-themes-bold-constructs nil
+	modus-themes-mode-line '(accented borderless padded))
   (setq modus-themes-common-palette-overrides
         modus-themes-preset-overrides-intense)
   (load-theme 'modus-operandi-tinted))
@@ -256,11 +257,6 @@
 ;;; Modeline
 ;; ======================================
 (setq mode-line-right-align-edge 'right-margin)
-(setq-default mode-line-misc-info
-                 (list (concat " " (propertize
-                                    (format-time-string "%y/%m/%d(%a) %H:%M")
-                                    'face 'mode-line)
-                               " ")))
 
 (setq-default mode-line-format
               '("%e "
@@ -271,13 +267,12 @@
                 " Ⓗ "
                 mode-line-buffer-identification
                 mode-line-frame-identification
-;                " Ⓨ "
+;;                " Ⓨ "
                 mode-line-modes
                 mode-line-format-right-align
                 mode-line-position
-		" Ⓨ "
-                mode-line-misc-info
-		(:eval (if (bound-and-true-p battery-mode-line-string) battery-mode-line-string))))
+		"Ⓨ "
+                mode-line-misc-info))
 
 ;; ======================================
 ;;; Battery display
@@ -286,5 +281,5 @@
   (use-package battery
     :config
     (setq battery-status-function 'battery-pmset
-          battery-mode-line-format "Ⓑ %p%%  ")
+          battery-mode-line-format "Ⓑ %p%% ")
     (display-battery-mode 1)))
