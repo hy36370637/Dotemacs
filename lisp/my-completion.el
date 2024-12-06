@@ -181,8 +181,8 @@
   (abbrev-table-put global-abbrev-table :regexp "\\(?:^\\|[\t\s]+\\)\\(?1:[:;_].*\\|.*\\)")
   (define-abbrev-table 'global-abbrev-table 
     '(("m2"  "㎡")   ("km"  "㎞")  ("lDot" "……") 
-      ("cX"    "×")   ("cB"   "※")  ("lDash" "―")
-      ("lG"    "「")   ("rG"    "」")
+      ("cA"    "→")   ("cB"   "※")  ("lDash" "―")
+      ("lG"    "「")   ("rG"    "」") 
       ("llG"  "『")   ("rrG"   "』")
       ("cZ"   "○")   ("cQ"   "□")
       ))

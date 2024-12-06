@@ -98,6 +98,23 @@
 (global-set-key [remap move-beginning-of-line]
                 'my-smarter-move-beginning-of-line)
 
+;; ======================================
+;;; Date,Time insert
+;; ======================================
+(defun my/time-stamp-short ()
+  "Insert short date/time stamp as 2024-12-06 09:27"
+  (interactive)
+  (insert (format-time-string "%Y-%m-%d %R")))
+
+(defun my/date-stamp ()
+  "Insert date stamp as 2024-12-06"
+  (interactive)
+  (insert (format-time-string "%Y-%m-%d")))
+
+(defun my/date-dot-stamp ()
+  "Insert date dot stamp as 2024.12.06"
+  (interactive)
+  (insert (format-time-string "%Y.%m.%d")))
 
 
 
