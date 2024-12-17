@@ -33,11 +33,11 @@
   (org-image-actual-width 300)
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE"))))
 
-(use-package ox-md
-  :after org   ; org 모드가 로드된 후에 ox-md를 로드
-  :config
-  (require 'ox-md)
-  (add-to-list 'org-export-backends 'md))
+;; (use-package ox-md
+;;   :after org   ; org 모드가 로드된 후에 ox-md를 로드
+;;   :config
+;;   (require 'ox-md)
+;;   (add-to-list 'org-export-backends 'md))
 
 (use-package ox-latex
   :ensure nil  ; built in
@@ -78,12 +78,12 @@
   :config
   (setq org-agenda-files (list (my-org-person-file-path "Tasks.org")
                                (my-org-person-file-path "Daily.org")))
-  (setq org-agenda-prefix-format
-	'((agenda . " %t %s")  ;" %t %-12:c%?-12t% s"
-          (timeline . "  % s")
-          (todo . " %i %-12:c")
-          (tags . " %i %-12:c")
-          (search . " %i %-12:c")))
+  ;; (setq org-agenda-prefix-format
+  ;; 	'((agenda . " %t %s")  ;" %t %-12:c%?-12t% s"
+  ;;         (timeline . "  % s")
+  ;;         (todo . " %i %-12:c")
+  ;;         (tags . " %i %-12:c")
+  ;;         (search . " %i %-12:c")))
   (setq org-agenda-format-date "%Y-%m-%d (%a)")       ; 날자 포맷. 가독성
   (setq org-agenda-current-time-string "← now ───────")
   (setq org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))  ;완료항목 hidden

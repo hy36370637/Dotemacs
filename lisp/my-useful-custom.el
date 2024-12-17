@@ -47,15 +47,15 @@
 ;; =======================================
 ;;; writerroom
 ;; ======================================-
-(use-package writeroom-mode
-  :ensure nil
-;;  :hook (org-mode . writeroom-mode) ; Org mode에서 writeroom-mode 자동 활성화
-  :init
-  (setq writeroom-width 100)                    ; 글쓰기 너비 설정
-;;  (setq writeroom-mode-line t)                  ; 모드라인 표시 여부
-;;  (setq writeroom-global-effects '(writeroom-toggle-fullscreen
-;;                                   writeroom-toggle-alpha)) ; 전역 효과 설정
-  :bind ("C-c w" . writeroom-mode))             ; writeroom-mode 토글 단축키
+;; (use-package writeroom-mode
+;;   :ensure nil
+;; ;;  :hook (org-mode . writeroom-mode) ; Org mode에서 writeroom-mode 자동 활성화
+;;   :init
+;;   (setq writeroom-width 100)                    ; 글쓰기 너비 설정
+;; ;;  (setq writeroom-mode-line t)                  ; 모드라인 표시 여부
+;; ;;  (setq writeroom-global-effects '(writeroom-toggle-fullscreen
+;; ;;                                   writeroom-toggle-alpha)) ; 전역 효과 설정
+;;   :bind ("C-c w" . writeroom-mode))             ; writeroom-mode 토글 단축키
 
 ;; =======================================
 ;;; spacious-padding
@@ -101,11 +101,6 @@
 ;; ======================================
 ;;; Date,Time insert
 ;; ======================================
-(defun my/time-stamp-short ()
-  "Insert short date/time stamp as 2024-12-06 09:27"
-  (interactive)
-  (insert (format-time-string "%Y-%m-%d %R")))
-
 (defun my/date-stamp ()
   "Insert date stamp as 2024-12-06"
   (interactive)
@@ -115,6 +110,21 @@
   "Insert date dot stamp as 2024.12.06"
   (interactive)
   (insert (format-time-string "%Y.%m.%d")))
+
+(defun my/date-time-stamp-short ()
+  "Insert short date/time stamp as 2024-12-06 09:27"
+  (interactive)
+  (insert (format-time-string "%Y-%m-%d %R")))
+
+(defun my/date-korean-weekday-stamp ()
+  "Insert date korean weekday stamp as 2024-12-17 화요일"
+  (interactive)
+  (let* ((weekday (format-time-string "%w"))
+         (weekday-name (nth (string-to-number weekday)
+                            '("일요일" "월요일" "화요일" "수요일" "목요일" "금요일" "토요일"))))
+    (insert (format-time-string "%Y-%m-%d "))
+    (insert weekday-name)))
+
 
 
 
