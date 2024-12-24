@@ -1,5 +1,7 @@
-;;; -*- lexical-binding: t; -*-
-;; .emacs.d/lisp/my-todays-pop.el
+;;; .emacs.d/lisp/my-todays-pop.el --- Emacs configuration      -*- lexical-binding: t; -*-
+;; Author: Ho Young <hy36370637@gmail.com>
+
+;;; Code:
 
 (defun get-random-quote-from-creading ()
   "Extract a random quote from the cReading.org file."
@@ -32,11 +34,14 @@
   ;;   (format "%s\, Copyright © 1996-%s, Free Software Foundation, Inc." emacs-version current-year)))
 
 (defun my-Ddays ()
-  "Calculate the number of days until 2024-12-31."
+  "2024-12-31까지 남은 일수 or 경과한 일수를 계산."
   (let* ((today (current-time))
          (target-date (encode-time 0 0 0 31 12 2024))
-         (diff-days (floor (/ (float-time (time-subtract target-date today)) 86400))))
-    (format "/ D-day %d日前" diff-days)))
+         (diff-seconds (float-time (time-subtract today target-date)))
+         (diff-days (floor (/ diff-seconds 86400))))
+    (if (> diff-days 0)
+        (format "/ D+%d日 경과" diff-days)
+      (format "/ D-day %d日前" (- diff-days)))))
 
 (defun my-todays-pop ()
   "오늘의 정보. 일자, 일정 등"

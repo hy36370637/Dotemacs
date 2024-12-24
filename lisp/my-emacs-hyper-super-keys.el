@@ -19,8 +19,8 @@
   "s-2"  #'tab-bar-switch-to-next-tab	;tab-bar move right
 
 ;;; kmacro
-  "s-{" #'kmacro-start-macro
-  "s-}" #'kmacro-end-macro
+  ;; "s-{" #'kmacro-start-macro
+  ;; "s-}" #'kmacro-end-macro
  ;; "H-'"    #'kmacro-end-and-call-macro  ; F4
 
 ;;; Other operations
