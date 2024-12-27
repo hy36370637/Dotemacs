@@ -132,32 +132,14 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; =======================================
-;;; corfu
+;;; completion-preview
 ;; ======================================-
-(setq completion-cycle-threshold 3
-      tab-always-indent 'complete)
-
-(use-package corfu
-  :ensure t
-  :bind (:map corfu-map
-	      ("M-d" . corfu-info-documentation)  ; eldoc 정보 표시
-              ("M-l" . corfu-info-location)
-	      ("TAB" . corfu-insert))
-  :custom
-  (corfu-auto t)
-  (corfu-cycle t)			
-  (corfu-preselect 'prompt)
-  (corfu-echo-documentation 0.2)
-  (corfu-preview-current 'insert)
-  (corfu-separator ?\s)			        ;orderless field separator
-  (corfu-quit-no-match 'separator)	;Automatically quit if there is no match
+(use-package completion-preview
+  :ensure nil				;version 30
   :config
-  (corfu-history-mode 1)
-  (corfu-popupinfo-mode 1)
-  :hook ((prog-mode . corfu-mode)
-	 (eshell-mode . corfu-mode)
-	 (shell-mode . corfu-mode)))
-
+  (global-completion-preview-mode)
+  ;; enable completion-preview in org-mode
+  (push 'org-self-insert-command completion-preview-commands))
 
 ;; =======================================
 ;;; eldoc
