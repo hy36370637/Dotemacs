@@ -215,13 +215,6 @@
   :after dired
   :hook (dired-mode . nerd-icons-dired-mode))
 
-(use-package nerd-icons-corfu
-  :ensure t
-  :if (display-graphic-p)
-  :after corfu
-  :config
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
-
 (use-package nerd-icons-completion
   :if (display-graphic-p)
   :after marginalia

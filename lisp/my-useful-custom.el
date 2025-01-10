@@ -11,6 +11,25 @@
     (insert (completing-read "선택: " choi))))
 (global-set-key (kbd "C-c SPC C") 'select-special-character)
 
+(defun region-dblspecial-characters (start end)
+  "Insert special characters around the selected region.
+Use arrow keys to choose between 「」 and 『』."
+  (interactive "r") ; Get the region's start and end
+  (let* ((prompt "Use LEFT or RIGHT arrow to choose brackets: [←]「」 [→]『』")
+         (choice (catch 'done
+                   (while t
+                     (let ((key (read-key prompt)))
+                       (cond
+                        ((equal key 'left) (throw 'done "「」"))
+                        ((equal key 'right) (throw 'done "『』"))))))))
+    (save-excursion
+      (goto-char end)
+      (insert (if (equal choice "「」") "」" "』"))
+      (goto-char start)
+      (insert (if (equal choice "「」") "「" "『")))))
+
+(global-set-key (kbd "C-c SPC c") 'region-dblspecial-characters)
+
 ;; =======================================
 ;;; Hunspell 설정
 ;; ======================================-

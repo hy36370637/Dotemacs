@@ -116,8 +116,8 @@
   :ensure nil  ;built in
   :config
   (setq electric-pair-pairs '((?\" . ?\")
-                              (?\` . ?\`)  ;; 이 라인은 백틱(`)를 쌍으로 추가
-                              (?\' . ?\') 
+                              (?\` . ?\`)
+                              (?\' . ?\')
                               (?\{ . ?\})
                               (?\[ . ?\])
                               (?\( . ?\))))
@@ -220,7 +220,6 @@
       (he-substitute-string (car he-expand-list))
       (setq he-expand-list (cdr he-expand-list))
       t)))
-
 
 
 ;; end here

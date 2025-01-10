@@ -106,7 +106,7 @@
   (setq my-holidays
         '((holiday-fixed 1 1 "새해")
           (holiday-chinese  1  1 "설날")
-          (holiday-fixed 1 10 "딸 생일")
+          (holiday-fixed 1 29 "딸 생일")
           (holiday-fixed 3 1 "삼일절")
           (holiday-fixed 3 19 "결혼일")
           (holiday-chinese  4  8 "석탄일")

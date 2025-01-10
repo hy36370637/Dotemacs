@@ -40,7 +40,7 @@
          (diff-seconds (float-time (time-subtract today target-date)))
          (diff-days (floor (/ diff-seconds 86400))))
     (if (> diff-days 0)
-        (format "/ D+%d日 경과" diff-days)
+        (format "/  %d日 경과" diff-days)
       (format "/ D-day %d日前" (- diff-days)))))
 
 (defun my-todays-pop ()
