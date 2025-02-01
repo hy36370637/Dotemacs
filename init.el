@@ -56,6 +56,14 @@
       (load file)
     (error (message "Error loading %s: %s" file err))))
 
+;; ~/.emacs.d/lisp 디렉토리에서 특정 파일 불러오기
+;; (let ((lisp-dir "~/.emacs.d/lisp/")  ; 디렉토리 경로
+;;       (files '("my-emacs-hyper-super-keys.el" "my-useful-custom.el" "my-org-custom.el" "my-completion.el" "my-dired-custom.el")))  ; 불러올 파일 목록
+;;   (dolist (file files)
+;;     (let ((file-path (expand-file-name file lisp-dir)))  ; 파일의 전체 경로 생성
+;;       (when (file-exists-p file-path)  ; 파일이 존재하는지 확인
+;;         (load file-path)))))  ; 파일 불러오기
+
 ;; ======================================
 ;;; MacOS keyboard
 ;; ======================================
@@ -254,7 +262,6 @@
 ;;; Modeline
 ;; ======================================
 (setq mode-line-right-align-edge 'right-margin)
-
 (setq-default mode-line-format
               '("%e "
                 mode-line-front-space

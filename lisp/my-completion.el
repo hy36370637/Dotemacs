@@ -185,41 +185,41 @@
 ;; =======================================
 ;;; hippie-exp
 ;; ======================================-
-(use-package hippie-exp
-  :ensure nil  ; built-in
-  :bind ("s-;" . hippie-expand) 
-  :hook (org-mode . (lambda ()
-                      (make-local-variable 'hippie-expand-try-functions-list)
-                      (add-to-list 'hippie-expand-try-functions-list 'try-expand-org-keyword t)))
-  :config
-  (setq hippie-expand-try-functions-list
-        '(try-expand-dabbrev
-          try-expand-dabbrev-all-buffers
-          try-expand-dabbrev-from-kill
-          try-complete-lisp-symbol-partially
-          try-complete-lisp-symbol
-          try-expand-whole-kill
-          try-expand-list
-          try-expand-line
-          try-complete-file-name-partially
-          try-complete-file-name))
+;; (use-package hippie-exp
+;;   :ensure nil  ; built-in
+;;   :bind ("s-;" . hippie-expand) 
+;;   :hook (org-mode . (lambda ()
+;;                       (make-local-variable 'hippie-expand-try-functions-list)
+;;                       (add-to-list 'hippie-expand-try-functions-list 'try-expand-org-keyword t)))
+;;   :config
+;;   (setq hippie-expand-try-functions-list
+;;         '(try-expand-dabbrev
+;;           try-expand-dabbrev-all-buffers
+;;           try-expand-dabbrev-from-kill
+;;           try-complete-lisp-symbol-partially
+;;           try-complete-lisp-symbol
+;;           try-expand-whole-kill
+;;           try-expand-list
+;;           try-expand-line
+;;           try-complete-file-name-partially
+;;           try-complete-file-name))
 
-  (defun try-expand-org-keyword (old)
-    "Org-mode 키워드 자동완성 함수"
-    (unless old
-      (he-init-string (he-dabbrev-beg) (point))
-      (setq he-expand-list
-            (let ((completion-ignore-case t))
-              (all-completions he-search-string org-keywords))))
-    (while (and he-expand-list
-                (he-string-member (car he-expand-list) he-tried-table))
-      (setq he-expand-list (cdr he-expand-list)))
-    (if (null he-expand-list)
-        (progn (when old (he-reset-string))
-               nil)
-      (he-substitute-string (car he-expand-list))
-      (setq he-expand-list (cdr he-expand-list))
-      t)))
+;;   (defun try-expand-org-keyword (old)
+;;     "Org-mode 키워드 자동완성 함수"
+;;     (unless old
+;;       (he-init-string (he-dabbrev-beg) (point))
+;;       (setq he-expand-list
+;;             (let ((completion-ignore-case t))
+;;               (all-completions he-search-string org-keywords))))
+;;     (while (and he-expand-list
+;;                 (he-string-member (car he-expand-list) he-tried-table))
+;;       (setq he-expand-list (cdr he-expand-list)))
+;;     (if (null he-expand-list)
+;;         (progn (when old (he-reset-string))
+;;                nil)
+;;       (he-substitute-string (car he-expand-list))
+;;       (setq he-expand-list (cdr he-expand-list))
+;;       t)))
 
 
 ;; end here

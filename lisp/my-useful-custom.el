@@ -9,7 +9,7 @@
   (interactive)
   (let ((choi '("·"  "→"  "⇒"  "「」"  "『』"  "※"  "…"  "―" "《》")))
     (insert (completing-read "선택: " choi))))
-(global-set-key (kbd "C-c SPC C") 'select-special-character)
+(global-set-key (kbd "C-c SPC c") 'select-special-character)
 
 (defun region-dblspecial-characters (start end)
   "Insert special characters around the selected region.
@@ -28,7 +28,7 @@ Use arrow keys to choose between 「」 and 『』."
       (goto-char start)
       (insert (if (equal choice "「」") "「" "『")))))
 
-(global-set-key (kbd "C-c SPC c") 'region-dblspecial-characters)
+(global-set-key (kbd "C-c SPC C") 'region-dblspecial-characters)
 
 ;; =======================================
 ;;; Hunspell 설정
@@ -120,30 +120,27 @@ Use arrow keys to choose between 「」 and 『』."
 ;; ======================================
 ;;; Date,Time insert
 ;; ======================================
-(defun my/date-stamp ()
-  "Insert date stamp as 2024-12-06"
+(defun my/insert-today-stamp ()
+  "Insert a date stamp based on user selection using arrow keys."
   (interactive)
-  (insert (format-time-string "%Y-%m-%d")))
-
-(defun my/date-dot-stamp ()
-  "Insert date dot stamp as 2024.12.06"
-  (interactive)
-  (insert (format-time-string "%Y.%m.%d")))
-
-(defun my/date-time-stamp-short ()
-  "Insert short date/time stamp as 2024-12-06 09:27"
-  (interactive)
-  (insert (format-time-string "%Y-%m-%d %R")))
-
-(defun my/date-korean-weekday-stamp ()
-  "Insert date korean weekday stamp as 2024-12-17 화요일"
-  (interactive)
-  (let* ((weekday (format-time-string "%w"))
-         (weekday-name (nth (string-to-number weekday)
-                            '("일요일" "월요일" "화요일" "수요일" "목요일" "금요일" "토요일"))))
-    (insert (format-time-string "%Y-%m-%d "))
-    (insert weekday-name)))
-
+  (let ((format (completing-read
+                 "Choose date format (use arrow keys): "
+                 '("YYYY-MM-DD" "YYYY.MM.DD" "YYYY-MM-DD HH:MM" "YYYY-MM-DD 요일")
+                 nil t))) ; `nil t`는 기본 완성 기능을 활성화하고, 화살표 키로 선택 가능하게 함
+    (cond
+     ((string= format "YYYY-MM-DD")
+      (insert (format-time-string "%Y-%m-%d")))
+     ((string= format "YYYY.MM.DD")
+      (insert (format-time-string "%Y.%m.%d")))
+     ((string= format "YYYY-MM-DD HH:MM")
+      (insert (format-time-string "%Y-%m-%d %R")))
+     ((string= format "YYYY-MM-DD 요일")
+      (let* ((weekday (format-time-string "%w"))
+             (weekday-name (nth (string-to-number weekday)
+                                '("일요일" "월요일" "화요일" "수요일" "목요일" "금요일" "토요일"))))
+        (insert (format-time-string "%Y-%m-%d "))
+        (insert weekday-name)))
+     (t (message "Invalid format selection.")))))
 
 
 
