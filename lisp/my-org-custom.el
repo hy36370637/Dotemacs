@@ -21,12 +21,12 @@
   (org-adapt-indentation t)
   (org-hide-leading-stars t)
   (org-src-preserve-indentation t)
-  (org-structure-template-alist
-   '(("s" . "src")
-     ("S" . "src emacs-lisp")
-     ("C" . "comment")
-     ("v" . "verse")
-     ("q ".  "quote")))
+  ;; (org-structure-template-alist
+  ;;  '(("s" . "src")
+  ;;    ("S" . "src emacs-lisp")
+  ;;    ("C" . "comment")
+  ;;    ("v" . "verse")
+  ;;    ("q ".  "quote")))
   (org-startup-with-inline-images nil)
   (org-log-into-drawer t)
   (org-log-done 'time)

@@ -7,26 +7,36 @@
 (defun select-special-character ()
   "Prompt the user to select a special character and insert it at point."
   (interactive)
-  (let ((choi '("·"  "→"  "⇒"  "「」"  "『』"  "※"  "…"  "―" "《》")))
+  (let ((choi '("·"  "→"  "⇒"   "※"  "…"  "―" "《》")))
     (insert (completing-read "선택: " choi))))
 (global-set-key (kbd "C-c SPC c") 'select-special-character)
 
 (defun region-dblspecial-characters (start end)
   "Insert special characters around the selected region.
-Use arrow keys to choose between 「」 and 『』."
+Use arrow keys to choose between 「」, 『』, '', and ""."
   (interactive "r") ; Get the region's start and end
-  (let* ((prompt "Use LEFT or RIGHT arrow to choose brackets: [←]「」 [→]『』")
+  (let* ((prompt "Choose brackets: [←]「」 [→]『』 [↑]'' [↓]\"\"")
          (choice (catch 'done
                    (while t
                      (let ((key (read-key prompt)))
                        (cond
                         ((equal key 'left) (throw 'done "「」"))
-                        ((equal key 'right) (throw 'done "『』"))))))))
+                        ((equal key 'right) (throw 'done "『』"))
+                        ((equal key 'up) (throw 'done "''"))
+                        ((equal key 'down) (throw 'done "\"\""))))))))
     (save-excursion
       (goto-char end)
-      (insert (if (equal choice "「」") "」" "』"))
+      ;; 선택된 문자열 끝에 닫는 괄호 삽입
+      (insert (cond ((equal choice "「」") "」")
+                    ((equal choice "『』") "』")
+                    ((equal choice "''") "'")
+                    ((equal choice "\"\"") "\"")))
       (goto-char start)
-      (insert (if (equal choice "「」") "「" "『")))))
+      ;; 선택된 문자열 시작에 여는 괄호 삽입
+      (insert (cond ((equal choice "「」") "「")
+                    ((equal choice "『』") "『")
+                    ((equal choice "''") "'")
+                    ((equal choice "\"\"") "\""))))))
 
 (global-set-key (kbd "C-c SPC C") 'region-dblspecial-characters)
 
