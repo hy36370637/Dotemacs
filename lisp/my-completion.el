@@ -168,7 +168,7 @@
       ("llG"  "『")   ("rrG"   "』")
       ("cZ"   "○")   ("cQ"   "□")
       ))
-;; Org 모드 약어 테이블 설정
+;;; Org 모드 약어 테이블 설정
   (with-eval-after-load 'org
     (define-abbrev-table 'org-mode-abbrev-table
       '(("Dsc" "#+DESCRIPTION: ")

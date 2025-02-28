@@ -1,62 +1,62 @@
 ;; -*- lexical-binding: t -*-
-;;; Config for EMACS
+;;  default Config for EMACS
 
-;; ======================================
+;; =======================================
 ;;; Speed up Emacs startup
-;; ======================================
+;; =======================================
 (setq gc-cons-threshold most-positive-fixnum)
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq gc-cons-threshold (* 1024 1024 16))))  ; 16MB
 (setq read-process-output-max (* 1024 1024))  ; 1MB
 
-;; ======================================
+;; =======================================
 ;;; Custom file
-;; ======================================
+;; =======================================
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
 (load custom-file t t)
 
-;; ======================================
+;; =======================================
 ;;; Package initialization
-;; ======================================
+;; =======================================
 (require 'package)
 (setq package-archives
       '(("melpa" . "https://melpa.org/packages/")
         ("gnu" . "https://elpa.gnu.org/packages/")))
 (package-initialize)
 
-;; ======================================
-;; Configure use-package
-;; ======================================
+;; =======================================
+;;; Configure use-package
+;; =======================================
 (setq package-install-upgrade-built-in nil)         ; Prevent upgrading built-in packages
 (require 'use-package)			                        ;emacs 27+
 (setq use-package-always-ensure nil)	                ;emacs 29+
 
-;; ======================================
+;; =======================================
 ;;; System info
-;; ======================================
+;; =======================================
 (defvar my-mactop-p (eq system-type 'darwin))
 (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
-;; ======================================
+;; =======================================
 ;;; exec-path-from-shell
-;; ======================================
+;; =======================================
 (use-package exec-path-from-shell
 ;;  :if my-mactop-p
   :config
   (exec-path-from-shell-initialize))
 
-;; ======================================
+;; =======================================
 ;;; Load custom packages
-;; ======================================
+;; =======================================
 (dolist (file (directory-files "~/.emacs.d/lisp" t "\\.el$"))
   (condition-case err
       (load file)
     (error (message "Error loading %s: %s" file err))))
 
-;; ~/.emacs.d/lisp 디렉토리에서 특정 파일 불러오기
+;;; ~/.emacs.d/lisp 디렉토리에서 특정 파일 불러오기(효율)
 ;; (let ((lisp-dir "~/.emacs.d/lisp/")  ; 디렉토리 경로
 ;;       (files '("my-emacs-hyper-super-keys.el" "my-useful-custom.el" "my-org-custom.el" "my-completion.el" "my-dired-custom.el")))  ; 불러올 파일 목록
 ;;   (dolist (file files)
@@ -64,15 +64,15 @@
 ;;       (when (file-exists-p file-path)  ; 파일이 존재하는지 확인
 ;;         (load file-path)))))  ; 파일 불러오기
 
-;; ======================================
+;; =======================================
 ;;; MacOS keyboard
-;; ======================================
+;; =======================================
 ;;(when my-mactop-p
 ;;  (setq ns-left-command-modifier nil))
 
-;; ======================================
+;; =======================================
 ;;; Emacs UI and behavior
-;; ======================================
+;; =======================================
 (use-package emacs
 ;;  :hook (emacs-startup . my-fancy-startup-screen) ;my-useful-custom.el
   :init
@@ -97,14 +97,14 @@
   (global-font-lock-mode 1)
   (global-visual-line-mode t)
   (global-auto-revert-mode 1)
-  (delete-selection-mode t)
+;;  (delete-selection-mode t)
   (transient-mark-mode t)
   (column-number-mode t)
   (display-time-mode 1))
 
-;; ======================================
+;; =======================================
 ;;; Bookmark
-;; ======================================
+;; =======================================
 (use-package bookmark
   :ensure nil				;built-in
   :commands (bookmark-set bookmark-jump bookmark-bmenu-list)
@@ -122,9 +122,9 @@
    ("C-x r b" . bookmark-jump)
    ("C-x r l" . bookmark-bmenu-list)))
 
-;; ======================================
+;; =======================================
 ;;; Register
-;; ======================================
+;; =======================================
 (use-package register
   :ensure nil				;built-in
   :config
@@ -139,9 +139,9 @@
 ;;   ("C-x r s" . copy-to-register)
    ("C-x r i" . insert-register)))
 
-;; ======================================
+;; =======================================
 ;;; Key bindings
-;; ======================================
+;; =======================================
 (use-package emacs
   :bind
   (([f11] . nil)
@@ -150,9 +150,9 @@
    ("C-x o" . nil)
    ("M-o" . other-window)))
 
-;; ======================================
+;; =======================================
 ;;; Locale and Korean settings
-;; ======================================
+;; =======================================
 (use-package emacs
   :config
   (setenv "LANG" "ko_KR.UTF-8")
@@ -163,31 +163,34 @@
 	input-method-verbose-flag nil
 	input-method-highlight-flag nil))
 
-;; ======================================
+;; =======================================
 ;;; Fonts
-;; ======================================
+;; =======================================
 (use-package emacs
   :config
 ;;  (set-face-attribute 'default nil :family "D2Coding" :height 160)
   (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
   (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR"))
 
-;; ======================================
+;; =======================================
 ;;; Theme
-;; ======================================
-(use-package emacs
-  :config
-  (require-theme 'modus-themes)
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs nil
-	modus-themes-mode-line '(accented borderless padded))
-  (setq modus-themes-common-palette-overrides
-        modus-themes-preset-overrides-intense)
-  (load-theme 'modus-operandi-tinted))
+;; =======================================
+;; (use-package emacs
+;;   :config
+;;   (require-theme 'modus-themes)
+;;   (setq modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs nil
+;; 	modus-themes-mode-line '(accented borderless padded))
+;;   (setq modus-themes-common-palette-overrides
+;;         modus-themes-preset-overrides-intense)
+;;   (load-theme 'modus-operandi-tinted))
 
-;; ======================================
+(use-package zenburn-theme
+  :config
+  (load-theme 'zenburn t))
+;; =======================================
 ;;; Helpful
-;; ======================================
+;; =======================================
 (use-package helpful
   :bind
   (("C-h f" . helpful-callable)
@@ -197,9 +200,9 @@
    ("C-h F" . helpful-function)
    ("C-h C" . helpful-command)))
 
-;; ======================================
+;; =======================================
 ;;; Session and Place Persistence
-;; ======================================
+;; =======================================
 (use-package savehist
   :ensure nil
   :init (savehist-mode 1)
@@ -210,9 +213,9 @@
   :ensure nil
   :config (save-place-mode 1))
 
-;; ======================================
+;; =======================================
 ;;; Icons
-;; ======================================
+;; =======================================
 (use-package nerd-icons
   :ensure t
   :if (display-graphic-p))
@@ -232,17 +235,17 @@
 
 ;; =======================================
 ;;; recenfF
-;; ======================================-
+;; =======================================
 (use-package recentf
   :ensure t
   :config
   (recentf-mode 1)
   (setq recentf-max-menu-items 25)
   (setq recentf-max-saved-items 25))
-  
+
 ;; =======================================
 ;;; hi-line
-;; ======================================-
+;; =======================================
 (use-package hl-line
   :ensure nil
   :custom
@@ -250,25 +253,33 @@
   :hook
   ((dired-mode text-mode emacs-lisp-mode) . hl-line-mode))
 
-;; ======================================
+;; =======================================
 ;;; Eshell
-;; ======================================
+;; =======================================
 (use-package eshell
   :commands eshell
   :config
   (setq eshell-destroy-buffer-when-process-dies t))
 
-;; ======================================
+;; =======================================
 ;;; Modeline
-;; ======================================
+;; =======================================
+(defvar ko-indicator (create-image "~/.emacs.d/img-indicator/han2.tiff" 'tiff nil :ascent 'center))
+(defvar en-indicator (create-image "~/.emacs.d/img-indicator/qwerty.tiff" 'tiff nil :ascent 'center))
 (setq mode-line-right-align-edge 'right-margin)
 (setq-default mode-line-format
               '("%e "
                 mode-line-front-space
-		(:eval (propertize
-                        (if (string= current-input-method "korean-hangul")
-                            "KO" "EN")))
-                " Ⓗ "
+		;; (:eval (propertize
+                ;;         (if (string= current-input-method "korean-hangul")
+                ;;             "KO" "EN")))
+		(:eval (propertize " "
+				   'display
+				   (if (string= current-input-method "korean-hangul")
+				       ko-indicator
+				     en-indicator)))
+                "   "
+                "Ⓗ "
                 mode-line-buffer-identification
                 mode-line-frame-identification
 ;;                " Ⓨ "
@@ -278,9 +289,9 @@
 		"Ⓨ "
                 mode-line-misc-info))
 
-;; ======================================
+;; =======================================
 ;;; Battery display
-;; ======================================
+;; =======================================
 (when my-Macbook-p
   (use-package battery
     :config
