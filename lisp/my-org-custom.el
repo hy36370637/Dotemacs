@@ -14,19 +14,16 @@
 
 (use-package org
   :ensure nil				;built-in
-  ;; :bind (("s-o e" . org-emphasize)
-  ;; 	 ("s-o v" . org-toggle-inline-images))
+  ;; TEST  from: https://github.com/jamescherti/minimal-emacs.d
+  :defer t
+  :commands (org-mode org-version)
+  :mode
+  ("\\.org\\'" . org-mode)
+  ;; TEST END
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org/"))
-  (org-adapt-indentation t)
-  (org-hide-leading-stars t)
-  (org-src-preserve-indentation t)
-  ;; (org-structure-template-alist
-  ;;  '(("s" . "src")
-  ;;    ("S" . "src emacs-lisp")
-  ;;    ("C" . "comment")
-  ;;    ("v" . "verse")
-  ;;    ("q ".  "quote")))
+  (org-startup-indented t)
+  (org-adapt-indentation nil)
   (org-startup-with-inline-images nil)
   (org-log-into-drawer t)
   (org-log-done 'time)
