@@ -178,21 +178,21 @@
 ;; ======================================
 ;;; for org edit/custom function
 ;; --------------------------------------
-(with-eval-after-load 'org  ; in org-mode
-  (define-key org-mode-map (kbd "C-0") (lambda () 
-                                         (interactive)
-					 (end-of-line)
-                                         (newline-and-indent)
-                                         (next-line)
-                                         (org-cycle)))
-  (define-key org-mode-map (kbd "C-8") (lambda () 
-                                         (interactive)
-					 (end-of-line)
-                                         (newline-and-indent)))
-  (define-key org-mode-map (kbd "C-9") (lambda () 
-                                         (interactive)
-					 (end-of-line)
-                                         (org-insert-heading))))
+;; (with-eval-after-load 'org  ; in org-mode
+;;   (define-key org-mode-map (kbd "C-0") (lambda () 
+;;                                          (interactive)
+;; 					 (end-of-line)
+;;                                          (newline-and-indent)
+;;                                          (next-line)
+;;                                          (org-cycle)))
+;;   (define-key org-mode-map (kbd "C-8") (lambda () 
+;;                                          (interactive)
+;; 					 (end-of-line)
+;;                                          (newline-and-indent)))
+;;   (define-key org-mode-map (kbd "C-9") (lambda () 
+;;                                          (interactive)
+;; 					 (end-of-line)
+;;                                          (org-insert-heading))))
 
 ;; ======================================
 ;;; denote

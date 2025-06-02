@@ -128,7 +128,7 @@
 ;; ======================================
 ;; 괄호, 중괄호, 각종 쌍을 시각적(무지개색) 구분
 (use-package rainbow-delimiters
-  :ensure t
+  :defer t
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; =======================================
@@ -160,11 +160,12 @@
   (setq-default abbrev-mode t)
   (setq save-abbrevs nil)
   ;; (setq save-abbrevs 'silently)        ;; save abbrevs when files are saved
-  (abbrev-table-put global-abbrev-table :regexp "\\(?:^\\|[\t\s]+\\)\\(?1:[:;_].*\\|.*\\)")
+  ;;(abbrev-table-put global-abbrev-table :regexp "\\(?:^\\|[ \t]+\\)[:;_]?\\(\\w+\\)")
+  ;;줄 시작이나 공백/탭 다음에 오는, 선택적으로 :, ;, _로 시작하고,  뒤에 단어가 이어지는 형태의 약어만 확장
   (define-abbrev-table 'global-abbrev-table 
     '(("m2"  "㎡")   ("km"  "㎞")  ("lDot" "……") 
       ("cA"    "→")   ("cB"   "※")  ("lDash" "―")
-      ("lG"    "「")   ("rG"    "」") 
+      ("lG"    "「")   ("rG"    "」")  ("pC" "·")
       ("llG"  "『")   ("rrG"   "』")
       ("cZ"   "○")   ("cQ"   "□")
       ))

@@ -18,11 +18,6 @@
   "s-1"  #'tab-bar-switch-to-prev-tab	;bab-bar move left
   "s-2"  #'tab-bar-switch-to-next-tab	;tab-bar move right
 
-;;; kmacro
-  ;; "s-{" #'kmacro-start-macro
-  ;; "s-}" #'kmacro-end-macro
- ;; "H-'"    #'kmacro-end-and-call-macro  ; F4
-
 ;;; Other operations
   "s-z"   #'repeat
   "s-/"   #'undo

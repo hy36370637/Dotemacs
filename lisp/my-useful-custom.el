@@ -55,7 +55,7 @@ Use arrow keys to choose between 「」, 『』, '', and ""."
   (defun my-enable-korean-spell-check ()
     "Enable Korean spell checking manually."
     (interactive)
-    (setq ispell-local-dictionary "ko_KR")
+;;    (setq ispell-local-dictionary "ko_KR")
     (flyspell-mode 1))
 
 ;; =======================================
