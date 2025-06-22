@@ -4,41 +4,43 @@
 ;; =======================================
 ;;; 특수문자 입력
 ;; ======================================-
-(defun select-special-character ()
+(defun my/select-special-character ()
   "Prompt the user to select a special character and insert it at point."
   (interactive)
   (let ((choi '("·"  "→"  "⇒"   "※"  "…"  "―" "《》")))
     (insert (completing-read "선택: " choi))))
-(global-set-key (kbd "C-c SPC c") 'select-special-character)
+(global-set-key (kbd "C-c SPC c") 'my/select-special-character)
 
-(defun region-dblspecial-characters (start end)
+(defun my/region-dblspecial-characters (start end)
   "Insert special characters around the selected region.
-Use arrow keys to choose between 「」, 『』, '', and ""."
+Use arrow keys to choose between 「」, 『』, '', and \"\".
+Use option+left to select 《》."
   (interactive "r") ; Get the region's start and end
-  (let* ((prompt "Choose brackets: [←]「」 [→]『』 [↑]'' [↓]\"\"")
+  (let* ((prompt "Choose brackets: [←]「」 [→]『』 [↑]'' [↓]\"\" [M-←]《》")
          (choice (catch 'done
                    (while t
-                     (let ((key (read-key prompt)))
+                     (let ((key (read-key-sequence prompt)))
                        (cond
-                        ((equal key 'left) (throw 'done "「」"))
-                        ((equal key 'right) (throw 'done "『』"))
-                        ((equal key 'up) (throw 'done "''"))
-                        ((equal key 'down) (throw 'done "\"\""))))))))
+                        ((equal key (kbd "<left>")) (throw 'done "「」"))
+                        ((equal key (kbd "<right>")) (throw 'done "『』"))
+                        ((equal key (kbd "<up>")) (throw 'done "''"))
+                        ((equal key (kbd "<down>")) (throw 'done "\"\""))
+                        ((equal key (kbd "M-<left>")) (throw 'done "《》"))))))))
     (save-excursion
       (goto-char end)
-      ;; 선택된 문자열 끝에 닫는 괄호 삽입
       (insert (cond ((equal choice "「」") "」")
                     ((equal choice "『』") "』")
                     ((equal choice "''") "'")
-                    ((equal choice "\"\"") "\"")))
+                    ((equal choice "\"\"") "\"")
+                    ((equal choice "《》") "》")))
       (goto-char start)
-      ;; 선택된 문자열 시작에 여는 괄호 삽입
       (insert (cond ((equal choice "「」") "「")
                     ((equal choice "『』") "『")
                     ((equal choice "''") "'")
-                    ((equal choice "\"\"") "\""))))))
+                    ((equal choice "\"\"") "\"")
+                    ((equal choice "《》") "《"))))))
 
-(global-set-key (kbd "C-c SPC C") 'region-dblspecial-characters)
+(global-set-key (kbd "C-c SPC C") 'my/region-dblspecial-characters)
 
 ;; =======================================
 ;;; Hunspell 설정

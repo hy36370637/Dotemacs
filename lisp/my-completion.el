@@ -180,7 +180,7 @@
 	("SetfileQV"   "#+SETUPFILE: setLTH/HeaderQV.org")
 	("Option"  "#+OPTIONS: toc:2 num:2")
 	("Latex_header"  "#+LATEX_HEADER:")
-	("Inimg" "#+attr_latex: :width 0.4\\textwidth\n#+CAPTION: \n[[../org/img/imgDaily/fileName]]")
+	("Inimg" "#+attr_latex: :width 0.5\\textwidth\n#+CAPTION: \n[[../org/img/imgJW/IMG_]]")
 	))))
 
 ;; =======================================

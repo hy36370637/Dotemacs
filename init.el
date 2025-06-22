@@ -90,7 +90,7 @@
         scroll-conservatively 101
         text-scale-mode-step 1.05)  	;글꼴 확대축소 비율 5% 단위
   :config
-  (menu-bar-mode -1)
+;;  (menu-bar-mode -1)
   (tool-bar-mode -1)
   (toggle-scroll-bar -1)
   (setq-default line-spacing 0.2)
