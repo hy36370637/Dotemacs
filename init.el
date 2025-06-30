@@ -67,7 +67,8 @@
 ;; =======================================
 ;;; MacOS keyboard
 ;; =======================================
-;;(when my-mactop-p
+(when my-mactop-p
+  (setq mac-right-command-modifier 'meta))
 ;;  (setq ns-left-command-modifier nil))
 
 ;; =======================================
