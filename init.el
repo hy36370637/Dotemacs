@@ -56,14 +56,6 @@
       (load file)
     (error (message "Error loading %s: %s" file err))))
 
-;;; ~/.emacs.d/lisp 디렉토리에서 특정 파일 불러오기(효율)
-;; (let ((lisp-dir "~/.emacs.d/lisp/")  ; 디렉토리 경로
-;;       (files '("my-emacs-hyper-super-keys.el" "my-useful-custom.el" "my-org-custom.el" "my-completion.el" "my-dired-custom.el")))  ; 불러올 파일 목록
-;;   (dolist (file files)
-;;     (let ((file-path (expand-file-name file lisp-dir)))  ; 파일의 전체 경로 생성
-;;       (when (file-exists-p file-path)  ; 파일이 존재하는지 확인
-;;         (load file-path)))))  ; 파일 불러오기
-
 ;; =======================================
 ;;; MacOS keyboard
 ;; =======================================
@@ -98,7 +90,6 @@
   (global-font-lock-mode 1)
   (global-visual-line-mode t)
   (global-auto-revert-mode 1)
-;;  (delete-selection-mode t)
   (transient-mark-mode t)
   (column-number-mode t)
   (display-time-mode 1))
@@ -176,19 +167,19 @@
 ;; =======================================
 ;;; Theme
 ;; =======================================
-;; (use-package emacs
-;;   :config
-;;   (require-theme 'modus-themes)
-;;   (setq modus-themes-italic-constructs t
-;;         modus-themes-bold-constructs nil
-;; 	modus-themes-mode-line '(accented borderless padded))
-;;   (setq modus-themes-common-palette-overrides
-;;         modus-themes-preset-overrides-intense)
-;;   (load-theme 'modus-operandi-tinted))
-
-(use-package zenburn-theme
+(use-package emacs
   :config
-  (load-theme 'zenburn t))
+  (require-theme 'modus-themes)
+  (setq modus-themes-italic-constructs t
+        modus-themes-bold-constructs nil
+	modus-themes-mode-line '(accented borderless padded))
+  (setq modus-themes-common-palette-overrides
+        modus-themes-preset-overrides-intense)
+  (load-theme 'modus-operandi-tinted))
+
+;; (use-package zenburn-theme
+;;   :config
+;;   (load-theme 'zenburn t))
 ;; =======================================
 ;;; Helpful
 ;; =======================================
