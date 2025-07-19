@@ -34,6 +34,7 @@
 (require 'use-package)			                        ;emacs 27+
 (setq use-package-always-ensure nil)	                ;emacs 29+
 
+
 ;; =======================================
 ;;; System info
 ;; =======================================
@@ -60,7 +61,7 @@
 ;;; MacOS keyboard
 ;; =======================================
 (when my-mactop-p
-  (setq mac-right-command-modifier 'meta))
+  (setq mac-right-command-modifier 'control))
 ;;  (setq ns-left-command-modifier nil))
 
 ;; =======================================
@@ -167,19 +168,19 @@
 ;; =======================================
 ;;; Theme
 ;; =======================================
-(use-package emacs
-  :config
-  (require-theme 'modus-themes)
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs nil
-	modus-themes-mode-line '(accented borderless padded))
-  (setq modus-themes-common-palette-overrides
-        modus-themes-preset-overrides-intense)
-  (load-theme 'modus-operandi-tinted))
-
-;; (use-package zenburn-theme
+;; (use-package emacs
 ;;   :config
-;;   (load-theme 'zenburn t))
+;;   (require-theme 'modus-themes)
+;;   (setq modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs nil
+;; 	modus-themes-mode-line '(accented borderless padded))
+;;   (setq modus-themes-common-palette-overrides
+;;         modus-themes-preset-overrides-intense)
+;;   (load-theme 'modus-operandi-tinted))
+
+(use-package zenburn-theme
+  :config
+  (load-theme 'zenburn t))
 ;; =======================================
 ;;; Helpful
 ;; =======================================
