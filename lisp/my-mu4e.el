@@ -82,6 +82,32 @@ Ho Young (Apple Mail)")
                     ;; msmtp 사용 시, ~/.msmtprc의 'applemail' 계정 사용 지정
                     (mu4e-compose-policy-args . ("--account=applemail"))
                     ))
+
+	  ;; --- Naver Mail 컨텍스트 ---
+          (make-mu4e-context
+           :name "Naver Mail"
+           :enter-func (lambda () (mu4e-message "Switched to Naver Mail context"))
+           ;; 이메일의 maildir 경로가 /navermail 로 시작하면 이 컨텍스트에 매칭
+           :match-func (lambda (msg)
+                         (when msg
+                           (string-prefix-p "/navermail" (mu4e-message-field msg :maildir))))
+           :vars '((user-full-name . "Ho Young")  ; 네이버 메일에서 사용할 이름
+                   (user-mail-address . "hy0637@naver.com") ; **실제 네이버 메일 주소로 변경하세요**
+                    (mu4e-user-mail-address-list . ("hy0637@naver.com")) ; **실제 네이버 메일 주소로 변경하세요**
+                    (mu4e-compose-signature .
+                      "
+--
+Ho Young (Naver Mail)")
+                    ;; 네이버 메일의 실제 폴더 경로 (mbsync 설정과 일치해야 함)
+                    ;; `mbsync -l navermail` 명령으로 정확한 IMAP 폴더명 확인 권장
+                    (mu4e-sent-folder . "/navermail/보낸메일함")
+                    (mu4e-drafts-folder . "/navermail/임시보관함")
+                    (mu4e-trash-folder . "/navermail/지운메일함")
+                    (mu4e-refile-folder . "/navermail/전체메일함") ; 또는 "/navermail/내게쓴메일함" 등
+                    (mu4e-compose-custom-header-alist . (("From" . "Ho Young <hy0637@naver.com>"))) ; **실제 네이버 메일 주소로 변경하세요**
+                    ;; msmtp 사용 시, ~/.msmtprc의 'navermail' 계정 사용 지정
+                    (mu4e-compose-policy-args . ("--account=navermail"))
+                    ))
           )) ;; 이 괄호는 mu4e-contexts 리스트의 닫는 괄호입니다.
 
   ;; 기타 UI 설정
