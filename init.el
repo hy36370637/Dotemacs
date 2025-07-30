@@ -54,8 +54,22 @@
 ;; =======================================
 (dolist (file (directory-files "~/.emacs.d/lisp" t "\\.el$"))
   (condition-case err
-      (load file)
+;; 'my-web-search.el'과 'my-todays-pop.el'은 아래 autoload로 처리, 여기서 로드하지 않도록 조건.
+      (unless (or (string-equal (file-name-nondirectory file) "my-web-search.el")
+                  (string-equal (file-name-nondirectory file) "my-todays-pop.el"))
+        (load file))
     (error (message "Error loading %s: %s" file err))))
+
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+
+;; my-web-search.el 관련 autoload
+(autoload 'my-custom-search-text "my-web-search" "macOS Dic, Naver, 구글 or 나무위키, 닐씨 검색." t)
+(autoload 'my/naver-weather-search "my-web-search"  "Naver 날씨 정보." t)
+(global-set-key (kbd "C-c SPC S") 'my-custom-search-text)
+
+;; my-todays-pop.el 관련 autoload
+(autoload 'my-todays-pop "my-todays-pop"  "오늘의 정보. 일정 등" t)
+(global-set-key (kbd "s-3") 'my-todays-pop)
 
 ;; =======================================
 ;;; MacOS keyboard
@@ -82,9 +96,10 @@
         scroll-margin 7
         scroll-preserve-screen-position t
         scroll-conservatively 101
-        text-scale-mode-step 1.05)  	;글꼴 확대축소 비율 5% 단위
+        text-scale-mode-step 1.05  	;글꼴 확대축소 비율 5% 단위
+	display-time-format "%m.%d(%a) %H:%M") ; 원하는 날짜/시간 형식
   :config
-;;  (menu-bar-mode -1)
+  (menu-bar-mode -1)
   (tool-bar-mode -1)
   (toggle-scroll-bar -1)
   (setq-default line-spacing 0.2)
@@ -168,19 +183,20 @@
 ;; =======================================
 ;;; Theme
 ;; =======================================
-;; (use-package emacs
-;;   :config
-;;   (require-theme 'modus-themes)
-;;   (setq modus-themes-italic-constructs t
-;;         modus-themes-bold-constructs nil
-;; 	modus-themes-mode-line '(accented borderless padded))
-;;   (setq modus-themes-common-palette-overrides
-;;         modus-themes-preset-overrides-intense)
-;;   (load-theme 'modus-operandi-tinted))
-
-(use-package zenburn-theme
+(use-package emacs
   :config
-  (load-theme 'zenburn t))
+  (require-theme 'modus-themes)
+  (setq modus-themes-italic-constructs t
+        modus-themes-bold-constructs nil
+	modus-themes-mode-line '(accented borderless padded))
+  (setq modus-themes-common-palette-overrides
+        modus-themes-preset-overrides-intense)
+  (load-theme 'modus-operandi-tinted))
+
+;; (use-package zenburn-theme
+;;   :config
+;;   (load-theme 'zenburn t))
+
 ;; =======================================
 ;;; Helpful
 ;; =======================================
@@ -239,12 +255,12 @@
 ;; =======================================
 ;;; hi-line
 ;; =======================================
-(use-package hl-line
-  :ensure nil
-  :custom
-  (hl-line-sticky-flag nil)
-  :hook
-  ((dired-mode text-mode emacs-lisp-mode) . hl-line-mode))
+;; (use-package hl-line
+;;   :ensure nil
+;;   :custom
+;;   (hl-line-sticky-flag nil)
+;;   :hook
+;;   ((dired-mode text-mode emacs-lisp-mode) . hl-line-mode))
 
 ;; =======================================
 ;;; Eshell

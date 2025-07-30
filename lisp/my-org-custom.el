@@ -3,7 +3,6 @@
 ;;; org
 ;; ======================================
 ;; /.emacs.d/lisp/my-org-custom.el
-;; CODE
 
 (defvar my/org-person-dir "~/Dropbox/Docs/Person/"
   "Directory for personal org files.")
@@ -14,12 +13,10 @@
 
 (use-package org
   :ensure nil				;built-in
-  ;; TEST  from: https://github.com/jamescherti/minimal-emacs.d
   :defer t
   :commands (org-mode org-version)
   :mode
   ("\\.org\\'" . org-mode)
-  ;; TEST END
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org/"))
   (org-startup-indented t)
@@ -27,7 +24,7 @@
   (org-startup-with-inline-images nil)
   (org-log-into-drawer t)
   (org-log-done 'time)
-  (org-image-actual-width 300)
+  (org-image-actual-width 400)
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE"))))
 
 ;; (use-package ox-md

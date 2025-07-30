@@ -166,7 +166,7 @@
     '(("m2"  "㎡")   ("km"  "㎞")  ("lDot" "……") 
       ("cA"    "→")   ("cB"   "※")  ("lDash" "―")
       ("lG"    "「")   ("rG"    "」")  ("pC" "·")
-      ("llG"  "『")   ("rrG"   "』")  ("sDot"   "#+begin_center\n· · ·\n#+end_center")
+      ("llG"  "『")   ("rrG"   "』")  
       ("cZ"   "○")   ("cQ"   "□")
       ))
 ;;; Org 모드 약어 테이블 설정
@@ -178,6 +178,7 @@
 	("Keyword" "#+KEYWORDS: ")
 	("Setfile"   "#+SETUPFILE: setLTH/Header.org")
 	("SetfileQV"   "#+SETUPFILE: setLTH/HeaderQV.org")
+	("sDot"   "#+begin_center\n· · ·\n#+end_center")
 	("Option"  "#+OPTIONS: toc:2 num:2")
 	("Latex_header"  "#+LATEX_HEADER:")
 	("Inimg" "#+attr_latex: :width 0.5\\textwidth\n#+CAPTION: \n[[../org/img/imgJW/IMG_]]")

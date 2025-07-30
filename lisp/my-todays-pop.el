@@ -77,4 +77,4 @@
         (use-local-map map)))
     (switch-to-buffer buffer)))  ;; 버퍼 전환
 
-(global-set-key (kbd "s-3") 'my-todays-pop)
+;; (global-set-key (kbd "s-3") 'my-todays-pop)

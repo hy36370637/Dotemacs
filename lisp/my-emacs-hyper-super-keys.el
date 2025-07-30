@@ -10,7 +10,7 @@
   "s-/"   #'undo
   "C-s-/" #'undo-redo
   "s-<return>" #'toggle-frame-fullscreen
-;;  "M-s-<return>" #'toggle-frame-maximized   ; M-F10
+  "M-s-<return>" #'toggle-frame-maximized   ; M-F10
 )
 
 (define-minor-mode my-emacs-hyper-super-keys-mode
