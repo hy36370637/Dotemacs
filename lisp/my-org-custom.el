@@ -22,6 +22,7 @@
   (org-startup-indented t)
   (org-adapt-indentation nil)
   (org-startup-with-inline-images nil)
+  (org-support-shift-select t)
   (org-log-into-drawer t)
   (org-log-done 'time)
   (org-image-actual-width 400)
@@ -35,16 +36,15 @@
 
 (use-package ox-latex
   :ensure nil  ; built in
-  :after org
-  :commands (org-latex-export-to-latex org-latex-export-to-pdf)
+ :after org
+ :commands (org-latex-export-to-latex org-latex-export-to-pdf)
   :custom
   (org-latex-title-command "\\maketitle \\newpage")
   (org-latex-toc-command "\\tableofcontents \\newpage")
   (org-latex-compiler "xelatex")
   (org-latex-to-pdf-process
-   '("xelatex -interaction nonstopmode -output-directory %o %f"
-     "xelatex -interaction nonstopmode -output-directory %o %f"
-     "xelatex -interaction nonstopmode -output-directory %o %f"))
+   '("xelatex -interaction=nonstopmode -synctex=1 %f"
+     "xelatex  -interaction=nonstopmode -synctex=1 %f"))
   :config
   (add-to-list 'org-export-backends 'latex))
 
@@ -72,12 +72,6 @@
   :config
   (setq org-agenda-files (list (my-org-person-file-path "Tasks.org")
                                (my-org-person-file-path "Daily.org")))
-  ;; (setq org-agenda-prefix-format
-  ;; 	'((agenda . " %t %s")  ;" %t %-12:c%?-12t% s"
-  ;;         (timeline . "  % s")
-  ;;         (todo . " %i %-12:c")
-  ;;         (tags . " %i %-12:c")
-  ;;         (search . " %i %-12:c")))
   (setq org-agenda-format-date "%Y-%m-%d (%a)")       ; 날자 포맷. 가독성
   (setq org-agenda-current-time-string "← now ───────")
   (setq org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))  ;완료항목 hidden
@@ -107,7 +101,7 @@
           (holiday-fixed 5 5 "어린이날")
           (holiday-fixed 6 6 "현충일")
           (holiday-fixed 6 10 "아들생일")
-          (holiday-fixed 7 17 "제헌절")
+          (holiday-fixed 7 21 "제헌절")
           (holiday-chinese  7  21 "장인제")
 ;;          (holiday-chinese  8  4 "조부제")
           (holiday-fixed 8 15 "광복절")

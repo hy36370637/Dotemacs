@@ -34,13 +34,21 @@
 (require 'use-package)			                        ;emacs 27+
 (setq use-package-always-ensure nil)	                ;emacs 29+
 
-
 ;; =======================================
 ;;; System info
 ;; =======================================
 (defvar my-mactop-p (eq system-type 'darwin))
 (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
+;; =======================================
+;;; Server / Skim Sync
+;; =======================================
+;; Skim에서 Emacs로 역방향 검색을 위한 추가 설정
+;; (use-package server
+;;   :ensure nil
+;;   :config
+;;   (unless (server-running-p)
+;;     (server-start)))
 ;; =======================================
 ;;; exec-path-from-shell
 ;; =======================================
@@ -52,24 +60,25 @@
 ;; =======================================
 ;;; Load custom packages
 ;; =======================================
-(dolist (file (directory-files "~/.emacs.d/lisp" t "\\.el$"))
-  (condition-case err
-;; 'my-web-search.el'과 'my-todays-pop.el'은 아래 autoload로 처리, 여기서 로드하지 않도록 조건.
-      (unless (or (string-equal (file-name-nondirectory file) "my-web-search.el")
-                  (string-equal (file-name-nondirectory file) "my-todays-pop.el"))
-        (load file))
-    (error (message "Error loading %s: %s" file err))))
-
+;; 사용자 Lisp 디렉토리를 load-path에 추가.
 (add-to-list 'load-path "~/.emacs.d/lisp/")
+;; autoload할 파일 목록, 변수 정의.
+(setq my-autoload-files '("my-web-search.el" "my-todays-pop.el"))
 
-;; my-web-search.el 관련 autoload
-(autoload 'my-custom-search-text "my-web-search" "macOS Dic, Naver, 구글 or 나무위키, 닐씨 검색." t)
-(autoload 'my/naver-weather-search "my-web-search"  "Naver 날씨 정보." t)
+;; autoload 처리
+(autoload 'my-custom-search-text "my-web-search" "macDic, Naver, 구글 or 나무위키, 날씨 검색." t)
+(autoload 'my/naver-weather-search "my-web-search" "Naver 날씨." t)
 (global-set-key (kbd "C-c SPC S") 'my-custom-search-text)
 
-;; my-todays-pop.el 관련 autoload
-(autoload 'my-todays-pop "my-todays-pop"  "오늘의 정보. 일정 등" t)
+(autoload 'my-todays-pop "my-todays-pop" "오늘 정보 등" t)
 (global-set-key (kbd "s-3") 'my-todays-pop)
+
+;; my-autoload-files 변수에 지정된 파일을 제외한 나머지 .el 파일 로드.
+(dolist (file (directory-files "~/.emacs.d/lisp" t "\\.el$"))
+  (condition-case err
+      (unless (member (file-name-nondirectory file) my-autoload-files)
+        (load file))
+    (error (message "Error loading %s: %s" file err))))
 
 ;; =======================================
 ;;; MacOS keyboard
@@ -249,8 +258,8 @@
   :ensure t
   :config
   (recentf-mode 1)
-  (setq recentf-max-menu-items 25)
-  (setq recentf-max-saved-items 25))
+  (setq recentf-max-menu-items 15)
+  (setq recentf-max-saved-items 15))
 
 ;; =======================================
 ;;; hi-line
