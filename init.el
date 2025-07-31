@@ -41,15 +41,6 @@
 (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
 ;; =======================================
-;;; Server / Skim Sync
-;; =======================================
-;; Skim에서 Emacs로 역방향 검색을 위한 추가 설정
-;; (use-package server
-;;   :ensure nil
-;;   :config
-;;   (unless (server-running-p)
-;;     (server-start)))
-;; =======================================
 ;;; exec-path-from-shell
 ;; =======================================
 (use-package exec-path-from-shell
