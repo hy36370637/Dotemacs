@@ -4,9 +4,6 @@
 ;; ======================================
 ;; /.emacs.d/lisp/my-org-custom.el
 
-(defvar my/org-person-dir "~/Dropbox/Docs/Person/"
-  "Directory for personal org files.")
-
 (defun my-org-person-file-path (filename)
   "Construct the full path for a personal org file."
   (expand-file-name filename my/org-person-dir))
@@ -59,8 +56,8 @@
 	 `(("d" "Daily" entry (file+datetree ,(my-org-person-file-path "Daily.org")) "* %?")
            ("t" "Tasks" entry (file ,(my-org-person-file-path "Tasks.org")) "* TODO %?")
            ("r" "Read" entry (file ,(my-org-person-file-path "cReading.org")) "* %?")
-	   ("D" "동강fNote" entry (file+datetree ,(my-org-person-file-path "DG_fNote.org")) "* %?")
-           ("G" "금산fNote" entry (file+datetree ,(my-org-person-file-path "GS_fNote.org")) "* %?")
+	   ;; ("D" "동강fNote" entry (file+datetree ,(my-org-person-file-path "DG_fNote.org")) "* %?")
+           ;; ("G" "금산fNote" entry (file+datetree ,(my-org-person-file-path "GS_fNote.org")) "* %?")
 	   ("m" "경조사" table-line (file, (my-org-person-file-path "aMoney.org")) "| %^{구분} | %^{일자} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |" :prepend nil))))
 
 ;; ======================================
@@ -152,7 +149,6 @@
 
 (defun cal-fixLayout ()
   "calendar layout for D2Coding font. 고정폭 깨짐방지"
-;;  (face-remap-add-relative 'default '(:family "D2Coding" :height 160)))
   (face-remap-add-relative 'default '(:family "Noto Sans Mono CJK KR" :height 160)))
 
 (use-package calendar
@@ -193,7 +189,7 @@
   :ensure nil
   :bind("C-c SPC n" . denote)
   :custom
-  (denote-directory (expand-file-name "~/Dropbox/Docs/org/denote"))
+  (denote-directory (concat org-directory "denote"))
   (denote-known-keywords '("work" "personal" "reading"))
   (denote-infer-keywords t)
   (denote-sort-keywords t)

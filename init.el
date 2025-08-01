@@ -2,6 +2,15 @@
 ;;  default Config for EMACS
 
 ;; =======================================
+;; Global variables
+;; =======================================
+(defvar my/lisp-path (expand-file-name "lisp/" user-emacs-directory)
+  "Path to the user's personal lisp directory.")
+
+(defvar my/org-person-dir "~/Dropbox/Docs/Person/"
+  "Directory for personal org files.")
+
+;; =======================================
 ;;; Custom file
 ;; =======================================
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -128,12 +137,11 @@
   (setq register-preview-delay 0
         register-preview-function #'register-preview-default)
   (set-register ?i '(file . "~/.emacs.d/init.el"))
-  (set-register ?r '(file . "~/Dropbox/Docs/Person/cReading.org"))
-  (set-register ?d '(file . "~/Dropbox/Docs/Person/Daily.org"))
-  (set-register ?n '(file . "~/Dropbox/Docs/Person/cNotes.org"))
+  (set-register ?r `(file . ,(concat my/org-person-dir "cReading.org")))
+  (set-register ?d `(file . ,(concat my/org-person-dir "Daily.org")))
+  (set-register ?n `(file . ,(concat my/org-person-dir "cNotes.org")))
   :bind
   (("C-x r j" . jump-to-register)
-;;   ("C-x r s" . copy-to-register)
    ("C-x r i" . insert-register)))
 
 ;; =======================================

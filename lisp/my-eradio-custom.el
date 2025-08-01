@@ -26,8 +26,7 @@
   :init
 ;;  (setq eradio-player '("/Applications/VLC.app/Contents/MacOS/VLC" "--no-video" "-I" "rc"))
   (setq eradio-player '("mpv" "--no-video"))
-  (setq eradio-channels (load-eradio-channels-from-file "~/.emacs.d/lisp/mmslist.txt")))
-
+  (setq eradio-channels (load-eradio-channels-from-file (concat my/lisp-path "mmslist.txt"))))
 
 ;; end here
 (provide 'my-eradio-custom)
