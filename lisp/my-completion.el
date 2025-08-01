@@ -82,8 +82,8 @@
 ;; ======================================
 ;;; consult-dir
 ;; ======================================
-(use-package consult-dir
-  :ensure t)
+;; (use-package consult-dir
+;;   :ensure nil)
   ;; :after vertico
   ;; :bind (("C-x c-d" . consult-dir)
   ;;         :map vertico-map
@@ -128,7 +128,7 @@
 ;; ======================================
 ;; 괄호, 중괄호, 각종 쌍을 시각적(무지개색) 구분
 (use-package rainbow-delimiters
-  :defer t
+  :defer nil
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; =======================================

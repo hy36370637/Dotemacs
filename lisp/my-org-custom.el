@@ -81,7 +81,7 @@
 ;;; org-bullets
 ;; ======================================
 (use-package org-bullets
-  :ensure t
+  :ensure nil
   :hook (org-mode . org-bullets-mode)
   :config
   (setq org-bullets-bullet-list '("◉" "◎" "●" "◇" "◆" "▷" "▶")))
@@ -190,7 +190,7 @@
 ;; ======================================
 ;; Denote 설정
 (use-package denote
-  :ensure t
+  :ensure nil
   :bind("C-c SPC n" . denote)
   :custom
   (denote-directory (expand-file-name "~/Dropbox/Docs/org/denote"))

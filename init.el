@@ -2,15 +2,6 @@
 ;;  default Config for EMACS
 
 ;; =======================================
-;;; Speed up Emacs startup
-;; =======================================
-(setq gc-cons-threshold most-positive-fixnum)
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq gc-cons-threshold (* 1024 1024 16))))  ; 16MB
-(setq read-process-output-max (* 1024 1024))  ; 1MB
-
-;; =======================================
 ;;; Custom file
 ;; =======================================
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -82,33 +73,31 @@
 ;;; Emacs UI and behavior
 ;; =======================================
 (use-package emacs
-;;  :hook (emacs-startup . my-fancy-startup-screen) ;my-useful-custom.el
   :init
-  (setq inhibit-startup-message t
-        visible-bell t
-        initial-scratch-message nil
-        use-dialog-box nil
-        default-directory (expand-file-name "~/Dropbox/Docs/org")
-        temporary-file-directory "~/tmpdir/"
-        make-backup-files nil
-        kill-whole-line 1
-        search-highlight t
-        scroll-margin 7
-        scroll-preserve-screen-position t
-        scroll-conservatively 101
-        text-scale-mode-step 1.05  	;글꼴 확대축소 비율 5% 단위
-	display-time-format "%m.%d(%a) %H:%M") ; 원하는 날짜/시간 형식
+  (setq  default-directory (expand-file-name "~/Dropbox/Docs/org")
+         temporary-file-directory "~/tmpdir/"
+         make-backup-files nil
+         kill-whole-line 1
+         search-highlight t
+         scroll-margin 7
+         scroll-preserve-screen-position t
+         scroll-conservatively 101
+         text-scale-mode-step 1.05  	;글꼴 확대축소 비율 5% 단위
+	 display-time-format "%m.%d(%a) %H:%M") ; 원하는 날짜/시간 형식
   :config
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (toggle-scroll-bar -1)
   (setq-default line-spacing 0.2)
   (global-font-lock-mode 1)
   (global-visual-line-mode t)
   (global-auto-revert-mode 1)
   (transient-mark-mode t)
   (column-number-mode t)
-  (display-time-mode 1))
+  (display-time-mode 1)
+  :bind
+  (([f11] . nil)
+   ("C-x f" . nil)
+   ("C-x m". nil)
+   ("C-x o" . nil)
+   ("M-o" . other-window)))
 
 ;; =======================================
 ;;; Bookmark
@@ -150,13 +139,13 @@
 ;; =======================================
 ;;; Key bindings
 ;; =======================================
-(use-package emacs
-  :bind
-  (([f11] . nil)
-   ("C-x f" . nil)
-   ("C-x m". nil)
-   ("C-x o" . nil)
-   ("M-o" . other-window)))
+;; (use-package emacs
+;;   :bind
+;;   (([f11] . nil)
+;;    ("C-x f" . nil)
+;;    ("C-x m". nil)
+;;    ("C-x o" . nil)
+;;    ("M-o" . other-window)))
 
 ;; =======================================
 ;;; Locale and Korean settings
@@ -226,11 +215,11 @@
 ;;; Icons
 ;; =======================================
 (use-package nerd-icons
-  :ensure t
+  :ensure nil
   :if (display-graphic-p))
 
 (use-package nerd-icons-dired
-  :ensure t
+  :ensure nil
   :if (display-graphic-p)
   :after dired
   :hook (dired-mode . nerd-icons-dired-mode))
@@ -246,7 +235,7 @@
 ;;; recenfF
 ;; =======================================
 (use-package recentf
-  :ensure t
+  :ensure nil
   :config
   (recentf-mode 1)
   (setq recentf-max-menu-items 15)
