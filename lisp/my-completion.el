@@ -49,11 +49,11 @@
   :bind (("C-x b" . consult-buffer)
 	 ("C-x C-r" . consult-recent-file)
 	 ("C-c SPC b" . consult-bookmark)
-	 ("C-c SPC d" . consult-dir)
+;;	 ("C-c SPC d" . consult-dir)
 	 ("C-c SPC f" . consult-find)
 	 ("C-c SPC g" . my-consult-grep-custom)
-	 ("C-c SPC l" . consult-line)
-	 ("C-c SPC r" . consult-register))
+	 ("C-c SPC l" . consult-line))
+;;	 ("C-c SPC r" . consult-register))
   :init
   (defun my-consult-grep-custom ()
     "Run consult-grep with option to use default directory or choose a new one."

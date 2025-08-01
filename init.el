@@ -137,17 +137,6 @@
    ("C-x r i" . insert-register)))
 
 ;; =======================================
-;;; Key bindings
-;; =======================================
-;; (use-package emacs
-;;   :bind
-;;   (([f11] . nil)
-;;    ("C-x f" . nil)
-;;    ("C-x m". nil)
-;;    ("C-x o" . nil)
-;;    ("M-o" . other-window)))
-
-;; =======================================
 ;;; Locale and Korean settings
 ;; =======================================
 (use-package emacs

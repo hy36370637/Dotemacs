@@ -108,32 +108,6 @@ Use option+left to select 《》."
         (insert weekday-name)))
      (t (message "Invalid format selection.")))))
 
-;; ======================================
-;;; eradio
-;; ======================================
-(defun load-eradio-channels-from-file (file-path)
-  "Load radio channel definitions from a file."
-  (with-temp-buffer
-    (insert-file-contents file-path)
-    (goto-char (point-min))
-    (let (channels)
-      (while (not (eobp))
-        (let ((line (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
-          (when (string-match "^\\([^|]+\\)|\\(.*\\)$" line) ; 정규 표현식을 갱신함
-            (let ((name (match-string 1 line))
-                  (url (match-string 2 line)))
-              (push (cons name url) channels))))
-        (forward-line 1))
-      (nreverse channels)))  ; 리스트를 뒤집어 원래 파일 순서대로 유지
-)
-
-(use-package eradio
-  :ensure nil
-  :bind(("C-c SPC r" . eradio-play))
-;;        ("C-c r s" . eradio-stop))
-  :init
-  (setq eradio-player '("/Applications/VLC.app/Contents/MacOS/VLC" "--no-video" "-I" "rc"))
-  (setq eradio-channels (load-eradio-channels-from-file "~/.emacs.d/lisp/mmslist.txt")))
 
 ;; end here
 (provide 'my-useful-custom)
