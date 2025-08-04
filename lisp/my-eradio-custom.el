@@ -5,6 +5,7 @@
 ;; ======================================
 ;;; eradio
 ;; ======================================
+
 (defun load-eradio-channels-from-file (file-path)
   "Load radio channel definitions from a file."
   (with-temp-buffer
@@ -13,20 +14,25 @@
     (let (channels)
       (while (not (eobp))
         (let ((line (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
-          (when (string-match "^\\([^|]+\\)|\\(.*\\)$" line) ; 정규 표현식을 갱신함
+          (when (string-match "^\\([^|]+\\)|\\(.*\\)$" line)
             (let ((name (match-string 1 line))
                   (url (match-string 2 line)))
               (push (cons name url) channels))))
         (forward-line 1))
-      (nreverse channels))))  ; 리스트를 뒤집어 원래 파일 순서대로 유지
+      (nreverse channels))))
 
-(use-package eradio
-  :ensure nil
-  :bind(("C-c SPC r" . eradio-toggle))
-  :init
-;;  (setq eradio-player '("/Applications/VLC.app/Contents/MacOS/VLC" "--no-video" "-I" "rc"))
-  (setq eradio-player '("mpv" "--no-video"))
-  (setq eradio-channels (load-eradio-channels-from-file (concat my/lisp-path "mmslist.txt"))))
+(defun my/eradio-toggle-hook ()
+  "Configure eradio when the eradio-toggle command is first called."
+  (interactive)
+  (require 'eradio)
+  (setq eradio-player '("/Applications/VLC.app/Contents/MacOS/VLC" "--no-video" "-I" "rc"))
+  ;;  (setq eradio-player '("mpv" "--no-video"))
+  (setq eradio-channels (load-eradio-channels-from-file (concat my/lisp-path "mmslist.txt")))
+  (eradio-toggle))
+
+(autoload 'my/eradio-toggle-hook "my-eradio-custom" "Toggle eradio and configure it on first use." t)
+(global-set-key (kbd "C-c SPC r") 'my/eradio-toggle-hook)
+
 
 ;; end here
 (provide 'my-eradio-custom)

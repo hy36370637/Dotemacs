@@ -6,7 +6,8 @@
   :doc "My command alternatives using the Super key."
   "s-1"  #'tab-bar-switch-to-prev-tab	;bab-bar move left
   "s-2"  #'tab-bar-switch-to-next-tab	;tab-bar move right
-  "s-t"   #'tab-new                                       ; "s-n" #'make-frame
+  "s-n f" #'make-frame
+  "s-n t" #'tab-new
   "s-z"  #'repeat
   "s-/"   #'undo-redo
   "s-<return>" #'toggle-frame-fullscreen

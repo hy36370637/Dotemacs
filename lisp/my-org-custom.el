@@ -97,18 +97,17 @@
 ;;          (holiday-chinese  4  8 "석탄일")
 ;;          (holiday-fixed 5 5 "어린이날")
 ;;          (holiday-fixed 6 6 "현충일")
-          (holiday-fixed 6 10 "아들日")
+          (holiday-fixed 6 10 "아들日")))
 ;;          (holiday-fixed 7 17 "제헌절")
-          (holiday-chinese  7  21 "장인제")
+;;          (holiday-chinese  7  21 "장인제")
 ;;          (holiday-chinese  8  4 "조부제")
-;;          (holiday-fixed 8 15 "광복절")
-;;          (holiday-chinese  8 15 "추석")
-          (holiday-chinese  9  3 "母生")
-          (holiday-chinese  9  5 "父祭")
+          ;; (holiday-fixed 8 15 "광복절")
+          ;; (holiday-chinese  9  3 "母生")
+          ;; (holiday-chinese  9  5 "父祭")
 ;;          (holiday-fixed 10 3 "개천절")
 ;;          (holiday-fixed 10 9 "한글날")
-          (holiday-chinese  11  9 "장모생신")
-          (holiday-fixed 12 25 "성탄절")))
+;;          (holiday-chinese  11  9 "장모생신")
+;;          (holiday-fixed 12 25 "성탄절")))
   ;; 24절기 설정
   (setq 24solar-holidays
         '((holiday-fixed 2 4 "입춘")
@@ -185,27 +184,27 @@
 ;;; denote
 ;; ======================================
 ;; Denote 설정
-(use-package denote
-  :ensure nil
-  :bind("C-c SPC n" . denote)
-  :custom
-  (denote-directory (concat org-directory "denote"))
-  (denote-known-keywords '("work" "personal" "reading"))
-  (denote-infer-keywords t)
-  (denote-sort-keywords t)
-  (denote-file-type nil) ; 기본값으로 org 파일 사용
-  (denote-prompts '(title keywords))
-  :config
-  (with-eval-after-load 'org-capture
-    (add-to-list 'org-capture-templates
-                 '("n" "New  Denote" plain
-                   (file denote-last-path)
-                   #'denote-org-capture
-                   :no-save t
-                   :immediate-finish nil
-                   :kill-buffer t
-                   :jump-to-captured t))))
-;;   (consult-denote-default-file-type 'org))
+;; (use-package denote
+;;   :ensure nil
+;; ;;  :bind("C-c SPC n" . denote)
+;;   :custom
+;;   (denote-directory (concat org-directory "denote"))
+;;   (denote-known-keywords '("work" "personal" "reading"))
+;;   (denote-infer-keywords t)
+;;   (denote-sort-keywords t)
+;;   (denote-file-type nil) ; 기본값으로 org 파일 사용
+;;   (denote-prompts '(title keywords))
+;;   :config
+;;   (with-eval-after-load 'org-capture
+;;     (add-to-list 'org-capture-templates
+;;                  '("n" "New  Denote" plain
+;;                    (file denote-last-path)
+;;                    #'denote-org-capture
+;;                    :no-save t
+;;                    :immediate-finish nil
+;;                    :kill-buffer t
+;;                    :jump-to-captured t))))
+;; ;;   (consult-denote-default-file-type 'org))
 
 
 

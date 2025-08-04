@@ -35,7 +35,7 @@ If the selected text includes '날씨', perform a weather search using my/naver-
         (if (string-equal search-option "macOS Dictionary")
             (call-process "open" nil 0 nil url)
           (browse-url url)))))))
-;;(global-set-key (kbd "C-c SPC S") 'my-custom-search-text)
+(global-set-key (kbd "C-c SPC S") 'my-custom-search-text)
 
 (defun my/naver-weather-search (city)
   "Search Naver weather information for the given CITY."

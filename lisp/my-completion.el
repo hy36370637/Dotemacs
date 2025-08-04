@@ -51,29 +51,13 @@
 	 ("C-c SPC b" . consult-bookmark)
 ;;	 ("C-c SPC d" . consult-dir)
 	 ("C-c SPC f" . consult-find)
-	 ("C-c SPC g" . my-consult-grep-custom)
+	 ("C-c SPC g" . consult-grep)
 	 ("C-c SPC l" . consult-line))
 ;;	 ("C-c SPC r" . consult-register))
-  :init
-  (defun my-consult-grep-custom ()
-    "Run consult-grep with option to use default directory or choose a new one."
-    (interactive)
-    (let* ((default-dir (or org-directory (expand-file-name "~/Dropbox/Docs/org/")))
-           (use-default (y-or-n-p (format "Use default directory (%s)? " default-dir)))
-           (dir (if use-default
-                    default-dir
-                  (read-directory-name "Choose directory: " nil nil t))))
-      (consult-grep dir)))
   :config
   (setq consult-buffer-sources
         '(consult--source-buffer
           consult--source-recent-file))
-  ;; ;; 북마크 관련 추가 설정
-  ;; (setq consult-bookmark-narrow
-  ;;       '((?b "Bookmarks" bookmark)
-  ;;         (?f "Files" file)
-  ;;         (?d "Directories" dir)))
-  ;; 북마크 미리보기 설정
   (setq consult-preview-key 'any)
   ;; 북마크 정렬 설정
   (setq consult-sort-function #'consult--alpha-sort)

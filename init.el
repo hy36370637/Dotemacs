@@ -76,6 +76,8 @@
 ;; =======================================
 (when my-mactop-p
   (setq mac-right-command-modifier 'control))
+  ;; fn 키를 Hyper 키로 사용
+;;  (setq mac-function-modifier 'hyper))
 ;;  (setq ns-left-command-modifier nil))
 
 ;; =======================================
@@ -281,6 +283,7 @@
                 mode-line-modes
                 mode-line-format-right-align
                 mode-line-position
+;;                (:eval (my/mode-line-holiday))  ; 휴일 표시 추가		
 		"Ⓨ "
                 mode-line-misc-info))
 
@@ -293,3 +296,4 @@
     (setq battery-status-function 'battery-pmset
           battery-mode-line-format "Ⓑ %p%% ")
     (display-battery-mode 1)))
+
