@@ -18,19 +18,9 @@
 	initial-scratch-message nil
 	use-dialog-box nil)
   :config
-  (menu-bar-mode -1)
+;;  (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1))
-
-;; (setq inhibit-startup-message t
-;;       visible-bell t
-;;       initial-scratch-message nil
-;;       use-dialog-box nil)
-
-;; ;; 메뉴, 툴바, 스크롤바 숨기기
-;; ;;(menu-bar-mode -1)
-;; (tool-bar-mode -1)
-;; (scroll-bar-mode -1)
 
 ;; ======================================
 ;;; Package initialization (기본 설정)

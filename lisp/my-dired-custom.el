@@ -19,9 +19,9 @@
               ("M-<up>" . my/dired-jump-to-top)
               ("M-<down>" . my/dired-jump-to-bottom)
               ("C-<return>" . dired-do-open)
-	      ;; ("C-c C-o" . dired-open-in-finder)
-              ("/" . dired-narrow)
-              ("M-p" . dired-mpv-play-file))  ; mpv 재생 단축키 추가
+	      ("C-c C-o" . dired-open-in-finder)
+              ("/" . dired-narrow)))
+;;              ("M-p" . dired-mpv-play-file))  ; mpv 재생 단축키 추가
   :config
   (defun sof/dired-sort ()
     "Dired 정렬, 디렉토리를 우선으로."
@@ -43,10 +43,10 @@
     (goto-char (point-max))
     (dired-next-line -1))
 
-  ;; (defun dired-open-in-finder ()
-  ;;   "Open current directory in macOS Finder."
-  ;;   (interactive)
-  ;;   (shell-command (concat "open " (dired-current-directory))))
+  (defun dired-open-in-finder ()
+    "Open current directory in macOS Finder."
+    (interactive)
+    (shell-command (concat "open " (dired-current-directory))))
 
   ;; (defun dired-mpv-play-file ()
   ;;   "Play the file at point with mpv."
@@ -56,12 +56,6 @@
 
   :hook ((dired-after-readin . sof/dired-sort))
          (dired-mode . dired-hide-details-mode))  ;Dired mode 상세정보 숨김
-
-(use-package mpv
-  :ensure t
-  :after dired
-  :config
-  (setq mpv-executable "/opt/homebrew/bin/mpv"))
 
 (use-package dired-narrow
   :ensure t

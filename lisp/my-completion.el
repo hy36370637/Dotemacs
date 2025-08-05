@@ -48,12 +48,12 @@
   :ensure t
   :bind (("C-x b" . consult-buffer)
 	 ("C-x C-r" . consult-recent-file)
-	 ("C-c SPC b" . consult-bookmark)
-;;	 ("C-c SPC d" . consult-dir)
-	 ("C-c SPC f" . consult-find)
-	 ("C-c SPC g" . consult-grep)
-	 ("C-c SPC l" . consult-line))
-;;	 ("C-c SPC r" . consult-register))
+	 ("C-c k b" . consult-bookmark)
+;;	 ("C-c k d" . consult-dir)
+	 ("C-c k f" . consult-find)
+	 ("C-c k g" . consult-grep)
+	 ("C-c k l" . consult-line))
+;;	 ("C-c k r" . consult-register))
   :config
   (setq consult-buffer-sources
         '(consult--source-buffer

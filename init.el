@@ -59,7 +59,7 @@
 ;; autoload 처리
 (autoload 'my-custom-search-text "my-web-search" "macDic, Naver, 구글 or 나무위키, 날씨 검색." t)
 (autoload 'my/naver-weather-search "my-web-search" "Naver 날씨." t)
-(global-set-key (kbd "C-c SPC S") 'my-custom-search-text)
+(global-set-key (kbd "C-c k S") 'my-custom-search-text)
 
 (autoload 'my-todays-pop "my-todays-pop" "오늘 정보 등" t)
 (global-set-key (kbd "s-3") 'my-todays-pop)
@@ -171,15 +171,15 @@
 ;; =======================================
 ;;; Theme
 ;; =======================================
-(use-package emacs
-  :config
-  (require-theme 'modus-themes)
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs nil
-	modus-themes-mode-line '(accented borderless padded))
-  (setq modus-themes-common-palette-overrides
-        modus-themes-preset-overrides-intense)
-  (load-theme 'modus-operandi-tinted))
+;; (use-package emacs
+;;   :config
+;;   (require-theme 'modus-themes)
+;;   (setq modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs nil
+;; 	modus-themes-mode-line '(accented borderless padded))
+;;   (setq modus-themes-common-palette-overrides
+;;         modus-themes-preset-overrides-intense)
+;;  (load-theme 'modus-operandi-tinted))
 
 ;; (use-package zenburn-theme
 ;;   :config

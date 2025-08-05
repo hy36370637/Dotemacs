@@ -9,7 +9,7 @@
   (interactive)
   (let ((choi '("·"  "→"  "⇒"   "※"  "…"  "―" "《》")))
     (insert (completing-read "선택: " choi))))
-(global-set-key (kbd "C-c SPC c") 'my/select-special-character)
+(global-set-key (kbd "C-c k c") 'my/select-special-character)
 
 (defun my/region-dblspecial-characters (start end)
   "Insert special characters around the selected region.
@@ -40,7 +40,7 @@ Use option+left to select 《》."
                     ((equal choice "\"\"") "\"")
                     ((equal choice "《》") "《"))))))
 
-(global-set-key (kbd "C-c SPC C") 'my/region-dblspecial-characters)
+(global-set-key (kbd "C-c k C") 'my/region-dblspecial-characters)
 
 ;; =======================================
 ;;; Hunspell 설정

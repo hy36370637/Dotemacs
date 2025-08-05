@@ -1,11 +1,9 @@
 ;;; -*- lexical-binding: t; -*-
 ;; .emacs.d/lisp/my-eradio-custom.el
-;;
 
 ;; ======================================
 ;;; eradio
 ;; ======================================
-
 (defun load-eradio-channels-from-file (file-path)
   "Load radio channel definitions from a file."
   (with-temp-buffer
@@ -31,8 +29,13 @@
   (eradio-toggle))
 
 (autoload 'my/eradio-toggle-hook "my-eradio-custom" "Toggle eradio and configure it on first use." t)
-(global-set-key (kbd "C-c SPC r") 'my/eradio-toggle-hook)
+(global-set-key (kbd "C-c k r") 'my/eradio-toggle-hook)
 
+(use-package mpv
+  :ensure t
+  :after dired
+  :config
+  (setq mpv-executable "/opt/homebrew/bin/mpv"))
 
 ;; end here
 (provide 'my-eradio-custom)
