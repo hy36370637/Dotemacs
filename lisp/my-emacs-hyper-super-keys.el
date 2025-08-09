@@ -6,6 +6,7 @@
   :doc "My command alternatives using the Super key."
   "s-1"  #'tab-bar-switch-to-prev-tab	;bab-bar move left
   "s-2"  #'tab-bar-switch-to-next-tab	;tab-bar move right
+  "s-3"  #'my-todays-pop   ;
   "s-n f" #'make-frame
   "s-n t" #'tab-new
   "s-z"  #'repeat

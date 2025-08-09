@@ -19,11 +19,12 @@
   (org-startup-indented t)
   (org-adapt-indentation nil)
   (org-startup-with-inline-images nil)
-;;  (org-support-shift-select t)
+  (org-startup-folded t)                    ;heading, drawers folding
   (org-log-into-drawer t)
   (org-log-done 'time)
   (org-image-actual-width 400)
-  (org-todo-keywords '((sequence "TODO" "HOLD" "DONE"))))
+  (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
+  (org-export-with-drawers nil))     ;drawer 출력off/default t
 
 ;; (use-package ox-md
 ;;   :after org   ; org 모드가 로드된 후에 ox-md를 로드
@@ -50,7 +51,7 @@
 ;; ======================================
 (use-package org-capture
   :ensure nil
-  :bind ("C-c c" . org-capture)
+  :bind ("C-c o c" . org-capture)
   :config
    (setq org-capture-templates
 	 `(("d" "Daily" entry (file+datetree ,(my-org-person-file-path "Daily.org")) "* %?")
@@ -65,14 +66,14 @@
 ;; ======================================
 (use-package org
   :ensure nil
-  :bind ("C-c a" . org-agenda)
+  :bind ("C-c o a" . org-agenda)
   :config
   (setq org-agenda-files (list (my-org-person-file-path "Tasks.org")
                                (my-org-person-file-path "Daily.org")))
-  (setq org-agenda-format-date "%Y-%m-%d (%a)")       ; 날자 포맷. 가독성
+  (setq org-agenda-format-date "%Y-%m-%d (%a)")                                       ; 날자 포맷. 가독성
   (setq org-agenda-current-time-string "← now ───────")
   (setq org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))  ;완료항목 hidden
-  (setq org-agenda-include-diary t))              	;holidays 포함
+  (setq org-agenda-include-diary t))                                                               	;holidays 포함
 
 ;; ======================================
 ;;; org-bullets
@@ -81,7 +82,7 @@
   :ensure nil
   :hook (org-mode . org-bullets-mode)
   :config
-  (setq org-bullets-bullet-list '("◉" "◎" "●" "◇" "◆" "▷" "▶")))
+  (setq org-bullets-bullet-list '("◉" "◎" "●" "○" "◆" "▷" "▶")))
 
 ;; ======================================
 ;;; for org edit/custom function
@@ -101,32 +102,6 @@
 ;;                                          (interactive)
 ;; 					 (end-of-line)
 ;;                                          (org-insert-heading))))
-
-;; ======================================
-;;; denote
-;; ======================================
-;; Denote 설정
-;; (use-package denote
-;;   :ensure nil
-;; ;;  :bind("C-c SPC n" . denote)
-;;   :custom
-;;   (denote-directory (concat org-directory "denote"))
-;;   (denote-known-keywords '("work" "personal" "reading"))
-;;   (denote-infer-keywords t)
-;;   (denote-sort-keywords t)
-;;   (denote-file-type nil) ; 기본값으로 org 파일 사용
-;;   (denote-prompts '(title keywords))
-;;   :config
-;;   (with-eval-after-load 'org-capture
-;;     (add-to-list 'org-capture-templates
-;;                  '("n" "New  Denote" plain
-;;                    (file denote-last-path)
-;;                    #'denote-org-capture
-;;                    :no-save t
-;;                    :immediate-finish nil
-;;                    :kill-buffer t
-;;                    :jump-to-captured t))))
-;; ;;   (consult-denote-default-file-type 'org))
 
 
 

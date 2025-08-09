@@ -59,14 +59,14 @@
 ;; autoload 처리
 (autoload 'my-custom-search-text "my-web-search" "macDic, Naver, 구글 or 나무위키, 날씨 검색." t)
 (autoload 'my/naver-weather-search "my-web-search" "Naver 날씨." t)
-(global-set-key (kbd "C-c k S") 'my-custom-search-text)
+;;(global-set-key (kbd "C-c p s") 'my-custom-search-text)
 
 (autoload 'my-todays-pop "my-todays-pop" "오늘 정보 등" t)
-(global-set-key (kbd "s-3") 'my-todays-pop)
+;;(global-set-key (kbd "s-3") 'my-todays-pop)
 
 ;; my-autoload-files 변수에 지정된 파일을 제외한 나머지 .el 파일 로드.
 (dolist (file (directory-files "~/.emacs.d/lisp" t "\\.el$"))
-  (condition-case err
+ (condition-case err
       (unless (member (file-name-nondirectory file) my-autoload-files)
         (load file))
     (error (message "Error loading %s: %s" file err))))
@@ -75,10 +75,8 @@
 ;;; MacOS keyboard
 ;; =======================================
 (when my-mactop-p
-  (setq mac-right-command-modifier 'control))
-  ;; fn 키를 Hyper 키로 사용
-;;  (setq mac-function-modifier 'hyper))
-;;  (setq ns-left-command-modifier nil))
+  (setq mac-right-command-modifier 'control)
+  )
 
 ;; =======================================
 ;;; Emacs UI and behavior
@@ -104,11 +102,18 @@
   (column-number-mode t)
   (display-time-mode 1)
   :bind
-  (([f11] . nil)
-   ("C-x f" . nil)
-   ("C-x m". nil)
-   ("C-x o" . nil)
-   ("M-o" . other-window)))
+  ( :map global-map
+    ([f11] . nil)
+    ("C-x f" . nil)
+    ("C-x m". nil)
+    ("C-x o" . nil)
+    ("C-x C-r" . restart-emacs)
+    ("M-o" . other-window)
+    ("C-c p s" .  my-custom-search-text)
+    ;; ("C-c p c" . my/select-special-character)
+    ;; ("C-c p C" . my/region-dblspecial-character)
+    ("C-c p t" . my/insert-today-stamp))
+  )
 
 ;; =======================================
 ;;; Bookmark
@@ -296,4 +301,3 @@
     (setq battery-status-function 'battery-pmset
           battery-mode-line-format "Ⓑ %p%% ")
     (display-battery-mode 1)))
-

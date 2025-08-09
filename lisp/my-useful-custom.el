@@ -9,7 +9,7 @@
   (interactive)
   (let ((choi '("·"  "→"  "⇒"   "※"  "…"  "―" "《》")))
     (insert (completing-read "선택: " choi))))
-(global-set-key (kbd "C-c k c") 'my/select-special-character)
+(global-set-key (kbd "C-c p c") 'my/select-special-character)
 
 (defun my/region-dblspecial-characters (start end)
   "Insert special characters around the selected region.
@@ -40,40 +40,39 @@ Use option+left to select 《》."
                     ((equal choice "\"\"") "\"")
                     ((equal choice "《》") "《"))))))
 
-(global-set-key (kbd "C-c k C") 'my/region-dblspecial-characters)
+(global-set-key (kbd "C-c p C") 'my/region-dblspecial-characters)
 
 ;; =======================================
 ;;; Hunspell 설정
 ;; ======================================-
 (use-package ispell
   :if my-mactop-p
-  :commands (my-enable-korean-spell-check)
+  :hook (text-mode . my-enable-korean-spell-check))
   :config
   (setq ispell-program-name "hunspell")
-  (setq ispell-local-dictionary "ko_KR")
   (setq ispell-local-dictionary-alist
-        '(("ko_KR" "[가-힣]" "[^가-힣]" "[-']" nil ("-d" "ko_KR") nil utf-8))))
+        '(("ko_KR" "[가-힣]" "[^가-힣]" "[-']" nil ("-d" "ko_KR") nil utf-8)))
 
   (defun my-enable-korean-spell-check ()
-    "Enable Korean spell checking manually."
+    "Enable Korean spell checking for the current buffer."
     (interactive)
-;;    (setq ispell-local-dictionary "ko_KR")
-    (flyspell-mode 1))
+    (setq-local ispell-local-dictionary "ko_KR")
+    (flyspell-mode 1)))
 
 ;; =======================================
 ;;; gptel
 ;; ======================================-
-(use-package gptel
-  :ensure nil
-  :if my-Macbook-p
-  :bind ("C-c G" . gptel)
-  :config
-;;  (setq gptel-model "o1-preview")	;GPT-4o-mini
-  (setq gptel-model "gpt-4-turbo")	;GPT-4o-mini
-  (setq gptel-api-key
-        (plist-get
-         (car (auth-source-search :host "openai.com" :user "api_key"))
-         :secret)))
+;; (use-package gptel
+;;   :ensure nil
+;;   :if my-Macbook-p
+;;   :bind ("C-c G" . gptel)
+;;   :config
+;; ;;  (setq gptel-model "o1-preview")	;GPT-4o-mini
+;;   (setq gptel-model "gpt-4-turbo")	;GPT-4o-mini
+;;   (setq gptel-api-key
+;;         (plist-get
+;;          (car (auth-source-search :host "openai.com" :user "api_key"))
+;;          :secret)))
 
 ;; ======================================
 ;;; Magit
@@ -107,7 +106,7 @@ Use option+left to select 《》."
         (insert (format-time-string "%Y-%m-%d "))
         (insert weekday-name)))
      (t (message "Invalid format selection.")))))
-
+(global-set-key (kbd "C-c p t") 'my/insert-today-stamp)
 
 ;; end here
 (provide 'my-useful-custom)

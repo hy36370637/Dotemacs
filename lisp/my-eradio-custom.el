@@ -19,18 +19,18 @@
         (forward-line 1))
       (nreverse channels))))
 
-(defun my/eradio-toggle-hook ()
-  "Configure eradio when the eradio-toggle command is first called."
-  (interactive)
-  (require 'eradio)
+(use-package eradio
+  :bind(("C-c e p" . eradio-play)
+	("C-c e s" . eradio-stop)
+	("C-c e t" . eradio-toggle))
+  :init
   (setq eradio-player '("/Applications/VLC.app/Contents/MacOS/VLC" "--no-video" "-I" "rc"))
-  ;;  (setq eradio-player '("mpv" "--no-video"))
-  (setq eradio-channels (load-eradio-channels-from-file (concat my/lisp-path "mmslist.txt")))
-  (eradio-toggle))
+;;  (setq eradio-player '("mpv" "--no-video"))
+  (setq eradio-channels (load-eradio-channels-from-file (concat my/lisp-path "mmslist.txt"))))
 
-(autoload 'my/eradio-toggle-hook "my-eradio-custom" "Toggle eradio and configure it on first use." t)
-(global-set-key (kbd "C-c k r") 'my/eradio-toggle-hook)
-
+;; ======================================
+;;; mpv
+;; ======================================
 (use-package mpv
   :ensure t
   :after dired

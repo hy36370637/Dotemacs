@@ -47,13 +47,13 @@
 (use-package consult
   :ensure t
   :bind (("C-x b" . consult-buffer)
-	 ("C-x C-r" . consult-recent-file)
-	 ("C-c k b" . consult-bookmark)
-;;	 ("C-c k d" . consult-dir)
-	 ("C-c k f" . consult-find)
-	 ("C-c k g" . consult-grep)
-	 ("C-c k l" . consult-line))
-;;	 ("C-c k r" . consult-register))
+	 ("C-c c b" . consult-bookmark)
+;;	 ("C-c c d" . consult-dir)
+	 ("C-c c f" . consult-find)
+	 ("C-c c g" . consult-grep)
+	 ("C-c c l" . consult-line)
+	 ("C-c c r" . consult-recent-file)
+	 ("C-c c t" . consult-theme))
   :config
   (setq consult-buffer-sources
         '(consult--source-buffer
@@ -77,21 +77,21 @@
 ;; ======================================
 ;;; embark
 ;; ======================================
-(use-package embark
-  :ensure t
-  :bind
-  (("C-." . embark-act))
-  :config
-  (setq prefix-help-command #'embark-prefix-help-command))
+;; (use-package embark
+;;   :ensure t
+;;   :bind
+;;   (("C-." . embark-act))
+;;   :config
+;;   (setq prefix-help-command #'embark-prefix-help-command))
 
 ;; ======================================
 ;;; embark-consult
 ;; ======================================
-(use-package embark-consult
-  :ensure t
-  :after (embark consult)
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
+;; (use-package embark-consult
+;;   :ensure t
+;;   :after (embark consult)
+;;   :hook
+;;   (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; =======================================
 ;;; electric-pair-mode

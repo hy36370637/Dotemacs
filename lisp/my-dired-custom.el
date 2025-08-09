@@ -18,9 +18,10 @@
   :bind (:map dired-mode-map
               ("M-<up>" . my/dired-jump-to-top)
               ("M-<down>" . my/dired-jump-to-bottom)
+	      ("C-+" . dired-create-empty-file)
               ("C-<return>" . dired-do-open)
 	      ("C-c C-o" . dired-open-in-finder)
-              ("/" . dired-narrow)))
+              ("/" . dired-narrow))
 ;;              ("M-p" . dired-mpv-play-file))  ; mpv 재생 단축키 추가
   :config
   (defun sof/dired-sort ()
