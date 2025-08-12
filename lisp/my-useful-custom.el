@@ -59,29 +59,6 @@ Use option+left to select 《》."
     (setq-local ispell-local-dictionary "ko_KR")
     (flyspell-mode 1)))
 
-;; =======================================
-;;; gptel
-;; ======================================-
-;; (use-package gptel
-;;   :ensure nil
-;;   :if my-Macbook-p
-;;   :bind ("C-c G" . gptel)
-;;   :config
-;; ;;  (setq gptel-model "o1-preview")	;GPT-4o-mini
-;;   (setq gptel-model "gpt-4-turbo")	;GPT-4o-mini
-;;   (setq gptel-api-key
-;;         (plist-get
-;;          (car (auth-source-search :host "openai.com" :user "api_key"))
-;;          :secret)))
-
-;; ======================================
-;;; Magit
-;; ======================================
-(use-package magit
-  :bind (("C-x g" . magit-status))
-  :config
-  (setq magit-auto-revert-mode t))
-
 ;; ======================================
 ;;; Date,Time insert
 ;; ======================================
@@ -107,6 +84,39 @@ Use option+left to select 《》."
         (insert weekday-name)))
      (t (message "Invalid format selection.")))))
 (global-set-key (kbd "C-c p t") 'my/insert-today-stamp)
+
+;; =======================================
+;;; gptel
+;; ======================================-
+(use-package gptel
+  :ensure t
+  :if my-Macbook-p
+  :bind ("C-c p g" . gptel)
+  :config
+  ;; API 키 불러오기
+  (setq gptel-api-key
+        (funcall
+         (plist-get
+          (car (auth-source-search :host "gemini.google.com"
+                                   :user "api_key"))
+          :secret)))
+
+  ;; Gemini 백엔드 등록
+  (gptel-make-gemini "Gemini"
+    :key gptel-api-key
+    :models '("gemini-2.5-flash" "gemini-2.5-pro"))
+
+  ;; 기본 백엔드를 Gemini로 지정
+  (setq gptel-backend (gptel-get-backend "Gemini"))
+  (setq gptel-model "gemini-2.5-flash"))
+
+;; ======================================
+;;; Magit
+;; ======================================
+(use-package magit
+  :bind (("C-x g" . magit-status))
+  :config
+  (setq magit-auto-revert-mode t))
 
 ;; end here
 (provide 'my-useful-custom)
