@@ -13,12 +13,12 @@ If the selected text includes '날씨', perform a weather search using my/naver-
                     (buffer-substring-no-properties (region-beginning) (region-end))
                   ""))
         (search-option (completing-read "Choose option: " 
-                                         '("macOS Dictionary" "Naver" "Google" "Namuwiki" "날씨 검색"))))
+                                         '("macOS Dictionary" "Naver" "Google" "Namuwiki" "weather"))))
     (cond
-     ((string-equal search-option "날씨 검색")
-      (let ((city (read-string "도시명을 입력하세요: ")))
-        (my/naver-weather-search city)))
-     ((and (not (string-equal search-option "날씨 검색")) (string-empty-p query))
+     ((string-equal search-option "weather")
+      (let ((city (read-string "도시명 입력: ")))
+        (my-naver-weather-search city)))
+     ((and (not (string-equal search-option "weather")) (string-empty-p query))
       (message "텍스트를 선택해주세요."))
      (t
       (let ((url (cond 
@@ -35,9 +35,9 @@ If the selected text includes '날씨', perform a weather search using my/naver-
         (if (string-equal search-option "macOS Dictionary")
             (call-process "open" nil 0 nil url)
           (browse-url url)))))))
-;; (global-set-key (kbd "C-c w s") 'my-custom-search-text)
+;; (global-set-key (kbd "C-c p s") 'my-custom-search-text)
 
-(defun my/naver-weather-search (city)
+(defun my-naver-weather-search (city)
   "Search Naver weather information for the given CITY."
   (let ((encoded-city (url-hexify-string city)))
     (url-retrieve

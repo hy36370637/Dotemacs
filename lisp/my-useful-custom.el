@@ -83,7 +83,7 @@ Use option+left to select 《》."
         (insert (format-time-string "%Y-%m-%d "))
         (insert weekday-name)))
      (t (message "Invalid format selection.")))))
-(global-set-key (kbd "C-c p t") 'my/insert-today-stamp)
+(global-set-key (kbd "C-c p d") 'my/insert-today-stamp)
 
 ;; =======================================
 ;;; gptel
@@ -91,7 +91,7 @@ Use option+left to select 《》."
 (use-package gptel
   :ensure t
   :if my-Macbook-p
-  :bind ("C-c p g" . gptel)
+  :bind ("C-c n g" . gptel)
   :config
   ;; API 키 불러오기
   (setq gptel-api-key
@@ -114,9 +114,29 @@ Use option+left to select 《》."
 ;;; Magit
 ;; ======================================
 (use-package magit
-  :bind (("C-x g" . magit-status))
+  :bind (("C-c n m" . magit-status))
   :config
   (setq magit-auto-revert-mode t))
 
 ;; end here
 (provide 'my-useful-custom)
+
+;; ======================================
+;;; pdf-tools TEST
+;; ======================================
+;; viewer 동작, search 한글 인코딩 문제(깨짐)
+;; (use-package pdf-tools
+;;   :ensure t
+;;   :mode ("\\.pdf\\'" . pdf-view-mode)
+;;   :config
+;;   ;; epdfinfo 서버 경로 지정 (버전 번호 확인 필요)
+;;   (setq pdf-info-epdfinfo-program
+;;         (expand-file-name "~/.emacs.d/elpa/pdf-tools-20240429.407/epdfinfo"))
+
+;;     (setq pdf-info-server-encoding-system 'utf-8-unix)
+;;   ;; pdf-tools 초기화
+;;   (pdf-tools-install) ;; 여기서 서버 빌드 & 로드
+
+;;   ;; PDF 페이지를 화면에 맞게 표시
+;; ;;  (setq-default pdf-view-display-size 'fit-page)
+;;   (message "pdf-tools configuration loaded successfully."))

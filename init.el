@@ -74,9 +74,11 @@
 ;; =======================================
 ;;; MacOS keyboard
 ;; =======================================
+;; macOS 환경에서만 아래 설정을 적용
 (when my-mactop-p
-  (setq mac-right-command-modifier 'control)
-  )
+  (setq mac-command-modifier 'meta)
+  (setq mac-option-modifier 'super)
+)
 
 ;; =======================================
 ;;; Emacs UI and behavior
@@ -88,9 +90,6 @@
          make-backup-files nil
          kill-whole-line 1
          search-highlight t
-         scroll-margin 7
-         scroll-preserve-screen-position t
-         scroll-conservatively 101
          text-scale-mode-step 1.05  	;글꼴 확대축소 비율 5% 단위
 	 display-time-format "%m.%d(%a) %H:%M") ; 원하는 날짜/시간 형식
   :config
@@ -100,20 +99,18 @@
   (global-auto-revert-mode 1)
   (transient-mark-mode t)
   (column-number-mode t)
-  (display-time-mode 1)
+  (display-time-mode 1))
+
+(use-package emacs
   :bind
   ( :map global-map
-    ([f11] . nil)
     ("C-x f" . nil)
     ("C-x m". nil)
-    ("C-x o" . nil)
     ("C-x C-r" . restart-emacs)
-    ("M-o" . other-window)
-    ("C-c p s" .  my-custom-search-text)
-    ;; ("C-c p c" . my/select-special-character)
-    ;; ("C-c p C" . my/region-dblspecial-character)
-    ("C-c p t" . my/insert-today-stamp))
-  )
+    ("C-c p s" . my-custom-search-text)
+    ("C-c p t" . my-todays-pop)
+    ("C-c 0" . toggle-frame-fullscreen)
+  ))
 
 ;; =======================================
 ;;; Bookmark
@@ -158,6 +155,7 @@
   :config
   (setenv "LANG" "ko_KR.UTF-8")
   (setenv "LC_COLLATE" "C")
+;;  (setenv "POPPLER_DATADIR" "/opt/homebrew/share/poppler")   ;; Poppler CJK 매핑 경로 설정
 ;;  (set-language-environment "Korean")    ;for linux
   (set-locale-environment "ko_KR.UTF-8")
   (setq default-input-method "korean-hangul"
@@ -288,7 +286,6 @@
                 mode-line-modes
                 mode-line-format-right-align
                 mode-line-position
-;;                (:eval (my/mode-line-holiday))  ; 휴일 표시 추가		
 		"Ⓨ "
                 mode-line-misc-info))
 

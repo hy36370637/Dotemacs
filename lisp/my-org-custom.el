@@ -51,7 +51,7 @@
 ;; ======================================
 (use-package org-capture
   :ensure nil
-  :bind ("C-c o c" . org-capture)
+  :bind ("C-c n c" . org-capture)
   :config
    (setq org-capture-templates
 	 `(("d" "Daily" entry (file+datetree ,(my-org-person-file-path "Daily.org")) "* %?")
@@ -66,7 +66,7 @@
 ;; ======================================
 (use-package org
   :ensure nil
-  :bind ("C-c o a" . org-agenda)
+  :bind ("C-c a" . org-agenda)
   :config
   (setq org-agenda-files (list (my-org-person-file-path "Tasks.org")
                                (my-org-person-file-path "Daily.org")))

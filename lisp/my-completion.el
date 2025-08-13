@@ -165,7 +165,7 @@
 	("sDot"   "#+begin_center\n· · ·\n#+end_center")
 	("Option"  "#+OPTIONS: toc:2 num:2")
 	("Latex_header"  "#+LATEX_HEADER:")
-	("Inimg" "#+attr_latex: :width 0.5\\textwidth\n#+CAPTION: \n[[../org/img/imgJW/IMG_]]")
+	("Doimg" "#+attr_latex: :width 0.5\\textwidth\n#+CAPTION: \n[[../org/img/imgJW/IMG_]]")
 	))))
 
 ;; =======================================
@@ -194,6 +194,14 @@
   (setq dabbrev-minimum-length 3)  ; 최소 3글자 이상 입력해야 확장을 시도
   )
 
+;;
+;; (use-package company
+;;   :ensure t
+;;   :hook (prog-mode . company-mode))
+
+;; (use-package flycheck
+;;   :ensure t
+;;   :hook (prog-mode . flycheck-mode))
 
 
 ;; end here

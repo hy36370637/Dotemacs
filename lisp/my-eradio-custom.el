@@ -20,9 +20,9 @@
       (nreverse channels))))
 
 (use-package eradio
-  :bind(("C-c e p" . eradio-play)
-	("C-c e s" . eradio-stop)
-	("C-c e t" . eradio-toggle))
+  :bind(("C-c n P" . eradio-play)
+	("C-c n S" . eradio-stop)
+	("C-c n T" . eradio-toggle))
   :init
   (setq eradio-player '("/Applications/VLC.app/Contents/MacOS/VLC" "--no-video" "-I" "rc"))
 ;;  (setq eradio-player '("mpv" "--no-video"))

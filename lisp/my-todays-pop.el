@@ -44,7 +44,7 @@
       (format "/ D-day %d日前" (- diff-days)))))
 
 (defun my-todays-pop ()
-  "오늘의 정보. 일자, 일정 등"
+  "오늘의 정보. 일자, 일정 등"   ;Create Buffer
   (interactive)
   (let ((buffer (get-buffer-create "Today's Happy"))
         (current-date (format-time-string "● 오늘 %Y-%m-%d (%A) "))
@@ -75,6 +75,7 @@
       (let ((map (make-sparse-keymap)))
         (define-key map (kbd "q") (lambda () (interactive) (kill-this-buffer)))
         (use-local-map map)))
-    (switch-to-buffer buffer)))  ;; 버퍼 전환
+    (switch-to-buffer buffer)))
 
-;; (global-set-key (kbd "s-3") 'my-todays-pop)
+
+;;(global-set-key (kbd "C-c p t") 'my-todays-pop)
