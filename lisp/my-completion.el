@@ -19,14 +19,16 @@
   :init
   (vertico-mode)
   :custom
-  (vertico-resize t)
-  (vertico-cycle t))
-
+  (vertico-resize nil)    ; 크기 조정 비활성화로 성능 향상
+  (vertico-cycle t)
+  (vertico-count 20))   ; 표시할 항목 수 제한
+ 
 ;; ======================================
 ;;; marginalia
 ;; ======================================
 (use-package marginalia
   :ensure t
+  :defer 1  ; 1초 후 로딩
   :custom
   (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
   :init
@@ -56,13 +58,9 @@
 	 ("C-c c t" . consult-theme))
   :config
   (setq consult-buffer-sources
-        '(consult--source-buffer
-          consult--source-recent-file))
-  (setq consult-preview-key 'any)
-  ;; 북마크 정렬 설정
-  (setq consult-sort-function #'consult--alpha-sort)
-  :hook (completion-list-mode . consult-preview-at-point-mode))
-
+        (list consult--source-buffer
+              consult--source-recent-file))
+  (setq consult-preview-key 'any))
 ;; ======================================
 ;;; consult-dir
 ;; ======================================
@@ -156,13 +154,12 @@
 ;;; Org 모드 약어 테이블 설정
   (with-eval-after-load 'org
     (define-abbrev-table 'org-mode-abbrev-table
-      '(("Dsc" "#+DESCRIPTION: ")
-	("Title"   "#+TITLE:")
-	("Author" "#+AUTHOR: ")
-	("Keyword" "#+KEYWORDS: ")
+      '(("Dsc" "#+DESCRIPTION: ")     	("Title"   "#+TITLE:")
+	("Author" "#+AUTHOR: ")                ("Keyword" "#+KEYWORDS: ")
 	("Setfile"   "#+SETUPFILE: setLTH/Header.org")
 	("SetfileQV"   "#+SETUPFILE: setLTH/HeaderQV.org")
 	("sDot"   "#+begin_center\n· · ·\n#+end_center")
+	("Unum"  ":PROPERTIES:\n:UNNUMBERED: t\n:END:")
 	("Option"  "#+OPTIONS: toc:2 num:2")
 	("Latex_header"  "#+LATEX_HEADER:")
 	("Doimg" "#+attr_latex: :width 0.5\\textwidth\n#+CAPTION: \n[[../org/img/imgJW/IMG_]]")

@@ -91,6 +91,8 @@ Use option+left to select 《》."
 (use-package gptel
   :ensure t
   :if my-Macbook-p
+  :defer t
+  :commands (gptel)
   :bind ("C-c n g" . gptel)
   :config
   ;; API 키 불러오기
@@ -100,12 +102,10 @@ Use option+left to select 《》."
           (car (auth-source-search :host "gemini.google.com"
                                    :user "api_key"))
           :secret)))
-
   ;; Gemini 백엔드 등록
   (gptel-make-gemini "Gemini"
     :key gptel-api-key
     :models '("gemini-2.5-flash" "gemini-2.5-pro"))
-
   ;; 기본 백엔드를 Gemini로 지정
   (setq gptel-backend (gptel-get-backend "Gemini"))
   (setq gptel-model "gemini-2.5-flash"))
@@ -114,29 +114,12 @@ Use option+left to select 《》."
 ;;; Magit
 ;; ======================================
 (use-package magit
+  :defer t
+  :commands (magit-status magit-log magit-blame)
   :bind (("C-c n m" . magit-status))
   :config
   (setq magit-auto-revert-mode t))
 
+
 ;; end here
 (provide 'my-useful-custom)
-
-;; ======================================
-;;; pdf-tools TEST
-;; ======================================
-;; viewer 동작, search 한글 인코딩 문제(깨짐)
-;; (use-package pdf-tools
-;;   :ensure t
-;;   :mode ("\\.pdf\\'" . pdf-view-mode)
-;;   :config
-;;   ;; epdfinfo 서버 경로 지정 (버전 번호 확인 필요)
-;;   (setq pdf-info-epdfinfo-program
-;;         (expand-file-name "~/.emacs.d/elpa/pdf-tools-20240429.407/epdfinfo"))
-
-;;     (setq pdf-info-server-encoding-system 'utf-8-unix)
-;;   ;; pdf-tools 초기화
-;;   (pdf-tools-install) ;; 여기서 서버 빌드 & 로드
-
-;;   ;; PDF 페이지를 화면에 맞게 표시
-;; ;;  (setq-default pdf-view-display-size 'fit-page)
-;;   (message "pdf-tools configuration loaded successfully."))

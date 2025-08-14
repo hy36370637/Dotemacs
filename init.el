@@ -30,9 +30,14 @@
 ;; =======================================
 ;;; Configure use-package
 ;; =======================================
-(setq package-install-upgrade-built-in nil)         ; Prevent upgrading built-in packages
-(require 'use-package)			                        ;emacs 27+
-(setq use-package-always-ensure nil)	                ;emacs 29+
+;; 패키지 자동 로딩 최적화
+(setq package-install-upgrade-built-in nil
+      package-quickstart t)  ; 패키지 빠른 시작 활성화
+
+;; use-package 최적화
+(setq use-package-always-ensure nil
+      use-package-always-defer nil  
+      use-package-expand-minimally t) ; 매크로 확장 최소화
 
 ;; =======================================
 ;;; System info
@@ -44,7 +49,8 @@
 ;;; exec-path-from-shell
 ;; =======================================
 (use-package exec-path-from-shell
-;;  :if my-mactop-p
+  :if (eq system-type 'darwin)
+  :defer 2  ; 2초 후 로딩
   :config
   (exec-path-from-shell-initialize))
 
@@ -75,10 +81,10 @@
 ;;; MacOS keyboard
 ;; =======================================
 ;; macOS 환경에서만 아래 설정을 적용
-(when my-mactop-p
-  (setq mac-command-modifier 'meta)
-  (setq mac-option-modifier 'super)
-)
+; alfred snippets 불능. OS시스템 설정에서 키보드 교환
+;; (when my-mactop-p       
+;;   (setq mac-command-modifier 'meta)
+;;   (setq mac-option-modifier 'super))
 
 ;; =======================================
 ;;; Emacs UI and behavior
@@ -87,7 +93,6 @@
   :init
   (setq  default-directory (expand-file-name "~/Dropbox/Docs/org")
          temporary-file-directory "~/tmpdir/"
-         make-backup-files nil
          kill-whole-line 1
          search-highlight t
          text-scale-mode-step 1.05  	;글꼴 확대축소 비율 5% 단위
@@ -155,8 +160,6 @@
   :config
   (setenv "LANG" "ko_KR.UTF-8")
   (setenv "LC_COLLATE" "C")
-;;  (setenv "POPPLER_DATADIR" "/opt/homebrew/share/poppler")   ;; Poppler CJK 매핑 경로 설정
-;;  (set-language-environment "Korean")    ;for linux
   (set-locale-environment "ko_KR.UTF-8")
   (setq default-input-method "korean-hangul"
 	input-method-verbose-flag nil
@@ -166,11 +169,14 @@
 ;;; Fonts
 ;; =======================================
 (use-package emacs
+  :init
+  ;; 폰트 캐시 압축 비활성화 (전역 적용)
+  (setq inhibit-compacting-font-caches t)
   :config
-;;  (set-face-attribute 'default nil :family "D2Coding" :height 160)
-  (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
-  (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR"))
-
+  (when (display-graphic-p)
+    (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
+    (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
+    (set-fontset-font t 'hangul (font-spec :family "Noto Sans CJK KR"))))
 ;; =======================================
 ;;; Theme
 ;; =======================================
@@ -205,6 +211,7 @@
 ;; =======================================
 (use-package savehist
   :ensure nil
+  :demand t
   :init (savehist-mode 1)
   :config
   (setq history-length 10))
@@ -234,12 +241,13 @@
   :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
 
 ;; =======================================
-;;; recenfF
+;;; recentF
 ;; =======================================
 (use-package recentf
   :ensure nil
-  :config
+  :init
   (recentf-mode 1)
+  :config
   (setq recentf-max-menu-items 15)
   (setq recentf-max-saved-items 15))
 
@@ -294,6 +302,8 @@
 ;; =======================================
 (when my-Macbook-p
   (use-package battery
+    :ensure nil
+    :demand t  ; 즉시 로딩 강제
     :config
     (setq battery-status-function 'battery-pmset
           battery-mode-line-format "Ⓑ %p%% ")
