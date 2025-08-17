@@ -19,7 +19,7 @@
   :init
   (vertico-mode)
   :custom
-  (vertico-resize nil)    ; 크기 조정 비활성화로 성능 향상
+  (vertico-resize t)    ; 크기 조정 비활성화로 성능 
   (vertico-cycle t)
   (vertico-count 20))   ; 표시할 항목 수 제한
  
@@ -49,13 +49,12 @@
 (use-package consult
   :ensure t
   :bind (("C-x b" . consult-buffer)
-	 ("C-c c b" . consult-bookmark)
+	 ("C-x C-r" . consult-recent-file)
+	 ("C-c B" . consult-bookmark)
 ;;	 ("C-c c d" . consult-dir)
-	 ("C-c c f" . consult-find)
-	 ("C-c c g" . consult-grep)
-	 ("C-c c l" . consult-line)
-	 ("C-c c r" . consult-recent-file)
-	 ("C-c c t" . consult-theme))
+	 ("M-s f" . consult-find)
+	 ("M-s g" . consult-grep)
+	 ("M-s l" . consult-line))
   :config
   (setq consult-buffer-sources
         (list consult--source-buffer

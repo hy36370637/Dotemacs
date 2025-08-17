@@ -66,7 +66,7 @@
       (insert left-margin current-date d-day)    ;; 날짜 삽입
       (insert (format "\n%s● 일정\n" left-margin))
       (insert (replace-regexp-in-string "^" quote-margin agenda-string))  ;; 일정 삽입 (각 줄마다 여백 추가)
-      (insert (format "\n%s● 인용구\n" left-margin))
+      (insert (format "\n%s● 글말\n" left-margin))
       (insert (replace-regexp-in-string "^" quote-margin random-quote))  ;; 인용구 삽입 (각 줄마다 여백 추가)
       (goto-char (point-min))                    ;; 커서를 버퍼의 맨 처음으로 이동
       (goto-line 2)

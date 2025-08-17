@@ -49,7 +49,7 @@
 ;;; exec-path-from-shell
 ;; =======================================
 (use-package exec-path-from-shell
-  :if (eq system-type 'darwin)
+  :if my-mactop-p
   :defer 2  ; 2초 후 로딩
   :config
   (exec-path-from-shell-initialize))
@@ -65,10 +65,7 @@
 ;; autoload 처리
 (autoload 'my-custom-search-text "my-web-search" "macDic, Naver, 구글 or 나무위키, 날씨 검색." t)
 (autoload 'my/naver-weather-search "my-web-search" "Naver 날씨." t)
-;;(global-set-key (kbd "C-c p s") 'my-custom-search-text)
-
 (autoload 'my-todays-pop "my-todays-pop" "오늘 정보 등" t)
-;;(global-set-key (kbd "s-3") 'my-todays-pop)
 
 ;; my-autoload-files 변수에 지정된 파일을 제외한 나머지 .el 파일 로드.
 (dolist (file (directory-files "~/.emacs.d/lisp" t "\\.el$"))
@@ -111,7 +108,6 @@
   ( :map global-map
     ("C-x f" . nil)
     ("C-x m". nil)
-    ("C-x C-r" . restart-emacs)
     ("C-c p s" . my-custom-search-text)
     ("C-c p t" . my-todays-pop)
     ("C-c 0" . toggle-frame-fullscreen)
@@ -121,17 +117,12 @@
 ;;; Bookmark
 ;; =======================================
 (use-package bookmark
-  :ensure nil				;built-in
-  :commands (bookmark-set bookmark-jump bookmark-bmenu-list)
-  :init
-  (setq bookmark-save-flag 1
-        bookmark-sort-flag nil
-        bookmark-default-file "~/.emacs.d/bookmarks")
-  :config
-  (defun my/bookmark-save-automatically (&rest _)
-    (when (boundp 'bookmark-alist)
-      (bookmark-save)))
-  (advice-add 'bookmark-set :after #'my/bookmark-save-automatically)
+  :ensure nil                                        ;; built in
+  :custom
+  (bookmark-save-flag 1)                ;; 변경 때마다 자동 저장
+  (bookmark-sort-flag nil)              ;; 정렬 안 함(입력 순서 유지)
+  (bookmark-default-file
+   (expand-file-name "bookmarks" user-emacs-directory)) ;; 경로 이식성
   :bind
   (("C-x r m" . bookmark-set)
    ("C-x r b" . bookmark-jump)
@@ -204,7 +195,8 @@
    ("C-h k" . helpful-key)
    ("C-c C-d" . helpful-at-point)
    ("C-h F" . helpful-function)
-   ("C-h C" . helpful-command)))
+   ("C-h C" . helpful-command)
+   ))
 
 ;; =======================================
 ;;; Session and Place Persistence
@@ -272,29 +264,42 @@
 ;; =======================================
 ;;; Modeline
 ;; =======================================
+;; 이미지 아이콘 (GUI에서 사용)
 (defvar ko-indicator (create-image "~/.emacs.d/img-indicator/han2.tiff" 'tiff nil :ascent 'center))
 (defvar en-indicator (create-image "~/.emacs.d/img-indicator/qwerty.tiff" 'tiff nil :ascent 'center))
+
 (setq mode-line-right-align-edge 'right-margin)
+
 (setq-default mode-line-format
               '("%e "
                 mode-line-front-space
-		;; (:eval (propertize
-                ;;         (if (string= current-input-method "korean-hangul")
-                ;;             "KO" "EN")))
-		(:eval (propertize " "
-				   'display
-				   (if (string= current-input-method "korean-hangul")
-				       ko-indicator
-				     en-indicator)))
+
+                ;; 입력기 상태: GUI=이미지+툴팁, 터미널=텍스트(“KO/EN”) + 툴팁
+                (:eval
+                 (let* ((is-ko (equal current-input-method "korean-hangul"))
+                        (img    (if is-ko ko-indicator en-indicator))
+                        (label  (if is-ko "KO" "EN"))
+                        (tip    (if is-ko "KO"
+                                  "EN"))
+                        ;; GUI이며 해당 이미지 타입을 쓸 수 있을 때만 아이콘 표시
+                        (use-img (and (display-graphic-p)
+                                      (image-type-available-p 'tiff))))
+                   (if use-img
+                       ;; GUI: 이미지 아이콘(대체텍스트=label), 마우스오버 툴팁
+                       (propertize label
+                                   'display   img
+                                   'help-echo tip)
+                     ;; 터미널/이미지 불가: 텍스트 라벨로 직접 표시
+                     (propertize label
+                                 'help-echo tip))))
                 "   "
                 "Ⓗ "
                 mode-line-buffer-identification
                 mode-line-frame-identification
-;;                " Ⓨ "
                 mode-line-modes
                 mode-line-format-right-align
                 mode-line-position
-		"Ⓨ "
+                "Ⓨ "
                 mode-line-misc-info))
 
 ;; =======================================

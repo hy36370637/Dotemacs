@@ -1,6 +1,6 @@
 ;; early-init.el
-;; early-init.el
-;; 더 적극적인 GC 설정
+;;;
+;; 초기 GC 설정
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.6
       read-process-output-max (* 1024 1024 4))  ; 4MB로 증가
@@ -23,19 +23,41 @@
       make-backup-files nil
       create-lockfiles nil
       auto-save-list-file-prefix nil)
+
+;;;;; emacs 30.2 build err FIX START
+;; Homebrew GCC 경로 설정 (Apple Silicon)
+(let* ((gcc-bin "/opt/homebrew/opt/gcc/bin")
+       (gcc-libcur "/opt/homebrew/opt/gcc/lib/gcc/current"))
+  
+  ;; PATH/exec-path 보강
+  (when (file-directory-p gcc-bin)
+    (setenv "PATH" (mapconcat #'identity
+                              (delete-dups
+                               (list gcc-bin
+                                     "/opt/homebrew/bin"
+                                     (getenv "PATH")))
+                              ":"))
+    (add-to-list 'exec-path gcc-bin))
+  
+  ;; libgccjit 설정
+  (when (file-directory-p gcc-libcur)
+    (setenv "LIBGCCJIT_EXEC_PREFIX" (concat gcc-libcur "/"))
+    (setenv "LIBRARY_PATH" gcc-libcur)))
+;;;;; emacs 30.2 build err FIX END
+
 ;; ======================================
 ;;; Emacs UI (초기 설정)
 ;; ======================================
-;;  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-
 (use-package emacs
   :init
   (setq inhibit-startup-message t
 	visible-bell t
 	initial-scratch-message nil
 	use-dialog-box nil))
+
+;;  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
 
 ;; ======================================
 ;;; Package initialization (기본 설정)
