@@ -48,11 +48,26 @@
 ;; =======================================
 ;;; exec-path-from-shell
 ;; =======================================
-(use-package exec-path-from-shell
-  :if my-mactop-p
-  :defer 2  ; 2초 후 로딩
-  :config
-  (exec-path-from-shell-initialize))
+(when my-mactop-p  ; macOS에서만 실행
+  (use-package exec-path-from-shell
+    :defer 2     ; 2초 후 로딩
+    :config
+    ;; shell에서 환경변수들을 가져올 변수명 지정
+    (setq exec-path-from-shell-variables '("PATH" "MANPATH" "LIBRARY_PATH"))
+    ;; shell PATH를 Emacs로 가져오기
+    (exec-path-from-shell-initialize)))
+
+;; =======================================
+;;; Homebrew GCC 설정 (macOS only)
+;; =======================================
+(when my-mactop-p
+  (let* ((gcc-bin "/opt/homebrew/opt/gcc/bin")
+         (gcc-libcur "/opt/homebrew/opt/gcc/lib/gcc/current"))
+    
+    ;; libgccjit 설정
+    (when (file-directory-p gcc-libcur)
+      (setenv "LIBGCCJIT_EXEC_PREFIX" (concat gcc-libcur "/"))
+      (setenv "LIBRARY_PATH" gcc-libcur))))
 
 ;; =======================================
 ;;; Load custom packages

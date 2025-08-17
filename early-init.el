@@ -24,27 +24,6 @@
       create-lockfiles nil
       auto-save-list-file-prefix nil)
 
-;;;;; emacs 30.2 build err FIX START
-;; Homebrew GCC 경로 설정 (Apple Silicon)
-(let* ((gcc-bin "/opt/homebrew/opt/gcc/bin")
-       (gcc-libcur "/opt/homebrew/opt/gcc/lib/gcc/current"))
-  
-  ;; PATH/exec-path 보강
-  (when (file-directory-p gcc-bin)
-    (setenv "PATH" (mapconcat #'identity
-                              (delete-dups
-                               (list gcc-bin
-                                     "/opt/homebrew/bin"
-                                     (getenv "PATH")))
-                              ":"))
-    (add-to-list 'exec-path gcc-bin))
-  
-  ;; libgccjit 설정
-  (when (file-directory-p gcc-libcur)
-    (setenv "LIBGCCJIT_EXEC_PREFIX" (concat gcc-libcur "/"))
-    (setenv "LIBRARY_PATH" gcc-libcur)))
-;;;;; emacs 30.2 build err FIX END
-
 ;; ======================================
 ;;; Emacs UI (초기 설정)
 ;; ======================================
