@@ -73,18 +73,18 @@
 ;;; Load custom packages
 ;; =======================================
 ;; 사용자 Lisp 디렉토리를 load-path에 추가.
-(add-to-list 'load-path "~/.emacs.d/lisp/")
-;; autoload할 파일 목록, 변수 정의.
-(setq my-autoload-files '("my-web-search.el" "my-todays-pop.el"))
+(add-to-list 'load-path my/lisp-path)
 
+;; autoload할 파일 목록, 변수 정의.
+(setq my-autoload-files '("my-web-search.elc" "my-todays-pop.elc"))
 ;; autoload 처리
 (autoload 'my-custom-search-text "my-web-search" "macDic, Naver, 구글 or 나무위키, 날씨 검색." t)
 (autoload 'my/naver-weather-search "my-web-search" "Naver 날씨." t)
 (autoload 'my-todays-pop "my-todays-pop" "오늘 정보 등" t)
 
 ;; my-autoload-files 변수에 지정된 파일을 제외한 나머지 .el 파일 로드.
-(dolist (file (directory-files "~/.emacs.d/lisp" t "\\.el$"))
- (condition-case err
+(dolist (file (directory-files (expand-file-name "lisp" user-emacs-directory) t "\\.elc$"))
+  (condition-case err
       (unless (member (file-name-nondirectory file) my-autoload-files)
         (load file))
     (error (message "Error loading %s: %s" file err))))
@@ -137,11 +137,7 @@
   (bookmark-save-flag 1)                ;; 변경 때마다 자동 저장
   (bookmark-sort-flag nil)              ;; 정렬 안 함(입력 순서 유지)
   (bookmark-default-file
-   (expand-file-name "bookmarks" user-emacs-directory)) ;; 경로 이식성
-  :bind
-  (("C-x r m" . bookmark-set)
-   ("C-x r b" . bookmark-jump)
-   ("C-x r l" . bookmark-bmenu-list)))
+   (expand-file-name "bookmarks" user-emacs-directory)))
 
 ;; =======================================
 ;;; Register
@@ -151,13 +147,10 @@
   :config
   (setq register-preview-delay 0
         register-preview-function #'register-preview-default)
-  (set-register ?i '(file . "~/.emacs.d/init.el"))
+  (set-register ?i `(file . ,(expand-file-name "init.el" user-emacs-directory)))
   (set-register ?r `(file . ,(concat my/org-person-dir "cReading.org")))
   (set-register ?d `(file . ,(concat my/org-person-dir "Daily.org")))
-  (set-register ?n `(file . ,(concat my/org-person-dir "cNotes.org")))
-  :bind
-  (("C-x r j" . jump-to-register)
-   ("C-x r i" . insert-register)))
+  (set-register ?n `(file . ,(concat my/org-person-dir "cNotes.org"))))
 
 ;; =======================================
 ;;; Locale and Korean settings
@@ -183,6 +176,7 @@
     (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
     (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
     (set-fontset-font t 'hangul (font-spec :family "Noto Sans CJK KR"))))
+
 ;; =======================================
 ;;; Theme
 ;; =======================================

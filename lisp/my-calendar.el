@@ -7,25 +7,9 @@
 (defun my/setup-calendar-holidays ()
   "Set up custom holidays and solar terms for the calendar."
   (setq my-holidays
-        '((holiday-fixed 1 1 "새해")
-;;          (holiday-chinese  1  1 "설날")
-          (holiday-fixed 1 29 "딸日")
-;;          (holiday-fixed 3 1 "삼일절")
-          (holiday-fixed 3 19 "결혼일")
-;;          (holiday-chinese  4  8 "석탄일")
-;;          (holiday-fixed 5 5 "어린이날")
-;;          (holiday-fixed 6 6 "현충일")
+        '((holiday-fixed 1 29 "딸日")
+          (holiday-fixed 3 19 "결혼日")
           (holiday-fixed 6 10 "아들日")))
-;;          (holiday-fixed 7 17 "제헌절")
-         ;; (holiday-chinese  7  21 "장인제")
-         ;; (holiday-chinese  8  4 "조부제")
-          ;; (holiday-fixed 8 15 "광복절")
-          ;; (holiday-chinese  9  3 "母生")
-          ;; (holiday-chinese  9  5 "父祭")
-;;          (holiday-fixed 10 3 "개천절")
-;;          (holiday-fixed 10 9 "한글날")
-;;          (holiday-chinese  11  9 "장모생신")
-;;          (holiday-fixed 12 25 "성탄절")))
   ;; 24절기 설정
   (setq 24solar-holidays
         '((holiday-fixed 2 4 "입춘")
