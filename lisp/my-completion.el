@@ -52,7 +52,6 @@
 	 ("C-x C-r" . consult-recent-file)
 	 ("C-c B" . consult-bookmark)
 	 ("C-c R" . consult-register)
-;;	 ("C-c c d" . consult-dir)
 	 ("M-s f" . consult-find)
 	 ("M-s g" . consult-grep)
 	 ("M-s l" . consult-line))

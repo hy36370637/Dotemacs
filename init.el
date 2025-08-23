@@ -61,13 +61,43 @@
 ;;; Homebrew GCC 설정 (macOS only)
 ;; =======================================
 (when my-mactop-p
-  (let* ((gcc-bin "/opt/homebrew/opt/gcc/bin")
-         (gcc-libcur "/opt/homebrew/opt/gcc/lib/gcc/current"))
+  ;; 네이티브 컴파일 경고를 완전히 억제
+  (setq native-comp-async-report-warnings-errors 'silent)
+  (setq warning-suppress-log-types '((comp) (bytecomp)))
+  (setq warning-suppress-types '((comp) (bytecomp)))
+  
+  (let* ((homebrew-base "/opt/homebrew")
+         (gcc-base (concat homebrew-base "/opt/gcc"))
+         (gcc-bin (concat gcc-base "/bin"))
+         (gcc-version "15")
+         ;; libgccjit 경로
+         (libgccjit-base (concat homebrew-base "/Cellar/libgccjit/15.1.0"))
+         (libgccjit-lib (concat libgccjit-base "/lib/gcc/current"))
+         (libgccjit-include (concat libgccjit-base "/include")))
     
-    ;; libgccjit 설정
-    (when (file-directory-p gcc-libcur)
-      (setenv "LIBGCCJIT_EXEC_PREFIX" (concat gcc-libcur "/"))
-      (setenv "LIBRARY_PATH" gcc-libcur))))
+    ;; GCC와 libgccjit 경로 확인
+    (when (and (file-directory-p gcc-bin) 
+               (file-exists-p (concat libgccjit-lib "/libgccjit.0.dylib")))
+      
+      ;; PATH 설정
+      (setq exec-path (cons gcc-bin exec-path))
+      (setenv "PATH" (concat gcc-bin ":" (getenv "PATH")))
+      
+      ;; 컴파일러 지정
+      (setenv "CC" (concat gcc-bin "/gcc-" gcc-version))
+      (setenv "CXX" (concat gcc-bin "/g++-" gcc-version))
+      
+      ;; libgccjit 환경변수
+      (setenv "LIBGCCJIT_EXEC_PREFIX" (concat libgccjit-lib "/"))
+      (setenv "LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LIBRARY_PATH") "")))
+      (setenv "LD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LD_LIBRARY_PATH") "")))
+      (setenv "DYLD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "DYLD_LIBRARY_PATH") "")))
+      
+      ;; 네이티브 컴파일러 옵션 - 최소한으로 설정
+      (setq native-comp-driver-options nil)  ; 기본값 사용
+      (setq native-comp-speed 2)
+      
+      (message "GCC-15 and libgccjit configured (warnings suppressed)"))))
 
 ;; =======================================
 ;;; Load custom packages
@@ -76,14 +106,14 @@
 (add-to-list 'load-path my/lisp-path)
 
 ;; autoload할 파일 목록, 변수 정의.
-(setq my-autoload-files '("my-web-search.elc" "my-todays-pop.elc"))
+(setq my-autoload-files '("my-web-search.el" "my-todays-pop.el"))
 ;; autoload 처리
 (autoload 'my-custom-search-text "my-web-search" "macDic, Naver, 구글 or 나무위키, 날씨 검색." t)
 (autoload 'my/naver-weather-search "my-web-search" "Naver 날씨." t)
 (autoload 'my-todays-pop "my-todays-pop" "오늘 정보 등" t)
 
 ;; my-autoload-files 변수에 지정된 파일을 제외한 나머지 .el 파일 로드.
-(dolist (file (directory-files (expand-file-name "lisp" user-emacs-directory) t "\\.elc$"))
+(dolist (file (directory-files (expand-file-name "lisp" user-emacs-directory) t "\\.el$"))
   (condition-case err
       (unless (member (file-name-nondirectory file) my-autoload-files)
         (load file))
