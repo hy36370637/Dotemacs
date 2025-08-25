@@ -9,7 +9,7 @@
   (interactive)
   (let ((choi '("·"  "→"  "⇒"   "※"  "…"  "―" "《》")))
     (insert (completing-read "선택: " choi))))
-(global-set-key (kbd "C-c p c") 'my/select-special-character)
+(global-set-key (kbd "C-c n c") 'my/select-special-character)
 
 (defun my/region-dblspecial-characters (start end)
   "Insert special characters around the selected region.
@@ -40,7 +40,7 @@ Use option+left to select 《》."
                     ((equal choice "\"\"") "\"")
                     ((equal choice "《》") "《"))))))
 
-(global-set-key (kbd "C-c p C") 'my/region-dblspecial-characters)
+(global-set-key (kbd "C-c n C") 'my/region-dblspecial-characters)
 
 ;; =======================================
 ;;; Hunspell 설정
@@ -83,7 +83,7 @@ Use option+left to select 《》."
         (insert (format-time-string "%Y-%m-%d "))
         (insert weekday-name)))
      (t (message "Invalid format selection.")))))
-(global-set-key (kbd "C-c p d") 'my/insert-today-stamp)
+(global-set-key (kbd "C-c n d") 'my/insert-today-stamp)
 
 ;; =======================================
 ;;; gptel

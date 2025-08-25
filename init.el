@@ -102,22 +102,30 @@
 ;; =======================================
 ;;; Load custom packages
 ;; =======================================
-;; 사용자 Lisp 디렉토리를 load-path에 추가.
+;; Emacs 24.4+ 에서 자동으로 최신 파일(.el vs .elc) 선택
+(when (fboundp 'load-prefer-newer)
+  (setq load-prefer-newer t))
+
+;; 사용자 Lisp 디렉토리를 load-path에 추가
 (add-to-list 'load-path my/lisp-path)
 
-;; autoload할 파일 목록, 변수 정의.
-(setq my-autoload-files '("my-web-search.el" "my-todays-pop.el"))
-;; autoload 처리
+;; autoload할 파일 목록 (확장자 제외 - .el/.elc 자동 처리)
+(setq my-autoload-files '("my-web-search" "my-todays-pop"))
+
+;; autoload 처리 - Emacs가 자동으로 .el/.elc 선택
 (autoload 'my-custom-search-text "my-web-search" "macDic, Naver, 구글 or 나무위키, 날씨 검색." t)
 (autoload 'my/naver-weather-search "my-web-search" "Naver 날씨." t)
 (autoload 'my-todays-pop "my-todays-pop" "오늘 정보 등" t)
 
-;; my-autoload-files 변수에 지정된 파일을 제외한 나머지 .el 파일 로드.
-(dolist (file (directory-files (expand-file-name "lisp" user-emacs-directory) t "\\.el$"))
-  (condition-case err
-      (unless (member (file-name-nondirectory file) my-autoload-files)
-        (load file))
-    (error (message "Error loading %s: %s" file err))))
+;; 효율적인 파일 로딩 - load-prefer-newer가 자동으로 처리
+(let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
+  (dolist (file (directory-files lisp-dir t "\\.el$"))
+    (condition-case err
+        (let ((base-name (file-name-sans-extension (file-name-nondirectory file))))
+          (unless (member base-name my-autoload-files)
+            ;; load 함수가 자동으로 .el/.elc 중 최신 파일 선택
+            (load (file-name-sans-extension file) nil t)))
+      (error (message "Error loading %s: %s" file err)))))
 
 ;; =======================================
 ;;; MacOS keyboard
@@ -153,8 +161,8 @@
   ( :map global-map
     ("C-x f" . nil)
     ("C-x m". nil)
-    ("C-c p s" . my-custom-search-text)
-    ("C-c p t" . my-todays-pop)
+    ("C-c n s" . my-custom-search-text)
+    ("C-c n t" . my-todays-pop)
     ("C-c 0" . toggle-frame-fullscreen)
   ))
 
@@ -281,16 +289,6 @@
   :config
   (setq recentf-max-menu-items 15)
   (setq recentf-max-saved-items 15))
-
-;; =======================================
-;;; hi-line
-;; =======================================
-;; (use-package hl-line
-;;   :ensure nil
-;;   :custom
-;;   (hl-line-sticky-flag nil)
-;;   :hook
-;;   ((dired-mode text-mode emacs-lisp-mode) . hl-line-mode))
 
 ;; =======================================
 ;;; Eshell

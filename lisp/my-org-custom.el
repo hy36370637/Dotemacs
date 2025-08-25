@@ -15,7 +15,7 @@
   :mode ("\\.org\\'" . org-mode)
   ;; 전역 단축키 설정 - :bind 섹션에서
   :bind (("C-c a" . org-agenda)
-         ("C-c n c" . org-capture))
+         ("C-c C" . org-capture))
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org/"))
   (org-startup-indented t)

@@ -46,6 +46,9 @@
 ;; ======================================
 ;;; consult
 ;; ======================================
+(setq enable-recursive-minibuffers t) ; for consut-dir
+(minibuffer-depth-indicate-mode 1)  ;; 선택: 깊이 표시
+
 (use-package consult
   :ensure t
   :bind (("C-x b" . consult-buffer)
@@ -64,13 +67,13 @@
 ;; ======================================
 ;;; consult-dir
 ;; ======================================
-;; (use-package consult-dir
-;;   :ensure nil)
-  ;; :after vertico
-  ;; :bind (("C-x c-d" . consult-dir)
-  ;;         :map vertico-map
-  ;;        ("C-x c-d" . consult-dir)
-  ;; 	 ("C-x c-j" . consult-dir-jump-file)))
+(use-package consult-dir
+  :ensure nil
+  :after vertico
+  :bind (("C-c D" . consult-dir)
+          :map vertico-map
+         ("C-c D" . consult-dir)
+	 ("C-x c-j" . consult-dir-jump-file)))
 
 ;; ======================================
 ;;; embark

@@ -20,10 +20,10 @@
       (nreverse channels))))
 
 (use-package eradio
-  :bind(("C-c n P" . eradio-play)
-	("C-c n S" . eradio-stop)
-	("C-c n T" . eradio-toggle))
-  :init
+  :bind(("C-c e p" . eradio-play)
+	("C-c e s" . eradio-stop)
+	("C-c e t" . eradio-toggle))
+:init
   (setq eradio-player '("/Applications/VLC.app/Contents/MacOS/VLC" "--no-video" "-I" "rc"))
 ;;  (setq eradio-player '("mpv" "--no-video"))
   (setq eradio-channels (load-eradio-channels-from-file (concat my/lisp-path "mmslist.txt"))))
