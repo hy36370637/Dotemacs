@@ -95,9 +95,9 @@
       
       ;; 네이티브 컴파일러 옵션 - 최소한으로 설정
       (setq native-comp-driver-options nil)  ; 기본값 사용
-      (setq native-comp-speed 2)
+      (setq native-comp-speed 2))))
       
-      (message "GCC-15 and libgccjit configured (warnings suppressed)"))))
+;;      (message "GCC-15 and libgccjit configured (warnings suppressed)"))))
 
 ;; =======================================
 ;;; Load custom packages
@@ -117,7 +117,6 @@
 (autoload 'my/naver-weather-search "my-web-search" "Naver 날씨." t)
 (autoload 'my-todays-pop "my-todays-pop" "오늘 정보 등" t)
 
-;; 효율적인 파일 로딩 - load-prefer-newer가 자동으로 처리
 (let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
   (dolist (file (directory-files lisp-dir t "\\.el$"))
     (condition-case err
@@ -132,9 +131,10 @@
 ;; =======================================
 ;; macOS 환경에서만 아래 설정을 적용
 ; alfred snippets 불능. OS시스템 설정에서 키보드 교환
-;; (when my-mactop-p       
-;;   (setq mac-command-modifier 'meta)
-;;   (setq mac-option-modifier 'super))
+(when my-mactop-p
+   (setq mac-right-option-modifier 'none))
+  ;; (setq mac-command-modifier 'meta)
+  ;; (setq mac-option-modifier 'super))
 
 ;; =======================================
 ;;; Emacs UI and behavior
@@ -145,8 +145,7 @@
          temporary-file-directory "~/tmpdir/"
          kill-whole-line 1
          search-highlight t
-         text-scale-mode-step 1.05  	;글꼴 확대축소 비율 5% 단위
-	 display-time-format "%m.%d(%a) %H:%M") ; 원하는 날짜/시간 형식
+         text-scale-mode-step 1.05)                                      	; 글꼴 확대축소 비율 5% 단위
   :config
   (setq-default line-spacing 0.2)
   (global-font-lock-mode 1)
@@ -299,18 +298,28 @@
   (setq eshell-destroy-buffer-when-process-dies t))
 
 ;; =======================================
+;;; Time
+;; =======================================
+;; modeline display time
+(use-package time
+  :ensure nil
+  :hook (after-init . display-time-mode)
+  :custom
+  (display-time-24hr-format t);; 24-hour system
+  (display-time-format "%y-%m-%d %a %H:%M")
+  (display-time-day-and-date t) ;; Show time, day, date
+  )
+
+;; =======================================
 ;;; Modeline
 ;; =======================================
 ;; 이미지 아이콘 (GUI에서 사용)
 (defvar ko-indicator (create-image "~/.emacs.d/img-indicator/han2.tiff" 'tiff nil :ascent 'center))
 (defvar en-indicator (create-image "~/.emacs.d/img-indicator/qwerty.tiff" 'tiff nil :ascent 'center))
-
 (setq mode-line-right-align-edge 'right-margin)
-
 (setq-default mode-line-format
               '("%e "
                 mode-line-front-space
-
                 ;; 입력기 상태: GUI=이미지+툴팁, 터미널=텍스트(“KO/EN”) + 툴팁
                 (:eval
                  (let* ((is-ko (equal current-input-method "korean-hangul"))

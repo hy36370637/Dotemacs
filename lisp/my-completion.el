@@ -112,9 +112,9 @@
 ;;; rainbow-delimiters
 ;; ======================================
 ;; 괄호, 중괄호, 각종 쌍을 시각적(무지개색) 구분
-(use-package rainbow-delimiters
-  :defer nil
-  :hook (prog-mode . rainbow-delimiters-mode))
+;; (use-package rainbow-delimiters
+;;   :defer nil
+;;   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; =======================================
 ;;; completion-preview
@@ -171,7 +171,7 @@
 ;; **hippie-expand 패키지 설정 (dabbrev 관련 설정 통합)**
 (use-package hippie-expand
   :ensure nil ; 내장 패키지이므로 ensure nil
-  :bind (("s-;" . hippie-expand)) ;
+  :bind (("C-c SPC" . hippie-expand)) ;
   :config
   ;; hippie-expand가 시도할 확장 함수들의 순서를 정의
   (setq hippie-expand-try-functions-list

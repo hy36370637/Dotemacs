@@ -79,3 +79,7 @@
 
 
 ;;(global-set-key (kbd "C-c p t") 'my-todays-pop)
+
+
+;;end here
+(provide 'my-todays-pop)

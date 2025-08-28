@@ -1,6 +1,7 @@
 ;;; -*- lexical-binding: t; -*-
 ;; /.emacs.d/lisp/my-calendar.el
 
+;;;###autoload
 ;; ======================================
 ;;; holidays/calendar
 ;; ======================================
@@ -18,6 +19,7 @@
         (push (list next-month day "녹동장") holidays)))
     holidays))
 
+;;;###autoload
 (defun my/setup-calendar-holidays ()
   "Set up custom holidays and solar terms for the calendar."
   (setq my-holidays

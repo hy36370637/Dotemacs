@@ -4,6 +4,7 @@
 ;; =======================================
 ;;; 특수문자 입력
 ;; ======================================-
+;;;###autoload
 (defun my/select-special-character ()
   "Prompt the user to select a special character and insert it at point."
   (interactive)
@@ -11,6 +12,7 @@
     (insert (completing-read "선택: " choi))))
 (global-set-key (kbd "C-c n c") 'my/select-special-character)
 
+;;;###autoload
 (defun my/region-dblspecial-characters (start end)
   "Insert special characters around the selected region.
 Use arrow keys to choose between 「」, 『』, '', and \"\".
@@ -62,6 +64,7 @@ Use option+left to select 《》."
 ;; ======================================
 ;;; Date,Time insert
 ;; ======================================
+;;;###autoload
 (defun my/insert-today-stamp ()
   "Insert a date stamp based on user selection using arrow keys."
   (interactive)
