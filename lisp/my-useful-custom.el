@@ -49,7 +49,7 @@ Use option+left to select 《》."
 ;; ======================================-
 (use-package ispell
   :if my-mactop-p
-  :hook (text-mode . my-enable-korean-spell-check)
+;;  :hook (text-mode . my-enable-korean-spell-check)
   :config
   (setq ispell-program-name "hunspell")
   (setq ispell-local-dictionary-alist

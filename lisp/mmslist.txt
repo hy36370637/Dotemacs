@@ -1,7 +1,8 @@
 1.cbsMusic|https://m-aac.cbs.co.kr/mweb_cbs939/_definst_/cbs939.stream/chunklist.m3u8
 2.bbsRadio|http://bbslive.clouducs.com:1935/bbsradio-live/livestream/playlist.m3u8
 3.kbsHappyFM|http://serpent0.duckdns.org:8088/kbs2radio.pls
-4.kbsClassic|http://serpent0.duckdns.org:8088/kbsfm.pls
-5.bbsWoolimFM|rtmp://btn.nowcdn.co.kr/btn_ch4st/live.stream
-6.Sunshine radio|http://ec1.yesstreaming.net:1380/stream
-7.cbsFM|https://m-aac.cbs.co.kr/mweb_cbs981/_definst_/cbs981.stream/chunklist.m3u8
+4.kbs3RadioFM|https://radio.bsod.kr/stream/?stn=kbs&ch=3radio
+5.kbsClassic|http://serpent0.duckdns.org:8088/kbsfm.pls
+6.bbsWoolimFM|rtmp://btn.nowcdn.co.kr/btn_ch4st/live.stream
+7.Sunshine radio|http://ec1.yesstreaming.net:1380/stream
+8.cbsFM|https://m-aac.cbs.co.kr/mweb_cbs981/_definst_/cbs981.stream/chunklist.m3u8

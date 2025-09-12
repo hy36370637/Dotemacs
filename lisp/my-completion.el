@@ -162,6 +162,7 @@
 	("sDot"   "#+begin_center\n· · ·\n#+end_center")
 	("Unum"  ":PROPERTIES:\n:UNNUMBERED: t\n:END:")
 	("Option"  "#+OPTIONS: toc:2 num:2")
+	("Grayq"  "#+ATTR_LATEX: :environment grayquote")
 	("Doimg" "#+attr_latex: :width 0.5\\textwidth\n#+CAPTION: \n[[../org/img/imgJW/IMG_]]")
 	))))
 

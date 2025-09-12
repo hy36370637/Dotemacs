@@ -142,7 +142,7 @@
 (use-package emacs
   :init
   (setq  default-directory (expand-file-name "~/Dropbox/Docs/org")
-         temporary-file-directory "~/tmpdir/"
+	 temporary-file-directory (expand-file-name "tmp/" user-emacs-directory)
          kill-whole-line 1
          search-highlight t
          text-scale-mode-step 1.05)                                      	; 글꼴 확대축소 비율 5% 단위
@@ -153,7 +153,16 @@
   (global-auto-revert-mode 1)
   (transient-mark-mode t)
   (column-number-mode t)
-  (display-time-mode 1))
+  (display-time-mode t)
+  )
+
+(use-package time
+  :ensure nil
+;  :hook (after-init . display-time-mode)
+  :custom
+  (display-time-24hr-format t);; 24-hour system
+  (display-time-format "%y-%m-%d %a %H:%M")
+  (display-time-day-and-date t)) ; Show time, day, date
 
 (use-package emacs
   :bind
@@ -162,8 +171,7 @@
     ("C-x m". nil)
     ("C-c n s" . my-custom-search-text)
     ("C-c n t" . my-todays-pop)
-    ("C-c 0" . toggle-frame-fullscreen)
-  ))
+    ("C-c 0" . toggle-frame-fullscreen)))
 
 ;; =======================================
 ;;; Bookmark
@@ -227,10 +235,7 @@
 ;;         modus-themes-preset-overrides-intense)
 ;;  (load-theme 'modus-operandi-tinted))
 
-;; (use-package zenburn-theme
-;;   :config
-;;   (load-theme 'zenburn t))
-
+(load-theme 'tango-dark t)
 ;; =======================================
 ;;; Helpful
 ;; =======================================
@@ -296,19 +301,6 @@
   :commands eshell
   :config
   (setq eshell-destroy-buffer-when-process-dies t))
-
-;; =======================================
-;;; Time
-;; =======================================
-;; modeline display time
-(use-package time
-  :ensure nil
-  :hook (after-init . display-time-mode)
-  :custom
-  (display-time-24hr-format t);; 24-hour system
-  (display-time-format "%y-%m-%d %a %H:%M")
-  (display-time-day-and-date t) ;; Show time, day, date
-  )
 
 ;; =======================================
 ;;; Modeline

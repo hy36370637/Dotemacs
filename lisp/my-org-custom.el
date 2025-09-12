@@ -29,7 +29,8 @@
   (org-export-with-drawers nil)
   :config
   ;; org-agenda 설정
-  (setq org-agenda-files (list (my-org-person-file-path "Tasks.org")
+  (setq org-agenda-files (list (my-org-person-file-path "Anniversary.org")
+			       (my-org-person-file-path "Tasks.org") 
                                (my-org-person-file-path "Daily.org")))
   (setq org-agenda-format-date "%Y-%m-%d (%a)")
   (setq org-agenda-current-time-string "← now ─────────")
@@ -69,6 +70,12 @@
   :hook (org-mode . org-bullets-mode)
   :config
   (setq org-bullets-bullet-list '("◉" "◎" "●" "○" "◆" "▷" "▶")))
+
+;; ======================================
+;;; org-md
+;; ======================================
+(use-package ox-md
+  :after org)
 
 ;; ======================================
 ;;; for org edit/custom function
