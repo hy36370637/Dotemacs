@@ -169,6 +169,8 @@
   ( :map global-map
     ("C-x f" . nil)
     ("C-x m". nil)
+    ("C-x z". nil)
+    ("<f8>" . repeat)
     ("C-c n s" . my-custom-search-text)
     ("C-c n t" . my-todays-pop)
     ("C-c 0" . toggle-frame-fullscreen)))
@@ -206,8 +208,8 @@
   (setenv "LC_COLLATE" "C")
   (set-locale-environment "ko_KR.UTF-8")
   (setq default-input-method "korean-hangul"
-	input-method-verbose-flag nil
-	input-method-highlight-flag nil))
+        input-method-verbose-flag nil
+        input-method-highlight-flag nil))
 
 ;; =======================================
 ;;; Fonts

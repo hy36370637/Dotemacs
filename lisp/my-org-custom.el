@@ -3,7 +3,6 @@
 ;;; org
 ;; ======================================
 ;; /.emacs.d/lisp/my-org-custom.el
-
 (defun my-org-person-file-path (filename)
   "Construct the full path for a personal org file."
   (expand-file-name filename my/org-person-dir))
