@@ -145,7 +145,7 @@
 	 temporary-file-directory (expand-file-name "tmp/" user-emacs-directory)
          kill-whole-line 1
          search-highlight t
-         text-scale-mode-step 1.05)                                      	; 글꼴 확대축소 비율 5% 단위
+	 text-scale-mode-step 1.02)
   :config
   (setq-default line-spacing 0.2)
   (global-font-lock-mode 1)
@@ -154,15 +154,17 @@
   (transient-mark-mode t)
   (column-number-mode t)
   (display-time-mode t)
+  :custom
+  (use-short-answers t)   ;; Always ask for y/n keypress instead of typing out 'yes' or 'no'
   )
 
 (use-package time
   :ensure nil
-;  :hook (after-init . display-time-mode)
+;;  :hook (after-init . display-time-mode)
   :custom
-  (display-time-24hr-format t);; 24-hour system
-  (display-time-format "%y-%m-%d %a %H:%M")
-  (display-time-day-and-date t)) ; Show time, day, date
+  (display-time-24hr-format t)                         ;; 24-hour system
+  (display-time-format "%y-%m-%d (%a) %H:%M")
+  (display-time-day-and-date t))                     ;; Show time, day, date
 
 (use-package emacs
   :bind
@@ -190,7 +192,7 @@
 ;;; Register
 ;; =======================================
 (use-package register
-  :ensure nil				;built-in
+  :ensure nil				;; built-in
   :config
   (setq register-preview-delay 0
         register-preview-function #'register-preview-default)
@@ -319,8 +321,7 @@
                  (let* ((is-ko (equal current-input-method "korean-hangul"))
                         (img    (if is-ko ko-indicator en-indicator))
                         (label  (if is-ko "KO" "EN"))
-                        (tip    (if is-ko "KO"
-                                  "EN"))
+                        (tip    (if is-ko "KO" "EN"))
                         ;; GUI이며 해당 이미지 타입을 쓸 수 있을 때만 아이콘 표시
                         (use-img (and (display-graphic-p)
                                       (image-type-available-p 'tiff))))

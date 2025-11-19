@@ -3,9 +3,11 @@
 3.kbsHappyFM|http://serpent0.duckdns.org:8088/kbs2radio.pls
 4.kbs3RadioFM|https://radio.bsod.kr/stream/?stn=kbs&ch=3radio
 5.kbsClassic|http://serpent0.duckdns.org:8088/kbsfm.pls
-6.bbsWoolimFM|rtmp://btn.nowcdn.co.kr/btn_ch4st/live.stream
-7.Sunshine radio|http://ec1.yesstreaming.net:1380/stream
+6.btnWoolimFM|rtmp://btn.nowcdn.co.kr/btn_ch4st/live.stream
+7.BBS FM|http://bbslive.clouducs.com:1935/bbsradio-mlive/livestream/playlist.m3u8
 8.cbsFM|https://m-aac.cbs.co.kr/mweb_cbs981/_definst_/cbs981.stream/chunklist.m3u8
 9.Venice Classic Radio|https://www.veniceclassicradio.eu/live1/128.m3u
-10.Peaceful Piano|https://peacefulpiano.stream.publicradio.org/peacefulpiano.aac
-11.BBS FM|http://bbslive.clouducs.com:1935/bbsradio-mlive/livestream/playlist.m3u8
+10.Solo Piano|http://pianosolo.streamguys.net/live
+11.Epic Piano|https://stream1-epic-piano.radiohost.de/solo-piano
+12.Jazz lovers Radio|http://ec1.yesstreaming.net:2940/stream
+13.Smooth Jazz|http://ais-edge91-dal03.cdnstream.com:80/2585_64.aac

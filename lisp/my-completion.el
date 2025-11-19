@@ -147,7 +147,7 @@
   ;; (setq save-abbrevs 'silently)        ;; save abbrevs when files are saved
   (define-abbrev-table 'global-abbrev-table 
     '(("m2"  "㎡")   ("km"  "㎞")  ("lDot" "……") 
-      ("cA"    "→")   ("cB"   "※")  ("lDash" "―")
+      ("rA"    "→")   ("cB"   "※")  ("lDash" "―")
       ("lG"    "「")   ("rG"    "」")  ("cD" "·")
       ("llG"  "『")   ("rrG"   "』")  
       ("cZ"   "○")   ("cQ"   "□")
@@ -186,10 +186,10 @@
           try-expand-line                ; 8. 현재 줄과 유사한 과거 줄 확장
           try-complete-lisp-symbol-partially ; 9. Emacs Lisp 심볼 부분 완성 (Elisp 코딩 시)
           try-complete-lisp-symbol       ; 10. Emacs Lisp 심볼 전체 완성
-          try-complete-lisp-variable))   ; 11. Emacs Lisp 변수 완성
+          try-complete-lisp-variable)   ; 11. Emacs Lisp 변수 완성
   ;; dabbrev 동작 방식 미세 조정 (hippie-expand의 dabbrev 함수들에 영향을 줍니다)
-  ;; (setq dabbrev-case-replace t)    ; 확장할 때 원본 단어의 대소문자를 유지
-  (setq dabbrev-minimum-length 3)  ; 최소 3글자 이상 입력해야 확장을 시도
+	(setq dabbrev-case-replace t)    ; 확장할 때 원본 단어의 대소문자를 유지
+	(setq dabbrev-minimum-length 2))  ; 최소 3글자 이상 입력해야 확장을 시도
   )
 
 ;;
