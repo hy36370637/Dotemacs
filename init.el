@@ -1,5 +1,5 @@
 ;; -*- lexical-binding: t -*-
-;;  default Config for EMACS
+;;  emacs for macOS
 
 ;; =======================================
 ;; Global variables
@@ -22,9 +22,19 @@
 ;;; Package initialization
 ;; =======================================
 (require 'package)
+;; 1. 저장소 목록 정의
 (setq package-archives
-      '(("melpa" . "https://melpa.org/packages/")
-        ("gnu" . "https://elpa.gnu.org/packages/")))
+      '(("gnu-elpa" . "https://elpa.gnu.org/packages/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("melpa" . "https://melpa.org/packages/")))
+
+;; 2. 우선순위 설정 
+(setq package-archive-priorities
+      '(("nongnu" . 20)  ;; 1순위: 공식이면서 대중적인 패키지 (Magit 등)
+        ("gnu-elpa" . 10)     ;; 2순위: Emacs 핵심 공식 패키지
+        ("melpa" . 5)))  ;; 3순위: 위 두 곳에 없는 나머지 모든 패키지
+
+;; 패키지 초기화
 (package-initialize)
 
 ;; =======================================
@@ -42,62 +52,70 @@
 ;; =======================================
 ;;; System info
 ;; =======================================
-(defvar my-mactop-p (eq system-type 'darwin))
+;;(defvar my-mactop-p (eq system-type 'darwin))
 (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
 ;; =======================================
 ;;; exec-path-from-shell
 ;; =======================================
-(when my-mactop-p  ; macOS에서만 실행
   (use-package exec-path-from-shell
     :defer 2     ; 2초 후 로딩
     :config
     ;; shell에서 환경변수들을 가져올 변수명 지정
     (setq exec-path-from-shell-variables '("PATH" "MANPATH" "LIBRARY_PATH"))
     ;; shell PATH를 Emacs로 가져오기
-    (exec-path-from-shell-initialize)))
+    (exec-path-from-shell-initialize))
 
 ;; =======================================
 ;;; Homebrew GCC 설정 (macOS only)
 ;; =======================================
-(when my-mactop-p
-  ;; 네이티브 컴파일 경고를 완전히 억제
-  (setq native-comp-async-report-warnings-errors 'silent)
-  (setq warning-suppress-log-types '((comp) (bytecomp)))
-  (setq warning-suppress-types '((comp) (bytecomp)))
-  
-  (let* ((homebrew-base "/opt/homebrew")
-         (gcc-base (concat homebrew-base "/opt/gcc"))
-         (gcc-bin (concat gcc-base "/bin"))
-         (gcc-version "15")
-         ;; libgccjit 경로
-         (libgccjit-base (concat homebrew-base "/Cellar/libgccjit/15.1.0"))
-         (libgccjit-lib (concat libgccjit-base "/lib/gcc/current"))
-         (libgccjit-include (concat libgccjit-base "/include")))
+;; 네이티브 컴파일 경고 억제
+(setq native-comp-async-report-warnings-errors 'silent)
+(setq warning-suppress-log-types '((comp) (bytecomp)))
+(setq warning-suppress-types '((comp) (bytecomp)))
+
+(let* ((homebrew-base "/opt/homebrew")
+       ;; 1. GCC 바이너리 경로 (opt/gcc 사용)
+       (gcc-base (concat homebrew-base "/opt/gcc"))
+       (gcc-bin (concat gcc-base "/bin"))
+       
+       ;; 2. 버전
+       (gcc-version "15")
+       
+       ;; 3. libgccjit 기본 경로
+       (libgccjit-base (concat homebrew-base "/opt/libgccjit"))
+       
+       ;;  /lib/gcc/15 폴더 지정
+       (libgccjit-lib (concat libgccjit-base "/lib/gcc/" gcc-version))
+       (libgccjit-include (concat libgccjit-base "/include")))
+
+  ;; 디버깅: 경로 확인 메시지 출력 (성공 후 주석 처리 가능)
+  ;; (message "Trying to configure Native Comp with: %s" libgccjit-lib)
+
+  ;; GCC와 libgccjit 경로 확인
+  (when (and (file-directory-p gcc-bin)
+             (file-exists-p (concat libgccjit-lib "/libgccjit.dylib")))
     
-    ;; GCC와 libgccjit 경로 확인
-    (when (and (file-directory-p gcc-bin) 
-               (file-exists-p (concat libgccjit-lib "/libgccjit.0.dylib")))
-      
-      ;; PATH 설정
-      (setq exec-path (cons gcc-bin exec-path))
-      (setenv "PATH" (concat gcc-bin ":" (getenv "PATH")))
-      
-      ;; 컴파일러 지정
-      (setenv "CC" (concat gcc-bin "/gcc-" gcc-version))
-      (setenv "CXX" (concat gcc-bin "/g++-" gcc-version))
-      
-      ;; libgccjit 환경변수
-      (setenv "LIBGCCJIT_EXEC_PREFIX" (concat libgccjit-lib "/"))
-      (setenv "LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LIBRARY_PATH") "")))
-      (setenv "LD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LD_LIBRARY_PATH") "")))
-      (setenv "DYLD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "DYLD_LIBRARY_PATH") "")))
-      
-      ;; 네이티브 컴파일러 옵션 - 최소한으로 설정
-      (setq native-comp-driver-options nil)  ; 기본값 사용
-      (setq native-comp-speed 2))))
-      
-;;      (message "GCC-15 and libgccjit configured (warnings suppressed)"))))
+    ;; PATH 설정
+    (setq exec-path (cons gcc-bin exec-path))
+    (setenv "PATH" (concat gcc-bin ":" (getenv "PATH")))
+    
+    ;; 컴파일러 지정
+    (setenv "CC" (concat gcc-bin "/gcc-" gcc-version))
+    (setenv "CXX" (concat gcc-bin "/g++-" gcc-version))
+    
+    ;; 라이브러리 경로 환경변수 설정
+    (setenv "LIBGCCJIT_EXEC_PREFIX" (concat libgccjit-lib "/"))
+    (setenv "LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LIBRARY_PATH") "")))
+    (setenv "LD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LD_LIBRARY_PATH") "")))
+    (setenv "DYLD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "DYLD_LIBRARY_PATH") "")))
+    
+    ;; 옵션 설정
+    (setq native-comp-driver-options nil)
+    (setq native-comp-speed 2)
+    
+    ;; 성공 메시지
+    (message "✅ Native Compilation Configured Successfully!")))
 
 ;; =======================================
 ;;; Load custom packages
@@ -271,16 +289,17 @@
 ;;; Icons
 ;; =======================================
 (use-package nerd-icons
-  :ensure nil
+  :ensure t
   :if (display-graphic-p))
 
 (use-package nerd-icons-dired
-  :ensure nil
+  :ensure t
   :if (display-graphic-p)
   :after dired
   :hook (dired-mode . nerd-icons-dired-mode))
 
 (use-package nerd-icons-completion
+  :ensure t
   :if (display-graphic-p)
   :after marginalia
   :config
@@ -291,7 +310,7 @@
 ;;; recentF
 ;; =======================================
 (use-package recentf
-  :ensure nil
+  :ensure t
   :init
   (recentf-mode 1)
   :config
