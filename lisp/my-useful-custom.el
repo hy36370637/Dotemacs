@@ -48,7 +48,7 @@ Use option+left to select 《》."
 ;;; Hunspell 설정
 ;; ======================================-
 (use-package ispell
-  :if my-mactop-p
+  :if my-macOS-p
 ;;  :hook (text-mode . my-enable-korean-spell-check)
   :config
   (setq ispell-program-name "hunspell")

@@ -29,10 +29,13 @@
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   :ensure t
-  :custom
-  (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+  :after nerd-icons 
   :init
-  (marginalia-mode))
+  (marginalia-mode)
+  :config
+  ;; 주석과 아이콘을 표시하기 위한 설정
+  (setq marginalia-align 'right)  ; 주석을 오른쪽 정렬
+  (setq marginalia-align-offset 0))
 
 ;; ======================================
 ;;; orderless
@@ -69,7 +72,7 @@
 ;; ======================================
 (use-package consult-dir
   :ensure nil
-  :after (vertico consult)
+  :after (vertico)
   :bind (("C-c D" . consult-dir)
           :map vertico-map
          ("C-c D" . consult-dir)

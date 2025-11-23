@@ -52,7 +52,7 @@
 ;; =======================================
 ;;; System info
 ;; =======================================
-;;(defvar my-mactop-p (eq system-type 'darwin))
+(defvar my-macOS-p (eq system-type 'darwin))
 (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
 ;; =======================================
@@ -67,55 +67,84 @@
     (exec-path-from-shell-initialize))
 
 ;; =======================================
-;;; Homebrew GCC 설정 (macOS only)
+;;; Homebrew GCC & Native Comp 설정
 ;; =======================================
-;; 네이티브 컴파일 경고 억제
-(setq native-comp-async-report-warnings-errors 'silent)
-(setq warning-suppress-log-types '((comp) (bytecomp)))
-(setq warning-suppress-types '((comp) (bytecomp)))
+(when my-macOS-p
+  ;; 네이티브 컴파일 경고 억제
+  (setq native-comp-async-report-warnings-errors 'silent)
+  (setq warning-suppress-log-types '((comp) (bytecomp)))
+  (setq warning-suppress-types '((comp) (bytecomp)))
 
-(let* ((homebrew-base "/opt/homebrew")
-       ;; 1. GCC 바이너리 경로 (opt/gcc 사용)
-       (gcc-base (concat homebrew-base "/opt/gcc"))
-       (gcc-bin (concat gcc-base "/bin"))
-       
-       ;; 2. 버전
-       (gcc-version "15")
-       
-       ;; 3. libgccjit 기본 경로
-       (libgccjit-base (concat homebrew-base "/opt/libgccjit"))
-       
-       ;;  /lib/gcc/15 폴더 지정
-       (libgccjit-lib (concat libgccjit-base "/lib/gcc/" gcc-version))
-       (libgccjit-include (concat libgccjit-base "/include")))
+  (let* ((homebrew-base "/opt/homebrew")
+         ;; 1. GCC 바이너리 경로 (opt/gcc 사용)
+         (gcc-base (concat homebrew-base "/opt/gcc"))
+         (gcc-bin (concat gcc-base "/bin"))
+         
+         ;; 2. 버전 (15로 고정)
+         (gcc-version "15")
+         
+         ;; 3. libgccjit 기본 경로
+         (libgccjit-base (concat homebrew-base "/opt/libgccjit"))
+         
+         ;; [중요] 스크린샷 경로 반영: /lib/gcc/15 폴더 지정
+         (libgccjit-lib (concat libgccjit-base "/lib/gcc/" gcc-version))
+         (libgccjit-include (concat libgccjit-base "/include")))
 
-  ;; 디버깅: 경로 확인 메시지 출력 (성공 후 주석 처리 가능)
-  ;; (message "Trying to configure Native Comp with: %s" libgccjit-lib)
+    ;; GCC와 libgccjit 경로 확인
+    (when (and (file-directory-p gcc-bin)
+               (file-exists-p (concat libgccjit-lib "/libgccjit.dylib")))
+      
+      ;; PATH 설정
+      (setq exec-path (cons gcc-bin exec-path))
+      (setenv "PATH" (concat gcc-bin ":" (getenv "PATH")))
+      
+      ;; 컴파일러 지정
+      (setenv "CC" (concat gcc-bin "/gcc-" gcc-version))
+      (setenv "CXX" (concat gcc-bin "/g++-" gcc-version))
+      
+      ;; 라이브러리 경로 환경변수 설정
+      (setenv "LIBGCCJIT_EXEC_PREFIX" (concat libgccjit-lib "/"))
+      (setenv "LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LIBRARY_PATH") "")))
+      (setenv "LD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LD_LIBRARY_PATH") "")))
+      (setenv "DYLD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "DYLD_LIBRARY_PATH") "")))
+      
+      ;; 옵션 설정
+      (setq native-comp-driver-options nil)
+      (setq native-comp-speed 2))))
+      
+      ;; 성공 메시지 (확인용)
+;;      (message "✅ Native Compilation Configured (GCC-%s)" gcc-version))))
 
-  ;; GCC와 libgccjit 경로 확인
-  (when (and (file-directory-p gcc-bin)
-             (file-exists-p (concat libgccjit-lib "/libgccjit.dylib")))
-    
-    ;; PATH 설정
-    (setq exec-path (cons gcc-bin exec-path))
-    (setenv "PATH" (concat gcc-bin ":" (getenv "PATH")))
-    
-    ;; 컴파일러 지정
-    (setenv "CC" (concat gcc-bin "/gcc-" gcc-version))
-    (setenv "CXX" (concat gcc-bin "/g++-" gcc-version))
-    
-    ;; 라이브러리 경로 환경변수 설정
-    (setenv "LIBGCCJIT_EXEC_PREFIX" (concat libgccjit-lib "/"))
-    (setenv "LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LIBRARY_PATH") "")))
-    (setenv "LD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LD_LIBRARY_PATH") "")))
-    (setenv "DYLD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "DYLD_LIBRARY_PATH") "")))
-    
-    ;; 옵션 설정
-    (setq native-comp-driver-options nil)
-    (setq native-comp-speed 2)
-    
-    ;; 성공 메시지
-    (message "✅ Native Compilation Configured Successfully!")))
+;; =======================================
+;;; Dired & Path 설정 (gls 에러 해결)
+;; =======================================
+(when my-macOS-p
+  ;; 1. Homebrew의 bin 폴더(/opt/homebrew/bin)를 Emacs 경로에 강제 추가
+  (let ((brew-bin "/opt/homebrew/bin"))
+    (when (file-directory-p brew-bin)
+      (add-to-list 'exec-path brew-bin)
+      (setenv "PATH" (concat brew-bin ":" (getenv "PATH")))))
+
+  ;; 2. Dired에서 사용할 ls 프로그램 설정 (gls 우선)
+  (let ((gls-prog (executable-find "gls")))
+    (if gls-prog
+        (progn
+          (setq insert-directory-program gls-prog)
+          (setq dired-use-ls-dired t))
+      ;; gls가 없으면 기본 ls 사용
+      (setq insert-directory-program "ls")
+      (setq dired-use-ls-dired nil))))
+
+;; =======================================
+;;; TeX/XeLaTeX PATH 설정
+;; =======================================
+(when my-macOS-p
+  ;; XeLaTeX 경로(/Library/TeX/texbin)를 Emacs 경로에 강제 추가
+  (let ((tex-bin "/Library/TeX/texbin"))
+    (when (file-directory-p tex-bin)
+      (add-to-list 'exec-path tex-bin)
+      (setenv "PATH" (concat tex-bin ":" (getenv "PATH"))))))
+
 
 ;; =======================================
 ;;; Load custom packages
@@ -149,10 +178,9 @@
 ;; =======================================
 ;; macOS 환경에서만 아래 설정을 적용
 ; alfred snippets 불능. OS시스템 설정에서 키보드 교환
-(when my-mactop-p
+(when my-macOS-p
    (setq mac-right-option-modifier 'none))
-  ;; (setq mac-command-modifier 'meta)
-  ;; (setq mac-option-modifier 'super))
+
 
 ;; =======================================
 ;;; Emacs UI and behavior
@@ -199,7 +227,7 @@
 ;;; Bookmark
 ;; =======================================
 (use-package bookmark
-  :ensure nil                                        ;; built in
+  :ensure nil                                     ;; built in
   :custom
   (bookmark-save-flag 1)                ;; 변경 때마다 자동 저장
   (bookmark-sort-flag nil)              ;; 정렬 안 함(입력 순서 유지)
@@ -301,9 +329,7 @@
 (use-package nerd-icons-completion
   :ensure t
   :if (display-graphic-p)
-  :after marginalia
-  :config
-  (nerd-icons-completion-mode)
+  :after (marginalia nerd-icons)
   :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
 
 ;; =======================================

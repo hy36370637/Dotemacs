@@ -6,7 +6,7 @@
 (use-package dired
   :ensure nil
   :custom
-  (insert-directory-program "gls")
+;;  (insert-directory-program "gls")
   (dired-listing-switches "-alh")
   (dired-dwim-target t) 
   (dired-recursive-copies 'always) 
