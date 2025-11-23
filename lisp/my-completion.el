@@ -29,13 +29,15 @@
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   :ensure t
-  :after nerd-icons 
+  ;;:after nerd-icons-completion  ; nerd-icons-completion 로드 후 실행
   :init
   (marginalia-mode)
   :config
   ;; 주석과 아이콘을 표시하기 위한 설정
   (setq marginalia-align 'right)  ; 주석을 오른쪽 정렬
   (setq marginalia-align-offset 0))
+
+
 
 ;; ======================================
 ;;; orderless

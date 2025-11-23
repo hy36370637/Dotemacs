@@ -330,7 +330,8 @@
   :ensure t
   :if (display-graphic-p)
   :after (marginalia nerd-icons)
-  :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
+  :config
+  (nerd-icons-completion-mode 1))
 
 ;; =======================================
 ;;; recentF
