@@ -275,17 +275,17 @@
 ;; =======================================
 ;;; Theme
 ;; =======================================
-;; (use-package emacs
-;;   :config
-;;   (require-theme 'modus-themes)
-;;   (setq modus-themes-italic-constructs t
-;;         modus-themes-bold-constructs nil
-;; 	modus-themes-mode-line '(accented borderless padded))
-;;   (setq modus-themes-common-palette-overrides
-;;         modus-themes-preset-overrides-intense)
-;;  (load-theme 'modus-operandi-tinted))
+(use-package emacs
+  :config
+  (require-theme 'modus-themes)
+  (setq modus-themes-italic-constructs t
+        modus-themes-bold-constructs nil
+	modus-themes-mode-line '(accented borderless padded))
+  (setq modus-themes-common-palette-overrides
+        modus-themes-preset-overrides-intense)
+ (load-theme 'modus-operandi-tinted))
 
-(load-theme 'tango-dark t)
+;;(load-theme 'tango-dark t)
 ;; =======================================
 ;;; Helpful
 ;; =======================================
@@ -318,7 +318,9 @@
 ;; =======================================
 (use-package nerd-icons
   :ensure t
-  :if (display-graphic-p))
+  :if (display-graphic-p)
+  :config
+  (setq nerd-icons-font-family "Symbols Nerd Font"))
 
 (use-package nerd-icons-dired
   :ensure t
