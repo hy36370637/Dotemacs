@@ -49,17 +49,18 @@ Use option+left to select 《》."
 ;; ======================================-
 (use-package ispell
   :if my-macOS-p
-;;  :hook (text-mode . my-enable-korean-spell-check)
+;;  :hook (text-mode . my/korean-spell-check)
   :config
   (setq ispell-program-name "hunspell")
   (setq ispell-local-dictionary-alist
         '(("ko_KR" "[가-힣]" "[^가-힣]" "[-']" nil ("-d" "ko_KR") nil utf-8)))
 
-  (defun my-enable-korean-spell-check ()
+  (defun my/korean-spell-check ()
     "Enable Korean spell checking for the current buffer."
     (interactive)
     (setq-local ispell-local-dictionary "ko_KR")
     (flyspell-mode 1)))
+(global-set-key (kbd "C-c n S") 'my/korean-spell-check)
 
 ;; ======================================
 ;;; Date,Time insert

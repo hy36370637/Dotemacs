@@ -26,13 +26,14 @@
 (setq package-archives
       '(("gnu-elpa" . "https://elpa.gnu.org/packages/")
         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-        ("melpa" . "https://melpa.org/packages/")))
+	("melpa-stable" . "https://stable.melpa.org/packages/")))
+;;        ("melpa" . "https://melpa.org/packages/")))
 
 ;; 2. 우선순위 설정 
 (setq package-archive-priorities
       '(("nongnu" . 20)  ;; 1순위: 공식이면서 대중적인 패키지 (Magit 등)
         ("gnu-elpa" . 10)     ;; 2순위: Emacs 핵심 공식 패키지
-        ("melpa" . 5)))  ;; 3순위: 위 두 곳에 없는 나머지 모든 패키지
+        ("melpa-stable" . 5)))  ;; 3순위: 위 두 곳에 없는 나머지 모든 패키지
 
 ;; 패키지 초기화
 (package-initialize)
