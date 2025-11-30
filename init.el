@@ -70,51 +70,51 @@
 ;; =======================================
 ;;; Homebrew GCC & Native Comp 설정
 ;; =======================================
-(when my-macOS-p
-  ;; 네이티브 컴파일 경고 억제
-  (setq native-comp-async-report-warnings-errors 'silent)
-  (setq warning-suppress-log-types '((comp) (bytecomp)))
-  (setq warning-suppress-types '((comp) (bytecomp)))
+;; (when my-macOS-p
+;;   ;; 네이티브 컴파일 경고 억제
+;;   (setq native-comp-async-report-warnings-errors 'silent)
+;;   (setq warning-suppress-log-types '((comp) (bytecomp)))
+;;   (setq warning-suppress-types '((comp) (bytecomp)))
 
-  (let* ((homebrew-base "/opt/homebrew")
-         ;; 1. GCC 바이너리 경로 (opt/gcc 사용)
-         (gcc-base (concat homebrew-base "/opt/gcc"))
-         (gcc-bin (concat gcc-base "/bin"))
+;;   (let* ((homebrew-base "/opt/homebrew")
+;;          ;; 1. GCC 바이너리 경로 (opt/gcc 사용)
+;;          (gcc-base (concat homebrew-base "/opt/gcc"))
+;;          (gcc-bin (concat gcc-base "/bin"))
          
-         ;; 2. 버전 (15로 고정)
-         (gcc-version "15")
+;;          ;; 2. 버전 (15로 고정)
+;;          (gcc-version "15")
          
-         ;; 3. libgccjit 기본 경로
-         (libgccjit-base (concat homebrew-base "/opt/libgccjit"))
+;;          ;; 3. libgccjit 기본 경로
+;;          (libgccjit-base (concat homebrew-base "/opt/libgccjit"))
          
-         ;; [중요] 스크린샷 경로 반영: /lib/gcc/15 폴더 지정
-         (libgccjit-lib (concat libgccjit-base "/lib/gcc/" gcc-version))
-         (libgccjit-include (concat libgccjit-base "/include")))
+;;          ;; [중요] 스크린샷 경로 반영: /lib/gcc/15 폴더 지정
+;;          (libgccjit-lib (concat libgccjit-base "/lib/gcc/" gcc-version))
+;;          (libgccjit-include (concat libgccjit-base "/include")))
 
-    ;; GCC와 libgccjit 경로 확인
-    (when (and (file-directory-p gcc-bin)
-               (file-exists-p (concat libgccjit-lib "/libgccjit.dylib")))
+;;     ;; GCC와 libgccjit 경로 확인
+;;     (when (and (file-directory-p gcc-bin)
+;;                (file-exists-p (concat libgccjit-lib "/libgccjit.dylib")))
       
-      ;; PATH 설정
-      (setq exec-path (cons gcc-bin exec-path))
-      (setenv "PATH" (concat gcc-bin ":" (getenv "PATH")))
+;;       ;; PATH 설정
+;;       (setq exec-path (cons gcc-bin exec-path))
+;;       (setenv "PATH" (concat gcc-bin ":" (getenv "PATH")))
       
-      ;; 컴파일러 지정
-      (setenv "CC" (concat gcc-bin "/gcc-" gcc-version))
-      (setenv "CXX" (concat gcc-bin "/g++-" gcc-version))
+;;       ;; 컴파일러 지정
+;;       (setenv "CC" (concat gcc-bin "/gcc-" gcc-version))
+;;       (setenv "CXX" (concat gcc-bin "/g++-" gcc-version))
       
-      ;; 라이브러리 경로 환경변수 설정
-      (setenv "LIBGCCJIT_EXEC_PREFIX" (concat libgccjit-lib "/"))
-      (setenv "LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LIBRARY_PATH") "")))
-      (setenv "LD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LD_LIBRARY_PATH") "")))
-      (setenv "DYLD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "DYLD_LIBRARY_PATH") "")))
+;;       ;; 라이브러리 경로 환경변수 설정
+;;       (setenv "LIBGCCJIT_EXEC_PREFIX" (concat libgccjit-lib "/"))
+;;       (setenv "LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LIBRARY_PATH") "")))
+;;       (setenv "LD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "LD_LIBRARY_PATH") "")))
+;;       (setenv "DYLD_LIBRARY_PATH" (concat libgccjit-lib ":" (or (getenv "DYLD_LIBRARY_PATH") "")))
       
-      ;; 옵션 설정
-      (setq native-comp-driver-options nil)
-      (setq native-comp-speed 2))))
+;;       ;; 옵션 설정
+;;       (setq native-comp-driver-options nil)
+;;       (setq native-comp-speed 2))))
       
-      ;; 성공 메시지 (확인용)
-;;      (message "✅ Native Compilation Configured (GCC-%s)" gcc-version))))
+;;       ;; 성공 메시지 (확인용)
+;; ;;      (message "✅ Native Compilation Configured (GCC-%s)" gcc-version))))
 
 ;; =======================================
 ;;; Dired & Path 설정 (gls 에러 해결)
@@ -196,11 +196,12 @@
   :config
   (setq-default line-spacing 0.2)
   (global-font-lock-mode 1)
-  (global-visual-line-mode t)
+ ;; (global-visual-line-mode t)
   (global-auto-revert-mode 1)
   (transient-mark-mode t)
   (column-number-mode t)
   (display-time-mode t)
+  :hook (text-mode . visual-line-mode)   ; text-mode 기반의 하위 모드
   :custom
   (use-short-answers t)   ;; Always ask for y/n keypress instead of typing out 'yes' or 'no'
   )

@@ -140,35 +140,31 @@
 ;; =======================================
 ;;; abbrev
 ;; ======================================-
-;; https://protesilaos.com/codelog/2024-02-03-emacs-abbrev-mode/
 (use-package abbrev
-  :ensure nil				;built-in
+  :ensure nil ; built-in
   :config
-  (setq-default abbrev-mode t)
-  (setq save-abbrevs nil)
-  ;; (setq save-abbrevs 'silently)        ;; save abbrevs when files are saved
-  (define-abbrev-table 'global-abbrev-table 
-    '(("m2"  "㎡")   ("km"  "㎞")  ("lDot" "……") 
-      ("rA"    "→")   ("cB"   "※")  ("lDash" "―")
-      ("lG"    "「")   ("rG"    "」")  ("cD" "·")
-      ("llG"  "『")   ("rrG"   "』")  
-      ("cZ"   "○")   ("cQ"   "□")
-      ))
-;;; Org 모드 약어 테이블 설정
+  (setq save-abbrevs nil) ; 약어 저장 설정
   (with-eval-after-load 'org
     (define-abbrev-table 'org-mode-abbrev-table
-      '(("Dsc" "#+DESCRIPTION: ")     	("Title"   "#+TITLE:")
-	("Author" "#+AUTHOR: ")                ("Keyword" "#+KEYWORDS: ")
-	("Setfile"   "#+SETUPFILE: setLTH/Header.org")
-	("SetfileQV"   "#+SETUPFILE: setLTH/HeaderQV.org")
-	("sDot"   "#+begin_center\n· · ·\n#+end_center")
-	("Unum"  ":PROPERTIES:\n:UNNUMBERED: t\n:END:")
-	("Option"  "#+OPTIONS: toc:2 num:2")
-	("Grayq"  "#+ATTR_LATEX: :environment grayquote")
-	("Doimg" "#+attr_latex: :width 0.5\\textwidth\n#+CAPTION: \n[[../org/img/imgJW/IMG_]]")
-	))))
-
-
+      '(("rA" "→")   ("cB" "※")   ("lDash" "―")   ("lDot" "……")
+        ("lG" "「")   ("rG" "」")    ("cD" "·")   ("llG" "『")   ("rrG" "』")
+	;; 기존 Org-mode 약어
+        ("Dsc" "#+DESCRIPTION: ") 
+        ("Title" "#+TITLE:")
+        ("Author" "#+AUTHOR: ") 
+        ("Keyword" "#+KEYWORDS: ")
+        ("Setfile" "#+SETUPFILE: setLTH/Header.org")
+        ("SetfileQV" "#+SETUPFILE: setLTH/HeaderQV.org")
+        ("sDot" "#+begin_center\n· · ·\n#+end_center")
+        ("Unum" ":PROPERTIES:\n:UNNUMBERED: t\n:END:")
+        ("Notoc" "#+LATEX: \\addcontentsline{toc}{section}{Dsctitle}")
+        ("Option" "#+OPTIONS: toc:2 num:2")
+        ("Grayq" "#+ATTR_LATEX: :environment grayquote")
+        ("Doimg" "#+attr_latex: :width 0.5\\textwidth\n#+CAPTION: \n[[../org/img/imgJW/IMG_]]"))
+    ))
+  ;; Org-mode 진입 시 'abbrev-mode'를 실행하도록 설정
+  :hook (org-mode . abbrev-mode)
+  )
 ;; =======================================
 ;;; hippie-exp
 ;; ======================================-
