@@ -1,12 +1,10 @@
 ;; -*- lexical-binding: t -*-
 ;;  emacs for macOS
-
 ;; =======================================
 ;; Global variables
 ;; =======================================
 (defvar my/lisp-path (expand-file-name "lisp/" user-emacs-directory)
   "Path to the user's personal lisp directory.")
-
 (defvar my/org-person-dir "~/Dropbox/Docs/Person/"
   "Directory for personal org files.")
 
@@ -22,33 +20,25 @@
 ;;; Package initialization
 ;; =======================================
 (require 'package)
-;; 1. 저장소 목록 정의
+
+;; 저장소 목록 및 우선순위 설정
 (setq package-archives
       '(("gnu-elpa" . "https://elpa.gnu.org/packages/")
         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-	("melpa-stable" . "https://stable.melpa.org/packages/")))
-;;        ("melpa" . "https://melpa.org/packages/")))
+        ("melpa-stable" . "https://stable.melpa.org/packages/"))
+      package-archive-priorities
+      '(("nongnu" . 20)
+        ("gnu-elpa" . 10)
+        ("melpa-stable" . 5)))
 
-;; 2. 우선순위 설정 
-(setq package-archive-priorities
-      '(("nongnu" . 20)  ;; 1순위: 공식이면서 대중적인 패키지 (Magit 등)
-        ("gnu-elpa" . 10)     ;; 2순위: Emacs 핵심 공식 패키지
-        ("melpa-stable" . 5)))  ;; 3순위: 위 두 곳에 없는 나머지 모든 패키지
-
-;; 패키지 초기화
-(package-initialize)
-
-;; =======================================
-;;; Configure use-package
-;; =======================================
-;; 패키지 자동 로딩 최적화
+;; 패키지 초기화 및 최적화
 (setq package-install-upgrade-built-in nil
-      package-quickstart t)  ; 패키지 빠른 시작 활성화
+      package-quickstart t
+      use-package-always-ensure nil
+      use-package-always-defer nil
+      use-package-expand-minimally t)
 
-;; use-package 최적화
-(setq use-package-always-ensure nil
-      use-package-always-defer nil  
-      use-package-expand-minimally t) ; 매크로 확장 최소화
+(package-initialize)
 
 ;; =======================================
 ;;; System info
@@ -59,13 +49,267 @@
 ;; =======================================
 ;;; exec-path-from-shell
 ;; =======================================
-  (use-package exec-path-from-shell
-    :defer 2     ; 2초 후 로딩
+(use-package exec-path-from-shell
+  :defer 2
+  :if my-macOS-p
+  :config
+  (setq exec-path-from-shell-variables '("PATH" "MANPATH" "LIBRARY_PATH"))
+  (exec-path-from-shell-initialize))
+
+;; =======================================
+;;; macOS PATH
+;; =======================================
+(when my-macOS-p
+  (let ((brew-bin "/opt/homebrew/bin")
+        (tex-bin "/Library/TeX/texbin"))
+    (dolist (path (list brew-bin tex-bin))
+      (when (file-directory-p path)
+        (add-to-list 'exec-path path)
+        (setenv "PATH" (concat path ":" (getenv "PATH")))))
+    
+    ;; Dired ls 설정
+    (let ((gls-prog (executable-find "gls")))
+      (setq insert-directory-program (or gls-prog "ls")
+            dired-use-ls-dired (if gls-prog t nil)))))
+
+;; =======================================
+;;; Load custom packages
+;; =======================================
+(when (fboundp 'load-prefer-newer)
+  (setq load-prefer-newer t))
+
+(add-to-list 'load-path my/lisp-path)
+
+;; Autoload
+(autoload 'my-custom-search-text "my-web-search" "macDic, Naver, 구글 or 나무위키, 날씨 검색." t)
+(autoload 'my/naver-weather-search "my-web-search" "Naver 날씨." t)
+(autoload 'my-todays-pop "my-todays-pop" "오늘 정보 등" t)
+
+;; 나머지 파일 로드
+(let ((lisp-dir (expand-file-name "lisp" user-emacs-directory))
+      (autoload-files '("my-web-search" "my-todays-pop")))
+  (dolist (file (directory-files lisp-dir t "\\.el$"))
+    (condition-case err
+        (let ((base-name (file-name-sans-extension (file-name-nondirectory file))))
+          (unless (member base-name autoload-files)
+            (load (file-name-sans-extension file) nil t)))
+      (error (message "Error loading %s: %s" file err)))))
+
+;; =======================================
+;;; MacOS keyboard
+;; =======================================
+; alfred snippets 불능. OS시스템 설정에서 키보드 교환
+(when my-macOS-p
+   (setq mac-right-option-modifier 'none))
+
+;; =======================================
+;;; Emacs UI and behavior
+;; =======================================
+(use-package emacs
+  :init
+  (setq default-directory (expand-file-name "~/Dropbox/Docs/org")
+        temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
+  :hook
+  (text-mode . visual-line-mode)
+  :custom
+  (use-short-answers t)
+  (kill-whole-line 1)
+  (text-scale-mode-step 1.02)
+  (line-spacing 0.2)
+  (global-auto-revert-mode t)
+  (column-number-mode t)
+  (display-time-mode t)  
+  :bind
+  (("C-x f" . nil)
+   ("C-x m" . nil)
+   ("C-x z" . nil)
+   ("C-c n s" . my-custom-search-text)
+   ("C-c n t" . my-todays-pop)
+   ("C-c 0" . toggle-frame-fullscreen)))
+
+(use-package time
+  :ensure nil
+  :custom
+  (display-time-24hr-format t)                         ;; 24-hour system
+  (display-time-format "%y-%m-%d (%a) %H:%M")
+  (display-time-day-and-date t)
+  (display-time-load-average nil))                  ;mode-line-misc-info average nil
+
+;; ========================================================
+;; Window Management (Macbook Air 13")
+;; ========================================================
+(when my-Macbook-p
+  (setq split-window-preferred-direction 'horizontal
+        window-combination-resize t
+        even-window-sizes 'height-only
+        window-sides-vertical nil
+        switch-to-buffer-in-dedicated-window 'pop
+        split-height-threshold 35
+        split-width-threshold 85
+        window-min-height 3
+        window-min-width 30))
+
+;; =======================================
+;;; Bookmark
+;; =======================================
+(use-package bookmark
+  :ensure nil                                     ;; built in
+  :custom
+  (bookmark-save-flag 1)
+  (bookmark-sort-flag nil)
+  (bookmark-default-file (expand-file-name "bookmarks" user-emacs-directory)))
+
+;; =======================================
+;;; Register
+;; =======================================
+(use-package register
+  :ensure nil				;; built-in
+  :config
+  (setq register-preview-delay 0
+        register-preview-function #'register-preview-default)
+  (set-register ?i `(file . ,(expand-file-name "init.el" user-emacs-directory)))
+  (set-register ?r `(file . ,(concat my/org-person-dir "cReading.org")))
+  (set-register ?d `(file . ,(concat my/org-person-dir "Daily.org")))
+  (set-register ?n `(file . ,(concat my/org-person-dir "cNotes.org"))))
+
+;; =======================================
+;;; Locale and Korean settings
+;; =======================================
+(use-package emacs
+  :config
+  (setenv "LANG" "ko_KR.UTF-8")
+  (setenv "LC_COLLATE" "C")
+  (set-locale-environment "ko_KR.UTF-8")
+  (setq default-input-method "korean-hangul"
+        input-method-verbose-flag nil
+        input-method-highlight-flag nil))
+
+;; =======================================
+;;; Fonts
+;; =======================================
+(use-package emacs
+  :if (display-graphic-p)
+  :init
+  (setq inhibit-compacting-font-caches t)
+  :config
+  (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
+  (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
+  (set-fontset-font t 'hangul (font-spec :family "Noto Sans CJK KR")))
+
+;; =======================================
+;;; Theme
+;; =======================================
+(use-package emacs
+  :config
+  (require-theme 'modus-themes)
+  (setq modus-themes-italic-constructs t
+        modus-themes-bold-constructs nil
+	modus-themes-mode-line '(accented borderless padded))
+ (load-theme 'modus-operandi-tinted))
+
+;; =======================================
+;;; Helpful
+;; =======================================
+(use-package helpful
+  :bind
+  (("C-h f" . helpful-callable)
+   ("C-h v" . helpful-variable)
+   ("C-h k" . helpful-key)
+   ("C-c C-d" . helpful-at-point)
+   ("C-h F" . helpful-function)
+   ("C-h C" . helpful-command)))
+
+;; =======================================
+;;; Session and Place Persistence
+;; =======================================
+(use-package savehist
+  :ensure nil
+  :demand t
+  :init (savehist-mode 1)
+  :config
+  (setq history-length 10))
+
+(use-package saveplace
+  :ensure nil
+  :config (save-place-mode 1))
+
+;; =======================================
+;;; Icons
+;; =======================================
+(use-package nerd-icons
+  :if (display-graphic-p)
+  :custom (nerd-icons-font-family "Symbols Nerd Font"))
+
+(use-package nerd-icons-dired
+  :if (display-graphic-p)
+;;  :after dired
+  :hook (dired-mode . nerd-icons-dired-mode))
+
+(use-package nerd-icons-completion
+  :if (display-graphic-p)
+  :after (marginalia nerd-icons)
+  :config  (nerd-icons-completion-mode 1))
+
+;; =======================================
+;;; recentF
+;; =======================================
+(use-package recentf
+  :init (recentf-mode 1)
+  :custom
+  (recentf-max-menu-items 15)
+  (recentf-max-saved-items 15))
+
+;; =======================================
+;;; Eshell
+;; =======================================
+(use-package eshell
+  :defer t
+  :config
+  (setq eshell-destroy-buffer-when-process-dies t))
+
+;; =======================================
+;;; Modeline
+;; =======================================
+(defvar ko-indicator (create-image "~/.emacs.d/img-indicator/han2.tiff" 'tiff nil :ascent 'center))
+(defvar en-indicator (create-image "~/.emacs.d/img-indicator/qwerty.tiff" 'tiff nil :ascent 'center))
+(setq mode-line-right-align-edge 'right-margin)
+(setq-default mode-line-format
+              '("%e "
+                mode-line-front-space
+                (:eval
+                 (let* ((is-ko (equal current-input-method "korean-hangul"))
+                        (img    (if is-ko ko-indicator en-indicator))
+                        (label  (if is-ko "KO" "EN"))
+                        (tip    (if is-ko "KO" "EN"))
+                        (use-img (and (display-graphic-p)
+                                      (image-type-available-p 'tiff))))
+                   (if use-img
+                       (propertize label
+                                   'display   img
+                                   'help-echo tip)
+                     (propertize label
+                                 'help-echo tip))))
+                "   "
+                "Ⓗ "
+                mode-line-buffer-identification
+                mode-line-frame-identification
+                mode-line-modes
+                mode-line-format-right-align
+                mode-line-position
+                "Ⓨ "
+                mode-line-misc-info))
+
+;; =======================================
+;;; Battery display
+;; =======================================
+(when my-Macbook-p
+  (use-package battery
+    :ensure nil
+    :demand t
     :config
-    ;; shell에서 환경변수들을 가져올 변수명 지정
-    (setq exec-path-from-shell-variables '("PATH" "MANPATH" "LIBRARY_PATH"))
-    ;; shell PATH를 Emacs로 가져오기
-    (exec-path-from-shell-initialize))
+    (setq battery-status-function 'battery-pmset
+          battery-mode-line-format "Ⓑ %p%% ")
+    (display-battery-mode 1)))
 
 ;; =======================================
 ;;; Homebrew GCC & Native Comp 설정
@@ -115,302 +359,3 @@
       
 ;;       ;; 성공 메시지 (확인용)
 ;; ;;      (message "✅ Native Compilation Configured (GCC-%s)" gcc-version))))
-
-;; =======================================
-;;; Dired & Path 설정 (gls 에러 해결)
-;; =======================================
-(when my-macOS-p
-  ;; 1. Homebrew의 bin 폴더(/opt/homebrew/bin)를 Emacs 경로에 강제 추가
-  (let ((brew-bin "/opt/homebrew/bin"))
-    (when (file-directory-p brew-bin)
-      (add-to-list 'exec-path brew-bin)
-      (setenv "PATH" (concat brew-bin ":" (getenv "PATH")))))
-
-  ;; 2. Dired에서 사용할 ls 프로그램 설정 (gls 우선)
-  (let ((gls-prog (executable-find "gls")))
-    (if gls-prog
-        (progn
-          (setq insert-directory-program gls-prog)
-          (setq dired-use-ls-dired t))
-      ;; gls가 없으면 기본 ls 사용
-      (setq insert-directory-program "ls")
-      (setq dired-use-ls-dired nil))))
-
-;; =======================================
-;;; TeX/XeLaTeX PATH 설정
-;; =======================================
-(when my-macOS-p
-  ;; XeLaTeX 경로(/Library/TeX/texbin)를 Emacs 경로에 강제 추가
-  (let ((tex-bin "/Library/TeX/texbin"))
-    (when (file-directory-p tex-bin)
-      (add-to-list 'exec-path tex-bin)
-      (setenv "PATH" (concat tex-bin ":" (getenv "PATH"))))))
-
-;; =======================================
-;;; Load custom packages
-;; =======================================
-;; Emacs 24.4+ 에서 자동으로 최신 파일(.el vs .elc) 선택
-(when (fboundp 'load-prefer-newer)
-  (setq load-prefer-newer t))
-
-;; 사용자 Lisp 디렉토리를 load-path에 추가
-(add-to-list 'load-path my/lisp-path)
-
-;; autoload할 파일 목록 (확장자 제외 - .el/.elc 자동 처리)
-(setq my-autoload-files '("my-web-search" "my-todays-pop"))
-
-;; autoload 처리 - Emacs가 자동으로 .el/.elc 선택
-(autoload 'my-custom-search-text "my-web-search" "macDic, Naver, 구글 or 나무위키, 날씨 검색." t)
-(autoload 'my/naver-weather-search "my-web-search" "Naver 날씨." t)
-(autoload 'my-todays-pop "my-todays-pop" "오늘 정보 등" t)
-
-(let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
-  (dolist (file (directory-files lisp-dir t "\\.el$"))
-    (condition-case err
-        (let ((base-name (file-name-sans-extension (file-name-nondirectory file))))
-          (unless (member base-name my-autoload-files)
-            ;; load 함수가 자동으로 .el/.elc 중 최신 파일 선택
-            (load (file-name-sans-extension file) nil t)))
-      (error (message "Error loading %s: %s" file err)))))
-
-;; =======================================
-;;; MacOS keyboard
-;; =======================================
-; alfred snippets 불능. OS시스템 설정에서 키보드 교환
-(when my-macOS-p
-   (setq mac-right-option-modifier 'none))
-
-;; =======================================
-;;; Emacs UI and behavior
-;; =======================================
-(use-package emacs
-  :init
-  (setq default-directory (expand-file-name "~/Dropbox/Docs/org"))
-  (setq temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
-  :hook
-  (text-mode . visual-line-mode)  
-  :custom
-  (use-short-answers t)
-  (kill-whole-line 1)              
-  (text-scale-mode-step 1.02)
-  (line-spacing 0.2)
-  (global-auto-revert-mode t)
-  (column-number-mode t)
-  (display-time-mode t))
-
-(use-package time
-  :ensure nil
-  :custom
-  (display-time-24hr-format t)                         ;; 24-hour system
-  (display-time-format "%y-%m-%d (%a) %H:%M")
-  (display-time-day-and-date t)
-  (display-time-load-average nil))                  ;mode-line-misc-info average nil
-
-(use-package emacs
-  :bind
-  ( :map global-map
-    ("C-x f" . nil)
-    ("C-x m". nil)
-    ("C-x z". nil)
-  ;;  ("<f8>" . repeat)
-    ("C-c n s" . my-custom-search-text)
-    ("C-c n t" . my-todays-pop)
-    ("C-c 0" . toggle-frame-fullscreen)))
-
-;; ========================================================
-;; Window Management Settings for Macbook Air 13-inch Screen
-;; ========================================================
-(when my-Macbook-p
-  ;; 1. 기본 분할 방향 및 크기 조정
-  (setq split-window-preferred-direction 'horizontal) ; 기본 분할을 수평(위아래)으로 설정
-  (setq window-combination-resize t)                  ; 창 결합 시 크기 자동 조정
-  (setq even-window-sizes 'height-only)               ; 수평 분할 시 높이만 균등화
-  (setq window-sides-vertical nil)                    ; 수평 구분선 제거
-  (setq switch-to-buffer-in-dedicated-window 'pop)    ; 전용 창 전환 시 팝업 사용
-
-  ;; 2. 13인치 화면 최적화 분할 임계값 (가독성 유지)
-  (setq split-height-threshold 35)    ; 높이 임계값 35줄
-  (setq split-width-threshold 85)     ; 폭 임계값 85열
-
-  ;; 3. 최소 크기 보장
-  (setq window-min-height 3)          
-  (setq window-min-width 30)          
-  )
-
-;; =======================================
-;;; Bookmark
-;; =======================================
-(use-package bookmark
-  :ensure nil                                     ;; built in
-  :custom
-  (bookmark-save-flag 1)                ;; 변경 때마다 자동 저장
-  (bookmark-sort-flag nil)              ;; 정렬 안 함(입력 순서 유지)
-  (bookmark-default-file
-   (expand-file-name "bookmarks" user-emacs-directory)))
-
-;; =======================================
-;;; Register
-;; =======================================
-(use-package register
-  :ensure nil				;; built-in
-  :config
-  (setq register-preview-delay 0
-        register-preview-function #'register-preview-default)
-  (set-register ?i `(file . ,(expand-file-name "init.el" user-emacs-directory)))
-  (set-register ?r `(file . ,(concat my/org-person-dir "cReading.org")))
-  (set-register ?d `(file . ,(concat my/org-person-dir "Daily.org")))
-  (set-register ?n `(file . ,(concat my/org-person-dir "cNotes.org"))))
-
-;; =======================================
-;;; Locale and Korean settings
-;; =======================================
-(use-package emacs
-  :config
-  (setenv "LANG" "ko_KR.UTF-8")
-  (setenv "LC_COLLATE" "C")
-  (set-locale-environment "ko_KR.UTF-8")
-  (setq default-input-method "korean-hangul"
-        input-method-verbose-flag nil
-        input-method-highlight-flag nil))
-
-;; =======================================
-;;; Fonts
-;; =======================================
-(use-package emacs
-  :init
-  ;; 폰트 캐시 압축 비활성화 (전역 적용)
-  (setq inhibit-compacting-font-caches t)
-  :config
-  (when (display-graphic-p)
-    (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
-    (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
-    (set-fontset-font t 'hangul (font-spec :family "Noto Sans CJK KR"))))
-
-;; =======================================
-;;; Theme
-;; =======================================
-(use-package emacs
-  :config
-  (require-theme 'modus-themes)
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs nil
-	modus-themes-mode-line '(accented borderless padded))
- (load-theme 'modus-operandi-tinted))
-
-;;(load-theme 'tango-dark t)
-;; =======================================
-;;; Helpful
-;; =======================================
-(use-package helpful
-  :bind
-  (("C-h f" . helpful-callable)
-   ("C-h v" . helpful-variable)
-   ("C-h k" . helpful-key)
-   ("C-c C-d" . helpful-at-point)
-   ("C-h F" . helpful-function)
-   ("C-h C" . helpful-command)
-   ))
-
-;; =======================================
-;;; Session and Place Persistence
-;; =======================================
-(use-package savehist
-  :ensure nil
-  :demand t
-  :init (savehist-mode 1)
-  :config
-  (setq history-length 10))
-
-(use-package saveplace
-  :ensure nil
-  :config (save-place-mode 1))
-
-;; =======================================
-;;; Icons
-;; =======================================
-(use-package nerd-icons
-  :ensure t
-  :if (display-graphic-p)
-  :config
-  (setq nerd-icons-font-family "Symbols Nerd Font"))
-
-(use-package nerd-icons-dired
-  :ensure t
-  :if (display-graphic-p)
-  :after dired
-  :hook (dired-mode . nerd-icons-dired-mode))
-
-(use-package nerd-icons-completion
-  :ensure t
-  :if (display-graphic-p)
-  :after (marginalia nerd-icons)
-  :config
-  (nerd-icons-completion-mode 1))
-
-;; =======================================
-;;; recentF
-;; =======================================
-(use-package recentf
-  :ensure t
-  :init
-  (recentf-mode 1)
-  :config
-  (setq recentf-max-menu-items 15)
-  (setq recentf-max-saved-items 15))
-
-;; =======================================
-;;; Eshell
-;; =======================================
-(use-package eshell
-  :commands eshell
-  :config
-  (setq eshell-destroy-buffer-when-process-dies t))
-
-;; =======================================
-;;; Modeline
-;; =======================================
-;; 이미지 아이콘 (GUI에서 사용)
-(defvar ko-indicator (create-image "~/.emacs.d/img-indicator/han2.tiff" 'tiff nil :ascent 'center))
-(defvar en-indicator (create-image "~/.emacs.d/img-indicator/qwerty.tiff" 'tiff nil :ascent 'center))
-(setq mode-line-right-align-edge 'right-margin)
-(setq-default mode-line-format
-              '("%e "
-                mode-line-front-space
-                ;; 입력기 상태: GUI=이미지+툴팁, 터미널=텍스트(“KO/EN”) + 툴팁
-                (:eval
-                 (let* ((is-ko (equal current-input-method "korean-hangul"))
-                        (img    (if is-ko ko-indicator en-indicator))
-                        (label  (if is-ko "KO" "EN"))
-                        (tip    (if is-ko "KO" "EN"))
-                        ;; GUI이며 해당 이미지 타입을 쓸 수 있을 때만 아이콘 표시
-                        (use-img (and (display-graphic-p)
-                                      (image-type-available-p 'tiff))))
-                   (if use-img
-                       ;; GUI: 이미지 아이콘(대체텍스트=label), 마우스오버 툴팁
-                       (propertize label
-                                   'display   img
-                                   'help-echo tip)
-                     ;; 터미널/이미지 불가: 텍스트 라벨로 직접 표시
-                     (propertize label
-                                 'help-echo tip))))
-                "   "
-                "Ⓗ "
-                mode-line-buffer-identification
-                mode-line-frame-identification
-                mode-line-modes
-                mode-line-format-right-align
-                mode-line-position
-                "Ⓨ "
-                mode-line-misc-info))
-
-;; =======================================
-;;; Battery display
-;; =======================================
-(when my-Macbook-p
-  (use-package battery
-    :ensure nil
-    :demand t  ; 즉시 로딩 강제
-    :config
-    (setq battery-status-function 'battery-pmset
-          battery-mode-line-format "Ⓑ %p%% ")
-    (display-battery-mode 1)))
