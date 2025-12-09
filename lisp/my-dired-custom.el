@@ -5,7 +5,7 @@
 (use-package dired
   :ensure nil
   :custom
-  (dired-listing-switches "-ah --group-directories-first")
+  (dired-listing-switches "-AGFhlv --group-directories-first --time-style=long-iso")
   (dired-dwim-target t) 
   (dired-recursive-copies 'always) 
   (dired-recursive-deletes 'always)

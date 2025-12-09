@@ -85,9 +85,9 @@
   :hook ((calendar-mode . cal-fixLayout)
          ((calendar-mode org-agenda-mode) . my/setup-calendar-holidays))
   :config
-  (setq calendar-week-start-day 0	;일요일부터 시작
-;;	calendar-day-header-array ["일" "월" "화" "수" "목" "금" "토"]
-        calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월" "10월" "11월" "12월"])
+  (setq calendar-week-start-day 0)	                         ;일요일부터 시작
+  ;;	calendar-day-header-array ["일" "월" "화" "수" "목" "금" "토"]
+  (setq calendar-month-name-array ["1월" "2월" "3월" "4월" "5월" "6월" "7월" "8월" "9월" "10월" "11월" "12월"])
   (custom-set-faces
    '(holiday ((t (:foreground "red" :weight bold))))))
 

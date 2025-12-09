@@ -146,7 +146,6 @@
       (add-to-list 'exec-path tex-bin)
       (setenv "PATH" (concat tex-bin ":" (getenv "PATH"))))))
 
-
 ;; =======================================
 ;;; Load custom packages
 ;; =======================================
@@ -182,7 +181,6 @@
 (when my-macOS-p
    (setq mac-right-option-modifier 'none))
 
-
 ;; =======================================
 ;;; Emacs UI and behavior
 ;; =======================================
@@ -206,13 +204,35 @@
   (use-short-answers t)   ;; Always ask for y/n keypress instead of typing out 'yes' or 'no'
   )
 
+;; ========================================================
+;; Window Management Settings for Macbook Air 13-inch Screen
+;; ========================================================
+(when my-Macbook-p
+  ;; 1. 기본 분할 방향 및 크기 조정
+  (setq split-window-preferred-direction 'horizontal) ; 기본 분할을 수평(위아래)으로 설정
+  (setq window-combination-resize t)                  ; 창 결합 시 크기 자동 조정
+  (setq even-window-sizes 'height-only)               ; 수평 분할 시 높이만 균등화
+  (setq window-sides-vertical nil)                    ; 수평 구분선 제거
+  (setq switch-to-buffer-in-dedicated-window 'pop)    ; 전용 창 전환 시 팝업 사용
+
+  ;; 2. 13인치 화면 최적화 분할 임계값 (가독성 유지)
+  (setq split-height-threshold 35)    ; 높이 임계값 35줄
+  (setq split-width-threshold 85)     ; 폭 임계값 85열
+
+  ;; 3. 최소 크기 보장
+  (setq window-min-height 3)          
+  (setq window-min-width 30)          
+  )
+
 (use-package time
   :ensure nil
 ;;  :hook (after-init . display-time-mode)
   :custom
   (display-time-24hr-format t)                         ;; 24-hour system
   (display-time-format "%y-%m-%d (%a) %H:%M")
-  (display-time-day-and-date t))                     ;; Show time, day, date
+  (display-time-day-and-date t)
+  (display-time-load-average nil)                  ;mode-line-misc-info 내에서 로드 평균 부분 제거 
+  )
 
 (use-package emacs
   :bind
@@ -256,6 +276,7 @@
   :config
   (setenv "LANG" "ko_KR.UTF-8")
   (setenv "LC_COLLATE" "C")
+;;  (setenv "LC_TIME" "C")
   (set-locale-environment "ko_KR.UTF-8")
   (setq default-input-method "korean-hangul"
         input-method-verbose-flag nil
@@ -283,8 +304,6 @@
   (setq modus-themes-italic-constructs t
         modus-themes-bold-constructs nil
 	modus-themes-mode-line '(accented borderless padded))
-  (setq modus-themes-common-palette-overrides
-        modus-themes-preset-overrides-intense)
  (load-theme 'modus-operandi-tinted))
 
 ;;(load-theme 'tango-dark t)
