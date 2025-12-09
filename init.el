@@ -176,7 +176,6 @@
 ;; =======================================
 ;;; MacOS keyboard
 ;; =======================================
-;; macOS 환경에서만 아래 설정을 적용
 ; alfred snippets 불능. OS시스템 설정에서 키보드 교환
 (when my-macOS-p
    (setq mac-right-option-modifier 'none))
@@ -186,23 +185,40 @@
 ;; =======================================
 (use-package emacs
   :init
-  (setq  default-directory (expand-file-name "~/Dropbox/Docs/org")
-	 temporary-file-directory (expand-file-name "tmp/" user-emacs-directory)
-         kill-whole-line 1
-         search-highlight t
-	 text-scale-mode-step 1.02)
+  (setq default-directory (expand-file-name "~/Dropbox/Docs/org"))
+  (setq temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
   :config
+  (setq kill-whole-line 1)
+  (setq search-highlight t)
+  (setq text-scale-mode-step 1.02)
   (setq-default line-spacing 0.2)
-  (global-font-lock-mode 1)
- ;; (global-visual-line-mode t)
-  (global-auto-revert-mode 1)
-  (transient-mark-mode t)
-  (column-number-mode t)
-  (display-time-mode t)
-  :hook (text-mode . visual-line-mode)   ; text-mode 기반의 하위 모드
+  :hook
+  (text-mode . visual-line-mode)  
   :custom
-  (use-short-answers t)   ;; Always ask for y/n keypress instead of typing out 'yes' or 'no'
-  )
+  (use-short-answers t)
+  (global-auto-revert-mode t)       ;; 자동 revert
+  (transient-mark-mode t)              ;; 영역 하이라이트
+  (column-number-mode t)           ;; 열 번호 표시
+  (display-time-mode t))                 ;; 시간 표시
+
+(use-package time
+  :ensure nil
+  :custom
+  (display-time-24hr-format t)                         ;; 24-hour system
+  (display-time-format "%y-%m-%d (%a) %H:%M")
+  (display-time-day-and-date t)
+  (display-time-load-average nil))                  ;mode-line-misc-info average nil
+
+(use-package emacs
+  :bind
+  ( :map global-map
+    ("C-x f" . nil)
+    ("C-x m". nil)
+    ("C-x z". nil)
+  ;;  ("<f8>" . repeat)
+    ("C-c n s" . my-custom-search-text)
+    ("C-c n t" . my-todays-pop)
+    ("C-c 0" . toggle-frame-fullscreen)))
 
 ;; ========================================================
 ;; Window Management Settings for Macbook Air 13-inch Screen
@@ -223,27 +239,6 @@
   (setq window-min-height 3)          
   (setq window-min-width 30)          
   )
-
-(use-package time
-  :ensure nil
-;;  :hook (after-init . display-time-mode)
-  :custom
-  (display-time-24hr-format t)                         ;; 24-hour system
-  (display-time-format "%y-%m-%d (%a) %H:%M")
-  (display-time-day-and-date t)
-  (display-time-load-average nil)                  ;mode-line-misc-info 내에서 로드 평균 부분 제거 
-  )
-
-(use-package emacs
-  :bind
-  ( :map global-map
-    ("C-x f" . nil)
-    ("C-x m". nil)
-    ("C-x z". nil)
-    ("<f8>" . repeat)
-    ("C-c n s" . my-custom-search-text)
-    ("C-c n t" . my-todays-pop)
-    ("C-c 0" . toggle-frame-fullscreen)))
 
 ;; =======================================
 ;;; Bookmark
@@ -276,7 +271,6 @@
   :config
   (setenv "LANG" "ko_KR.UTF-8")
   (setenv "LC_COLLATE" "C")
-;;  (setenv "LC_TIME" "C")
   (set-locale-environment "ko_KR.UTF-8")
   (setq default-input-method "korean-hangul"
         input-method-verbose-flag nil
