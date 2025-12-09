@@ -187,19 +187,16 @@
   :init
   (setq default-directory (expand-file-name "~/Dropbox/Docs/org"))
   (setq temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
-  :config
-  (setq kill-whole-line 1)
-  (setq search-highlight t)
-  (setq text-scale-mode-step 1.02)
-  (setq-default line-spacing 0.2)
   :hook
   (text-mode . visual-line-mode)  
   :custom
   (use-short-answers t)
-  (global-auto-revert-mode t)       ;; 자동 revert
-  (transient-mark-mode t)              ;; 영역 하이라이트
-  (column-number-mode t)           ;; 열 번호 표시
-  (display-time-mode t))                 ;; 시간 표시
+  (kill-whole-line 1)              
+  (text-scale-mode-step 1.02)
+  (line-spacing 0.2)
+  (global-auto-revert-mode t)
+  (column-number-mode t)
+  (display-time-mode t))
 
 (use-package time
   :ensure nil
