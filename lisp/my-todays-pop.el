@@ -1,7 +1,14 @@
-;;; .emacs.d/lisp/my-todays-pop.el --- Emacs configuration      -*- lexical-binding: t; -*-
+;;; my-todays-pop.el --- Today's information display -*- lexical-binding: t; -*-
 ;; Author: Ho Young <hy36370637@gmail.com>
 
+;;; Commentary:
+;; Display today's date, agenda, and random quotes from cReading.org
+
 ;;; Code:
+
+;; ======================================
+;;; Helper Functions
+;; ======================================
 
 (defun get-random-quote-from-creading ()
   "Extract a random quote from the cReading.org file."
@@ -20,21 +27,17 @@
                               (point-max)))))))
           (push (cons title content) quotes)))
       (if quotes
-          (let* ((quote (nth (random (length quotes)) quotes))
-                 (formatted-quote (format "%s\n%s" (car quote) (cdr quote))))
-            formatted-quote)
+          (let ((quote (nth (random (length quotes)) quotes)))
+            (format "%s\n%s" (car quote) (cdr quote)))
         "No quotes found in cReading.org"))))
 
 (defun my-emacs-copyright ()
-  "Return the version･copyright information for Emacs, including the current year."
-  (let ((current-year (format-time-string "%Y")))
-    (format "Copyright © 1996-%s,  Free Software Foundation, Inc." current-year)))
-  ;; (let ((current-year (format-time-string "%Y"))
-  ;;       (emacs-version (emacs-version)))
-  ;;   (format "%s\, Copyright © 1996-%s, Free Software Foundation, Inc." emacs-version current-year)))
+  "Return the copyright information for Emacs with current year."
+  (format "Copyright © 1996-%s,  Free Software Foundation, Inc."
+          (format-time-string "%Y")))
 
 (defun my-Ddays ()
-  "2024-12-31까지 남은 일수 or 경과한 일수를 계산."
+  "Calculate days remaining until or elapsed since 2024-12-31."
   (let* ((today (current-time))
          (target-date (encode-time 0 0 0 31 12 2024))
          (diff-seconds (float-time (time-subtract today target-date)))
@@ -43,43 +46,61 @@
         (format "/  %d日 경과" diff-days)
       (format "/ D-day %d日前" (- diff-days)))))
 
+(defun my-format-agenda-string ()
+  "Get formatted 3-day agenda string with bullet points."
+  (with-temp-buffer
+    (org-agenda-list 3)
+    (goto-char (point-min))
+    (forward-line 1)
+    (replace-regexp-in-string 
+     "^" "- " 
+     (buffer-substring-no-properties (point) (point-max)))))
+
+;; ======================================
+;;; Main Function
+;; ======================================
+
 (defun my-todays-pop ()
-  "오늘의 정보. 일자, 일정 등"   ;Create Buffer
+  "Display today's date, agenda, and random quote in a popup buffer."
   (interactive)
-  (let ((buffer (get-buffer-create "Today's Happy"))
-        (current-date (format-time-string "● 오늘 %Y-%m-%d (%A) "))
-        (d-day (my-Ddays))  ;; D-day 계산
-        (agenda-string (with-temp-buffer
-                         (org-agenda-list 3)   ;; 3일 간의 일정 가져오기
-                         (goto-char (point-min)) ;; 버퍼의 맨 처음으로 이동
-                         (forward-line 1)           ;; 첫 번째 줄을 건너뜀
-			 (replace-regexp-in-string "^" "- " (buffer-substring-no-properties (point) (point-max)))))
-;;                         (buffer-substring-no-properties (point) (point-max))))  ;; 나머지 일정을 문자열로 변환
-        (random-quote (get-random-quote-from-creading))  ;; 무작위 인용구 가져오기
-        (left-margin "    ")                        ;; 왼쪽 여백을 위한 변수
-        (quote-margin "        "))              ;; 왼쪽 여백을 위한 변수(인용문)
+  (let* ((buffer (get-buffer-create "Today's Happy"))
+         (current-date (format-time-string "● 오늘 %Y-%m-%d (%A) "))
+         (d-day (my-Ddays))
+         (agenda-string (my-format-agenda-string))
+         (random-quote (get-random-quote-from-creading))
+         (left-margin "    ")
+         (quote-margin "        "))
+    
     (with-current-buffer buffer
-      (erase-buffer)                                 ;; 기존 내용을 지우고
-      (fancy-splash-head)                     ;; 기본 로고 출력
-      (insert quote-margin (my-emacs-copyright)) ;; Copyright 출력
-      (insert "\n")                                   ;; 줄 바꿈 추가
-      (insert left-margin current-date d-day)    ;; 날짜 삽입
+      (erase-buffer)
+      
+      ;; Header
+      (fancy-splash-head)
+      (insert quote-margin (my-emacs-copyright) "\n")
+      
+      ;; Date
+      (insert left-margin current-date d-day)
+      
+      ;; Agenda
       (insert (format "\n%s● 일정\n" left-margin))
-      (insert (replace-regexp-in-string "^" quote-margin agenda-string))  ;; 일정 삽입 (각 줄마다 여백 추가)
+      (insert (replace-regexp-in-string "^" quote-margin agenda-string))
+      
+      ;; Quote
       (insert (format "\n%s● 글말\n" left-margin))
-      (insert (replace-regexp-in-string "^" quote-margin random-quote))  ;; 인용구 삽입 (각 줄마다 여백 추가)
-      (goto-char (point-min))                    ;; 커서를 버퍼의 맨 처음으로 이동
-      (goto-line 2)
+      (insert (replace-regexp-in-string "^" quote-margin random-quote))
+      
+      ;; Cursor position
+      (goto-char (point-min))
+      (forward-line 1)
       (beginning-of-line)
-;; Set up a local keymap with 'q' to close the buffer
+      
+      ;; Key binding
       (let ((map (make-sparse-keymap)))
-        (define-key map (kbd "q") (lambda () (interactive) (kill-this-buffer)))
+        (define-key map (kbd "q") 
+          (lambda () (interactive) (kill-this-buffer)))
         (use-local-map map)))
+    
     (switch-to-buffer buffer)))
 
-
-;;(global-set-key (kbd "C-c p t") 'my-todays-pop)
-
-
-;;end here
+;;; end here
 (provide 'my-todays-pop)

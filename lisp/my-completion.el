@@ -6,18 +6,14 @@
 ;; ======================================
 (use-package which-key
   :ensure nil
-  :init
-  (which-key-mode)
-  :config
-  (setq which-key-idle-delay 0.2))
+  :init (which-key-mode)
+  :custom (which-key-idle-delay 0.2))
 
 ;; ======================================
 ;;; vertico
 ;; ======================================
 (use-package vertico
-  :ensure t
-  :init
-  (vertico-mode)
+  :init (vertico-mode)
   :custom
   (vertico-resize nil)    ; 크기 조정 비활성화로 성능 
   (vertico-cycle t)
@@ -28,19 +24,15 @@
 ;; ======================================
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
-  :ensure t
-  :init
-  (marginalia-mode)
-  :config
-  ;; 주석과 아이콘을 표시하기 위한 설정
-  (setq marginalia-align 'right)  ; 주석을 오른쪽 정렬
-  (setq marginalia-align-offset 0))
+  :init (marginalia-mode)
+  :custom
+  (marginalia-align 'right)
+  (marginalia-align-offset 0))
 
 ;; ======================================
 ;;; orderless
 ;; ======================================
 (use-package orderless
-  :ensure t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
@@ -61,9 +53,8 @@
 	 ("M-s g" . consult-grep)
 	 ("M-s l" . consult-line))
   :config
-  (setq consult-buffer-sources
-        (list consult--source-buffer
-              consult--source-recent-file))
+  (setq consult-buffer-sources (list consult--source-buffer
+				     consult--source-recent-file))
   (setq consult-preview-key 'any))
 
 ;; ======================================
@@ -77,55 +68,29 @@
          ("C-c D" . consult-dir)
 	 ("C-x C-j" . consult-dir-jump-file)))
 
-;; ======================================
-;;; embark
-;; ======================================
-;; (use-package embark
-;;   :ensure t
-;;   :bind
-;;   (("C-." . embark-act))
-;;   :config
-;;   (setq prefix-help-command #'embark-prefix-help-command))
-
-;; ======================================
-;;; embark-consult
-;; ======================================
-;; (use-package embark-consult
-;;   :ensure t
-;;   :after (embark consult)
-;;   :hook
-;;   (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; =======================================
 ;;; electric-pair-mode
 ;; ======================================-
 (use-package electric
-  :ensure nil  ;built in
-  :config
-  (setq electric-pair-pairs '((?\" . ?\")
-                              (?\` . ?\`)
-                              (?\' . ?\')
-                              (?\{ . ?\})
-                              (?\[ . ?\])
-                              (?\( . ?\))))
-  (electric-pair-mode t))
+  :ensure nil
+  :init (electric-pair-mode t)
+  :custom
+  (electric-pair-pairs '((?\" . ?\")
+                         (?\` . ?\`)
+                         (?\' . ?\')
+                         (?\{ . ?\})
+                         (?\[ . ?\])
+                         (?\( . ?\)))))
 
-;; ======================================
-;;; rainbow-delimiters
-;; ======================================
-;; 괄호, 중괄호, 각종 쌍을 시각적(무지개색) 구분
-;; (use-package rainbow-delimiters
-;;   :defer nil
-;;   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; =======================================
 ;;; completion-preview
 ;; ======================================-
 (use-package completion-preview
-  :ensure nil				;version 30
+  :ensure nil
+  :init (global-completion-preview-mode)
   :config
-  (global-completion-preview-mode)
-  ;; enable completion-preview in org-mode
   (push 'org-self-insert-command completion-preview-commands))
 
 ;; =======================================
@@ -141,17 +106,19 @@
 ;;; abbrev
 ;; ======================================-
 (use-package abbrev
-  :ensure nil ; built-in
+  :ensure nil
+  :hook (org-mode . abbrev-mode)
+  :custom (save-abbrevs nil)
   :config
-  (setq save-abbrevs nil) ; 약어 저장 설정
   (with-eval-after-load 'org
     (define-abbrev-table 'org-mode-abbrev-table
-      '(("rA" "→")   ("cB" "※")   ("lDash" "―")   ("lDot" "……")
-        ("lG" "「")   ("rG" "」")    ("cD" "·")   ("llG" "『")   ("rrG" "』")
-	;; 기존 Org-mode 약어
-        ("Dsc" "#+DESCRIPTION: ") 
+      '(;; 특수문자
+        ("rA" "→") ("cB" "※") ("lDash" "―") ("lDot" "……")
+        ("lG" "「") ("rG" "」") ("cD" "·") ("llG" "『") ("rrG" "』")
+        ;; Org-mode 설정
+        ("Dsc" "#+DESCRIPTION: ")
         ("Title" "#+TITLE:")
-        ("Author" "#+AUTHOR: ") 
+        ("Author" "#+AUTHOR: ")
         ("Keyword" "#+KEYWORDS: ")
         ("Setfile" "#+SETUPFILE: setLTH/Header.org")
         ("SetfileQV" "#+SETUPFILE: setLTH/HeaderQV.org")
@@ -160,11 +127,8 @@
         ("Notoc" "#+LATEX: \\addcontentsline{toc}{section}{Dsctitle}")
         ("Option" "#+OPTIONS: toc:2 num:2")
         ("Grayq" "#+ATTR_LATEX: :environment grayquote")
-        ("Doimg" "#+attr_latex: :width 0.5\\textwidth\n#+CAPTION: \n[[../org/img/imgJW/IMG_]]"))
-    ))
-  ;; Org-mode 진입 시 'abbrev-mode'를 실행하도록 설정
-  :hook (org-mode . abbrev-mode)
-  )
+        ("Doimg" "#+attr_latex: :width 0.5\\textwidth\n#+CAPTION: \n[[../org/img/imgJW/IMG_]]")))))
+
 ;; =======================================
 ;;; hippie-exp
 ;; ======================================-
@@ -203,4 +167,3 @@
 
 ;; end here
 (provide 'my-completion)
-
