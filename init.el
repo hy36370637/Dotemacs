@@ -75,26 +75,18 @@
 ;; =======================================
 ;;; Load custom packages
 ;; =======================================
-(when (fboundp 'load-prefer-newer)
-  (setq load-prefer-newer t))
-
 (add-to-list 'load-path my/lisp-path)
-
 ;; Autoload
-(autoload 'my-custom-search-text "my-web-search" "macDic, Naver, 구글 or 나무위키, 날씨 검색." t)
-(autoload 'my/naver-weather-search "my-web-search" "Naver 날씨." t)
+;;(autoload 'my-search-text-in-range "my-search" "macDic, Naver, 구글 or 나무위키" t)
+(autoload 'my-weather-search "my-search" "Naver 날씨." t)
 (autoload 'my-todays-pop "my-todays-pop" "오늘 정보 등" t)
-
-;; 나머지 파일 로드
-(let ((lisp-dir (expand-file-name "lisp" user-emacs-directory))
-      (autoload-files '("my-web-search" "my-todays-pop")))
-  (dolist (file (directory-files lisp-dir t "\\.el$"))
-    (condition-case err
-        (let ((base-name (file-name-sans-extension (file-name-nondirectory file))))
-          (unless (member base-name autoload-files)
-            (load (file-name-sans-extension file) nil t)))
-      (error (message "Error loading %s: %s" file err)))))
-
+(require 'my-completion)
+(require 'my-calendar)
+(require 'my-eradio-custom)
+(require 'my-dired-custom)
+(require 'my-org-custom)
+(require 'my-useful-custom)
+(require 'my-search)
 ;; =======================================
 ;;; MacOS keyboard
 ;; =======================================
@@ -118,13 +110,16 @@
   (line-spacing 0.2)
   (global-auto-revert-mode t)
   (column-number-mode t)
-  (display-time-mode t)  
+  (display-time-mode t)
+  :config
+  (minibuffer-depth-indicate-mode 1) ;; 미니버퍼 재귀 깊이 표시모드 for consult-dir
   :bind
   (("C-x f" . nil)
    ("C-x m" . nil)
    ("C-x z" . nil)
-   ("C-c n s" . my-custom-search-text)
+   ("C-c n s" . my-search-text-in-range)
    ("C-c n t" . my-todays-pop)
+   ("C-c n w" . my-weather-search)
    ("C-c 0" . toggle-frame-fullscreen)))
 
 (use-package time

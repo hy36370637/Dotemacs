@@ -1,41 +1,42 @@
-;;; my-web-search.el --- Web search utilities -*- lexical-binding: t; -*-
+;;; my-search.el --- Web search and weather functions -*- lexical-binding: t; -*-
 
-;;; Commentary:
-;; Search utilities for macOS Dictionary, Naver, Google, Namuwiki, and weather
-
-;;; Code:
-
+;; ======================================
+;;; Requirements
+;; ======================================
 (require 'url)
 (require 'dom)
 
 ;; ======================================
 ;;; Helper Functions
 ;; ======================================
+(defun my--get-search-url (search-option query)
+  "Generate search URL based on SEARCH-OPTION and QUERY."
+  (let ((encoded-query (url-hexify-string query)))
+    (cond
+     ((string-equal search-option "Naver")
+      (format "https://search.naver.com/search.naver?query=%s" encoded-query))
+     ((string-equal search-option "Google")
+      (format "https://www.google.com/search?q=%s" encoded-query))
+     ((string-equal search-option "Namuwiki")
+      (format "https://namu.wiki/w/%s" encoded-query))
+     (t nil))))
 
-(defun my--get-search-url (option query)
-  "Generate search URL for OPTION with QUERY."
-  (pcase option
-    ("macOS Dictionary" (concat "dict://" (url-hexify-string query)))
-    ("Naver" (format "https://search.naver.com/search.naver?query=%s"
-                     (url-hexify-string query)))
-    ("Google" (format "https://www.google.com/search?q=%s"
-                      (url-hexify-string query)))
-    ("Namuwiki" (format "https://namu.wiki/w/%s"
-                        (url-hexify-string query)))))
-
-(defun my--open-url (option url)
-  "Open URL based on OPTION (macOS Dictionary uses 'open' command)."
-  (if (string-equal option "macOS Dictionary")
-      (call-process "open" nil 0 nil url)
-    (browse-url url)))
+(defun my--open-url (search-option url query)
+  "Open URL based on SEARCH-OPTION with QUERY."
+  (cond
+   ((string-equal search-option "macOS Dictionary")
+    (call-process "open" nil 0 nil (concat "dict://" (url-hexify-string query))))
+   ((and url (not (string-empty-p url)))
+    (browse-url url))
+   (t
+    (message "Invalid search option"))))
 
 ;; ======================================
-;;; Main Search Function
+;;; Text Search Function
 ;; ======================================
-
-(defun my-custom-search-text ()
-  "Search selected text or perform weather search.
-Search options: macOS Dictionary, Naver, Google, Namuwiki, weather."
+(defun my-search-text-in-range ()
+  "Search selected text.
+Search options: macOS Dictionary, Naver, Google, Namuwiki."
   (interactive)
   (let* ((query (if (use-region-p)
                     (buffer-substring-no-properties 
@@ -43,26 +44,15 @@ Search options: macOS Dictionary, Naver, Google, Namuwiki, weather."
                   ""))
          (search-option (completing-read "Choose option: " 
                                          '("macOS Dictionary" "Naver" 
-                                           "Google" "Namuwiki" "weather"))))
-    (cond
-     ;; Weather search
-     ((string-equal search-option "weather")
-      (let ((city (read-string "도시명 입력: ")))
-        (my-naver-weather-search city)))
-     
-     ;; Regular search without text
-     ((string-empty-p query)
-      (message "텍스트를 선택해주세요."))
-     
-     ;; Regular search with text
-     (t
+                                           "Google" "Namuwiki"))))
+    (if (string-empty-p query)
+        (message "텍스트를 선택해주세요.")
       (let ((url (my--get-search-url search-option query)))
-        (my--open-url search-option url))))))
+        (my--open-url search-option url query)))))
 
 ;; ======================================
 ;;; Weather Search Functions
 ;; ======================================
-
 (defun my--parse-weather-data (dom city)
   "Parse weather data from DOM for CITY and display in buffer."
   (let* ((temperature-elem (dom-by-class dom "temperature_text"))
@@ -150,5 +140,12 @@ Search options: macOS Dictionary, Naver, Google, Namuwiki, weather."
      (list city)
      t)))
 
-;;; end here
-(provide 'my-web-search)
+(defun my-weather-search ()
+  "Interactive weather search command."
+  (interactive)
+  (let ((city (read-string "도시명 입력: ")))
+    (my-naver-weather-search city)))
+
+
+(provide 'my-search)
+;;; my-search.el ends here
