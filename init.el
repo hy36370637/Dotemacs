@@ -240,7 +240,6 @@
 
 (use-package nerd-icons-dired
   :if (display-graphic-p)
-;;  :after dired
   :hook (dired-mode . nerd-icons-dired-mode))
 
 (use-package nerd-icons-completion
