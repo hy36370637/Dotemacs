@@ -76,17 +76,20 @@
 ;;; Load custom packages
 ;; =======================================
 (add-to-list 'load-path my/lisp-path)
+
 ;; Autoload
-;;(autoload 'my-search-text-in-range "my-search" "macDic, Naver, 구글 or 나무위키" t)
+(autoload 'my-search-text-in-range "my-search" "macDic, google .." t)
 (autoload 'my-weather-search "my-search" "Naver 날씨." t)
-(autoload 'my-todays-pop "my-todays-pop" "오늘 정보 등" t)
+(autoload 'my-todays-pop "my-todays-pop" "정보 팝업" t)
+
+;; Require
 (require 'my-completion)
-(require 'my-calendar)
-(require 'my-eradio-custom)
 (require 'my-dired-custom)
 (require 'my-org-custom)
+(require 'my-calendar)
+(require 'my-eradio-custom)
 (require 'my-useful-custom)
-(require 'my-search)
+
 ;; =======================================
 ;;; MacOS keyboard
 ;; =======================================
