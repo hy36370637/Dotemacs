@@ -1,4 +1,4 @@
-;; my-org-custom.el --- Optimized Org-mode configuration -*- lexical-binding: t; -*-
+;;; my-org-custom.el --- Optimized Org-mode configuration -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;; Personal Org-mode configuration with optimized performance and structure
@@ -23,30 +23,45 @@
 ;; ======================================
 (use-package org
   :ensure nil
+  :defer t
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
          ("C-c C" . org-capture))
   :custom
+  ;; Directory
   (org-directory (expand-file-name "~/Dropbox/Docs/org"))
+  
+  ;; Startup
   (org-startup-indented t)
   (org-startup-with-inline-images nil)
   (org-startup-folded t)
   (org-adapt-indentation nil)
+  (org-indent-indentation-per-level 2)
+  
+  ;; Display
   (org-image-actual-width 400)
+  
+  ;; Logging
   (org-log-into-drawer t)
   (org-log-done 'time)
+  
+  ;; TODO
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
+  
+  ;; Export
   (org-export-with-drawers nil)
+  
   ;; Agenda
   (org-agenda-format-date "%Y-%m-%d (%a)")
   (org-agenda-current-time-string "← now ─────────")
   (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+  
   :config
   ;; Agenda files 
   (setq org-agenda-files
         (seq-filter #'file-exists-p
                     (list (my-org-person-file-path "Holidays.org")
-			  (my-org-person-file-path "Tasks.org")
+                          (my-org-person-file-path "Tasks.org")
                           (my-org-person-file-path "Daily.org"))))
   
   ;; Capture templates
@@ -54,17 +69,20 @@
         `(("d" "Daily" entry
            (file+datetree ,(my-org-person-file-path "Daily.org"))
            "* %?"
-           :empty-lines 1)
+           :empty-lines 1
+           :unnarrowed t)
           
           ("t" "Tasks" entry
            (file ,(my-org-person-file-path "Tasks.org"))
-           "* TODO %?\n  SCHEDULED: %t"
-           :empty-lines 1)
+           "* TODO %?\nSCHEDULED: %t"
+           :empty-lines 1
+           :unnarrowed t)
           
           ("r" "Reading" entry
            (file ,(my-org-person-file-path "cReading.org"))
-           "* %?\n  :PROPERTIES:\n  :CREATED: %U\n  :END:"
-           :empty-lines 1)
+           "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:"
+           :empty-lines 1
+           :unnarrowed t)
           
           ("m" "경조사" table-line
            (file ,(my-org-person-file-path "aMoney.org"))
@@ -78,7 +96,7 @@
 (use-package org-bullets
   :hook (org-mode . org-bullets-mode)
   :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "◆" "▶" "▷" "►")))
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "▶" "▷" "►")))
 
 ;; ======================================
 ;;; ox-latex
@@ -93,17 +111,6 @@
   (org-latex-pdf-process
    '("xelatex -interaction=nonstopmode -shell-escape %f"
      "xelatex -interaction=nonstopmode -shell-escape %f")))
-  ;; :config
-  ;; ;;   (add-to-list 'org-export-backends 'latex))
-  ;; (add-to-list 'org-latex-classes
-  ;;              '("article-kr"
-  ;;                "\\documentclass[12pt,a4paper]{article}
-  ;;                  \\usepackage{kotex}
-  ;;                  \\usepackage[margin=1in]{geometry}
-  ;;                  \\usepackage{hyperref}"
-  ;;                ("\\section{%s}" . "\\section*{%s}")
-  ;;                ("\\subsection{%s}" . "\\subsection*{%s}")
-  ;;                ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
 
 ;; ======================================
 ;;; ox-md
@@ -120,16 +127,12 @@
   (setq org-agenda-inhibit-startup t
         org-agenda-use-tag-inheritance nil
         org-agenda-dim-blocked-tasks nil)
+  
   ;; Fontification 성능 개선
   (setq org-fontify-whole-heading-line nil
         org-fontify-done-headline t
-        org-fontify-quote-and-verse-blocks t)
-  ;; 대용량 파일 처리
-  (setq org-element-use-cache t
-        org-element-cache-persistent t))
-
-
-
+        org-fontify-quote-and-verse-blocks t))
+  
 
 (provide 'my-org-custom)
 ;;; my-org-custom.el ends here
