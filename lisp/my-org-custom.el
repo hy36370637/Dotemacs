@@ -69,19 +69,16 @@
         `(("d" "Daily" entry
            (file+datetree ,(my-org-person-file-path "Daily.org"))
            "* %?"
-           :empty-lines 1
            :unnarrowed t)
           
           ("t" "Tasks" entry
            (file ,(my-org-person-file-path "Tasks.org"))
            "* TODO %?\nSCHEDULED: %t"
-           :empty-lines 1
            :unnarrowed t)
           
           ("r" "Reading" entry
            (file ,(my-org-person-file-path "cReading.org"))
            "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:"
-           :empty-lines 1
            :unnarrowed t)
           
           ("m" "경조사" table-line
