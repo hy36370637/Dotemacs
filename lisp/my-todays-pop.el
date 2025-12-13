@@ -12,12 +12,11 @@
 (require 'url)
 (require 'xml)
 
-;; API 키를 파일에서 읽어옵니다
+;; API 키 
 (defvar kasi-api-key nil
-  "한국천문연구원 공공데이터포털 API 키")
+  "KASI API 키")
 
 (defun kasi-load-api-key ()
-  "동일 디렉토리의 lunar_api 파일에서 API 키를 읽어옵니다."
   (let ((key-file (expand-file-name "lunar_api" 
                                      (file-name-directory 
                                       (or load-file-name buffer-file-name)))))
@@ -37,7 +36,6 @@
     (car (xml-node-children (car (xml-get-children item-node tag))))))
 
 (defun kasi-get-lunar-date (year month day)
-  "한국천문연구원 API로 양력을 음력으로 변환합니다."
   (unless kasi-api-key
     (kasi-load-api-key))
   (let* ((url (format "http://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService/getLunCalInfo?solYear=%s&solMonth=%s&solDay=%s&ServiceKey=%s"
@@ -127,7 +125,25 @@
           :low2 (format "%02d:%02d" low2-hour low2-min))))
 
 (defun my-lunar-date-string ()
-  "오늘의 음력 날짜 문자열을 (음) %Y-%m-%d (물때) 형식으로 반환합니다."
+  "오늘의 음력 날짜 문자열을 (음) %Y-%m-%d 형식으로 반환"
+  (let* ((date-list (decode-time (current-time)))
+         (year (format "%04d" (nth 5 date-list)))
+         (month (format "%02d" (nth 4 date-list)))
+         (day (format "%02d" (nth 3 date-list)))
+         (lunar (kasi-get-lunar-date year month day)))
+    (if lunar
+        (let* ((lunar-day (plist-get lunar :day))
+               (leap-str (if (string= (plist-get lunar :leap) "윤") " (윤)" "")))
+          (format " (음) %s-%s-%s%s"
+                  (plist-get lunar :year)
+                  (plist-get lunar :month)
+                  lunar-day
+                  leap-str))
+      " (음력 조회 실패)")))
+
+(defun my-format-tide-info ()
+  "오늘의 조석(만조/간조) 정보와 물때를 리스트로 반환합니다.
+반환 형식: (조석시각문자열 . 물때문자열)"
   (let* ((date-list (decode-time (current-time)))
          (year (format "%04d" (nth 5 date-list)))
          (month (format "%02d" (nth 4 date-list)))
@@ -136,32 +152,15 @@
     (if lunar
         (let* ((lunar-day (plist-get lunar :day))
                (muldae (my-calculate-muldae lunar-day))
-               (leap-str (if (string= (plist-get lunar :leap) "윤") " (윤)" ""))
-               (muldae-str (if (= muldae 0) "조금" (format "%d물" muldae))))
-          (format " (음) %s-%s-%s%s (%s)"
-                  (plist-get lunar :year)
-                  (plist-get lunar :month)
-                  lunar-day
-                  leap-str
-                  muldae-str))
-      " (음력 조회 실패)")))
-
-(defun my-format-tide-info ()
-  "오늘의 조석(만조/간조) 정보를 bullet point 형식으로 반환합니다."
-  (let* ((date-list (decode-time (current-time)))
-         (year (format "%04d" (nth 5 date-list)))
-         (month (format "%02d" (nth 4 date-list)))
-         (day (format "%02d" (nth 3 date-list)))
-         (lunar (kasi-get-lunar-date year month day)))
-    (if lunar
-        (let* ((lunar-day (plist-get lunar :day))
-               (tide-times (my-calculate-tide-times lunar-day)))
-          (format "- 만조: %s, %s\n- 간조: %s, %s"
-                  (plist-get tide-times :high1)
-                  (plist-get tide-times :high2)
-                  (plist-get tide-times :low1)
-                  (plist-get tide-times :low2)))
-      "- 조석 정보 조회 실패")))
+               (muldae-str (if (= muldae 0) "조금" (format "%d물" muldae)))
+               (tide-times (my-calculate-tide-times lunar-day))
+               (tide-string (format "- 만조: %s, %s\n- 간조: %s, %s"
+                                    (plist-get tide-times :high1)
+                                    (plist-get tide-times :high2)
+                                    (plist-get tide-times :low1)
+                                    (plist-get tide-times :low2))))
+          (cons tide-string (format " (%s)" muldae-str)))
+      (cons "- 조석 정보 조회 실패" ""))))
 
 ;; ======================================
 ;;; Helper Functions
@@ -218,14 +217,15 @@ Now includes holidays from my-calendar.el via org-agenda integration."
 ;;; Main Function
 ;; ======================================
 (defun my-todays-pop ()
-  "Display today's date (solar and lunar), agenda, and random quote in a popup buffer.
-Agenda now includes holidays and solar terms from my-calendar.el."
+  "Display today's date (solar and lunar), agenda, and random quote in a popup buffer."
   (interactive)
   (let* ((buffer (get-buffer-create "Today info"))
          (current-date (format-time-string "● 오늘 %Y-%m-%d (%A)"))
          (lunar-date-string (my-lunar-date-string))
          (d-day (my-Ddays))
-         (tide-info (my-format-tide-info))
+         (tide-result (my-format-tide-info)) ; (조석시각문자열 . 물때문자열)
+         (tide-info (car tide-result))
+         (muldae-str (cdr tide-result)) ; 예: " (1물)"
          (agenda-string (my-format-agenda-string))
          (random-quote (get-random-quote-from-creading))
          (left-margin "    ")
@@ -241,11 +241,11 @@ Agenda now includes holidays and solar terms from my-calendar.el."
       ;; Date: 양력 + 음력 + D-day
       (insert left-margin current-date lunar-date-string " " d-day)
 
-      ;; Tide Info (조석 정보)
-      (insert (format "\n%s● 조석\n" left-margin))
+      ;; Tide Info (조석 정보) - 물때 추가
+      (insert (format "\n%s● 조석%s\n" left-margin muldae-str)) ; 물때
       (insert (replace-regexp-in-string "^" quote-margin tide-info))
 
-      ;; Agenda (이제 holidays.org의 기념일/절기 포함)
+      ;; Agenda (holidays.org의 기념일/절기 포함)
       (insert (format "\n%s● 일정\n" left-margin))
       (insert (replace-regexp-in-string "^" quote-margin agenda-string))
 
