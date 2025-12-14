@@ -86,7 +86,6 @@
 (require 'my-completion)
 (require 'my-dired-custom)
 (require 'my-org-custom)
-;; (require 'my-calendar)
 (require 'my-eradio-custom)
 (require 'my-useful-custom)
 

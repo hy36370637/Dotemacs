@@ -28,57 +28,43 @@
   :bind (("C-c a" . org-agenda)
          ("C-c C" . org-capture))
   :custom
-  ;; Directory
   (org-directory (expand-file-name "~/Dropbox/Docs/org"))
-  
-  ;; Startup
   (org-startup-indented t)
   (org-startup-with-inline-images nil)
   (org-startup-folded t)
   (org-adapt-indentation nil)
   (org-indent-indentation-per-level 2)
-  
-  ;; Display
   (org-image-actual-width 400)
-  
-  ;; Logging
   (org-log-into-drawer t)
   (org-log-done 'time)
-  
-  ;; TODO
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
-  
-  ;; Export
   (org-export-with-drawers nil)
-  
-  ;; Agenda
   (org-agenda-format-date "%Y-%m-%d (%a)")
   (org-agenda-current-time-string "← now ─────────")
   (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-  
   :config
-  ;; Agenda files 
   (setq org-agenda-files
         (seq-filter #'file-exists-p
                     (list (my-org-person-file-path "Holidays.org")
                           (my-org-person-file-path "Tasks.org")
                           (my-org-person-file-path "Daily.org"))))
-  
-  ;; Capture templates
   (setq org-capture-templates
         `(("d" "Daily" entry
            (file+datetree ,(my-org-person-file-path "Daily.org"))
            "* %?"
+	   :empty-lines 1
            :unnarrowed t)
           
           ("t" "Tasks" entry
            (file ,(my-org-person-file-path "Tasks.org"))
            "* TODO %?\nSCHEDULED: %t"
+	   :empty-lines 1
            :unnarrowed t)
           
           ("r" "Reading" entry
            (file ,(my-org-person-file-path "cReading.org"))
            "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:"
+	   :empty-lines 1
            :unnarrowed t)
           
           ("m" "경조사" table-line
