@@ -13,13 +13,35 @@
 (require 'url)
 (require 'xml)
 (require 'json)
+(require 'dom)
+(require 'my-search)
 
 ;; ======================================
-;;; KASI API Settings and Helper
+;;; Configuration Variables
 ;; ======================================
 (defvar kasi-api-key nil
   "KASI API key for lunar calendar and tide data.")
 
+(defvar nokdong-tide-obs-code "SO_0761" 
+  "Nokdong port observation code for tide forecast API.")
+
+(defvar my-weather-location "도양읍"
+  "Default location for weather information.")
+
+(defvar my-weather-format-template "- 날씨: (%s) %s/%s, 어제보다 %s"
+  "Weather display format template.
+Format placeholders:
+  1st %s = weather status (e.g., '오전 10%% 맑음 오후 10%% 맑음')
+  2nd %s = highest temperature (e.g., '11°')
+  3rd %s = lowest temperature (e.g., '-2°')
+  4th %s = comparison with yesterday (e.g., '3° 높아요')")
+
+(defvar my--weather-cache nil
+  "Cache for weather data: (timestamp . weather-string)")
+
+;; ======================================
+;;; KASI API Functions
+;; ======================================
 (defun kasi-load-api-key ()
   "Load API key from lunar_api file."
   (let ((key-file (expand-file-name "lunar_api" 
@@ -42,26 +64,25 @@
 
 (defun kasi-get-lunar-date (year month day)
   "Fetch lunar date for given YEAR, MONTH, DAY from KASI API."
-  (unless kasi-api-key
-    (kasi-load-api-key))
-  (let* ((url (format "http://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService/getLunCalInfo?solYear=%s&solMonth=%s&solDay=%s&ServiceKey=%s"
-                      year month day kasi-api-key))
-         (buffer (url-retrieve-synchronously url t nil 10)))
-    (when buffer
-      (unwind-protect
-          (with-current-buffer buffer
-            (goto-char (point-min))
-            (when (re-search-forward "\n\n" nil t)
-              (when-let* ((xml-data (xml-parse-region (point) (point-max)))
-                          (response (car xml-data))
-                          (body (car (xml-get-children response 'body)))
-                          (items (car (xml-get-children body 'items)))
-                          (item (car (xml-get-children items 'item))))
-                (list :year (kasi-get-xml-text item 'lunYear)
-                      :month (kasi-get-xml-text item 'lunMonth)
-                      :day (kasi-get-xml-text item 'lunDay)
-                      :leap (kasi-get-xml-text item 'lunLeapmonth)))))
-        (kill-buffer buffer)))))
+  (unless kasi-api-key (kasi-load-api-key))
+  (when-let ((buffer (url-retrieve-synchronously 
+                      (format "http://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService/getLunCalInfo?solYear=%s&solMonth=%s&solDay=%s&ServiceKey=%s"
+                              year month day kasi-api-key)
+                      t nil 10)))
+    (unwind-protect
+        (with-current-buffer buffer
+          (goto-char (point-min))
+          (when (re-search-forward "\n\n" nil t)
+            (when-let* ((xml-data (xml-parse-region (point) (point-max)))
+                        (response (car xml-data))
+                        (body (car (xml-get-children response 'body)))
+                        (items (car (xml-get-children body 'items)))
+                        (item (car (xml-get-children items 'item))))
+              (list :year (kasi-get-xml-text item 'lunYear)
+                    :month (kasi-get-xml-text item 'lunMonth)
+                    :day (kasi-get-xml-text item 'lunDay)
+                    :leap (kasi-get-xml-text item 'lunLeapmonth)))))
+      (kill-buffer buffer))))
 
 (defun my-calculate-muldae (lunar-day)
   "Calculate tide cycle position from LUNAR-DAY (8-cycle system for Nokdong)."
@@ -93,9 +114,6 @@
 ;; ======================================
 ;;; Tide API Functions
 ;; ======================================
-(defvar nokdong-tide-obs-code "SO_0761" 
-  "Nokdong port observation code for tide forecast API.")
-
 (defun nokdong-tide-parse-json (json-string)
   "Parse tide forecast JSON-STRING and extract data."
   (condition-case nil
@@ -132,24 +150,21 @@
 
 (defun nokdong-tide-fetch-tide-times (date-str)
   "Fetch tide times for DATE-STR and return (HIGH-TIMES . LOW-TIMES)."
-  (let* ((url (format "https://apis.data.go.kr/1192136/tideFcstHghLw/GetTideFcstHghLwApiService?serviceKey=%s&obsCode=%s&reqDate=%s&type=json&numOfRows=10"
-                      kasi-api-key nokdong-tide-obs-code date-str))
-         (buffer (url-retrieve-synchronously url t nil 10)))
-    (when buffer
-      (unwind-protect
-          (with-current-buffer buffer
-            (goto-char (point-min))
-            (when (re-search-forward "^$" nil t)
-              (forward-char)
-              (delete-region (point-min) (point))
-              (when-let* ((parsed (nokdong-tide-parse-json (buffer-string)))
-                          (tide-data (plist-get parsed :data)))
-                (nokdong-tide-format-tide-times tide-data date-str))))
-        (kill-buffer buffer)))))
+  (when-let ((buffer (url-retrieve-synchronously 
+                      (format "https://apis.data.go.kr/1192136/tideFcstHghLw/GetTideFcstHghLwApiService?serviceKey=%s&obsCode=%s&reqDate=%s&type=json&numOfRows=10"
+                              kasi-api-key nokdong-tide-obs-code date-str)
+                      t nil 10)))
+    (unwind-protect
+        (with-current-buffer buffer
+          (goto-char (point-min))
+          (when (re-search-forward "^$" nil t)
+            (forward-char)
+            (delete-region (point-min) (point))
+            (when-let* ((parsed (nokdong-tide-parse-json (buffer-string)))
+                        (tide-data (plist-get parsed :data)))
+              (nokdong-tide-format-tide-times tide-data date-str))))
+      (kill-buffer buffer))))
 
-;; ======================================
-;;; Tide Info Formatting
-;; ======================================
 (defun my-format-tide-info ()
   "Return today's tide info as (TIDE-STRING . MULDAE-STRING)."
   (let* ((now (decode-time))
@@ -173,6 +188,56 @@
         (setq tide-string (format "- 만조: %s\n- 간조: %s" high low))))
     
     (cons tide-string muldae-str)))
+
+;; ======================================
+;;; Weather Functions
+;; ======================================
+(defun my--format-weather-inline (dom)
+  "Extract and format weather for inline display in date line."
+  (when-let* ((weekly-forecast (dom-by-class dom "week_item"))
+              (day (car weekly-forecast))
+              (weather-elem (car (dom-by-class day "weather")))
+              (weather-raw (dom-texts weather-elem))
+              (weather-normalized (string-trim (replace-regexp-in-string "\\s-+" " " weather-raw)))
+              (lowest-elem (car (dom-by-class day "lowest")))
+              (highest-elem (car (dom-by-class day "highest")))
+              (lowest (string-trim (string-replace "최저기온" "" (dom-texts lowest-elem))))
+              (highest (string-trim (string-replace "최고기온" "" (dom-texts highest-elem)))))
+    
+    (let* ((yesterday-day (nth 1 weekly-forecast))
+           (yesterday-highest-elem (car (dom-by-class yesterday-day "highest")))
+           (yesterday-high (if yesterday-highest-elem
+                               (string-to-number 
+                                (string-trim (string-replace "최고기온" "" (dom-texts yesterday-highest-elem))))
+                             (string-to-number highest)))
+           (today-high (string-to-number highest))
+           (temp-diff (- today-high yesterday-high))
+           (comparison (cond
+                        ((> temp-diff 0) (format "%d° 높아요" temp-diff))
+                        ((< temp-diff 0) (format "%d° 낮아요" (abs temp-diff)))
+                        (t "어제와 같아요"))))
+      (format my-weather-format-template weather-normalized highest lowest comparison))))
+
+(defun my--get-weather-info-sync ()
+  "Get weather info synchronously with caching (5-minute cache)."
+  (let ((current-time (float-time)))
+    (if (and my--weather-cache
+             (< (- current-time (car my--weather-cache)) 300))
+        (cdr my--weather-cache)
+      (when-let ((buffer (url-retrieve-synchronously 
+                          (format "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%s%%20날씨" 
+                                  (url-hexify-string my-weather-location))
+                          t nil 10)))
+        (unwind-protect
+            (with-current-buffer buffer
+              (goto-char (point-min))
+              (when (re-search-forward "^$" nil t)
+                (let* ((dom (libxml-parse-html-region (point) (point-max)))
+                       (weather-str (my--format-weather-inline dom)))
+                  (when weather-str
+                    (setq my--weather-cache (cons current-time weather-str))
+                    weather-str))))
+          (kill-buffer buffer))))))
 
 ;; ======================================
 ;;; Helper Functions
@@ -201,9 +266,9 @@
 
 (defun my-Ddays ()
   "Calculate days until/since 2024-12-31."
-  (let* ((diff-days (floor (/ (float-time (time-subtract (current-time)
-                                                          (encode-time 0 0 0 31 12 2024)))
-                              86400))))
+  (let ((diff-days (floor (/ (float-time (time-subtract (current-time)
+                                                         (encode-time 0 0 0 31 12 2024)))
+                             86400))))
     (if (> diff-days 0)
         (format "/  %d日 경과" diff-days)
       (format "/ D-day %d日前" (- diff-days)))))
@@ -227,6 +292,7 @@
          (current-date (format-time-string "● 오늘 %Y-%m-%d (%A)"))
          (lunar-date (my-lunar-date-string))
          (d-day (my-Ddays))
+         (weather-info (my--get-weather-info-sync))
          (tide-result (my-format-tide-info))
          (tide-info (car tide-result))
          (muldae-str (cdr tide-result))
@@ -244,7 +310,11 @@
         (insert indent-8 (my-emacs-copyright) "\n")
         
         ;; Date
-        (insert indent-4 current-date lunar-date " " d-day)
+        (insert indent-4 current-date lunar-date " " d-day "\n")
+        
+        ;; Weather
+        (when weather-info
+          (insert indent-8 weather-info "\n"))
         
         ;; Tide
         (insert (format "\n%s● 조석%s\n" indent-4 muldae-str))
