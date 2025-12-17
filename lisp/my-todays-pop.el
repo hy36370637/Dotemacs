@@ -25,15 +25,15 @@
 (defvar nokdong-tide-obs-code "SO_0761" 
   "Nokdong port observation code for tide forecast API.")
 
-(defvar my-weather-location "도양읍"
+(defvar my-weather-location "북부동" ; ex)도양읍
   "Default location for weather information.")
 
-(defvar my-weather-format-template "- 날씨: (%s) %s/%s, 어제보다 %s"
+(defvar my-weather-format-template "- %s, 최저/최고 %s/%s, 어제보다 %s"
   "Weather display format template.
 Format placeholders:
   1st %s = weather status (e.g., '오전 10%% 맑음 오후 10%% 맑음')
-  2nd %s = highest temperature (e.g., '11°')
-  3rd %s = lowest temperature (e.g., '-2°')
+  2nd %s = lowest temperature (e.g., '-2°')
+  3rd %s = highest temperature (e.g., '11°')
   4th %s = comparison with yesterday (e.g., '3° 높아요')")
 
 (defvar my--weather-cache nil
@@ -216,10 +216,27 @@ Format placeholders:
                         ((> temp-diff 0) (format "%d° 높아요" temp-diff))
                         ((< temp-diff 0) (format "%d° 낮아요" (abs temp-diff)))
                         (t "어제와 같아요"))))
-      (format my-weather-format-template weather-normalized highest lowest comparison))))
+      (format my-weather-format-template weather-normalized lowest highest comparison))))
+
+(defun my--format-weekly-weather (dom)
+  "Extract and format weekly weather forecast from DOM."
+  (when-let* ((weekly-forecast (dom-by-class dom "week_item"))
+              (weekly-data (mapcar 
+                            (lambda (day)
+                              (let* ((date (string-trim (dom-texts (dom-by-class day "date"))))
+                                     (weather-raw (string-trim (dom-texts (dom-by-class day "weather"))))
+                                     (weather (replace-regexp-in-string "\\s-+" " " weather-raw))
+                                     (lowest (string-trim (string-replace "최저기온" "" 
+                                                                          (dom-texts (dom-by-class day "lowest")))))
+                                     (highest (string-trim (string-replace "최고기온" "" 
+                                                                           (dom-texts (dom-by-class day "highest"))))))
+                                (format "- %s: %s, 최저/최고 %s/%s" date weather lowest highest)))
+                            (seq-take (cdr weekly-forecast) 6))))  ; Skip today, take next 6 days
+    (string-join weekly-data "\n")))
 
 (defun my--get-weather-info-sync ()
-  "Get weather info synchronously with caching (5-minute cache)."
+  "Get weather info synchronously with caching (5-minute cache).
+Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
   (let ((current-time (float-time)))
     (if (and my--weather-cache
              (< (- current-time (car my--weather-cache)) 300))
@@ -233,10 +250,12 @@ Format placeholders:
               (goto-char (point-min))
               (when (re-search-forward "^$" nil t)
                 (let* ((dom (libxml-parse-html-region (point) (point-max)))
-                       (weather-str (my--format-weather-inline dom)))
-                  (when weather-str
-                    (setq my--weather-cache (cons current-time weather-str))
-                    weather-str))))
+                       (today-str (my--format-weather-inline dom))
+                       (weekly-str (my--format-weekly-weather dom))
+                       (result (cons today-str weekly-str)))
+                  (when (and today-str weekly-str)
+                    (setq my--weather-cache (cons current-time result))
+                    result))))
           (kill-buffer buffer))))))
 
 ;; ======================================
@@ -292,7 +311,9 @@ Format placeholders:
          (current-date (format-time-string "● 오늘 %Y-%m-%d (%A)"))
          (lunar-date (my-lunar-date-string))
          (d-day (my-Ddays))
-         (weather-info (my--get-weather-info-sync))
+         (weather-data (my--get-weather-info-sync))
+         (today-weather (when weather-data (car weather-data)))
+         (weekly-weather (when weather-data (cdr weather-data)))
          (tide-result (my-format-tide-info))
          (tide-info (car tide-result))
          (muldae-str (cdr tide-result))
@@ -309,15 +330,18 @@ Format placeholders:
         (fancy-splash-head)
         (insert indent-8 (my-emacs-copyright) "\n")
         
-        ;; Date
+        ;; Date (without inline weather)
         (insert indent-4 current-date lunar-date " " d-day "\n")
         
-        ;; Weather
-        (when weather-info
-          (insert indent-8 weather-info "\n"))
+        ;; Weather Section
+        (when (and today-weather weekly-weather)
+          (insert (format "%s● 날씨: %s\n" indent-4 my-weather-location))
+          (insert indent-8 today-weather "\n")
+          (insert (replace-regexp-in-string "^" indent-8 weekly-weather)))
         
         ;; Tide
-        (insert (format "\n%s● 조석%s\n" indent-4 muldae-str))
+        (insert (format "\n%s● 조석: %s\n" indent-4 
+                        (substring muldae-str 2 -1)))  ; Remove " (" and ")"
         (insert (replace-regexp-in-string "^" indent-8 tide-info))
         
         ;; Agenda

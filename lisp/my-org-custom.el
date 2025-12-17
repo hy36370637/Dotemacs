@@ -18,6 +18,24 @@
   "Construct the full path for a personal org file FILENAME."
   (expand-file-name filename my/org-person-dir))
 
+(defun cal-fixLayout () 
+  "Fix calendar layout for monospace Korean font."
+  (face-remap-add-relative 'default 
+                           '(:family "Noto Sans Mono CJK KR" :height 160)))
+
+;; ======================================
+;;; Calendar
+;; ======================================
+(use-package calendar
+  :ensure nil
+  :hook (calendar-mode . cal-fixLayout)
+  :custom
+  (calendar-week-start-day 0)  ; Start week on Sunday
+  (calendar-date-style 'iso)   ; YYYY-MM-DD 형식
+  (calendar-month-name-array 
+   ["1월" "2월" "3월" "4월" "5월" "6월" 
+    "7월" "8월" "9월" "10월" "11월" "12월"]))
+
 ;; ======================================
 ;;; org-mode
 ;; ======================================
@@ -48,6 +66,7 @@
                     (list (my-org-person-file-path "Holidays.org")
                           (my-org-person-file-path "Tasks.org")
                           (my-org-person-file-path "Daily.org"))))
+  
   (setq org-capture-templates
         `(("d" "Daily" entry
            (file+datetree ,(my-org-person-file-path "Daily.org"))
