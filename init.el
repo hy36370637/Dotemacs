@@ -106,13 +106,25 @@
   :hook
   (text-mode . visual-line-mode)
   :custom
-  (use-short-answers t)
-  (kill-whole-line 1)
-  (text-scale-mode-step 1.02)
-  (line-spacing 0.2)
-  (global-auto-revert-mode t)
-  (column-number-mode t)
-  (display-time-mode t)
+  ;; UI 및 상태 정보 관련
+  (use-short-answers t)                ; y/n으로 대답 단축
+  (column-number-mode t)       ; 열 번호 표시
+  (display-time-mode t)              ; 시간 표시
+  ;;시각 효과, 가독성
+  (line-spacing 0.2)                       ; 줄 간격 여백
+  (text-scale-mode-step 1.02)   ; 텍스트 크기 조절 단계
+  ;; 스크롤, 탐색
+  (scroll-margin 3)                        ; 상하 2줄 여백 유지하며 스크롤
+  (scroll-conservatively 101)      ; 화면 점프 없이 부드럽게 한 줄씩 스크롤
+  (scroll-error-top-bottom t)     ; 문서 끝에서 방향키 입력 시 커서 이동 후 경고
+  ;;마크, 히스토리 
+  (set-mark-command-repeat-pop t)      ; C-u C-SPC 이후 C-SPC만으로 계속 점프
+  (mark-ring-max 16)                                   ; 버퍼 내 마크 저장 개수
+  (global-mark-ring-max 32)                     ; 전체 버퍼 마크 저장 개수
+  ;; 편집 행동 관련
+  (kill-whole-line 1)                      ; 줄 전체 삭제 시 줄바꿈까지 삭제
+  (global-auto-revert-mode t)   ; 외부에서 변경된 파일 자동 새로고침
+  (next-line-add-newlines nil)   ; 문서 끝에서 C-n 눌러도 새 줄 추가 안 함
   :config
   (minibuffer-depth-indicate-mode 1) ;; 미니버퍼 재귀 깊이 표시모드 for consult-dir
   :bind
@@ -183,7 +195,7 @@
 
 ;; =======================================
 ;;; Fonts
-;; =======================================
+;; =======================================  
 (use-package emacs
   :if (display-graphic-p)
   :init
@@ -191,7 +203,10 @@
   :config
   (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
   (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
-  (set-fontset-font t 'hangul (font-spec :family "Noto Sans CJK KR")))
+  (set-fontset-font t 'hangul (font-spec :family "Noto Sans CJK KR"))
+  (add-hook 'prog-mode-hook
+            (lambda ()
+              (face-remap-add-relative 'default :family "Noto Sans Mono CJK KR"))))
 
 ;; =======================================
 ;;; Theme

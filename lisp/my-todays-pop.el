@@ -25,7 +25,7 @@
 (defvar nokdong-tide-obs-code "SO_0761" 
   "Nokdong port observation code for tide forecast API.")
 
-(defvar my-weather-location "도양읍"
+(defvar my-weather-location "북부동" 	;도양읍
   "Default location for weather information.")
 
 (defvar my-weather-format-template "- %s, 최저/최고 %s/%s, 어제보다 %s"
@@ -262,20 +262,26 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
 ;;; Helper Functions
 ;; ======================================
 (defun get-random-quote-from-creading ()
-  "Extract a random quote from cReading.org file."
+  "Extract a random quote from cReading.org file and clean up trailing symbols."
   (with-temp-buffer
     (insert-file-contents (my-org-person-file-path "cReading.org"))
     (let (quotes)
       (goto-char (point-min))
+      ;; 제목(* 타이틀)과 본문을 분리하여 수집
       (while (re-search-forward "^\\* \\(.+\\)" nil t)
         (let* ((title (match-string 1))
-               (end (or (save-excursion (re-search-forward "^\\* " nil t))
-                        (point-max)))
-               (content (string-trim (buffer-substring-no-properties (point) end))))
+               (start (point))
+               (end (save-excursion 
+                      (if (re-search-forward "^\\* " nil t) 
+                          (match-beginning 0) 
+                        (point-max))))
+               (content (string-trim (buffer-substring-no-properties start end))))
           (push (cons title content) quotes)))
       (if quotes
-          (let ((quote (nth (random (length quotes)) quotes)))
-            (format "%s\n%s" (car quote) (cdr quote)))
+          (let* ((quote (nth (random (length quotes)) quotes))
+                 (raw-result (format "%s\n%s" (car quote) (cdr quote))))
+            ;; 결과값 끝에 있는 '*', 공백, 개행을 모두 제거
+            (replace-regexp-in-string "[ \t\n\*]+$" "" raw-result))
         "No quotes found in cReading.org"))))
 
 (defun my-emacs-copyright ()
@@ -289,17 +295,18 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
                                                          (encode-time 0 0 0 31 12 2024)))
                              86400))))
     (if (> diff-days 0)
-        (format "/  %d日 경과" diff-days)
+        (format "/  %d일 경과" diff-days)
       (format "/ D-day %d日前" (- diff-days)))))
 
 (defun my-format-agenda-string ()
-  "Get formatted 3-day agenda with bullets."
+  "Get formatted 3-day agenda with bullets, removing trailing empty lines."
   (with-temp-buffer
     (org-agenda-list 3)
     (goto-char (point-min))
-    (forward-line 1)
-    (replace-regexp-in-string "^" "- " 
-                              (buffer-substring-no-properties (point) (point-max)))))
+    (forward-line 1) ; 첫 줄(헤더) 제외
+    (let ((content (buffer-substring-no-properties (point) (point-max))))
+      ;; 마지막 개행 및 공백 제거 후 각 줄 처음에 "- " 추가
+      (replace-regexp-in-string "^" "- " (string-trim-right content)))))
 
 ;; ======================================
 ;;; Main Function
@@ -308,7 +315,7 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
   "Display today's info in a popup buffer."
   (interactive)
   (let* ((buffer (get-buffer-create "Today info"))
-         (current-date (format-time-string "● 오늘 %Y-%m-%d (%A)"))
+         (current-date (format-time-string "● 오늘: %Y-%m-%d (%a) /"))
          (lunar-date (my-lunar-date-string))
          (d-day (my-Ddays))
          (weather-data (my--get-weather-info-sync))
@@ -325,9 +332,10 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
     (with-current-buffer buffer
       (let ((inhibit-read-only t))
         (erase-buffer)
+      ;;  (buffer-face-set 'fixed-pitch)       ; 버퍼 전체에 고정폭 폰트(Noto Sans Mono CJK KR) 적용
         
         ;; Header
-     ;;   (fancy-splash-head)
+	;;   (fancy-splash-head)
         (insert indent-8 (my-emacs-copyright) "\n")
         
         ;; Date (without inline weather)
