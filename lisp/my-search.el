@@ -146,6 +146,53 @@ Search options: macOS Dictionary, Naver, Google, Namuwiki."
   (let ((city (read-string "도시명 입력: ")))
     (my-naver-weather-search city)))
 
+;; ======================================
+;;; org-Content Search Function
+;; ======================================
+;; (defun my-open-org-book ()
+;;   "Org dir 내 모든 .org 파일 한글 오름차순 정렬 필터링 후 엽니다."
+;;   (interactive)
+;;   (let* ((book-dir "~/Dropbox/Docs/org/")
+;;          (files (directory-files book-dir t "\\.org$"))
+;;          (sorted-files (sort files #'string-collate-lessp))
+;;          (file-alist (mapcar (lambda (f) (cons (file-name-nondirectory f) f)) sorted-files))
+;;          (choice (completing-read "읽을 책 선택: " (mapcar #'car file-alist) nil t)))
+;;     (when (and choice (not (string-empty-p choice)))
+;;       (find-file (cdr (assoc choice file-alist))))))
+
+;; (keymap-global-set "M-b" #'my-open-org-book)
+(defun my/open-org-book ()
+  "전체 목록을 MacOS 파인더 스타일(숫자-영문-한글)로 일관되게 정렬하여 엽니다."
+  (interactive)
+  (let* ((book-dir "~/Dropbox/Docs/org/")
+         ;; 폴더 내 모든 .org 파일을 가져옴
+         (files (directory-files book-dir t "\\.org$"))
+         ;; 파일명만 추출하여 MacOS 스타일(숫자 인식 + 한글 로케일)로 정렬
+         (sorted-files (sort files (lambda (a b)
+                                     (string-collate-lessp (file-name-nondirectory a)
+                                                           (file-name-nondirectory b)
+                                                           "ko_KR.UTF-8" t))))
+         ;; 정렬된 목록으로 선택지 생성
+         (file-alist (mapcar (lambda (f) (cons (file-name-nondirectory f) f)) sorted-files))
+         ;; Vertico UI를 통해 선택 (정렬이 유지되도록 처리)
+         (choice (let ((vertico-sort-function nil)) ; Vertico가 임의로 재정렬하지 못하게 방지
+                   (completing-read "읽을 책 선택: " (mapcar #'car file-alist) nil t))))
+    ;; 선택한 파일 열기
+    (when (and choice (not (string-empty-p choice)))
+      (find-file (cdr (assoc choice file-alist))))))
+
+;; --- 3. 단축키 연결 ---
+(keymap-global-set "M-b" #'my/open-org-book)
+
+(defun my-search-org-content ()
+  "org-dir내 모든 파일 내용 검색(Grep)."
+  (interactive)
+  (let ((org-dir "~/Dropbox/Docs/org/"))
+    (consult-ripgrep org-dir)))
+
+(keymap-global-set "M-B" #'my-search-org-content)
+
+
 
 (provide 'my-search)
 ;;; my-search.el ends here
