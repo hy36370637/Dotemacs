@@ -82,14 +82,15 @@
 (require 'my-org-custom)
 (require 'my-useful-custom)
 (require 'my-search)
+(require 'my-todays-pop)
 (require 'my-eradio-custom)
 
 ;; =======================================
 ;;; MacOS keyboard
 ;; =======================================
 ; alfred snippets 불능. OS시스템 설정에서 키보드 교환
-(when my-macOS-p
-   (setq mac-right-option-modifier 'none))
+(when (and my-macOS-p (boundp 'mac-right-option-modifier))
+  (setq mac-right-option-modifier 'none))
 
 ;; =======================================
 ;;; Emacs UI and behavior
@@ -127,9 +128,11 @@
    ("C-x m" . nil)
    ("C-x z" . nil)
    ("C-c n o" . my-search-org-content)
+   ("C-c n s" . my-search-text-in-range)
    ("C-c n t" . my-todays-pop)
    ("C-c n w" . my-weather-search)
-   ("C-c 0" . toggle-frame-fullscreen)))
+   ("C-c 0" . toggle-frame-fullscreen)
+   ("C-c 9" . toggle-frame-maximized)))
 
 (use-package time
   :ensure nil

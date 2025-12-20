@@ -356,10 +356,22 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
         (insert (format "\n%s● 일정\n" indent-4))
         (insert (replace-regexp-in-string "^" indent-8 agenda))
         
-        ;; Quote
-        (insert (format "\n%s● 글말\n" indent-4))
-        (insert (replace-regexp-in-string "^" indent-8 quote))
-        
+	;; Quote
+        (insert (format "\n%s● 글말: " indent-4))
+        (let* ((quote-lines (split-string quote "\n"))
+               (title (car quote-lines))
+               (content-lines (cdr quote-lines)))
+          (insert (format "%s\n" (or title "")))
+          (when content-lines
+            (dolist (line content-lines)
+              (let ((trimmed (string-trim line)))
+                (unless (string-empty-p trimmed)
+                  ;; 줄 시작이 '-'가 아니면 "- "를 붙여서 출력
+                  (let ((formatted-line (if (string-prefix-p "-" trimmed)
+                                            trimmed
+                                          (concat "- " trimmed))))
+                    (insert (format "%s%s\n" indent-8 formatted-line))))))))
+	
         ;; Setup buffer
         (goto-char (point-min))
         (forward-line 1)
