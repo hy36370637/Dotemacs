@@ -27,7 +27,7 @@
                    (bounds-of-thing-at-point 'word)))
          (start (car bounds))
          (end (cdr bounds))
-         (brackets '(("<left>"   . ("「" . "」"))
+	 (brackets '(("<left>"   . ("「" . "」"))
                      ("<right>"  . ("『" . "』"))
                      ("<up>"     . ("'" . "'"))
                      ("<down>"   . ("\"" . "\""))

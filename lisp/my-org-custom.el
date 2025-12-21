@@ -82,7 +82,7 @@
           
           ("r" "Reading" entry
            (file ,(my-org-person-file-path "cReading.org"))
-           "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:"
+           "* %?\n\n기록일: %U"
 	   :empty-lines 1
            :unnarrowed t)
           
