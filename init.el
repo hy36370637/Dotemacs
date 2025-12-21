@@ -177,8 +177,10 @@
   :custom
   (register-preview-delay 0)               ; 지연 없이 바로 프레뷰 표시
   :config
-  (let ((org-dir my/org-person-dir))
-    (set-register ?i `(file . ,(expand-file-name "init.el" user-emacs-directory)))
+  (let ((org-dir my/org-person-dir)
+	(conf-dir user-emacs-directory))
+    (set-register ?i `(file . ,(expand-file-name "init.el" conf-dir)))
+    (set-register ?l `(file . ,(expand-file-name "lisp/" conf-dir)))
     (set-register ?r `(file . ,(concat org-dir "cReading.org")))
     (set-register ?d `(file . ,(concat org-dir "Daily.org")))
     (set-register ?n `(file . ,(concat org-dir "cNotes.org"))))
