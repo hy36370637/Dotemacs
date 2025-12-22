@@ -314,7 +314,7 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
 (defun my-todays-pop ()
   "Display today's info in a popup buffer."
   (interactive)
-  (let* ((buffer (get-buffer-create "Today info"))
+  (let* ((buffer (get-buffer-create "*Today info*"))
          (current-date (format-time-string "● 오늘: %Y-%m-%d (%a) /"))
          (lunar-date (my-lunar-date-string))
          (d-day (my-Ddays))

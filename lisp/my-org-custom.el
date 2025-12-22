@@ -18,6 +18,48 @@
   "Construct the full path for a personal org file FILENAME."
   (expand-file-name filename my/org-person-dir))
 
+(defun my-org-insert-image ()
+  "img 폴더에서 이미지 선택 삽입합니다."
+  (interactive)
+  (let* ((img-base-dir (expand-file-name "img/" org-directory))
+         (selected-file (read-file-name "이미지 선택: " img-base-dir nil t)))
+    (when (and selected-file (not (file-directory-p selected-file)))
+      (insert (format "[[file:%s]]\n" selected-file))
+      (org-display-inline-images))))
+
+(defun my-insert-image-path ()
+  "'./img/imgCover/파일명.확장자' 형식을 커서에 삽입."
+  (interactive)
+  (let* ((base-dir (expand-file-name "img/" org-directory))
+         (selected-file (read-file-name "img 선택: " base-dir nil t))
+         (relative-path (when (and selected-file (file-exists-p selected-file))
+                          (file-relative-name selected-file))))
+    (if relative-path
+        (progn
+          (insert (concat "./" relative-path))
+          (message "완료: %s" relative-path))
+      (message "선택 취소되었습니다."))))
+
+;; (defun my-set-latex-cover-image ()
+;;   "표지 이미지를 선택하고 LaTeX title-command를 설정합니다. 이미지 너비를 지정할 수 있습니다."
+;;   (interactive)
+;;   (let* ((cover-img-dir (expand-file-name "img/imgCover/" org-directory))
+;;          (selected-file (read-file-name "표지 이미지 선택: " cover-img-dir nil t))
+;;          ;; 너비를 입력받되, 기본값으로 14.7cm를 제시합니다.
+;;          (img-width (read-string "이미지 너비 (기본 14.7cm): " nil nil "14.7cm")))
+;;     (when (and selected-file (not (file-directory-p selected-file)))
+;;       ;; 버퍼 로컬 변수로 설정 (현재 파일에만 적용)
+;;       (make-variable-buffer-local 'org-latex-title-command)
+      
+;;       ;; \vspace를 제거하고 \vfill을 사용하여 상하 균형을 맞춥니다.
+;;       (setq org-latex-title-command
+;;             (format "\\begin{titlepage}\n\\centering\n\\vfill\n\\includegraphics[width=%s]{%s}\n\\vfill\n\\end{titlepage}\n"
+;;                     img-width
+;;                     (file-relative-name selected-file)))
+;;       (message "LaTeX 표지 설정 완료: %s (너비: %s)" 
+;;                (file-name-nondirectory selected-file) 
+;;                img-width))))
+
 (defun cal-fixLayout () 
   "Fix calendar layout for monospace Korean font."
   (face-remap-add-relative 'default 
@@ -44,7 +86,8 @@
   :defer t
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
-         ("C-c C" . org-capture))
+         ("C-c C" . org-capture)
+	 ("C-c n i" . my-org-insert-image))
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org"))
   (org-startup-indented t)

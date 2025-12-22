@@ -138,7 +138,7 @@
   :ensure nil
   :custom
   (display-time-24hr-format t)                      ; 24-hour system
-  (display-time-format "%y-%m-%d (%a) %H:%M")
+  (display-time-format "%Y-%m-%d (%a) %H:%M")
   (display-time-day-and-date t)
   (display-time-load-average nil))                  ; mode-line-misc-info average nil
 

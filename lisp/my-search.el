@@ -5,6 +5,7 @@
 ;; ======================================
 (require 'url)
 (require 'dom)
+(require 'cl-lib)
 
 ;; ======================================
 ;;; Helper Functions
@@ -61,72 +62,71 @@ Search options: macOS Dictionary, Naver, Google, Namuwiki."
 ;;; Weather Search Functions
 ;; ======================================
 (defun my--parse-weather-data (dom city)
-  "Parse weather data from DOM for CITY and display in buffer."
-  (let* ((temperature-elem (dom-by-class dom "temperature_text"))
-         (temperature (when temperature-elem 
-                        (string-replace " " "" 
-                                        (dom-texts (car temperature-elem)))))
-         (summary-elem (dom-by-class dom "summary"))
-         (summary (when summary-elem 
-                    (string-replace " " "" 
-                                    (dom-texts (car summary-elem)))))
-         (weather-elem (dom-by-class dom "weather before_slash"))
-         (weather (when weather-elem 
-                    (string-replace " " "" 
-                                    (dom-texts (car weather-elem)))))
-         (dust-elems (dom-by-class dom "today_chart_list"))
-         (dust-info (when dust-elems
-                      (cl-remove-duplicates
-                       (mapcar (lambda (elem)
-                                 (cons (dom-texts (dom-by-class elem "title"))
-                                       (dom-texts (dom-by-class elem "txt"))))
-                               dust-elems)
-                       :test #'equal)))
-         (sunset-elem (dom-by-class dom "item_today type_sun"))
+  "Naver 날씨 DOM에서 데이터를 추출하여 전용 버퍼에 시각화합니다."
+  (let* ((buffer-name (format "*날씨: %s*" city))
+         ;; 1. 현재 온도 및 요약 정보 추출
+         (temp-elem (car (dom-by-class dom "temperature_text")))
+         (temperature (if temp-elem (string-trim (dom-texts temp-elem)) "정보 없음"))
+         (summary-elem (car (dom-by-class dom "summary")))
+         (summary (if summary-elem (string-trim (dom-texts summary-elem)) ""))
+         (weather-elem (car (dom-by-class dom "weather before_slash")))
+         (weather (if weather-elem (string-trim (dom-texts weather-elem)) ""))
+
+         ;; 2. 미세먼지 등 상세 지표 (오늘의 차트)
+         (dust-info (mapcar (lambda (elem)
+                              (cons (string-trim (dom-texts (car (dom-by-class elem "title"))))
+                                    (string-trim (dom-texts (car (dom-by-class elem "txt"))))))
+                            (dom-by-class dom "today_chart_list")))
+
+         ;; 3. 일몰/일출 정보
+         (sunset-elem (car (dom-by-class dom "item_today type_sun")))
          (sunset-info (when sunset-elem
-                        (format "%s %s"
-                                (dom-texts (dom-by-class sunset-elem "title"))
-                                (dom-texts (dom-by-class sunset-elem "txt")))))
-         (weekly-forecast (dom-by-class dom "week_item"))
+                        (format "%s: %s"
+                                (dom-texts (car (dom-by-class sunset-elem "title")))
+                                (dom-texts (car (dom-by-class sunset-elem "txt"))))))
+
+         ;; 4. 주간 예보 파싱
          (weekly-info (mapcar 
                        (lambda (day)
-                         (list (dom-texts (dom-by-class day "date"))
-                               (dom-texts (dom-by-class day "weather"))
-                               (string-replace "최저기온" "" 
-                                               (dom-texts (dom-by-class day "lowest")))
-                               (string-replace "최고기온" "" 
-                                               (dom-texts (dom-by-class day "highest")))))
-                       weekly-forecast)))
-    
-    ;; Display weather information
-    (with-current-buffer (get-buffer-create (format "*%s 날씨*" city))
-      (erase-buffer)
-      
-      ;; Current weather
-      (insert (format "%s 날씨 정보\n -----\n온도: %s\n날씨: %s … %s\n"
-                      city
-                      (or temperature "정보 없음")
-                      (or summary "정보 없음")
-                      (or weather "정보 없음")))
-      
-      ;; Sunset/sunrise info
-      (when sunset-info
-        (insert (format "%s\n" sunset-info)))
-      
-      ;; Air quality info
-      (dolist (dust dust-info)
-        (insert (format "%s: %s\n" (car dust) (cdr dust))))
-      
-      ;; Weekly forecast
-      (insert "\n주간 날씨 :\n")
-      (dolist (day weekly-info)
-        (insert (format "%s: %s 기온 %s/%s\n"
-                        (nth 0 day) (nth 1 day) 
-                        (nth 2 day) (nth 3 day))))
-      
-      ;; Setup buffer
-      (goto-char (point-min))
-      (local-set-key (kbd "q") 'quit-window)
+                         (list (string-trim (dom-texts (car (dom-by-class day "date"))))
+                               (string-trim (dom-texts (car (dom-by-class day "weather"))))
+                               (string-trim (string-replace "최저기온" "" 
+                                                            (dom-texts (car (dom-by-class day "lowest")))))
+                               (string-trim (string-replace "최고기온" "" 
+                                                            (dom-texts (car (dom-by-class day "highest")))))))
+                       (dom-by-class dom "week_item"))))
+
+    ;; 버퍼 생성 및 데이터 삽입
+    (with-current-buffer (get-buffer-create buffer-name)
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        
+        ;; 헤더 출력
+        (insert (propertize (format " @ %s 날씨 정보\n" city) 'face 'bold-italic))
+        (insert (make-string 30 ?-) "\n")
+        
+        ;; 현재 상태
+        (insert (propertize "현재 온도: " 'face 'bold) temperature "\n")
+        (insert (propertize "날씨 요약: " 'face 'italic) summary " / " weather "\n")
+        
+        (when sunset-info
+          (insert sunset-info "\n"))
+        
+        (insert "\n[대기 환경]\n")
+        (dolist (dust (cl-remove-duplicates dust-info :test #'equal))
+          (insert (format "- %-8s: %s\n" (car dust) (cdr dust))))
+        
+        ;; 주간 예보 (표 형식 비슷하게 정렬)
+        (insert "\n[주간 예보]\n")
+        (dolist (day weekly-info)
+          (cl-destructuring-bind (date sky low high) day
+            (insert (format "%-6s | %-6s | %3s / %3s\n" 
+                            date sky low high))))
+        
+        ;; 버퍼 설정
+        (goto-char (point-min))
+        (special-mode) ; q 키로 닫기, 읽기 전용 등 기본 설정 적용
+        (setq-local truncate-lines t))
       (pop-to-buffer (current-buffer)))))
 
 (defun my-naver-weather-search (city)
