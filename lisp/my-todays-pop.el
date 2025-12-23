@@ -185,8 +185,7 @@ Format placeholders:
     (when-let ((tide-times (nokdong-tide-fetch-tide-times date-str)))
       (let ((high (if (string-empty-p (car tide-times)) "정보 없음" (car tide-times)))
             (low (if (string-empty-p (cdr tide-times)) "정보 없음" (cdr tide-times))))
-        (setq tide-string (format "- 만조: %s\n- 간조: %s" high low))))
-    
+        (setq tide-string (format "- 간조: %s\n- 만조: %s" low high))))
     (cons tide-string muldae-str)))
 
 ;; ======================================
@@ -292,11 +291,12 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
 (defun my-Ddays ()
   "Calculate days until/since 2024-12-31."
   (let ((diff-days (floor (/ (float-time (time-subtract (current-time)
-                                                         (encode-time 0 0 0 31 12 2024)))
+                                                        (encode-time 0 0 0 16 12 2025)))
+;;                                                      (encode-time 0 0 0 31 12 2024)))
                              86400))))
     (if (> diff-days 0)
         (format "/  %d일 경과" diff-days)
-      (format "/ D-day %d日前" (- diff-days)))))
+      (format "/ D-day %d일前" (- diff-days)))))
 
 (defun my-format-agenda-string ()
   "Get formatted 3-day agenda with bullets, removing trailing empty lines."
@@ -351,7 +351,7 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
         (insert (format "\n%s● 조석: %s\n" indent-4 
                         (substring muldae-str 2 -1)))  ; Remove " (" and ")"
         (insert (replace-regexp-in-string "^" indent-8 tide-info))
-        
+	
         ;; Agenda
         (insert (format "\n%s● 일정\n" indent-4))
         (insert (replace-regexp-in-string "^" indent-8 agenda))

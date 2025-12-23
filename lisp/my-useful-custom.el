@@ -4,55 +4,61 @@
 ;; =======================================
 ;;; 특수문자 입력
 ;; ======================================-
-;;;###autoload
-(defun my-insert-special-character ()
-  "특수 문자 삽입. 괄호 쌍 삽입 시 TAB 키로 괄호를 탈출."
-  (interactive)
-  (let* ((chars '("·" "→" "⇒" "※" "…" "―" "《》" "「」" "『』"))
-         (choice (completing-read "특수 문자 선택: " chars nil t)))
-    (unless (string-empty-p choice)
-      (if (= (length choice) 2)
-          (progn
-            (insert (substring choice 0 1) (substring choice 1 2))
-            (backward-char 1)
-            (my--enable-tab-escape))
-        (insert choice)))))
-
-;;;###autoload
-(defun my-region-dblspecial-characters ()
-  "선택 영역 또는 커서 위치의 단어를 괄호로 감쌉니다."
-  (interactive)
-  (let* ((bounds (if (use-region-p)
-                     (cons (region-beginning) (region-end))
-                   (bounds-of-thing-at-point 'word)))
-         (start (car bounds))
-         (end (cdr bounds))
-	 (brackets '(("<left>"   . ("「" . "」"))
-                     ("<right>"  . ("『" . "』"))
-                     ("<up>"     . ("'" . "'"))
-                     ("<down>"   . ("\"" . "\""))
-                     ("M-<left>" . ("《" . "》"))))
-         (key (read-key-sequence "괄호: [←]「」 [→]『』 [↑]'' [↓]\"\" [M-←]《》"))
-         (pair (alist-get (key-description key) brackets nil nil #'string=)))
-    (when pair
-      (save-excursion
-        (goto-char end) (insert (cdr pair))
-        (goto-char start) (insert (car pair)))
-      (goto-char (1+ start))
-      (my--enable-tab-escape))))
+(defcustom my-pair-pairs
+  '((?* :description "Bold"           :pair ?*)
+    (?/ :description "Italic"         :pair ?/)
+    (?= :description "Verbatim"       :pair ?=)
+    (?~ :description "Code"           :pair ?~)
+    (?+ :description "Strike"         :pair ?+)
+    (?\" :description "Double Quotes" :pair ?\")
+    (?\' :description "Single Quotes" :pair ?\')
+    (?\( :description "Parentheses"   :pair (?\( . ?\)))
+    (?\[ :description "Square brackets" :pair (?\[ . ?\]))
+    (?{  :description "Curly brackets"  :pair (?{ . ?}))
+    (?<  :description "「」"           :pair ("「" . "」"))
+    (?>  :description "『』"           :pair ("『" . "』"))
+    (?M  :description "《》"           :pair ("《" . "》")))
+  "Org-mode 마커 및 특수 괄호 쌍 리스트"
+  :group 'editing
+  :type '(alist :key-type character :value-type (plist)))
 
 (defun my--enable-tab-escape ()
-  "TAB 키로 한 칸 이동하는 일회성 키맵 활성화."
+  "기호 삽입 후 TAB 키로 한 칸 이동하는 일회성 키맵 활성화."
   (set-transient-map
    (let ((map (make-sparse-keymap)))
      (define-key map (kbd "TAB")
                  (lambda () (interactive) (forward-char 1)))
      map)
-   t
-   (lambda () (message "괄호 탈출!"))))
+   t))
 
-(global-set-key (kbd "C-c j c") 'my-insert-special-character)
-(global-set-key (kbd "C-c j r") 'my-region-dblspecial-characters)
+(defun my-region-wrap (char)
+  "선택 영역이나 단어를 입력받은 CHAR 쌍으로 감쌉니다. TAB으로 탈출 가능합니다."
+  (interactive "c기호 입력 (*, /, =, ~, <, >, M ...): ")
+  (let* ((entry (assoc char my-pair-pairs))
+         (pair-data (plist-get (cdr entry) :pair))
+         (open (if (consp pair-data) (car pair-data) pair-data))
+         (close (if (consp pair-data) (cdr pair-data) pair-data))
+         (bounds (if (use-region-p)
+                     (cons (region-beginning) (region-end))
+                   (or (bounds-of-thing-at-point 'symbol)
+                       (cons (point) (point)))))
+         (start (car bounds))
+         (end (cdr bounds)))
+
+    (if (not pair-data)
+        (message "정의되지 않은 기호: %c" char)
+      (save-excursion
+        ;; 닫는 기호 삽입
+        (goto-char end)
+        (insert (if (characterp close) (char-to-string close) close))
+        ;; 여는 기호 삽입
+        (goto-char start)
+        (insert (if (characterp open) (char-to-string open) open)))
+      
+      ;; 커서 위치 조정 및 TAB 탈출 기능 활성화
+      (unless (use-region-p) (goto-char (1+ end)))
+      (my--enable-tab-escape)
+      (message "'%s' 적용 완료 (TAB으로 탈출)" (plist-get (cdr entry) :description)))))
 
 ;; =======================================
 ;;; Hunspell 설정
@@ -70,7 +76,7 @@
     (interactive)
     (setq-local ispell-local-dictionary "ko_KR")
     (flyspell-mode 1)))
-(global-set-key (kbd "C-c j h") 'my-korean-spell-check)
+;; (global-set-key (kbd "C-c j h") 'my-korean-spell-check)
 
 ;; ======================================
 ;;; Date,Time insert

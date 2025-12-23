@@ -87,7 +87,11 @@
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
          ("C-c C" . org-capture)
-	 ("C-c n i" . my-org-insert-image))
+         ("C-c n i" . my-org-insert-image)
+	 ("C-c n c" . my-region-wrap)
+         :map org-mode-map
+         ("M-o" . end-of-buffer)
+         ("M-O" . beginning-of-buffer))
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org"))
   (org-startup-indented t)

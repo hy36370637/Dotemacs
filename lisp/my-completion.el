@@ -110,7 +110,7 @@
   (with-eval-after-load 'org
     (define-abbrev-table 'org-mode-abbrev-table
       '(;; 특수문자
-        ("rA" "→") ("cB" "※") ("lDash" "―") ("lDot" "……")
+        ("rA" "→") ("lS" "―") ("lT" "……")
         ("lG" "「") ("rG" "」") ("cD" "·") ("llG" "『") ("rrG" "』")
         ;; Org-mode 설정
         ("Dsc" "#+DESCRIPTION: ")
@@ -118,7 +118,6 @@
         ("Author" "#+AUTHOR: ")
         ("Keyword" "#+KEYWORDS: ")
         ("Setfile" "#+SETUPFILE: setLTH/Header.org")
-        ("SetfileQV" "#+SETUPFILE: setLTH/HeaderQV.org")
         ("sDot" "#+begin_center\n· · ·\n#+end_center")
         ("Unum" ":PROPERTIES:\n:UNNUMBERED: t\n:END:")
         ("Notoc" "#+LATEX: \\addcontentsline{toc}{section}{Dsctitle}")
