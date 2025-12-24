@@ -19,7 +19,7 @@
   (expand-file-name filename my/org-person-dir))
 
 (defun my-org-insert-image ()
-  "img 폴더에서 이미지 선택 삽입합니다."
+  "img 폴더 ⇒ 이미지 선택 삽입합니다."
   (interactive)
   (let* ((img-base-dir (expand-file-name "img/" org-directory))
          (selected-file (read-file-name "이미지 선택: " img-base-dir nil t)))
@@ -39,6 +39,31 @@
           (insert (concat "./" relative-path))
           (message "완료: %s" relative-path))
       (message "선택 취소되었습니다."))))
+
+(defun my-org-screenshot (chdir name)
+  "저장 폴더(chdir)와 파일 이름을 입력받아 스크린샷을 삽입합니다."
+  (interactive 
+   (let* ((default-dir (expand-file-name "img/" org-directory))
+          (chosen-dir (read-directory-name "저장 폴더: " default-dir default-dir t))
+          (file-name (read-string "파일 이름 입력 (확장자 제외): ")))
+     (list chosen-dir file-name)))
+  (let* (;; 파일 전체 경로 생성
+         (path (expand-file-name (concat name ".png") chdir))
+         ;; 시스템에 설치된 pngpaste의 경로를 자동으로 찾음
+         (pngpaste-bin (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste"))
+         (cmd (concat pngpaste-bin " " (shell-quote-argument path))))
+    ;; 폴더(chdir)가 없으면 생성
+    (unless (file-exists-p chdir) 
+      (make-directory chdir t))
+    ;; pngpaste 실행
+    (if (zerop (shell-command cmd))
+        (progn
+          ;; Org-mode 링크 삽입
+          (insert (format "\n#+ATTR_ORG: :width 400\n[[file:%s]]\n" path))
+          ;; 이미지 즉시 표시
+          (org-display-inline-images)
+          (message "이미지 저장되었습니다: %s" path))
+      (error "클립보드 이미지 없거나 pngpaste 실행 실패!."))))
 
 ;; (defun my-set-latex-cover-image ()
 ;;   "표지 이미지를 선택하고 LaTeX title-command를 설정합니다. 이미지 너비를 지정할 수 있습니다."

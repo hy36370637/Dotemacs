@@ -4,6 +4,7 @@
 ;; =======================================
 ;;; 특수문자 입력
 ;; ======================================-
+;;inspire https://protesilaos.com
 (defcustom my-pair-pairs
   '((?* :description "Bold"           :pair ?*)
     (?/ :description "Italic"         :pair ?/)
@@ -12,12 +13,12 @@
     (?+ :description "Strike"         :pair ?+)
     (?\" :description "Double Quotes" :pair ?\")
     (?\' :description "Single Quotes" :pair ?\')
-    (?\( :description "Parentheses"   :pair (?\( . ?\)))
-    (?\[ :description "Square brackets" :pair (?\[ . ?\]))
-    (?{  :description "Curly brackets"  :pair (?{ . ?}))
-    (?<  :description "「」"           :pair ("「" . "」"))
-    (?>  :description "『』"           :pair ("『" . "』"))
-    (?M  :description "《》"           :pair ("《" . "》")))
+    (?\( :description " () "          :pair (?\( . ?\)))
+    (?\[ :description " [] "          :pair (?\[ . ?\]))
+    (?{  :description " {} "          :pair (?{ . ?}))
+    (?<  :description "「」"          :pair ("「" . "」"))
+    (?>  :description "『』"          :pair ("『" . "』")))
+;;    (?M  :description "《》"          :pair ("《" . "》")))
   "Org-mode 마커 및 특수 괄호 쌍 리스트"
   :group 'editing
   :type '(alist :key-type character :value-type (plist)))
@@ -33,7 +34,7 @@
 
 (defun my-region-wrap (char)
   "선택 영역이나 단어를 입력받은 CHAR 쌍으로 감쌉니다. TAB으로 탈출 가능합니다."
-  (interactive "c기호 입력 (*, /, =, ~, <, >, M ...): ")
+  (interactive "c기호 입력 (*, /, =, ~, <, > ...): ")
   (let* ((entry (assoc char my-pair-pairs))
          (pair-data (plist-get (cdr entry) :pair))
          (open (if (consp pair-data) (car pair-data) pair-data))
@@ -58,25 +59,29 @@
       ;; 커서 위치 조정 및 TAB 탈출 기능 활성화
       (unless (use-region-p) (goto-char (1+ end)))
       (my--enable-tab-escape)
-      (message "'%s' 적용 완료 (TAB으로 탈출)" (plist-get (cdr entry) :description)))))
+      (message "'%s' 완료 (TAB으로 탈출)" (plist-get (cdr entry) :description)))))
 
 ;; =======================================
 ;;; Hunspell 설정
 ;; ======================================-
+(defun my-korean-spell-check ()
+  "Flyspell 모드를 한국어 사전과 함께 활성화합니다."
+  (interactive)
+  (require 'ispell) ;; 함수 실행 시 패키지 로드
+  (setq ispell-local-dictionary "ko_KR")
+  (flyspell-mode 1)
+  (message "Korean spell check enable"))
+
 (use-package ispell
   :if my-macOS-p
-;;  :hook (text-mode . my/korean-spell-check)
+  :defer t
   :config
   (setq ispell-program-name "hunspell")
   (setq ispell-local-dictionary-alist
         '(("ko_KR" "[가-힣]" "[^가-힣]" "[-']" nil ("-d" "ko_KR") nil utf-8)))
-
-  (defun my-korean-spell-check ()
-    "Enable Korean spell checking for the current buffer."
-    (interactive)
-    (setq-local ispell-local-dictionary "ko_KR")
-    (flyspell-mode 1)))
-;; (global-set-key (kbd "C-c j h") 'my-korean-spell-check)
+  (setq flyspell-delay 0.5)
+  (setq flyspell-issue-message-flag nil)
+  (setq flyspell-use-meta-tab nil))
 
 ;; ======================================
 ;;; Date,Time insert
@@ -96,43 +101,12 @@
           (insert (funcall action))
         (insert (format-time-string action))))))
 
-;; =======================================
-;;; gptel
-;; ======================================-
-;; (use-package gptel
-;;   :ensure t
-;;   :if my-Macbook-p
-;;   :defer t
-;;   :commands (gptel gptel-send)
-;;   :bind (("C-c n g" . gptel)          ; 전용 AI 채팅 버퍼 열기
-;;          ("C-c n q" . gptel-send))   ; 선택 영역 혹은 현재 문맥 질문하기
-;;   :config
-;;   (setq gptel-api-key
-;;         (funcall
-;;          (plist-get
-;;           (car (auth-source-search :host "gemini.google.com"
-;;                                    :user "api_key"))
-;;           :secret)))
-;;   (gptel-make-gemini "Gemini"
-;;     :key gptel-api-key
-;;     :stream t                         ; 답변을 실시간 스트리밍으로 출력
-;;     :models '("gemini-2.0-flash-001"  ; Gemini 3의 기반이 되는 최신 Flash 모델
-;;               "gemini-2.0-pro-exp"    ; 최신 고성능 추론 모델
-;;               "gemini-1.5-pro"))      ; 안정적인 긴 문맥 처리용
-;;   (setq gptel-backend (gptel-get-backend "Gemini")
-;;         gptel-model "gemini-2.0-flash-001"  ; 가장 빠르고 스마트한 기본값
-;;         gptel-default-mode 'org-mode)       ; Org-mode 기반으로 AI와 대화
-;;   (setq gptel-directives
-;;         '((default . "당신은 Gemini 3 기반의 유능한 AI 파트너입니다. 한국어로 답변하세요.")
-;;           (coder . "Emacs Lisp 전문가로서 간결한 코드와 명확한 주석을 제공하세요.")
-;;           (editor . "Org-mode 문서의 논리를 분석하고 문체와 가독성을 개선하세요."))))
-
 ;; ======================================
 ;;; Magit
 ;; ======================================
 (use-package magit
   :defer t
-  :commands (magit-status magit-log magit-blame)
+;;  :commands (magit-status magit-log magit-blame)
   :bind (("C-x g" . magit-status))
   :config
   (setq magit-auto-revert-mode t))
