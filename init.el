@@ -306,31 +306,28 @@
 ;; =======================================
 (defvar ko-indicator (create-image "~/.emacs.d/img-indicator/han2.tiff" 'tiff nil :ascent 'center))
 (defvar en-indicator (create-image "~/.emacs.d/img-indicator/qwerty.tiff" 'tiff nil :ascent 'center))
+(defvar mode-line-use-images-p 
+  (and (display-graphic-p) (image-type-available-p 'tiff)))
 (setq mode-line-right-align-edge 'right-margin)
 (setq-default mode-line-format
               '("%e "
                 mode-line-front-space
                 (:eval
                  (let* ((is-ko (equal current-input-method "korean-hangul"))
-                        (img    (if is-ko ko-indicator en-indicator))
-                        (label  (if is-ko "KO" "EN"))
-                        (tip    (if is-ko "KO" "EN"))
-                        (use-img (and (display-graphic-p)
-                                      (image-type-available-p 'tiff))))
-                   (if use-img
-                       (propertize label
-                                   'display   img
-                                   'help-echo tip)
-                     (propertize label
-                                 'help-echo tip))))
+                        (label (if is-ko "KO" "EN")))
+                   (propertize label
+                               'display (when mode-line-use-images-p 
+                                          (if is-ko ko-indicator en-indicator))
+                               'help-echo label)))
                 "   "
                 "Ⓗ "
                 mode-line-buffer-identification
                 mode-line-frame-identification
+                "  "
                 mode-line-modes
                 mode-line-format-right-align
                 mode-line-position
-                "Ⓨ "
+                " Ⓨ "
                 mode-line-misc-info))
 
 ;; =======================================

@@ -57,15 +57,15 @@
 ;; ======================================
 ;;; consult-dir
 ;; ======================================
-(use-package consult-dir
-  :ensure nil
-  :after (vertico)
-  :init
-  (setq enable-recursive-minibuffers t) ;; 재귀적 미니버퍼
-  :bind (("C-c D" . consult-dir)
-          :map vertico-map
-         ("C-c D" . consult-dir)
-	 ("C-x C-j" . consult-dir-jump-file)))
+;; (use-package consult-dir
+;;   :ensure nil
+;;   :after (vertico)
+;;   :init
+;;   (setq enable-recursive-minibuffers t) ;; 재귀적 미니버퍼
+;;   :bind (("C-c D" . consult-dir)
+;;           :map vertico-map
+;;          ("C-c D" . consult-dir)
+;; 	 ("C-x C-j" . consult-dir-jump-file)))
 
 ;; =======================================
 ;;; electric-pair-mode

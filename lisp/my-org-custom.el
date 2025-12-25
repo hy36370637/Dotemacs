@@ -19,7 +19,7 @@
   (expand-file-name filename my/org-person-dir))
 
 (defun my-org-insert-image ()
-  "img 폴더 ⇒ 이미지 선택 삽입합니다."
+  "img폴더의 img 삽입-표시합니다."
   (interactive)
   (let* ((img-base-dir (expand-file-name "img/" org-directory))
          (selected-file (read-file-name "이미지 선택: " img-base-dir nil t)))
@@ -41,29 +41,49 @@
       (message "선택 취소되었습니다."))))
 
 (defun my-org-screenshot (chdir name)
-  "저장 폴더(chdir)와 파일 이름을 입력받아 스크린샷을 삽입합니다."
+  "저장 폴더(chdir)와 파일 이름을 입력받아 스크린샷 삽입합니다."
   (interactive 
    (let* ((default-dir (expand-file-name "img/" org-directory))
           (chosen-dir (read-directory-name "저장 폴더: " default-dir default-dir t))
           (file-name (read-string "파일 이름 입력 (확장자 제외): ")))
      (list chosen-dir file-name)))
-  (let* (;; 파일 전체 경로 생성
-         (path (expand-file-name (concat name ".png") chdir))
-         ;; 시스템에 설치된 pngpaste의 경로를 자동으로 찾음
+  (let* ((path (expand-file-name (concat name ".png") chdir))
          (pngpaste-bin (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste"))
          (cmd (concat pngpaste-bin " " (shell-quote-argument path))))
-    ;; 폴더(chdir)가 없으면 생성
     (unless (file-exists-p chdir) 
       (make-directory chdir t))
-    ;; pngpaste 실행
     (if (zerop (shell-command cmd))
         (progn
-          ;; Org-mode 링크 삽입
           (insert (format "\n#+ATTR_ORG: :width 400\n[[file:%s]]\n" path))
-          ;; 이미지 즉시 표시
           (org-display-inline-images)
           (message "이미지 저장되었습니다: %s" path))
       (error "클립보드 이미지 없거나 pngpaste 실행 실패!."))))
+
+;; (defun my-org-generate-toc ()
+;;   "목차Toc 자동 생성 (PDF Export 제외)."
+;;   (interactive)
+;;   (save-excursion
+;;     (goto-char (point-min))
+;;     ;; 기존 목차 삭제
+;;     (when (re-search-forward "^\\* 목차.*:noexport:" nil t)
+;;       (org-cut-subtree))
+;;     ;; 새 목차 생성 위치
+;;     (goto-char (point-min))
+;;     (re-search-forward "^\\* " nil t)
+;;     (beginning-of-line)
+;;     (insert "* 목차 :noexport:\n")  ; :noexport: 태그 추가
+;;     (let ((toc-items '()))
+;;       (org-map-entries
+;;        (lambda ()
+;;          (let* ((level (org-current-level))
+;;                 (title (org-get-heading t t t t))
+;;                 (indent (make-string (* 2 (1- level)) ?\s)))
+;;            (when (> level 1)
+;;              (push (format "%s- [[*%s][%s]]" indent title title) toc-items))))
+;;        nil 'file)
+;;       (insert (mapconcat 'identity (reverse toc-items) "\n"))
+;;       (insert "\n\n")))
+;;   (message "목차 생성 완료 (PDF Export 제외됨)"))
 
 ;; (defun my-set-latex-cover-image ()
 ;;   "표지 이미지를 선택하고 LaTeX title-command를 설정합니다. 이미지 너비를 지정할 수 있습니다."
@@ -112,18 +132,19 @@
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
          ("C-c C" . org-capture)
-         ("C-c n i" . my-org-insert-image)
-	 ("C-c n c" . my-region-wrap)
+         ("C-c j i" . my-org-insert-image)
+	 ("C-c j c" . my-region-wrap)
          :map org-mode-map
          ("M-o" . end-of-buffer)
          ("M-O" . beginning-of-buffer))
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org"))
-  (org-startup-indented t)
+  (org-startup-indented t)             ;시작때 indent mode enable
   (org-startup-with-inline-images nil)
   (org-startup-folded t)
-  (org-adapt-indentation nil)
+  (org-adapt-indentation nil)         ;indent의 실제 공백 nil 
   (org-indent-indentation-per-level 2)
+  (org-edit-src-content-indentation 0)
   (org-image-actual-width 400)
   (org-log-into-drawer t)
   (org-log-done 'time)
@@ -138,25 +159,21 @@
                     (list (my-org-person-file-path "Holidays.org")
                           (my-org-person-file-path "Tasks.org")
                           (my-org-person-file-path "Daily.org"))))
-  
   (setq org-capture-templates
         `(("d" "Daily" entry
            (file+datetree ,(my-org-person-file-path "Daily.org"))
            "* %?"
-	   :empty-lines 1
-           :unnarrowed t)
+           :empty-lines-after 1)
           
           ("t" "Tasks" entry
            (file ,(my-org-person-file-path "Tasks.org"))
            "* TODO %?\nSCHEDULED: %t"
-	   :empty-lines 1
-           :unnarrowed t)
+           :empty-lines-after 1)
           
           ("r" "Reading" entry
            (file ,(my-org-person-file-path "cReading.org"))
-           "* %?\n\n기록일: %U"
-	   :empty-lines 1
-           :unnarrowed t)
+           "* %?\n기록일: %U"
+           :empty-lines-after 1)
           
           ("m" "경조사" table-line
            (file ,(my-org-person-file-path "aMoney.org"))
@@ -207,6 +224,8 @@
         org-fontify-done-headline t
         org-fontify-quote-and-verse-blocks t))
   
+
+
 
 (provide 'my-org-custom)
 ;;; my-org-custom.el ends here
