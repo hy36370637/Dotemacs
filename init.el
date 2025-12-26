@@ -92,6 +92,26 @@
 (when (and my-macOS-p (boundp 'mac-right-option-modifier))
   (setq mac-right-option-modifier 'none))
 
+
+;; =======================================
+;;; macOS Input Source Control (im-select)
+;; =======================================
+;; im-select 설치를 위한 탭 추가 및 설치
+;; brew tap daipeihust/tap
+;; brew install im-select
+(defvar my/im-select-path nil
+  "im-select 실행 파일 경로 캐시")
+
+(defun my/mac-switch-to-english ()
+  "Emacs 포커스 시 macOS 입력기 영문 전환합니다."
+  (when (and my-macOS-p (display-graphic-p))
+    (unless my/im-select-path
+      (setq my/im-select-path (executable-find "im-select")))
+    (when my/im-select-path
+      (call-process my/im-select-path nil 0 nil "com.apple.keylayout.ABC"))))
+
+(add-hook 'focus-in-hook #'my/mac-switch-to-english)
+
 ;; =======================================
 ;;; Emacs UI and behavior
 ;; =======================================
@@ -129,7 +149,7 @@
    ("C-x z" . nil)
    ("C-c n d" . my-search-content-in-dir)
    ("C-c n r" . my-search-text-in-range)
-   ("C-c n t" . my-todays-pop)
+   ("C-c n n" . my-todays-pop)
    ("C-c n w" . my-weather-search)
    ("C-c 0" . toggle-frame-fullscreen)
    ("C-c 9" . toggle-frame-maximized)))
