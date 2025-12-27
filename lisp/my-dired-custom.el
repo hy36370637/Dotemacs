@@ -12,9 +12,7 @@
 (use-package dired
   :ensure nil
   :custom
-  ;; Listing options
   (dired-listing-switches "-AGFhlv --group-directories-first --time-style=long-iso")
-  ;; Behavior
   (dired-dwim-target t)
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
@@ -23,7 +21,6 @@
   (dired-free-space nil)
   :bind
   (:map dired-mode-map
-   ("C-+" . dired-create-empty-file)
    ("C-<return>" . dired-do-open)
    ("/" . dired-narrow)))
 

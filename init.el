@@ -111,6 +111,7 @@
       (call-process my/im-select-path nil 0 nil "com.apple.keylayout.ABC"))))
 
 (add-hook 'focus-in-hook #'my/mac-switch-to-english)
+(add-hook 'prog-mode-hook #'my/mac-switch-to-english)
 
 ;; =======================================
 ;;; Emacs UI and behavior
