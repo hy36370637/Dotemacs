@@ -34,7 +34,7 @@
 
 (defun my-region-wrap (char)
   "선택 영역이나 단어를 입력받은 CHAR 쌍으로 감쌉니다. TAB으로 탈출 가능합니다."
-  (interactive "c기호 입력 (*, /, =, ~, <, > ...): ")
+  (interactive "c기호 입력 (*, /, =, ~, (, [, <, > ...): ")
   (let* ((entry (assoc char my-pair-pairs))
          (pair-data (plist-get (cdr entry) :pair))
          (open (if (consp pair-data) (car pair-data) pair-data))

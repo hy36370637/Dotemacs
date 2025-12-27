@@ -133,7 +133,7 @@
   :bind (("C-c a" . org-agenda)
          ("C-c C" . org-capture)
          ("C-c j i" . my-org-insert-image)
-	 ("C-c j c" . my-region-wrap)
+	 ("C-c j n" . my-region-wrap)
          :map org-mode-map
          ("M-o" . end-of-buffer)
          ("M-O" . beginning-of-buffer))

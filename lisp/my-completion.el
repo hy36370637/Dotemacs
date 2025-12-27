@@ -75,7 +75,6 @@
   :init (electric-pair-mode t)
   :custom
   (electric-pair-pairs '((?\" . ?\")
-                         (?\` . ?\`)
                          (?\' . ?\')
                          (?\{ . ?\})
                          (?\[ . ?\])
@@ -114,19 +113,22 @@
         ("lG" "「") ("rG" "」") ("cD" "·") ("llG" "『") ("rrG" "』")
         ;; Org-mode 설정
         ("Dsc" "#+DESCRIPTION: ")
-        ("Title" "#+TITLE:")
+        ("Title" "#+TITLE: ")
         ("Author" "#+AUTHOR: ")
         ("Keyword" "#+KEYWORDS: ")
         ("Setfile" "#+SETUPFILE: setLTH/Header.org")
-        ("sDot" "#+begin_center\n· · ·\n#+end_center")
-        ("Unum" ":PROPERTIES:\n:UNNUMBERED: t\n:END:")
-        ("Notoc" "#+LATEX: \\addcontentsline{toc}{section}{Dsctitle}")
+        ("Center" "#+BEGIN_CENTER\n· · ·\n#+END_CENTER")
+        ("Nonum" ":PROPERTIES:\n:UNNUMBERED: t\n:END:")
         ("Option" "#+OPTIONS: toc:2 num:2")
         ("Grayq" "#+ATTR_LATEX: :environment grayquote")
-        ("Doimg" "#+attr_latex: :width 0.5\\textwidth\n#+CAPTION: \n[[../org/img/imgJW/IMG_]]")))))
+        ("Doimg" "#+ATTR_LATEX: :width 0.5\\textwidth\n#+CAPTION: \n")
+        ("Notoc" "#+LATEX: \\addcontentsline{toc}{section}{}" 
+         (lambda () (backward-char 2)))))))  ;; Notoc: 입력 후 커서를 {} 사이로 이동
+
+
+
+
+
 
 ;; end here
-
-
-
 (provide 'my-completion)

@@ -147,10 +147,10 @@
   (("C-x f" . nil)
    ("C-x m" . nil)
    ("C-x z" . nil)
-   ("C-c n d" . my-search-content-in-dir)
-   ("C-c n r" . my-search-text-in-range)
+   ("M-s c" . my-search-content-in-dir)
+   ("M-s r" . my-search-text-in-range)
+   ("M-s n" . my-weather-search)
    ("C-c n n" . my-todays-pop)
-   ("C-c n w" . my-weather-search)
    ("C-c 0" . toggle-frame-fullscreen)
    ("C-c 9" . toggle-frame-maximized)))
 
