@@ -8,7 +8,6 @@
 ;; ======================================
 ;;; Helper Functions
 ;; ======================================
-
 (defun load-eradio-channels-from-file (file-path)
   "Load radio channel definitions from FILE-PATH.
 Format: NAME|URL (one channel per line, # for comments)"
@@ -32,7 +31,7 @@ Format: NAME|URL (one channel per line, # for comments)"
             (forward-line 1)))
         (nreverse channels)))))
 
-(defun my-eradio-reload-channels ()
+(defun my/eradio-reload-channels ()
   "Reload eradio channels from the configuration file."
   (interactive)
   (if-let ((channels (load-eradio-channels-from-file 
@@ -42,7 +41,7 @@ Format: NAME|URL (one channel per line, # for comments)"
         (message "Loaded %d radio channels" (length channels)))
     (warn "No channels loaded or file not found")))
 
-(defun my-eradio-play-url ()
+(defun my/eradio-play-url ()
   "Play a radio stream from a URL entered by the user."
   (interactive)
   (when-let ((url (read-string "Enter stream URL: ")))
@@ -57,17 +56,15 @@ Format: NAME|URL (one channel per line, # for comments)"
   (("C-c e p" . eradio-play)
    ("C-c e s" . eradio-stop)
    ("C-c e t" . eradio-toggle)
-   ("C-c e r" . my-eradio-reload-channels)
-   ("C-c e u" . my-eradio-play-url))
-  
+   ("C-c e r" . my/eradio-reload-channels)
+   ("C-c e u" . my/eradio-play-url))
   :custom
   ;; Use VLC on macOS, fallback to mpv on other systems
-  (eradio-player 
-   (if (eq system-type 'darwin)
+  (eradio-player
+   (if (and (boundp 'my-macOS-p) my-macOS-p)
        '("/Applications/VLC.app/Contents/MacOS/VLC" 
          "--no-video" "-I" "rc")
      '("mpv" "--no-video" "--no-audio-display")))
-  
   :config
   ;; Load channels from file
   (unless (boundp 'my/lisp-path)
@@ -88,36 +85,36 @@ Format: NAME|URL (one channel per line, # for comments)"
                  (lambda ()
                    (when (and (boundp 'eradio-current-channel) 
                               eradio-current-channel)
-                     (let ((name (if (consp eradio-current-channel)
-                                     (car eradio-current-channel)
-                                   (or (car (rassoc eradio-current-channel 
-                                                    eradio-channels))
-                                       eradio-current-channel))))
-                       (message "▶ Playing: %s" name))))))))
+                     (let* ((name (if (consp eradio-current-channel)
+                                      (car eradio-current-channel)
+                                    (or (car (rassoc eradio-current-channel 
+                                                     eradio-channels))
+                                        eradio-current-channel)))
+                            (display-name
+                             (if (string-match "^[^.]*\\.\\([^|]+\\)" name) ; .있으면: . 이후 텍스트 추출
+                                 (match-string 1 name)
+                               name)))
+                       (message "🎶 Playing: %s" display-name))))))))
 
 ;; ======================================
 ;;; mpv Configuration
 ;; ======================================
-
 (use-package mpv
   :after dired
-  
   :custom
-  ;; Set mpv executable path based on system
   (mpv-executable 
    (cond
-    ((eq system-type 'darwin)
+    ((and (boundp 'my-macOS-p) my-macOS-p)
      (or (executable-find "/opt/homebrew/bin/mpv")
          (executable-find "/usr/local/bin/mpv")
          "mpv"))
-    ((eq system-type 'gnu/linux)
-     (or (executable-find "mpv") "mpv"))
-    (t "mpv")))
+    (t (or (executable-find "mpv") "mpv"))))
   
   :config
   ;; Verify mpv is available
   (unless (executable-find mpv-executable)
     (warn "mpv executable not found at: %s" mpv-executable)))
+
 
 
 (provide 'my-eradio-custom)
