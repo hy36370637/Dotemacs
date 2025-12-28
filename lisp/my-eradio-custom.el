@@ -31,7 +31,7 @@ Format: NAME|URL (one channel per line)"
             (forward-line 1)))
         (nreverse channels)))))
 
-(defun my/eradio-reload-channels ()
+(defun my-eradio-reload-channels ()
   "Reload eradio channels from the configuration file."
   (interactive)
   (if-let ((channels (load-eradio-channels-from-file 
@@ -41,7 +41,7 @@ Format: NAME|URL (one channel per line)"
         (message "Loaded %d radio channels" (length channels)))
     (warn "No channels loaded or file not found")))
 
-(defun my/eradio-play-url ()
+(defun my-eradio-play-url ()
   "Play a radio stream from a URL entered by the user."
   (interactive)
   (when-let ((url (read-string "Enter stream URL: ")))
@@ -56,23 +56,23 @@ Format: NAME|URL (one channel per line)"
   (("C-c e p" . eradio-play)
    ("C-c e s" . eradio-stop)
    ("C-c e t" . eradio-toggle)
-   ("C-c e r" . my/eradio-reload-channels)
-   ("C-c e u" . my/eradio-play-url))
+   ("C-c e r" . my-eradio-reload-channels)
+   ("C-c e u" . my-eradio-play-url))
   
   :custom
   ;; Use VLC on macOS, fallback to mpv on other systems
-  (eradio-player 
-   (if (eq system-type 'darwin)
+(eradio-player 
+   (if (and (boundp 'my-macOS-p) my-macOS-p)
        '("/Applications/VLC.app/Contents/MacOS/VLC" 
          "--no-video" "-I" "rc")
      '("mpv" "--no-video" "--no-audio-display")))
-  
+
   :config
   ;; Load channels from file
   (unless (boundp 'my/lisp-path)
     (error "eradio: my/lisp-path is not defined"))
   
-  (let ((channel-file (expand-file-name "mmslist.txt" my/lisp-path)))
+  (let ((channel-file (expand-file-name "mmslist" my/lisp-path)))
     (setq eradio-channels 
           (or (load-eradio-channels-from-file channel-file)
               (error "eradio: Channel file not found or invalid at %s" 
@@ -103,18 +103,15 @@ Format: NAME|URL (one channel per line)"
 ;; ======================================
 (use-package mpv
   :after dired
-  
   :custom
   ;; Set mpv executable path based on system
-  (mpv-executable 
+ (mpv-executable 
    (cond
-    ((eq system-type 'darwin)
+    ((and (boundp 'my-macOS-p) my-macOS-p)
      (or (executable-find "/opt/homebrew/bin/mpv")
          (executable-find "/usr/local/bin/mpv")
          "mpv"))
-    ((eq system-type 'gnu/linux)
-     (or (executable-find "mpv") "mpv"))
-    (t "mpv")))
+    (t (or (executable-find "mpv") "mpv"))))
   
   :config
   ;; Verify mpv is available
