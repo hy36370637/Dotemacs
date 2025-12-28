@@ -10,7 +10,7 @@
 ;; ======================================
 (defun load-eradio-channels-from-file (file-path)
   "Load radio channel definitions from FILE-PATH.
-Format: NAME|URL (one channel per line, # for comments)"
+Format: NAME|URL (one channel per line)"
   (when (file-exists-p file-path)
     (with-temp-buffer
       (insert-file-contents file-path)
@@ -21,7 +21,7 @@ Format: NAME|URL (one channel per line, # for comments)"
                        (buffer-substring-no-properties 
                         (line-beginning-position) 
                         (line-end-position)))))
-            (unless (or (string-empty-p line) (string-prefix-p "#" line))
+            (unless (string-empty-p line)
               (when (string-match "^\\([^|]+\\)|\\(.+\\)$" line)
                 (let ((name (string-trim (match-string 1 line)))
                       (url (string-trim (match-string 2 line))))
@@ -46,7 +46,7 @@ Format: NAME|URL (one channel per line, # for comments)"
   (interactive)
   (when-let ((url (read-string "Enter stream URL: ")))
     (unless (string-empty-p url)
-      (eradio-play-channel (cons "Custom URL" url)))))
+      (eradio-play url))))
 
 ;; ======================================
 ;;; eradio Configuration
@@ -58,13 +58,15 @@ Format: NAME|URL (one channel per line, # for comments)"
    ("C-c e t" . eradio-toggle)
    ("C-c e r" . my/eradio-reload-channels)
    ("C-c e u" . my/eradio-play-url))
+  
   :custom
   ;; Use VLC on macOS, fallback to mpv on other systems
-  (eradio-player
-   (if (and (boundp 'my-macOS-p) my-macOS-p)
+  (eradio-player 
+   (if (eq system-type 'darwin)
        '("/Applications/VLC.app/Contents/MacOS/VLC" 
          "--no-video" "-I" "rc")
      '("mpv" "--no-video" "--no-audio-display")))
+  
   :config
   ;; Load channels from file
   (unless (boundp 'my/lisp-path)
@@ -91,7 +93,7 @@ Format: NAME|URL (one channel per line, # for comments)"
                                                      eradio-channels))
                                         eradio-current-channel)))
                             (display-name
-                             (if (string-match "^[^.]*\\.\\([^|]+\\)" name) ; .있으면: . 이후 텍스트 추출
+                             (if (string-match "^[^.]*\\.\\([^|]+\\)" name)
                                  (match-string 1 name)
                                name)))
                        (message "🎶 Playing: %s" display-name))))))))
@@ -101,20 +103,23 @@ Format: NAME|URL (one channel per line, # for comments)"
 ;; ======================================
 (use-package mpv
   :after dired
+  
   :custom
+  ;; Set mpv executable path based on system
   (mpv-executable 
    (cond
-    ((and (boundp 'my-macOS-p) my-macOS-p)
+    ((eq system-type 'darwin)
      (or (executable-find "/opt/homebrew/bin/mpv")
          (executable-find "/usr/local/bin/mpv")
          "mpv"))
-    (t (or (executable-find "mpv") "mpv"))))
+    ((eq system-type 'gnu/linux)
+     (or (executable-find "mpv") "mpv"))
+    (t "mpv")))
   
   :config
   ;; Verify mpv is available
   (unless (executable-find mpv-executable)
     (warn "mpv executable not found at: %s" mpv-executable)))
-
 
 
 (provide 'my-eradio-custom)
