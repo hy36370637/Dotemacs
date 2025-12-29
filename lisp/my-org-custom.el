@@ -41,7 +41,7 @@
       (message "선택 취소되었습니다."))))
 
 (defun my-org-screenshot (chdir name)
-  "저장 폴더(chdir)와 파일 이름을 입력받아 스크린샷 삽입합니다."
+  "OS Buffer에 저장된 '스크린샷' 삽입-저장폴더, 파일이름 지정"
   (interactive 
    (let* ((default-dir (expand-file-name "img/" org-directory))
           (chosen-dir (read-directory-name "저장 폴더: " default-dir default-dir t))
@@ -59,31 +59,31 @@
           (message "이미지 저장되었습니다: %s" path))
       (error "클립보드 이미지 없거나 pngpaste 실행 실패!."))))
 
-;; (defun my-org-generate-toc ()
-;;   "목차Toc 자동 생성 (PDF Export 제외)."
-;;   (interactive)
-;;   (save-excursion
-;;     (goto-char (point-min))
-;;     ;; 기존 목차 삭제
-;;     (when (re-search-forward "^\\* 목차.*:noexport:" nil t)
-;;       (org-cut-subtree))
-;;     ;; 새 목차 생성 위치
-;;     (goto-char (point-min))
-;;     (re-search-forward "^\\* " nil t)
-;;     (beginning-of-line)
-;;     (insert "* 목차 :noexport:\n")  ; :noexport: 태그 추가
-;;     (let ((toc-items '()))
-;;       (org-map-entries
-;;        (lambda ()
-;;          (let* ((level (org-current-level))
-;;                 (title (org-get-heading t t t t))
-;;                 (indent (make-string (* 2 (1- level)) ?\s)))
-;;            (when (> level 1)
-;;              (push (format "%s- [[*%s][%s]]" indent title title) toc-items))))
-;;        nil 'file)
-;;       (insert (mapconcat 'identity (reverse toc-items) "\n"))
-;;       (insert "\n\n")))
-;;   (message "목차 생성 완료 (PDF Export 제외됨)"))
+(defun my-org-generate-toc ()
+  "목차Toc 자동 생성 (PDF Export 제외)."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    ;; 기존 목차 삭제
+    (when (re-search-forward "^\\* 목차.*:noexport:" nil t)
+      (org-cut-subtree))
+    ;; 새 목차 생성 위치
+    (goto-char (point-min))
+    (re-search-forward "^\\* " nil t)
+    (beginning-of-line)
+    (insert "* 목차 :noexport:\n")  ; :noexport: 태그 추가
+    (let ((toc-items '()))
+      (org-map-entries
+       (lambda ()
+         (let* ((level (org-current-level))
+                (title (org-get-heading t t t t))
+                (indent (make-string (* 2 (1- level)) ?\s)))
+           (when (> level 1)
+             (push (format "%s- [[*%s][%s]]" indent title title) toc-items))))
+       nil 'file)
+      (insert (mapconcat 'identity (reverse toc-items) "\n"))
+      (insert "\n\n")))
+  (message "목차 생성 완료 (PDF Export 제외됨)"))
 
 ;; (defun my-set-latex-cover-image ()
 ;;   "표지 이미지를 선택하고 LaTeX title-command를 설정합니다. 이미지 너비를 지정할 수 있습니다."

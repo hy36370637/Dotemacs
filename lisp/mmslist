@@ -1,13 +1,13 @@
-1.cbsMusic|https://m-aac.cbs.co.kr/mweb_cbs939/_definst_/cbs939.stream/chunklist.m3u8
-2.bbsRadio|http://bbslive.clouducs.com:1935/bbsradio-live/livestream/playlist.m3u8
-3.kbsHappyFM|http://serpent0.duckdns.org:8088/kbs2radio.pls
-4.kbs3RadioFM|https://radio.bsod.kr/stream/?stn=kbs&ch=3radio
-5.kbsClassic|http://serpent0.duckdns.org:8088/kbsfm.pls
-6.btnWoolimFM|rtmp://btn.nowcdn.co.kr/btn_ch4st/live.stream
-7.BBS FM|http://bbslive.clouducs.com:1935/bbsradio-mlive/livestream/playlist.m3u8
-8.cbsFM|https://m-aac.cbs.co.kr/mweb_cbs981/_definst_/cbs981.stream/chunklist.m3u8
-9.Venice Classic Radio|https://www.veniceclassicradio.eu/live1/128.m3u
-10.Solo Piano|http://pianosolo.streamguys.net/live
-11.Epic Piano|https://stream1-epic-piano.radiohost.de/solo-piano
-12.Jazz lovers Radio|http://ec1.yesstreaming.net:2940/stream
-13.Smooth Jazz|http://ais-edge91-dal03.cdnstream.com:80/2585_64.aac
+1.CBSMusic|https://m-aac.cbs.co.kr/mweb_cbs939/_definst_/cbs939.stream/chunklist.m3u8
+2.KBSHappyFM|http://serpent0.duckdns.org:8088/kbs2radio.pls
+3.KBS3RadioFM|https://radio.bsod.kr/stream/?stn=kbs&ch=3radio
+4.KBSClassic|http://serpent0.duckdns.org:8088/kbsfm.pls
+5.BTNwoolim|rtmp://btn.nowcdn.co.kr/btn_ch4st/live.stream
+6.BBSFM|https://radio.bsod.kr/stream/?stn=bbs&city=daegu
+7.CBSFM|https://m-aac.cbs.co.kr/mweb_cbs981/_definst_/cbs981.stream/chunklist.m3u8
+8.TBN광주|https://radio.bsod.kr/stream/?stn=tbn&city=gwangju
+9.TBN경남|https://radio.bsod.kr/stream/?stn=tbn&city=gyeongnam
+10.Venice Classic Radio|https://www.veniceclassicradio.eu/live1/128.m3u
+11.Solo Piano|http://pianosolo.streamguys.net/live
+12.Epic Piano|https://stream1-epic-piano.radiohost.de/solo-piano
+13.Jazz lovers Radio|http://ec1.yesstreaming.net:2940/stream
