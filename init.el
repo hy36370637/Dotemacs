@@ -111,7 +111,6 @@
       (call-process my/im-select-path nil 0 nil "com.apple.keylayout.ABC"))))
 
 (add-hook 'focus-in-hook #'my/mac-switch-to-english)
-(add-hook 'prog-mode-hook #'my/mac-switch-to-english)
 
 ;; =======================================
 ;;; Emacs UI and behavior
@@ -225,8 +224,6 @@
 ;; =======================================  
 (use-package emacs
   :if (display-graphic-p)
-  :init
-  (setq inhibit-compacting-font-caches t)
   :config
   (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
   (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
@@ -325,8 +322,14 @@
 ;; =======================================
 ;;; Modeline
 ;; =======================================
-(defvar ko-indicator (create-image "~/.emacs.d/img-indicator/han2.tiff" 'tiff nil :ascent 'center))
-(defvar en-indicator (create-image "~/.emacs.d/img-indicator/qwerty.tiff" 'tiff nil :ascent 'center))
+(defvar my/indicator-image-dir 
+  (expand-file-name "img-indicator/" user-emacs-directory))
+(defvar ko-indicator 
+  (create-image (expand-file-name "han2.tiff" my/indicator-image-dir) 
+                'tiff nil :ascent 'center))
+(defvar en-indicator 
+  (create-image (expand-file-name "qwerty.tiff" my/indicator-image-dir) 
+                'tiff nil :ascent 'center))
 (defvar mode-line-use-images-p 
   (and (display-graphic-p) (image-type-available-p 'tiff)))
 (setq mode-line-right-align-edge 'right-margin)

@@ -1,44 +1,56 @@
-;; early-init.el
-;;;
-;; 초기 GC 설정
-(setq gc-cons-threshold most-positive-fixnum
-      gc-cons-percentage 0.6
-      read-process-output-max (* 1024 1024 4))  ; 4MB로 증가
+;;; early-init.el --- Early initialization -*- lexical-binding: t -*-
 
-;; 파일 이름 핸들러 비활성화 (시작시에만)
+;; ======================================
+;;; GC 최적화
+;; ======================================
+(setq gc-cons-threshold (* 100 1024 1024)  ; 100MB - 시작 시
+      gc-cons-percentage 0.6
+      read-process-output-max (* 4 1024 1024))  ; 4MB
+
+;; 파일 핸들러 임시 비활성화
 (defvar my--file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
 
-;; 시작 후 복원
+;; 시작 후 GC 설정 복원
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq gc-cons-threshold (* 16 1024 1024)  ; 16MB
                   gc-cons-percentage 0.1
-                  file-name-handler-alist my--file-name-handler-alist)))
+                  file-name-handler-alist my--file-name-handler-alist)
+            (garbage-collect)))  ; 명시적 GC 실행
 
-;; 추가 최적화
+;; ======================================
+;;; 성능 최적화
+;; ======================================
 (setq frame-inhibit-implied-resize t
       inhibit-compacting-font-caches t
+      ;; 파일 관련 최적화
       auto-save-default nil
       make-backup-files nil
       create-lockfiles nil
-      auto-save-list-file-prefix nil)
+      auto-save-list-file-prefix nil
+      ;; 추가 최적화
+      idle-update-delay 1.0
+      ffap-machine-p-known 'reject)  ; 네트워크 체크 비활성화
 
 ;; ======================================
-;;; Emacs UI (초기 설정)
+;;; UI 초기 설정
 ;; ======================================
-(use-package emacs
-  :init
-  (setq inhibit-startup-message t
-	visible-bell t
-	initial-scratch-message nil
-	use-dialog-box nil))
+(setq inhibit-startup-message t
+      inhibit-startup-screen t
+      initial-scratch-message nil
+      visible-bell t
+      use-dialog-box nil
+      use-file-dialog nil)
 
-;;  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
+;; UI 요소 제거 (early-init에서 처리하면 깜빡임 방지)
+(push '(menu-bar-lines . 0) default-frame-alist)
+(push '(tool-bar-lines . 0) default-frame-alist)
+(push '(vertical-scroll-bars) default-frame-alist)
 
 ;; ======================================
-;;; Package initialization (기본 설정)
+;;; Package 시스템
 ;; ======================================
 (setq package-enable-at-startup nil)
+
+;;; early-init.el ends here

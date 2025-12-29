@@ -51,7 +51,7 @@ Search options: macOS Dictionary, Naver, Google, Namuwiki."
       (let ((url (my--get-search-url search-option query)))
         (my--open-url search-option url query)))))
 
-(defun my-search-content-in-dir ()
+(defun my-consult-ripgrep-selected-dir ()
   "사용자가 선택한 디렉토리 내의 파일 내용을 consult-ripgrep으로 검색."
   (interactive)
   (let* ((default-dir "~/Dropbox/Docs/org/")
