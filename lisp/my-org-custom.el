@@ -133,6 +133,7 @@
   :bind (("C-c a" . org-agenda)
          ("C-c C" . org-capture)
          ("C-c j i" . my-org-insert-image)
+	 ("C-c j r" .  my-capture-cReading-access)
 	 ("C-c j n" . my-region-wrap)
          :map org-mode-map
          ("M-o" . end-of-buffer)
@@ -180,6 +181,25 @@
            "| %^{구분} | %^{일자}U | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |"
            :prepend nil
            :table-line-pos "II-1"))))
+
+(defun my-capture-cReading-access ()
+  "Access cReading.org right away"
+  (interactive)
+  (require 'org)
+  (require 'org-capture)
+  (let ((org-capture-templates
+         `(("r" "Reading" entry
+            (file ,(my-org-person-file-path "cReading.org"))
+            "* %^{제목}\n%^{내용}\n기록일: %U"
+            :empty-lines-after 1
+            :immediate-finish t)))
+        (org-capture-after-finalize-hook
+         (list (lambda ()
+                 (when (get-buffer "*Org Select*")
+                   (kill-buffer "*Org Select*"))
+                 (when (get-buffer "CAPTURE-cReading.org")
+                   (kill-buffer "CAPTURE-cReading.org"))))))
+    (org-capture nil "r")))
 
 ;; ======================================
 ;;; org-bullets
