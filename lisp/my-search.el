@@ -8,48 +8,51 @@
 (require 'cl-lib)
 
 ;; ======================================
+;;; Configuration
+;; ======================================
+(defvar my-search-engines
+  '(("macOS Dictionary" . dict)
+    ("Naver" .  "https://search.naver.com/search.naver?query=%s")
+    ("Google" . "https://www.google.com/search?q=%s")
+    ("Namuwiki" .  "https://namu.wiki/w/%s"))
+  "검색 엔진 설정 (이름 .  URL/타입)")
+
+;; ======================================
 ;;; Helper Functions
 ;; ======================================
-(defun my--get-search-url (search-option query)
-  "Generate search URL based on SEARCH-OPTION and QUERY."
-  (let ((encoded-query (url-hexify-string query)))
-    (cond
-     ((string-equal search-option "Naver")
-      (format "https://search.naver.com/search.naver?query=%s" encoded-query))
-     ((string-equal search-option "Google")
-      (format "https://www.google.com/search?q=%s" encoded-query))
-     ((string-equal search-option "Namuwiki")
-      (format "https://namu.wiki/w/%s" encoded-query))
-     (t nil))))
+(defun my--get-search-url (engine query)
+  "엔진과 쿼리로 검색 URL 생성."
+  (let ((config (assoc engine my-search-engines)))
+    (when config
+      (let ((url-template (cdr config)))
+        (if (eq url-template 'dict)
+            (concat "dict://" (url-hexify-string query))
+          (format url-template (url-hexify-string query)))))))
 
-(defun my--open-url (search-option url query)
-  "Open URL based on SEARCH-OPTION with QUERY."
-  (cond
-   ((string-equal search-option "macOS Dictionary")
-    (call-process "open" nil 0 nil (concat "dict://" (url-hexify-string query))))
-   ((and url (not (string-empty-p url)))
-    (browse-url url))
-   (t
-    (message "Invalid search option"))))
+(defun my--open-url (url)
+  "URL 열기."
+  (if (string-prefix-p "dict://" url)
+      (call-process "open" nil 0 nil url)
+    (browse-url url)))
 
 ;; ======================================
-;;; Text Search Function
+;;; Main Function
 ;; ======================================
 (defun my-search-text-in-range ()
-  "Search selected text.
-Search options: macOS Dictionary, Naver, Google, Namuwiki."
+  "범위range내 검색.
+검색 옵션: macOS Dictionary, Naver, Google, Namuwiki"
   (interactive)
-  (let* ((query (if (use-region-p)
-                    (buffer-substring-no-properties 
-                     (region-beginning) (region-end))
-                  ""))
-         (search-option (completing-read "Choose option: " 
-                                         '("macOS Dictionary" "Naver" 
-                                           "Google" "Namuwiki"))))
-    (if (string-empty-p query)
-        (message "텍스트를 선택해주세요.")
-      (let ((url (my--get-search-url search-option query)))
-        (my--open-url search-option url query)))))
+  (if-let* ((query (and (use-region-p)
+                        (buffer-substring-no-properties 
+                         (region-beginning) (region-end))))
+            ((not (string-empty-p query)))
+            (engine (completing-read 
+                     "검색 엔진 선택: " 
+                     (mapcar #'car my-search-engines)))
+            (url (my--get-search-url engine query))
+            ((not (string-empty-p url))))
+      (my--open-url url)
+    (message "텍스트를 선택해주세요.")))
 
 (defun my-consult-ripgrep-selected-dir ()
   "사용자가 선택한 디렉토리 내의 파일 내용을 consult-ripgrep으로 검색."

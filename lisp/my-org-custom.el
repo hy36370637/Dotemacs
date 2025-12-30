@@ -40,50 +40,59 @@
           (message "완료: %s" relative-path))
       (message "선택 취소되었습니다."))))
 
+(defvar my/pngpaste-bin 
+  (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste")
+  "pngpaste executable path (cached).")
+
 (defun my-org-screenshot (chdir name)
-  "OS Buffer에 저장된 '스크린샷' 삽입-저장폴더, 파일이름 지정"
+  "OS Buffer에 저장된 스크린샷 삽입"
   (interactive 
-   (let* ((default-dir (expand-file-name "img/" org-directory))
-          (chosen-dir (read-directory-name "저장 폴더: " default-dir default-dir t))
+   (let* ((default-dir (file-name-concat org-directory "img/"))
+          (chosen-dir (read-directory-name "저장 폴더:  " default-dir default-dir t))
           (file-name (read-string "파일 이름 입력 (확장자 제외): ")))
      (list chosen-dir file-name)))
-  (let* ((path (expand-file-name (concat name ".png") chdir))
-         (pngpaste-bin (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste"))
-         (cmd (concat pngpaste-bin " " (shell-quote-argument path))))
-    (unless (file-exists-p chdir) 
-      (make-directory chdir t))
-    (if (zerop (shell-command cmd))
+  
+  (let ((path (file-name-concat chdir name ".png")))
+    (make-directory chdir t)
+    (if (zerop (shell-command 
+                (format "%s %s" my/pngpaste-bin (shell-quote-argument path))))
         (progn
-          (insert (format "\n#+ATTR_ORG: :width 400\n[[file:%s]]\n" path))
+          (insert (format "\n#+ATTR_ORG:  :width 400\n[[file:%s]]\n" path))
           (org-display-inline-images)
-          (message "이미지 저장되었습니다: %s" path))
-      (error "클립보드 이미지 없거나 pngpaste 실행 실패!."))))
+          (message "이미지 저장:  %s" path))
+      (error "클립보드 이미지 없음 또는 pngpaste 실행 실패"))))
 
 (defun my-org-generate-toc ()
-  "목차Toc 자동 생성 (PDF Export 제외)."
+  "목차 Toc 자동 생성 (PDF Export 제외)."
   (interactive)
   (save-excursion
     (goto-char (point-min))
+    
     ;; 기존 목차 삭제
-    (when (re-search-forward "^\\* 목차.*:noexport:" nil t)
+    (when (re-search-forward "^\\* 목차.*: noexport:" nil t)
       (org-cut-subtree))
-    ;; 새 목차 생성 위치
+    
+    ;; 새 목차 생성
     (goto-char (point-min))
-    (re-search-forward "^\\* " nil t)
-    (beginning-of-line)
-    (insert "* 목차 :noexport:\n")  ; :noexport: 태그 추가
-    (let ((toc-items '()))
-      (org-map-entries
-       (lambda ()
-         (let* ((level (org-current-level))
-                (title (org-get-heading t t t t))
-                (indent (make-string (* 2 (1- level)) ?\s)))
-           (when (> level 1)
-             (push (format "%s- [[*%s][%s]]" indent title title) toc-items))))
-       nil 'file)
-      (insert (mapconcat 'identity (reverse toc-items) "\n"))
-      (insert "\n\n")))
-  (message "목차 생성 완료 (PDF Export 제외됨)"))
+    (when (re-search-forward "^\\* " nil t)
+      (beginning-of-line)
+      (insert "* 목차 : noexport:\n")
+      
+      (let ((toc-items '()))
+        ;; org-element 사용으로 성능 향상
+        (org-map-entries
+         (lambda ()
+           (let* ((level (org-current-level))
+                  (title (org-get-heading t t t t)))
+             (when (> level 1)
+               (push (format "%s- [[*%s][%s]]"
+                             (make-string (* 2 (1- level)) ?\s)
+                             title title)
+                     toc-items))))
+         nil 'file)
+        (insert (mapconcat #'identity (reverse toc-items) "\n"))
+        (insert "\n\n"))))
+  (message "목차 생성 완료"))
 
 ;; (defun my-set-latex-cover-image ()
 ;;   "표지 이미지를 선택하고 LaTeX title-command를 설정합니다. 이미지 너비를 지정할 수 있습니다."
@@ -143,7 +152,7 @@
   (org-startup-indented t)             ;시작때 indent mode enable
   (org-startup-with-inline-images nil)
   (org-startup-folded t)
-  (org-adapt-indentation nil)         ;indent의 실제 공백 nil 
+  (org-adapt-indentation nil)          ;indent의 실제 공백 nil 
   (org-indent-indentation-per-level 2)
   (org-edit-src-content-indentation 0)
   (org-image-actual-width 400)

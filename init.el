@@ -92,7 +92,6 @@
 (when (and my-macOS-p (boundp 'mac-right-option-modifier))
   (setq mac-right-option-modifier 'none))
 
-
 ;; =======================================
 ;;; macOS Input Source Control (im-select)
 ;; =======================================
@@ -147,7 +146,7 @@
   (("C-x f" . nil)
    ("C-x m" . nil)
    ("C-x z" . nil)
-   ("M-s c" . my-search-content-in-dir)
+   ("M-s c" . my-consult-ripgrep-selected-dir)
    ("M-s r" . my-search-text-in-range)
    ("M-s n" . my-weather-search)
    ("C-c n n" . my-todays-pop)
