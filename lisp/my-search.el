@@ -38,7 +38,7 @@
 ;; ======================================
 ;;; Main Function
 ;; ======================================
-(defun my-search-text-in-range ()
+(defun my-search-in-range ()
   "범위range내 검색.
 검색 옵션: macOS Dictionary, Naver, Google, Namuwiki"
   (interactive)
@@ -150,7 +150,7 @@
      (list city)
      t)))
 
-(defun my-weather-search ()
+(defun my-search-weather ()
   "Interactive weather search command."
   (interactive)
   (let ((city (read-string "도시명 입력: ")))

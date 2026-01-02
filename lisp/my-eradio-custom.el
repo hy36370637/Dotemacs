@@ -1,18 +1,13 @@
 ;;; my-eradio-custom.el --- Radio and media player configuration -*- lexical-binding: t; -*-
-
-;;; Commentary:
-;; Optimized configuration for eradio (internet radio) and mpv player
-
+;;; ver0.5
 ;;; Code:
 
 ;; ======================================
-;;; Helper Functions
+;;; 1. Radio Helper Functions
 ;; ======================================
 (defun load-eradio-channels-from-file (file-path)
-  "Load radio channel definitions from FILE-PATH.  
-Format: NAME|URL (one channel per line)"
-  (unless (file-exists-p file-path)  ;; ← 부정문으로 변경 (명확함)
-    (error "Channel file not found: %s" file-path))  ;; ← warn 대신 error
+  (unless (file-exists-p file-path)
+    (error "Channel file not found: %s" file-path))
   (with-temp-buffer
     (insert-file-contents file-path)
     (let (channels)
@@ -22,91 +17,138 @@ Format: NAME|URL (one channel per line)"
                                    (line-beginning-position)
                                    (line-end-position)))))
           (unless (string-empty-p line)
-            (pcase-let ((`(,name ,url)  ;; ← 정규식 대신 split-string + pcase-let
-                         (mapcar #'string-trim (split-string line "|"))))  ;; ← 간결한 파싱
+            (pcase-let ((`(,name ,url)
+                         (mapcar #'string-trim (split-string line "|"))))
               (when (and name url (not (string-empty-p name)) (not (string-empty-p url)))
                 (push (cons name url) channels))))
           (forward-line 1)))
       (nreverse channels))))
 
 (defun my-eradio-reload-channels ()
-  "Reload eradio channels from the configuration file."
   (interactive)
-  (if-let ((channels (load-eradio-channels-from-file
-                      (expand-file-name "mmslist" my/lisp-path))))
-      (progn
-        (setq eradio-channels channels)
-        (message "Loaded %d radio channels" (length channels)))
-    (warn "No channels loaded or file not found")))
+  (if-let ((channels (load-eradio-channels-from-file (expand-file-name "mmslist" my/lisp-path))))
+      (setq eradio-channels channels)
+    (warn "Reload failed")))
 
-(defun my-eradio-play-url ()
-  "Play a radio stream from a URL entered by the user."
+(defun my-openfile-mmslist ()
   (interactive)
-  (when-let ((url (read-string "Enter stream URL: ")))
-    (unless (string-empty-p url)
-      (eradio-play url))))
-
-(defun my-open-mmslist ()
-  "Open the file named \"mmslist\" in `my/lisp-path'."
-  (interactive)
-  (let ((file (expand-file-name "mmslist" my/lisp-path)))
-    (unless (file-directory-p (file-name-directory file))
-      (make-directory (file-name-directory file) t))
-    (find-file file)))
+  (find-file (expand-file-name "mmslist" my/lisp-path)))
 
 ;; ======================================
-;;; eradio Configuration
+;;; 2. Unified Media Control
 ;; ======================================
+(defun my-media-stop-all ()
+  "라디오와 로컬 음악을 모두 정지합니다."
+  (interactive)
+  (my-music-stop)
+  (when (fboundp 'eradio-stop)
+    (eradio-stop))
+  (message "⏹️ 모든 재생이 중단되었습니다."))
+
+;; ======================================
+;;; 3. VLC & eradio Configuration
+;; ======================================
+(defvar my-vlc-executable
+  (or (and (boundp 'my-macOS-p) my-macOS-p
+           (or (executable-find "/Applications/VLC.app/Contents/MacOS/VLC")
+               (executable-find "vlc")))
+      (executable-find "vlc")
+      "vlc"))
+
 (use-package eradio
-  :bind (("C-c e p" .   eradio-play)
-         ("C-c e s" .   eradio-stop)
-         ("C-c e t" .  eradio-toggle)
-         ("C-c e r" .  my-eradio-reload-channels)
-         ("C-c e u" .  my-eradio-play-url)
-         ("C-c e o" .   my-open-mmslist))
+  :bind (("C-c e p" . eradio-play)
+         ("C-c e s" . my-media-stop-all)
+         ("C-c e t" . eradio-toggle)
+         ("C-c e d" . my-music-play-directory)
+         ("C-c e f" . my-music-play-file)
+         ("C-c e n" . my-music-next)
+         ("C-c e b" . my-music-prev)
+         ("C-c e SPC" . my-music-pause-toggle)
+         ("C-c e r" . my-eradio-reload-channels)
+         ("C-c e o" . my-openfile-mmslist))
   :custom
-  ;; Use VLC on macOS, fallback to mpv on other systems
-  (eradio-player
-   (if (and (boundp 'my-macOS-p) my-macOS-p)
-       '("/Applications/VLC.app/Contents/MacOS/VLC"
-         "--no-video" "-I" "rc")
-     '("mpv" "--no-video" "--no-audio-display")))
-    :init
-  (unless (boundp 'my/lisp-path)
-    (error "eradio:  my/lisp-path is not defined"))
+  (eradio-player (list my-vlc-executable "--no-video" "-I" "rc"))
   :config
-  ;; Load channels from file at startup
-  (let ((channel-file (expand-file-name "mmslist" my/lisp-path)))
-    (setq eradio-channels (load-eradio-channels-from-file channel-file)))
-  ;; Display channel name after playing
-    (advice-add 'eradio-play :after
+  (setq eradio-channels (load-eradio-channels-from-file (expand-file-name "mmslist" my/lisp-path)))
+  
+  (advice-add 'eradio-play :before (lambda (&rest _) (my-music-stop)))   ;; 상호 정지 Advice
+  (advice-add 'eradio-play :after                                        ;; 방송 정보 출력 Advice
               (lambda (&rest _)
                 (when (boundp 'eradio-current-channel)
                   (let* ((current eradio-current-channel)
-                         (name (if (consp current)
-                                   (car current)
+                         (name (if (consp current) (car current)
                                  (car (rassoc current eradio-channels))))
-                         (display-name (if (and name (string-match "^[^.]*\\.\\([^|]+\\)" name))
+                         (display-name (if (and name (string-match "^[^. ]*\\.\\([^|]+\\)" name))
                                             (match-string 1 name)
                                           (or name "Unknown"))))
                     (message "🎶 Playing: %s" display-name))))))
 
 ;; ======================================
-;;; mpv Configuration
+;;; 4. Local Music Engine (VLC)
 ;; ======================================
-(use-package mpv
-  :after dired
-  :custom
-  (mpv-executable
-   (or (and (boundp 'my-macOS-p) my-macOS-p
-            (or (executable-find "/opt/homebrew/bin/mpv")
-                (executable-find "/usr/local/bin/mpv")))
-       (executable-find "mpv")
-       "mpv"))
-  :config
-  ;; Verify mpv is available
-  (unless (executable-find mpv-executable)
-    (warn "mpv executable not found at: %s" mpv-executable)))
+(defvar my-music-root (expand-file-name "~/Dropbox/MP3/"))
+(defvar my-music-extensions '("mp3" "m4a" "flac" "wav" "ogg" "opus" "aac"))
+(defvar my-music--files-cache nil)
+(defvar my-music--process nil)
+(defvar my-music--current-index 0)
+(defvar my-music--current-playlist nil)
+(defvar my-music--paused nil)
+
+(defun my-music-refresh-cache ()
+  (let ((regex (concat "\\.\\(" (mapconcat #'identity my-music-extensions "\\|") "\\)$")))
+    (setq my-music--files-cache (sort (directory-files-recursively my-music-root regex) #'string<))))
+
+(defun my-music-stop ()
+  (interactive)
+  (when (and (boundp 'my-music--process) my-music--process (process-live-p my-music--process))
+    (kill-process my-music--process)
+    (setq my-music--process nil my-music--paused nil)))
+
+(defun my-music--start-vlc (files start-index &optional shuffle loop)
+  (when (fboundp 'eradio-stop) (eradio-stop))
+  (my-music-stop)
+  (let* ((playlist-file (make-temp-file "vlc-playlist-" nil ".m3u"))
+         (ordered-files (if shuffle (seq-shuffle (copy-sequence files)) files)))
+    (with-temp-file playlist-file (dolist (f ordered-files) (insert f "\n")))
+    (setq my-music--process
+          (apply #'start-process "my-music-vlc" nil my-vlc-executable
+                 (append (list "--no-video" "-I" "rc" "--rc-fake-tty")
+                         (when loop '("--loop")) (list playlist-file))))
+    (setq my-music--current-playlist ordered-files my-music--current-index start-index my-music--paused nil)
+    (set-process-query-on-exit-flag my-music--process nil)
+    (message "🎵 Playing: %s" (file-relative-name (nth start-index ordered-files) my-music-root))
+    my-music--process))
+
+(defun my-music-next ()
+  (interactive)
+  (when (and my-music--process (process-live-p my-music--process))
+    (process-send-string my-music--process "next\n")
+    (setq my-music--current-index (mod (1+ my-music--current-index) (length my-music--current-playlist)))))
+
+(defun my-music-prev ()
+  (interactive)
+  (when (and my-music--process (process-live-p my-music--process))
+    (process-send-string my-music--process "prev\n")
+    (setq my-music--current-index (mod (1- my-music--current-index) (length my-music--current-playlist)))))
+
+(defun my-music-pause-toggle ()
+  (interactive)
+  (when (and my-music--process (process-live-p my-music--process))
+    (process-send-string my-music--process "pause\n")
+    (setq my-music--paused (not my-music--paused))))
+
+(defun my-music-play-file ()
+  (interactive)
+  (my-music-refresh-cache)
+  (let* ((choices (mapcar (lambda (p) (cons (file-relative-name p my-music-root) p)) my-music--files-cache))
+         (choice (completing-read "Play file: " (mapcar #'car choices) nil t))
+         (full (cdr (assoc choice choices))))
+    (when full (my-music--start-vlc (list full) 0 nil nil))))
+
+(defun my-music-play-directory (prefix)
+  (interactive "P")
+  (my-music-refresh-cache)
+  (when my-music--files-cache (my-music--start-vlc my-music--files-cache 0 prefix t)))
 
 (provide 'my-eradio-custom)
 ;;; my-eradio-custom.el ends here

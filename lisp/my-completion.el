@@ -44,8 +44,8 @@
   :ensure t
   :bind (("C-x b" . consult-buffer)
 	 ("C-x C-r" . consult-recent-file)
-	 ("C-c B" . consult-bookmark)
-	 ("C-c R" . consult-register)
+	 ;; ("C-c B" . consult-bookmark)
+	 ;; ("C-c R" . consult-register)
 	 ("M-s f" . consult-find)
 	 ("M-s g" . consult-grep)
 	 ("M-s l" . consult-line))

@@ -19,7 +19,7 @@
   (expand-file-name filename my/org-person-dir))
 
 (defun my-org-insert-image ()
-  "img폴더의 img 삽입-표시합니다."
+  "Insert and display image"
   (interactive)
   (let* ((img-base-dir (expand-file-name "img/" org-directory))
          (selected-file (read-file-name "이미지 선택: " img-base-dir nil t)))
@@ -28,7 +28,7 @@
       (org-display-inline-images))))
 
 (defun my-insert-image-path ()
-  "'./img/imgCover/파일명.확장자' 형식을 커서에 삽입."
+  "Insert relative image path"
   (interactive)
   (let* ((base-dir (expand-file-name "img/" org-directory))
          (selected-file (read-file-name "img 선택: " base-dir nil t))
@@ -42,57 +42,54 @@
 
 (defvar my/pngpaste-bin 
   (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste")
-  "pngpaste executable path (cached).")
-
+  "pngpaste executable path.")
 (defun my-org-screenshot (chdir name)
-  "OS Buffer에 저장된 스크린샷 삽입"
+  "Insert screenshot from clipboard"
   (interactive 
    (let* ((default-dir (file-name-concat org-directory "img/"))
-          (chosen-dir (read-directory-name "저장 폴더:  " default-dir default-dir t))
-          (file-name (read-string "파일 이름 입력 (확장자 제외): ")))
-     (list chosen-dir file-name)))
-  
-  (let ((path (file-name-concat chdir name ".png")))
+          (chosen-dir (read-directory-name "저장 폴더: " default-dir default-dir t))
+          (default-name (format-time-string "%Y%m%d_%H%M%S")) ;; 현재 날짜_시간 생성
+          (file-name (read-string (format "파일 이름 입력(기본값 %s, 확장자 제외): " default-name) 
+                                  nil nil default-name)))
+     (list chosen-dir file-name)))  
+  (let* ((pngpaste-bin (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste"))
+         (path (expand-file-name (concat name ".png") chdir)))
     (make-directory chdir t)
-    (if (zerop (shell-command 
-                (format "%s %s" my/pngpaste-bin (shell-quote-argument path))))
+    (if (zerop (shell-command (format "%s %s" pngpaste-bin (shell-quote-argument path))))
         (progn
-          (insert (format "\n#+ATTR_ORG:  :width 400\n[[file:%s]]\n" path))
+          (insert (format "\n#+ATTR_LATEX: :width 0.5\\textwidth\n#+CAPTION: %s\n[[file:%s]]\n" 
+                          name path))
           (org-display-inline-images)
-          (message "이미지 저장:  %s" path))
-      (error "클립보드 이미지 없음 또는 pngpaste 실행 실패"))))
+          (message "이미지 저장 성공: %s" path))
+      (error "클립보드 이미지 없음 or pngpaste 실행 실패"))))
 
-(defun my-org-generate-toc ()
-  "목차 Toc 자동 생성 (PDF Export 제외)."
-  (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    
-    ;; 기존 목차 삭제
-    (when (re-search-forward "^\\* 목차.*: noexport:" nil t)
-      (org-cut-subtree))
-    
-    ;; 새 목차 생성
-    (goto-char (point-min))
-    (when (re-search-forward "^\\* " nil t)
-      (beginning-of-line)
-      (insert "* 목차 : noexport:\n")
-      
-      (let ((toc-items '()))
-        ;; org-element 사용으로 성능 향상
-        (org-map-entries
-         (lambda ()
-           (let* ((level (org-current-level))
-                  (title (org-get-heading t t t t)))
-             (when (> level 1)
-               (push (format "%s- [[*%s][%s]]"
-                             (make-string (* 2 (1- level)) ?\s)
-                             title title)
-                     toc-items))))
-         nil 'file)
-        (insert (mapconcat #'identity (reverse toc-items) "\n"))
-        (insert "\n\n"))))
-  (message "목차 생성 완료"))
+;; (defun my-org-generate-toc ()
+;;   "Auto-generate table of contents(PDF Export 제외)."
+;;   (interactive)
+;;   (save-excursion
+;;     (goto-char (point-min))
+;;     ;; 기존 목차 삭제
+;;     (when (re-search-forward "^\\* 목차.*: noexport:" nil t)
+;;       (org-cut-subtree))
+;;     ;; 새 목차 생성
+;;     (goto-char (point-min))
+;;     (when (re-search-forward "^\\* " nil t)
+;;       (beginning-of-line)
+;;       (insert "* 목차 : noexport:\n")
+;;       (let ((toc-items '()))
+;;         (org-map-entries
+;;          (lambda ()
+;;            (let* ((level (org-current-level))
+;;                   (title (org-get-heading t t t t)))
+;;              (when (> level 1)
+;;                (push (format "%s- [[*%s][%s]]"
+;;                              (make-string (* 2 (1- level)) ?\s)
+;;                              title title)
+;;                      toc-items))))
+;;          nil 'file)
+;;         (insert (mapconcat #'identity (reverse toc-items) "\n"))
+;;         (insert "\n\n"))))
+;;   (message "목차 생성 완료"))
 
 ;; (defun my-set-latex-cover-image ()
 ;;   "표지 이미지를 선택하고 LaTeX title-command를 설정합니다. 이미지 너비를 지정할 수 있습니다."
@@ -142,11 +139,13 @@
   :bind (("C-c a" . org-agenda)
          ("C-c C" . org-capture)
          ("C-c j i" . my-org-insert-image)
+	 ("C-c j p" . my-insert-image-path)
 	 ("C-c j r" .  my-capture-cReading-access)
-	 ("C-c j n" . my-region-wrap)
-         :map org-mode-map
-         ("M-o" . end-of-buffer)
-         ("M-O" . beginning-of-buffer))
+	 ("C-c j s" . my-org-screenshot)
+	 ("C-c j n" . my-region-wrap))
+         ;; :map org-mode-map
+         ;; ("M-o" . end-of-buffer)
+         ;; ("M-O" . beginning-of-buffer))
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org"))
   (org-startup-indented t)             ;시작때 indent mode enable
@@ -159,10 +158,20 @@
   (org-log-into-drawer t)
   (org-log-done 'time)
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
+  (org-structure-template-alist
+          '(("c" . "center")
+            ("C" . "comment")
+            ("e" . "src emacs-lisp")
+	    ("s" . "src")
+            ("q" . "quote")
+	    ("v" . "verse")
+	    ("x" . "example")))
   (org-export-with-drawers nil)
   (org-agenda-format-date "%Y-%m-%d (%a)")
   (org-agenda-current-time-string "← now ─────────")
   (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+  (org-agenda-restore-windows-after-quit t)
+  (org-agenda-window-setup 'current-window)
   :config
   (setq org-agenda-files
         (seq-filter #'file-exists-p

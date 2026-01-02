@@ -147,8 +147,8 @@
    ("C-x m" . nil)
    ("C-x z" . nil)
    ("M-s c" . my-consult-ripgrep-selected-dir)
-   ("M-s r" . my-search-text-in-range)
-   ("M-s n" . my-weather-search)
+   ("M-s r" . my-search-in-range)
+   ("M-s n" . my-search-weather)
    ("C-c n n" . my-todays-pop)
    ("C-c 0" . toggle-frame-fullscreen)
    ("C-c 9" . toggle-frame-maximized)))
@@ -192,7 +192,6 @@
 ;; =======================================
 (use-package register
   :ensure nil
-  :bind ("M-j" . jump-to-register)         ; 레지스터 호출
   :custom
   (register-preview-delay 0)               ; 지연 없이 바로 프레뷰 표시
   :config
@@ -302,6 +301,14 @@
    ("<s-down>" . windmove-down)))
 
 ;; =======================================
+;;; windmove
+;; =======================================
+(use-package winner
+  :ensure nil    ;built-in
+  :init
+  (winner-mode 1))
+
+;; =======================================
 ;;; recentF
 ;; =======================================
 (use-package recentf
@@ -365,3 +372,14 @@
   (battery-mode-line-format "Ⓑ %p%% ")
   :init
   (display-battery-mode 1))
+
+;; =======================================
+;;; magit
+;; =======================================
+(use-package magit
+  :ensure t
+  :bind ("C-x g" . magit-status)
+  :custom
+  ;; Magit이 전체 화면을 차지하지 않고, 현재 창 구성을 최대한 유지
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+

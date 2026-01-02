@@ -20,16 +20,6 @@
           (insert (funcall action))
         (insert (format-time-string action))))))
 
-;; ======================================
-;;; Magit
-;; ======================================
-(use-package magit
-  :defer t
-;;  :commands (magit-status magit-log magit-blame)
-  :bind (("C-x g" . magit-status))
-  :config
-  (setq magit-auto-revert-mode t))
-
 
 
 ;; end here
