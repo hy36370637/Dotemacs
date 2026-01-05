@@ -88,9 +88,14 @@
 ;; =======================================
 ;;; MacOS keyboard
 ;; =======================================
-; alfred snippets 불능. OS시스템 설정에서 키보드 교환
-(when (and my-macOS-p (boundp 'mac-right-option-modifier))
-  (setq mac-right-option-modifier 'none))
+(when my-macOS-p
+  (setq mac-pass-command-to-system nil)
+  ;; [왼쪽] Opt(Super) / Cmd(Meta)
+  (setq ns-option-modifier 'super)
+  (setq ns-command-modifier 'meta)
+  ;; [오른쪽] Cmd(Control) / Opt(Meta)
+  (setq ns-right-command-modifier 'control)
+  (setq ns-right-option-modifier 'meta))
 
 ;; =======================================
 ;;; macOS Input Source Control (im-select)
@@ -102,7 +107,7 @@
   "im-select 실행 파일 경로 캐시")
 
 (defun my/mac-switch-to-english ()
-  "Emacs 포커스 시 macOS 입력기 영문 전환합니다."
+  "Switches macOS input method to English when Emacs gains focus."
   (when (and my-macOS-p (display-graphic-p))
     (unless my/im-select-path
       (setq my/im-select-path (executable-find "im-select")))
@@ -118,8 +123,7 @@
   :init
   (setq default-directory (expand-file-name "~/Dropbox/Docs/org")
         temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
-  :hook
-  (text-mode . visual-line-mode)
+  :hook (text-mode . visual-line-mode)
   :custom
   ;; UI 및 상태 정보 관련
   (use-short-answers t)               ; y/n으로 대답 단축
@@ -128,6 +132,7 @@
   ;;시각 효과, 가독성
   (line-spacing 0.2)                  ; 줄 간격 여백
   (text-scale-mode-step 1.02)         ; 텍스트 크기 조절 단계
+  (frame-resize-pixelwise t)          ; pixcel 단위
   ;; 스크롤, 탐색
   (scroll-margin 3)                   ; 상하 2줄 여백 유지하며 스크롤
   (scroll-conservatively 101)         ; 화면 점프 없이 부드럽게 한 줄씩 스크롤
@@ -140,18 +145,14 @@
   (kill-whole-line 1)                 ; 줄 전체 삭제 시 줄바꿈까지 삭제
   (global-auto-revert-mode t)         ; 외부에서 변경된 파일 자동 새로고침
   (next-line-add-newlines nil)        ; 문서 끝에서 C-n 눌러도 새 줄 추가 안 함
-  :config
-  (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이 표시모드 for consult-dir
+  ;; :config
+  ;; (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이 표시모드 for consult-dir
   :bind
   (("C-x f" . nil)
    ("C-x m" . nil)
    ("C-x z" . nil)
-   ("M-s c" . my-consult-ripgrep-selected-dir)
-   ("M-s r" . my-search-in-range)
-   ("M-s n" . my-search-weather)
-   ("C-c n n" . my-todays-pop)
-   ("C-c 0" . toggle-frame-fullscreen)
-   ("C-c 9" . toggle-frame-maximized)))
+   ("C-c 9" . toggle-frame-maximized)
+   ("C-c 0" . toggle-frame-fullscreen)))
 
 (use-package time
   :ensure nil
@@ -213,7 +214,7 @@
   (setenv "LC_COLLATE" "C")
   (set-locale-environment "ko_KR.UTF-8")
   :custom
-  (default-input-method "korean-hangul")
+;;  (default-input-method "korean-hangul")
   (input-method-verbose-flag nil)
   (input-method-highlight-flag nil))
 
@@ -236,15 +237,15 @@
 (use-package emacs
   :bind 
   ("<f5>" . modus-themes-toggle)
-  ;; ("<f6>" . modus-themes-select))
   :config
   (setq modus-themes-italic-constructs t
         modus-themes-bold-constructs nil
         modus-themes-mode-line '(accented borderless padded)
-	modus-themes-completions '((t . (extrabold)))
+        modus-themes-completions '((t . (extrabold)))
         modus-themes-prompts '(extrabold))
-  (load-theme 'modus-operandi-tinted t))
+  (setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
 
+  (load-theme 'modus-operandi-tinted t))
 ;; =======================================
 ;;; Helpful
 ;; =======================================
@@ -383,3 +384,17 @@
   ;; Magit이 전체 화면을 차지하지 않고, 현재 창 구성을 최대한 유지
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
+;; =======================================
+;;; Key-binding
+;; =======================================
+(defvar-keymap my-emacs-prefix-map
+  :doc "my-emacs-prefix-keymap"
+  "c" #'my-capture-cReading-access
+  "e" #'eval-buffer
+  "i" my-image-prefix-map
+  "s" my-search-prefix-map
+  "t" #'my-todays-pop
+  "w" #'my-pair-pairs-wrap)
+
+
+(keymap-set global-map "C-c j" my-emacs-prefix-map)

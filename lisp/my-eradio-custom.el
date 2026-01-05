@@ -56,16 +56,16 @@
       "vlc"))
 
 (use-package eradio
-  :bind (("C-c e p" . eradio-play)
-         ("C-c e s" . my-media-stop-all)
-         ("C-c e t" . eradio-toggle)
-         ("C-c e d" . my-music-play-directory)
-         ("C-c e f" . my-music-play-file)
-         ("C-c e n" . my-music-next)
-         ("C-c e b" . my-music-prev)
-         ("C-c e SPC" . my-music-pause-toggle)
-         ("C-c e r" . my-eradio-reload-channels)
-         ("C-c e o" . my-openfile-mmslist))
+  :bind (("C-c m p" . eradio-play)
+         ("C-c m s" . my-media-stop-all)
+         ("C-c m t" . eradio-toggle)
+         ("C-c m d" . my-music-play-directory)
+         ("C-c m f" . my-music-play-file)
+         ("C-c m n" . my-music-next)
+         ("C-c m b" . my-music-prev)
+         ("C-c m SPC" . my-music-pause-toggle)
+         ("C-c m r" . my-eradio-reload-channels)
+         ("C-c m o" . my-openfile-mmslist))
   :custom
   (eradio-player (list my-vlc-executable "--no-video" "-I" "rc"))
   :config

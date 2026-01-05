@@ -137,15 +137,7 @@
   :defer t
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
-         ("C-c C" . org-capture)
-         ("C-c j i" . my-org-insert-image)
-	 ("C-c j p" . my-insert-image-path)
-	 ("C-c j r" .  my-capture-cReading-access)
-	 ("C-c j s" . my-org-screenshot)
-	 ("C-c j n" . my-region-wrap))
-         ;; :map org-mode-map
-         ;; ("M-o" . end-of-buffer)
-         ;; ("M-O" . beginning-of-buffer))
+         ("C-c c" . org-capture))
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org"))
   (org-startup-indented t)             ;시작때 indent mode enable
@@ -169,10 +161,10 @@
   (org-export-with-drawers nil)
   (org-agenda-format-date "%Y-%m-%d (%a)")
   (org-agenda-current-time-string "← now ─────────")
-  (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
   (org-agenda-restore-windows-after-quit t)
   (org-agenda-window-setup 'current-window)
   :config
+;;  (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
   (setq org-agenda-files
         (seq-filter #'file-exists-p
                     (list (my-org-person-file-path "Holidays.org")
@@ -262,6 +254,14 @@
         org-fontify-done-headline t
         org-fontify-quote-and-verse-blocks t))
   
+;; =======================================
+;;; Key-binding
+;; =======================================
+(defvar-keymap my-image-prefix-map
+  :doc "image-Insert,Path,Screenshot "
+  "i" 'my-org-insert-image
+  "p" 'my-insert-image-path
+  "s" 'my-org-screenshot)
 
 
 

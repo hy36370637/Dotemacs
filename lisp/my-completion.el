@@ -18,7 +18,7 @@
   (vertico-resize nil)    ; 크기 조정 비활성화로 성능 
   (vertico-cycle t)
   (vertico-count 20))   ; 표시할 항목 수 제한
- 
+
 ;; ======================================
 ;;; marginalia
 ;; ======================================
@@ -43,12 +43,7 @@
 (use-package consult
   :ensure t
   :bind (("C-x b" . consult-buffer)
-	 ("C-x C-r" . consult-recent-file)
-	 ;; ("C-c B" . consult-bookmark)
-	 ;; ("C-c R" . consult-register)
-	 ("M-s f" . consult-find)
-	 ("M-s g" . consult-grep)
-	 ("M-s l" . consult-line))
+	 ("C-x C-r" . consult-recent-file))
   :config
   (setq consult-buffer-sources (list consult--source-buffer
 				     consult--source-recent-file))
@@ -110,12 +105,12 @@
     (?<  :description "「」"          :pair ("「" . "」"))
     (?>  :description "『』"          :pair ("『" . "』")))
 ;;    (?M  :description "《》"          :pair ("《" . "》")))
-  "Org-mode 마커 및 특수 괄호 쌍 리스트"
+  "List of Org-mode emphasis markers and special bracket pairs."
   :group 'editing
   :type '(alist :key-type character :value-type (plist)))
 
 (defun my--enable-tab-escape ()
-  "기호 삽입 후 TAB 키로 한 칸 이동하는 일회성 키맵 활성화."
+  "Enable a temporary TAB binding to jump out of brackets or emphasis markers"
   (set-transient-map
    (let ((map (make-sparse-keymap)))
      (define-key map (kbd "TAB")
@@ -123,8 +118,8 @@
      map)
    t))
 
-(defun my-region-wrap (char)
-  "선택 영역이나 단어를 입력받은 CHAR 쌍으로 감쌉니다. TAB으로 탈출 가능합니다."
+(defun my-pair-pairs-wrap (char)
+  "Enclose the active region or the word at point with a pair of CHARs."
   (interactive "c기호 입력 (*, /, =, ~, (, [, <, > ...): ")
   (let* ((entry (assoc char my-pair-pairs))
          (pair-data (plist-get (cdr entry) :pair))
@@ -138,7 +133,7 @@
          (end (cdr bounds)))
 
     (if (not pair-data)
-        (message "정의되지 않은 기호: %c" char)
+        (message "Undefined symbol: %c" char)
       (save-excursion
         ;; 닫는 기호 삽입
         (goto-char end)
@@ -156,7 +151,7 @@
 ;;; Hunspell 설정
 ;; ======================================-
 (defun my-korean-spell-check ()
-  "Flyspell 모드를 한국어 사전과 함께 활성화합니다."
+  "Set hunspell as the default spell checker for Korean"
   (interactive)
   (require 'ispell) ;; 함수 실행 시 패키지 로드
   (setq ispell-local-dictionary "ko_KR")
@@ -186,7 +181,6 @@
 ;; =======================================
 ;;; eldoc
 ;; ======================================-
-;; 현재 커서 위치의 함수나 변수에 대한 문서를 실시간으로 표시
 (use-package eldoc
   :ensure nil
   :diminish eldoc-mode

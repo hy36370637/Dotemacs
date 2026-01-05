@@ -47,6 +47,8 @@
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
+(push '(left-fringe . 0) default-frame-alist)  ; 왼쪽 회색 여백 제거, 답답하면 1
+(push '(right-fringe . 0) default-frame-alist) ; 오른쪽 회색 여백 제거, 답답하면 1
 
 ;; ======================================
 ;;; Package 시스템

@@ -15,13 +15,13 @@
     ("Naver" .  "https://search.naver.com/search.naver?query=%s")
     ("Google" . "https://www.google.com/search?q=%s")
     ("Namuwiki" .  "https://namu.wiki/w/%s"))
-  "검색 엔진 설정 (이름 .  URL/타입)")
+  "Each element is of the form (NAME . URL/TYPE).")
 
 ;; ======================================
 ;;; Helper Functions
 ;; ======================================
 (defun my--get-search-url (engine query)
-  "엔진과 쿼리로 검색 URL 생성."
+  "Generate a search URL from a search engine and a query."
   (let ((config (assoc engine my-search-engines)))
     (when config
       (let ((url-template (cdr config)))
@@ -30,7 +30,7 @@
           (format url-template (url-hexify-string query)))))))
 
 (defun my--open-url (url)
-  "URL 열기."
+  "Open the specified URL in the default web browser."
   (if (string-prefix-p "dict://" url)
       (call-process "open" nil 0 nil url)
     (browse-url url)))
@@ -39,33 +39,32 @@
 ;;; Main Function
 ;; ======================================
 (defun my-search-in-range ()
-  "범위range내 검색.
-검색 옵션: macOS Dictionary, Naver, Google, Namuwiki"
+  "Search within the selected range using various engines."
   (interactive)
   (if-let* ((query (and (use-region-p)
                         (buffer-substring-no-properties 
                          (region-beginning) (region-end))))
             ((not (string-empty-p query)))
             (engine (completing-read 
-                     "검색 엔진 선택: " 
+                     "Search engine: " 
                      (mapcar #'car my-search-engines)))
             (url (my--get-search-url engine query))
             ((not (string-empty-p url))))
       (my--open-url url)
-    (message "텍스트를 선택해주세요.")))
+    (message "Please select the text")))
 
 (defun my-consult-ripgrep-selected-dir ()
-  "사용자가 선택한 디렉토리 내의 파일 내용을 consult-ripgrep으로 검색."
+  "Search for a string in a directory using consult-ripgrep."
   (interactive)
   (let* ((default-dir "~/Dropbox/Docs/org/")
-         (selected-dir (read-directory-name "검색할 디렉토리 선택: " default-dir default-dir t)))
+         (selected-dir (read-directory-name "Select directory to search: " default-dir default-dir t)))
     (consult-ripgrep selected-dir)))
 
 ;; ======================================
 ;;; Weather Search Functions
 ;; ======================================
 (defun my--parse-weather-data (dom city)
-  "Naver 날씨 DOM에서 데이터를 추출하여 전용 버퍼에 시각화합니다."
+  "Extract weather data from Naver's DOM and visualize it in a dedicated buffer."
   (let* ((buffer-name (format "*날씨: %s*" city))
          ;; 1. 현재 온도 및 요약 정보 추출
          (temp-elem (car (dom-by-class dom "temperature_text")))
@@ -156,8 +155,17 @@
   (let ((city (read-string "도시명 입력: ")))
     (my-naver-weather-search city)))
 
-
-
+;; ======================================
+;;; Key-binding
+;; ======================================
+(defvar-keymap my-search-prefix-map
+  :doc "my-search-prefix-keymap"
+  "c" #'my-consult-ripgrep-selected-dir
+  "f" #'consult-find
+  "g" #'consult-grep
+  "l" #'consult-line
+  "r" #'my-search-in-range
+  "w" #'my-search-weather)
 
 (provide 'my-search)
 ;;; my-search.el ends here
