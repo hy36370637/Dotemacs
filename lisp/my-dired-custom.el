@@ -1,13 +1,26 @@
 ;;; my-dired-custom.el --- Custom Dired configuration -*- lexical-binding: t; -*-
 
-;;; Commentary:
-;; Dired customization with Korean filename support and enhanced features
-;; Note: (setenv "LC_COLLATE" "C") in init.el handles Korean filename sorting
-
-;;; Code:
+;; ======================================
+;;; Dired Move Function
+;; ======================================
+(defun my-dired-move-to-pdf-folder-safe ()
+  "Move marked files to '/pdf' safely."
+  (interactive)
+  (let* ((target-dir "../pdf/")
+         (expanded-target (expand-file-name target-dir))
+         (files (dired-get-marked-files)))
+    (unless (file-exists-p expanded-target)
+      (make-directory expanded-target t))
+    (condition-case nil
+        (progn
+          (dired-do-rename-regexp ".*" expanded-target nil t)
+          (revert-buffer)
+          (message "%d files moved to %s." (length files) target-dir))
+      (quit (message "Move canceled."))
+      (error (message "Error occurred during move.")))))
 
 ;; ======================================
-;;; Dired
+;;; Dired Main Configuration
 ;; ======================================
 (use-package dired
   :ensure nil
@@ -22,7 +35,8 @@
   :bind
   (:map dired-mode-map
    ("C-<return>" . dired-do-open)
-   ("/" . dired-narrow)))
+   ("/" . dired-narrow)
+   ("M" . my-dired-move-to-pdf-folder-safe)))
 
 ;; ======================================
 ;;; Dired Extensions
@@ -30,5 +44,4 @@
 (use-package dired-narrow
   :after dired)
 
-;;; my-dired-custom.el ends here
 (provide 'my-dired-custom)

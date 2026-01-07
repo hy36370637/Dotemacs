@@ -293,7 +293,7 @@
 ;;; windmove
 ;; =======================================
 (use-package windmove
-  :ensure nil
+  :ensure nil   ;built-in
   :bind
   (("<s-left>" . windmove-left)
    ("<s-right>" . windmove-right)
@@ -394,6 +394,5 @@
   "s" my-search-prefix-map
   "t" #'my-todays-pop
   "w" #'my-pair-pairs-wrap)
-
 
 (keymap-set global-map "C-c j" my-emacs-prefix-map)

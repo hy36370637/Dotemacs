@@ -221,7 +221,7 @@
                         \"\\\\end{titlepage}\\n\"))
                   #+end_src")
         ("Notoc" "#+LATEX: \\addcontentsline{toc}{section}{}" 
-         (lambda () (backward-char 2)))))))  ;; Notoc: 입력 후 커서를 {} 사이로 이동
+         (lambda () (backward-char 1)))))))  ;; Notoc: 입력 후 커서를 {} 사이로 이동
 
 
 
