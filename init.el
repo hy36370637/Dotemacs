@@ -93,9 +93,9 @@
   ;; [왼쪽] Opt(Super) / Cmd(Meta)
   (setq ns-option-modifier 'super)
   (setq ns-command-modifier 'meta)
-  ;; [오른쪽] Cmd(Control) / Opt(Meta)
-  (setq ns-right-command-modifier 'control)
-  (setq ns-right-option-modifier 'meta))
+  ;; [오른쪽] Cmd(Meta) / Opt(Control)
+  (setq ns-right-command-modifier 'meta)
+  (setq ns-right-option-modifier 'control))
 
 ;; =======================================
 ;;; macOS Input Source Control (im-select)
@@ -214,7 +214,6 @@
   (setenv "LC_COLLATE" "C")
   (set-locale-environment "ko_KR.UTF-8")
   :custom
-;;  (default-input-method "korean-hangul")
   (input-method-verbose-flag nil)
   (input-method-highlight-flag nil))
 
@@ -389,8 +388,8 @@
 ;; =======================================
 (defvar-keymap my-emacs-prefix-map
   :doc "my-emacs-prefix-keymap"
+  "b" #'eval-buffer
   "c" #'my-capture-cReading-access
-  "e" #'eval-buffer
   "i" my-image-prefix-map
   "s" my-search-prefix-map
   "t" #'my-todays-pop

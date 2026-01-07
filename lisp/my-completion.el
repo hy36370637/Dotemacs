@@ -195,6 +195,8 @@
   :custom (save-abbrevs nil)
   :config
   (with-eval-after-load 'org
+    ;; (abbrev-table-put org-mode-abbrev-table 
+    ;;                   :regexp "\\(?:^\\|[\t\s]+\\)\\(?1::.*\\)")
     (define-abbrev-table 'org-mode-abbrev-table
       '(;; 특수문자
         ("rA" "→") ("lS" "―") ("lT" "……")
@@ -210,6 +212,14 @@
         ("Option" "#+OPTIONS: toc:2 num:2")
         ("Grayq" "#+ATTR_LATEX: :environment grayquote")
         ("Doimg" "#+ATTR_LATEX: :width 0.5\\textwidth\n#+CAPTION: \n")
+	("Right" "#+BEGIN_EXPORT latex\n\\begin{flushright}\n\n\\end{flushright}\n#+END_EXPORT")
+	("Cover" "#+begin_src emacs-lisp :exports results :results none :eval export
+                  (make-variable-buffer-local 'org-latex-title-command)
+                  (setq org-latex-title-command (concat
+                        \"\\\\begin{titlepage}\\n\"
+                        \"\\\\includegraphics[width=14.7cm]{./img/PATH}\\n\"
+                        \"\\\\end{titlepage}\\n\"))
+                  #+end_src")
         ("Notoc" "#+LATEX: \\addcontentsline{toc}{section}{}" 
          (lambda () (backward-char 2)))))))  ;; Notoc: 입력 후 커서를 {} 사이로 이동
 
