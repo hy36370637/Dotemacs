@@ -160,6 +160,7 @@
 ;; ======================================
 (defvar-keymap my-search-prefix-map
   :doc "my-search-prefix-keymap"
+  :name "Search"
   "c" #'my-consult-ripgrep-selected-dir
   "f" #'consult-find
   "g" #'consult-grep
