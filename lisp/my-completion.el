@@ -13,8 +13,6 @@
 (use-package vertico-posframe
   :ensure t
   :after vertico
-  :config
-  (vertico-posframe-mode 1)
   :custom
   (vertico-posframe-poshandler #'posframe-poshandler-frame-center)
   (vertico-posframe-width 100)
@@ -23,29 +21,18 @@
    '((left-fringe . 20)
      (right-fringe . 20)))
   :init
-  ;; Update border color when theme changes
   (defun my-vertico-posframe-update-border-color ()
     "Apply current theme's highlight color to vertico-posframe border."
     (when (facep 'vertico-posframe-border)
       (set-face-attribute 'vertico-posframe-border nil 
                           :background (face-attribute 'highlight :background nil t))))
-  ;; Toggle posframe on/off
-  (defun my-vertico-posframe-toggle ()
-    "Toggle between vertico-posframe and default vertico display."
-    (interactive)
-    (if vertico-posframe-mode
-        (progn
-          (vertico-posframe-mode -1)
-          (message "Vertico: bottom display"))
-      (progn
-        (vertico-posframe-mode 1)
-        (message "Vertico: posframe display"))))
-  
+  :config
+  ;; Ensure center position
+  (setq vertico-posframe-poshandler #'posframe-poshandler-frame-center)
+  (vertico-posframe-mode 1)
   ;; Apply initially and register hook
   (my-vertico-posframe-update-border-color)
-  (add-hook 'after-load-theme-hook #'my-vertico-posframe-update-border-color)  
-  :bind
-  ("M-<escape>" . my-vertico-posframe-toggle))
+  (add-hook 'after-load-theme-hook #'my-vertico-posframe-update-border-color))
 
 ;; ======================================
 ;;; marginalia

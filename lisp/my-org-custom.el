@@ -185,12 +185,11 @@
            (file ,(my-org-person-file-path "cReading.org"))
            "* %?\n기록일: %U"
            :empty-lines-after 1)
-          
-          ("m" "경조사" table-line
-           (file ,(my-org-person-file-path "aMoney.org"))
-           "| %^{구분} | %^{일자}U | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |"
-           :prepend nil
-           :table-line-pos "II-1"))))
+
+	  ("m" "경조사" table-line
+	   (file ,(my-org-person-file-path "aMoney.org"))
+	   ,(concat "| %^{구분} | %^{일자|" (format-time-string "%Y.%m.%d") "} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
+           :prepend nil))))
 
 (defun my-capture-cReading-access ()
   "Access cReading.org right away"
