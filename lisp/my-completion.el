@@ -1,23 +1,51 @@
 ;;; -*- lexical-binding: t; -*-
 ;; .emacs.d/lisp/my-completion.el
-;;
-;; ======================================
-;;; which-key
-;; ======================================
-(use-package which-key
-  :ensure nil
-  :init (which-key-mode)
-  :custom (which-key-idle-delay 0.2))
-
 ;; ======================================
 ;;; vertico
 ;; ======================================
 (use-package vertico
   :init (vertico-mode)
   :custom
-  (vertico-resize nil)    ; 크기 조정 비활성화로 성능 
+  (vertico-resize nil)
   (vertico-cycle t)
-  (vertico-count 20))   ; 표시할 항목 수 제한
+  (vertico-count 15))
+
+(use-package vertico-posframe
+  :ensure t
+  :after vertico
+  :config
+  (vertico-posframe-mode 1)
+  :custom
+  (vertico-posframe-poshandler #'posframe-poshandler-frame-center)
+  (vertico-posframe-width 100)
+  (vertico-posframe-border-width 2)
+  (vertico-posframe-parameters
+   '((left-fringe . 20)
+     (right-fringe . 20)))
+  :init
+  ;; Update border color when theme changes
+  (defun my-vertico-posframe-update-border-color ()
+    "Apply current theme's highlight color to vertico-posframe border."
+    (when (facep 'vertico-posframe-border)
+      (set-face-attribute 'vertico-posframe-border nil 
+                          :background (face-attribute 'highlight :background nil t))))
+  ;; Toggle posframe on/off
+  (defun my-vertico-posframe-toggle ()
+    "Toggle between vertico-posframe and default vertico display."
+    (interactive)
+    (if vertico-posframe-mode
+        (progn
+          (vertico-posframe-mode -1)
+          (message "Vertico: bottom display"))
+      (progn
+        (vertico-posframe-mode 1)
+        (message "Vertico: posframe display"))))
+  
+  ;; Apply initially and register hook
+  (my-vertico-posframe-update-border-color)
+  (add-hook 'after-load-theme-hook #'my-vertico-posframe-update-border-color)  
+  :bind
+  ("M-<escape>" . my-vertico-posframe-toggle))
 
 ;; ======================================
 ;;; marginalia

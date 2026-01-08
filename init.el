@@ -83,7 +83,8 @@
 (require 'my-useful-custom)
 (require 'my-search)
 (require 'my-todays-pop)
-(require 'my-eradio-custom)
+(require 'my-radio-direct)
+;;(require 'my-eradio-custom)
 
 ;; =======================================
 ;;; MacOS keyboard
@@ -316,6 +317,14 @@
   :custom
   (recentf-max-menu-items 15)
   (recentf-max-saved-items 15))
+
+;; ======================================
+;;; which-key
+;; ======================================
+(use-package which-key
+  :ensure nil
+  :init (which-key-mode)
+  :custom (which-key-idle-delay 0.2))
 
 ;; =======================================
 ;;; Eshell

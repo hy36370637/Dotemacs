@@ -212,12 +212,14 @@
     (org-capture nil "r")))
 
 ;; ======================================
-;;; org-bullets
+;;; org-superstar
 ;; ======================================
-(use-package org-bullets
-  :hook (org-mode . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "○" "▶" "▷" "►")))
+(use-package org-superstar
+  :ensure t
+  :hook (org-mode . org-superstar-mode)
+  :config
+  ;; org-bullets-bullet-list 대신 아래 변수를 사용합니다.
+  (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "▶" "▷" "►")))
 
 ;; ======================================
 ;;; ox-latex
