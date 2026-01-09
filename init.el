@@ -84,6 +84,7 @@
 (require 'my-search)
 (require 'my-todays-pop)
 (require 'my-radio-direct)
+(require 'my-keys)
 
 ;; =======================================
 ;;; MacOS keyboard
@@ -145,9 +146,9 @@
   (kill-whole-line 1)                 ; 줄 전체 삭제 시 줄바꿈까지 삭제
   (global-auto-revert-mode t)         ; 외부에서 변경된 파일 자동 새로고침
   (next-line-add-newlines nil)        ; 문서 끝에서 C-n 눌러도 새 줄 추가 안 함
-  :config
-  (setq enable-recursive-minibuffers t)
-  (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
+  ;; :config
+  ;; (setq enable-recursive-minibuffers t)
+  ;; (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
   :bind
   (("C-x f" . nil)
    ("C-x m" . nil)
@@ -392,27 +393,27 @@
   ;; Magit이 전체 화면을 차지하지 않고, 현재 창 구성을 최대한 유지
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
-;; =======================================
-;;; Key-binding
-;; =======================================
-(defvar-keymap my-emacs-prefix-map
-  :doc "my-emacs-prefix-keymap"
-  :name "My Personal Map"
-  "b" #'eval-buffer
-  "c" #'my-capture-cReading-access
-  "i" my-image-prefix-map
-  "m" my-radio-prefix-map
-  "s" my-search-prefix-map
-  "t" #'my-todays-pop
-  "w" #'my-pair-pairs-wrap)
+;; ;; =======================================
+;; ;;; Key-binding
+;; ;; =======================================
+;; (defvar-keymap my-emacs-prefix-map
+;;   :doc "my-emacs-prefix-keymap"
+;;   :name "My Personal Map"
+;;   "b" #'eval-buffer
+;;   "c" #'my-capture-cReading-access
+;;   "i" my-image-prefix-map
+;;   "m" my-radio-prefix-map
+;;   "s" my-search-prefix-map
+;;   "t" #'my-todays-pop
+;;   "w" #'my-pair-pairs-wrap)
 
-(which-key-add-keymap-based-replacements my-emacs-prefix-map
-  "c" "Reading"
-  "i" "Image"
-  "m" "Radio"
-  "s" "Search"
-  "t" "Todays-pop"
-  "w" "Pairs-wrap")
+;; (which-key-add-keymap-based-replacements my-emacs-prefix-map
+;;   "c" "Reading"
+;;   "i" "Image"
+;;   "m" "Radio"
+;;   "s" "Search"
+;;   "t" "Todays-pop"
+;;   "w" "Pairs-wrap")
 
-;; 4. 전역 키 바인딩
-(keymap-set global-map "C-c j" my-emacs-prefix-map)
+;; ;; 4. 전역 키 바인딩
+;; (keymap-set global-map "C-c j" my-emacs-prefix-map)

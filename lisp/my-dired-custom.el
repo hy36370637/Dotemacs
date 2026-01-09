@@ -38,7 +38,8 @@
   (:map dired-mode-map
    ("C-<return>" . dired-do-open)
    ("M" . my-dired-move-to-pdf-folder-safe)
-   ("C-c f" . consult-focus-lines)))
+   ("f" . consult-line)))
 
 
 (provide 'my-dired-custom)
+;;; end my-dired-custom

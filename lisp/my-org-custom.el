@@ -255,16 +255,6 @@
         org-fontify-done-headline t
         org-fontify-quote-and-verse-blocks t))
 
-;; ======================================
-;;; Key-binding
-;; ======================================  
-(defvar-keymap my-image-prefix-map
-  :doc "image-Insert,Path,Screenshot "
-  :name "Image for org"
-  "i" 'my-org-insert-image
-  "p" 'my-insert-image-path
-  "s" 'my-org-screenshot)
-
 
 
 (provide 'my-org-custom)

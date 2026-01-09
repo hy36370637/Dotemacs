@@ -155,26 +155,7 @@
   (let ((city (read-string "도시명 입력: ")))
     (my-naver-weather-search city)))
 
-;; ======================================
-;;; Key-binding
-;; ======================================
-(defvar-keymap my-search-prefix-map
-  :doc "my-search-prefix-keymap"
-  :name "Search"
-  "c" #'my-consult-ripgrep-selected-dir
-  "f" #'consult-find
-  "g" #'consult-grep
-  "l" #'consult-line
-  "r" #'my-search-in-range
-  "w" #'my-search-weather)
 
-(which-key-add-keymap-based-replacements my-search-prefix-map
-  "c" "consult-ripgrep"
-  "f" "consult-find"
-  "g" "consult-grep"
-  "l" "consult-line"
-  "r" "search in range"
-  "w" "search weather")
 
 (provide 'my-search)
 ;;; my-search.el ends here
