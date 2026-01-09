@@ -58,11 +58,12 @@
 (use-package consult
   :ensure t
   :bind (("C-x b" . consult-buffer)
-	 ("C-x C-r" . consult-recent-file))
+	 ("C-x C-r" . consult-recent-file)
+	 ("M-y" . consult-yank-pop)
+	 ("M-g g" . consult-goto-line))
   :config
   (setq consult-buffer-sources (list consult--source-buffer
-				     consult--source-recent-file))
-  (setq consult-preview-key 'any))
+				     consult--source-recent-file)))
 
 ;; ======================================
 ;;; consult-dir

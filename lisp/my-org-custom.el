@@ -231,8 +231,7 @@
   (org-latex-title-command "\\maketitle\\newpage")
   (org-latex-toc-command "\\tableofcontents\\newpage")
   (org-latex-pdf-process
-   '("xelatex -interaction=nonstopmode -shell-escape %f"
-     "xelatex -interaction=nonstopmode -shell-escape %f")))
+   '("latexmk -pdflatex='xelatex -shell-escape -interaction=nonstopmode' -pdf -f %f")))
 
 ;; ======================================
 ;;; ox-md

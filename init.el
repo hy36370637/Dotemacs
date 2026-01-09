@@ -61,8 +61,9 @@
 ;; =======================================
 (when my-macOS-p
   (let ((brew-bin "/opt/homebrew/bin")
-        (tex-bin "/Library/TeX/texbin"))
-    (dolist (path (list brew-bin tex-bin))
+        (tex-bin "/Library/TeX/texbin")
+	(emacs-bin "/Applications/Emacs.app/Contents/MacOS/bin"))
+    (dolist (path (list brew-bin tex-bin emacs-bin))
       (when (file-directory-p path)
         (add-to-list 'exec-path path)
         (setenv "PATH" (concat path ":" (getenv "PATH")))))
@@ -392,28 +393,3 @@
   :custom
   ;; Magit이 전체 화면을 차지하지 않고, 현재 창 구성을 최대한 유지
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
-
-;; ;; =======================================
-;; ;;; Key-binding
-;; ;; =======================================
-;; (defvar-keymap my-emacs-prefix-map
-;;   :doc "my-emacs-prefix-keymap"
-;;   :name "My Personal Map"
-;;   "b" #'eval-buffer
-;;   "c" #'my-capture-cReading-access
-;;   "i" my-image-prefix-map
-;;   "m" my-radio-prefix-map
-;;   "s" my-search-prefix-map
-;;   "t" #'my-todays-pop
-;;   "w" #'my-pair-pairs-wrap)
-
-;; (which-key-add-keymap-based-replacements my-emacs-prefix-map
-;;   "c" "Reading"
-;;   "i" "Image"
-;;   "m" "Radio"
-;;   "s" "Search"
-;;   "t" "Todays-pop"
-;;   "w" "Pairs-wrap")
-
-;; ;; 4. 전역 키 바인딩
-;; (keymap-set global-map "C-c j" my-emacs-prefix-map)
