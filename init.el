@@ -146,8 +146,8 @@
   (global-auto-revert-mode t)         ; 외부에서 변경된 파일 자동 새로고침
   (next-line-add-newlines nil)        ; 문서 끝에서 C-n 눌러도 새 줄 추가 안 함
   :config
-  (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이 표시모드 for consult-dir
   (setq enable-recursive-minibuffers t)
+  (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
   :bind
   (("C-x f" . nil)
    ("C-x m" . nil)
@@ -407,9 +407,12 @@
   "w" #'my-pair-pairs-wrap)
 
 (which-key-add-keymap-based-replacements my-emacs-prefix-map
+  "c" "Reading"
   "i" "Image"
   "m" "Radio"
-  "s" "Search")
+  "s" "Search"
+  "t" "Todays-pop"
+  "w" "Pairs-wrap")
 
 ;; 4. 전역 키 바인딩
 (keymap-set global-map "C-c j" my-emacs-prefix-map)

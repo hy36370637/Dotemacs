@@ -168,5 +168,13 @@
   "r" #'my-search-in-range
   "w" #'my-search-weather)
 
+(which-key-add-keymap-based-replacements my-search-prefix-map
+  "c" "consult-ripgrep"
+  "f" "consult-find"
+  "g" "consult-grep"
+  "l" "consult-line"
+  "r" "search in range"
+  "w" "search weather")
+
 (provide 'my-search)
 ;;; my-search.el ends here
