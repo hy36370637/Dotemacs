@@ -153,9 +153,7 @@
   :bind
   (("C-x f" . nil)
    ("C-x m" . nil)
-   ("C-x z" . nil)
-   ("C-c 9" . toggle-frame-maximized)
-   ("C-c 0" . toggle-frame-fullscreen)))
+   ("C-x z" . nil)))
 
 (use-package time
   :ensure nil
@@ -196,8 +194,6 @@
 ;; =======================================
 (use-package register
   :ensure nil
-  :custom
-  (register-preview-delay 0)               ; 지연 없이 바로 프레뷰 표시
   :config
   (let ((org-dir my/org-person-dir)
 	(conf-dir user-emacs-directory))
@@ -206,7 +202,9 @@
     (set-register ?r `(file . ,(concat org-dir "cReading.org")))
     (set-register ?d `(file . ,(concat org-dir "Daily.org")))
     (set-register ?n `(file . ,(concat org-dir "cNotes.org"))))
-  (set-register ?o `(file . ,default-directory)))
+  (set-register ?o `(file . ,default-directory))
+  :custom
+  (register-preview-delay 0.5))
 
 ;; =======================================
 ;;; Locale and Korean settings

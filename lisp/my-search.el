@@ -155,6 +155,33 @@
   (let ((city (read-string "도시명 입력: ")))
     (my-naver-weather-search city)))
 
+;; ======================================
+;;; Sync embark
+;; ======================================
+(with-eval-after-load 'embark
+  (defun my-embark-web-search (query)
+    "Select a search engine and execute a search based on the QUERY provided by Embark."
+    (interactive "sSearch query: ")
+    (let* ((engine (completing-read "Search engine: " (mapcar #'car my-search-engines)))
+           (url (my--get-search-url engine query)))
+      (if (and url (not (string-empty-p url)))
+          (my--open-url url)
+        (message "Invalid search query or URL."))))
+
+  ;; (defun my-embark-weather-search (city)
+  ;;   "Search for weather using the city name provided by Embark."
+  ;;   (interactive "sCity: ")
+  ;;   (my-naver-weather-search city))
+
+  ;; identifier-map works on words; region-map works on selected blocks.
+  (let ((target-maps (list embark-identifier-map embark-region-map)))
+    (dolist (map target-maps)
+      (define-key map (kbd "S") #'my-embark-web-search)))
+  ;;    (define-key map (kbd "W") #'my-embark-weather-search)))
+
+  ;; Add descriptions to the Embark menu for better readability
+  (add-to-list 'embark-keymap-alist '(my-search)))
+  ;; (add-to-list 'embark-keymap-alist '(my-search . my-embark-web-search)))
 
 
 (provide 'my-search)

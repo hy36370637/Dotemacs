@@ -137,7 +137,9 @@
   :defer t
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
-         ("C-c c" . org-capture))
+         ("C-c c" . org-capture)
+	 :map org-mode-map
+         ("M-g w" . my-pair-pairs-wrap))  ;; my-completion
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org"))
   (org-startup-indented t)             ;시작때 indent mode enable
@@ -217,7 +219,6 @@
   :ensure t
   :hook (org-mode . org-superstar-mode)
   :config
-  ;; org-bullets-bullet-list 대신 아래 변수를 사용합니다.
   (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "▶" "▷" "►")))
 
 ;; ======================================

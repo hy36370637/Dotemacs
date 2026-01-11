@@ -59,24 +59,34 @@
   :ensure t
   :bind (("C-x b" . consult-buffer)
 	 ("C-x C-r" . consult-recent-file)
+	 ("C-c b" . consult-bookmark)
 	 ("M-y" . consult-yank-pop)
-	 ("M-g g" . consult-goto-line))
+	 ("M-s g" . consult-ripgrep)
+	 ("M-s l" . consult-line)
+	 ("M-s m" . consult-imenu)
+         ("M-s o" . consult-outline)
+	 ("M-g M-g" . consult-goto-line))
   :config
   (setq consult-buffer-sources (list consult--source-buffer
 				     consult--source-recent-file)))
 
-;; ======================================
-;;; consult-dir
-;; ======================================
-;; (use-package consult-dir
-;;   :ensure nil
-;;   :after (vertico)
-;;   :init
-;;   (setq enable-recursive-minibuffers t) ;; 재귀적 미니버퍼
-;;   :bind (("C-c D" . consult-dir)
-;;           :map vertico-map
-;;          ("C-c D" . consult-dir)
-;; 	 ("C-x C-j" . consult-dir-jump-file)))
+;; =======================================
+;;; embark
+;; ======================================-
+(use-package embark
+  :ensure t
+  :bind (("C-." . embark-act)         ;; 가장 기본적인 '행동'
+         ("M-." . embark-dwim)        ;; 알아서 가장 적절한 '행동' 수행
+         ("C-h B" . embark-bindings)) ;; 현재 모드에서 가능한 모든 키 바인딩 확인
+  :init
+  ;; 미니버퍼 내에서 도움말 역할을 하도록 설정
+(setq prefix-help-command #'embark-prefix-help-command))
+
+(use-package embark-consult
+  :ensure t
+  :after (embark consult)
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; =======================================
 ;;; electric-pair-mode
