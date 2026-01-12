@@ -117,7 +117,7 @@
       (call-process my/im-select-path nil 0 nil "com.apple.keylayout.ABC"))))
 
 (add-hook 'focus-in-hook #'my/mac-switch-to-english)
-
+(add-hook 'focus-out-hook #'my/mac-switch-to-english) 
 ;; =======================================
 ;;; Emacs UI and behavior
 ;; =======================================
@@ -153,7 +153,10 @@
   :bind
   (("C-x f" . nil)
    ("C-x m" . nil)
-   ("C-x z" . nil)))
+   ("C-x z" . nil)
+   ("C-\\" . my-pair-pairs-wrap)
+   ("C-c 9" . toggle-frame-maximized)
+   ("C-c 0" . toggle-frame-fullscreen)))
 
 (use-package time
   :ensure nil
@@ -215,6 +218,7 @@
   (setenv "LC_COLLATE" "C")
   (set-locale-environment "ko_KR.UTF-8")
   :custom
+  (default-input-method "korean-hangul")
   (input-method-verbose-flag nil)
   (input-method-highlight-flag nil))
 
@@ -224,12 +228,17 @@
 (use-package emacs
   :if (display-graphic-p)
   :config
-  (set-face-attribute 'default nil :family "Noto Sans KR" :height 160)
+  (set-face-attribute 'default nil :family "Menlo" :height 160)
   (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
-  (set-fontset-font t 'hangul (font-spec :family "Noto Sans CJK KR"))
-  (add-hook 'prog-mode-hook
+  (set-fontset-font t 'hangul (font-spec :family "Noto Sans KR"))
+  (set-face-attribute 'variable-pitch nil :family "Noto Sans KR" :height 1.0)
+  ;; (setq face-font-rescale-alist '(("Noto Sans KR" . 0.95)))
+  (add-hook 'org-mode-hook
             (lambda ()
-              (face-remap-add-relative 'default :family "Noto Sans Mono CJK KR"))))
+              (variable-pitch-mode 1)
+              (mapc (lambda (face)
+                      (set-face-attribute face nil :inherit 'fixed-pitch))
+                    '(org-table org-code org-block org-checkbox org-date org-link)))))
 
 ;; =======================================
 ;;; Theme
@@ -246,6 +255,7 @@
   (setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
 
   (load-theme 'modus-operandi-tinted t))
+
 ;; =======================================
 ;;; Helpful
 ;; =======================================

@@ -111,17 +111,17 @@
 ;;                (file-name-nondirectory selected-file) 
 ;;                img-width))))
 
-(defun cal-fixLayout () 
-  "Fix calendar layout for monospace Korean font."
-  (face-remap-add-relative 'default 
-                           '(:family "Noto Sans Mono CJK KR" :height 160)))
+;; (defun cal-fixLayout () 
+;;   "Fix calendar layout for monospace Korean font."
+;;   (face-remap-add-relative 'default 
+;;                            '(:family "Noto Sans Mono CJK KR" :height 160)))
 
 ;; ======================================
 ;;; Calendar
 ;; ======================================
 (use-package calendar
   :ensure nil
-  :hook (calendar-mode . cal-fixLayout)
+;; :hook (calendar-mode . cal-fixLayout)
   :custom
   (calendar-week-start-day 0)  ; Start week on Sunday
   (calendar-date-style 'iso)   ; YYYY-MM-DD 형식

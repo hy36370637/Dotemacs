@@ -4,10 +4,11 @@
 (defvar-keymap my-capture-prefix-map
   :name "Capture"
   "c" #'org-capture                         ;; M-SPC c c : 전체 메뉴
-  "d" (lambda () (interactive) (org-capture nil "d")) ;; M-SPC c d : Daily
-  "t" (lambda () (interactive) (org-capture nil "t")) ;; M-SPC c Tasks
-  "r" (lambda () (interactive) (org-capture nil "r")) ;; M-SPC c Reading
-  "m" (lambda () (interactive) (org-capture nil "m"))) ;; M-SPC c 경조사
+  "a" #'my-capture-cReading-access
+  "d" (lambda () (interactive) (org-capture nil "d"))
+  "t" (lambda () (interactive) (org-capture nil "t"))
+  "r" (lambda () (interactive) (org-capture nil "r"))
+  "m" (lambda () (interactive) (org-capture nil "m")))
 
 (defvar-keymap my-search-prefix-map
   :name "Search"
@@ -38,9 +39,7 @@
   "t" #'my-todays-pop
   "w" #'my-pair-pairs-wrap
   "p" #'my-radio-play 
-  "k" #'my-radio-stop
-  "9" #'toggle-frame-maximized
-  "0" #'toggle-frame-fullscreen)
+  "k" #'my-radio-stop)
 
 ;; which-key Labels
 (which-key-add-keymap-based-replacements my-capture-prefix-map
@@ -75,19 +74,11 @@
   "p" "Radio Play"
   "k" "Radio Stop"
   "t" "Today's"
-  "w" "Pairs Wrap"
-  "9" "Maximized"
-  "0" "fullscreen")
+  "w" "Pairs Wrap")
 
 (keymap-set global-map "M-SPC" my-emacs-prefix-map)
 
-;; (with-eval-after-load 'embark
-;;   ;; 1. 마스터 맵 전체를 embark-general-map에 연결
-;;   ;; 이제 어떤 타겟 위에서 C-. 을 누르고 스페이스(또는 설정한 키)를 누르면
-;;   ;; 사용자가 만든 모든 리더키 메뉴가 팝업됩니다.
-;;   (define-key embark-general-map (kbd "SPC") my-emacs-prefix-map)
 
-;;   ;; 2. 타겟이 없을 때 M-SPC와 똑같이 동작하도록 설정
-;;   (setf (alist-get 't embark-keymap-alist) my-emacs-prefix-map))
 
 (provide 'my-keys)
+;;; my-keys end here
