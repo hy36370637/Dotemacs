@@ -235,6 +235,21 @@
    '("latexmk -pdflatex='xelatex -shell-escape -interaction=nonstopmode' -pdf -f %f")))
 
 ;; ======================================
+;;; denote
+;; ======================================
+(use-package denote
+  :bind
+  (("C-c n n" . denote)                       ; 새 노트 생성
+   ("C-c n i" . denote-link)                  ; 현재 노트에 다른 노트 링크 삽입
+   ("C-c n b" . denote-show-backlinks-buffer) ; 현재 노트를 참조하는 다른 노트들 보기
+   ("C-c n r" . denote-rename-file))          ; 기존 파일 이름을 denote 형식으로 변경
+  :config
+  (setq denote-directory (expand-file-name "denote" org-directory))
+  (setq denote-file-type nil)
+  (unless (file-exists-p denote-directory)
+    (make-directory denote-directory t)))  
+
+;; ======================================
 ;;; ox-md
 ;; ======================================
 (use-package ox-md

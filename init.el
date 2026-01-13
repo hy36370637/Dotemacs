@@ -232,7 +232,7 @@
   (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
   (set-fontset-font t 'hangul (font-spec :family "Noto Sans KR"))
   (set-face-attribute 'variable-pitch nil :family "Noto Sans KR" :height 1.0)
-  (setq face-font-rescale-alist '(("Noto Sans KR" . 0.95)))
+;;  (setq face-font-rescale-alist '(("Noto Sans KR" . 0.95)))
   (add-hook 'org-mode-hook
             (lambda ()
               (variable-pitch-mode 1)

@@ -225,7 +225,7 @@
     ;;                   :regexp "\\(?:^\\|[\t\s]+\\)\\(?1::.*\\)")
     (define-abbrev-table 'org-mode-abbrev-table
       '(;; 특수문자
-        ("rA" "→") ("lS" "―") ("lT" "……")
+        ("rA" "→")("lA" "←") ("rrA" "⇒")("llA" "⇐")("lS" "―") ("lT" "……")
         ("lG" "「") ("rG" "」") ("cD" "·") ("llG" "『") ("rrG" "』")
         ;; Org-mode 설정
         ("Dsc" "#+DESCRIPTION: ")
@@ -247,9 +247,7 @@
                         \"\\\\end{titlepage}\\n\"))
                   #+end_src")
         ("Notoc" "#+LATEX: \\addcontentsline{toc}{section}{}" 
-         (lambda () (backward-char 1)))))))  ;; Notoc: 입력 후 커서를 {} 사이로 이동
-
-
+         (lambda () (backward-char 1)))))))
 
 
 
