@@ -154,6 +154,7 @@
   (("C-x f" . nil)
    ("C-x m" . nil)
    ("C-x z" . nil)
+   ("M-;" . comment-line)
    ("C-\\" . my-pair-pairs-wrap)
    ("C-c 9" . toggle-frame-maximized)
    ("C-c 0" . toggle-frame-fullscreen)))
@@ -243,18 +244,36 @@
 ;; =======================================
 ;;; Theme
 ;; =======================================
-(use-package emacs
-  :bind 
-  ("<f5>" . modus-themes-toggle)
-  :config
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs nil
-        modus-themes-mode-line '(accented borderless padded)
-        modus-themes-completions '((t . (extrabold)))
-        modus-themes-prompts '(extrabold))
-  (setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
+;; (use-package emacs
+;;   :bind 
+;;   ("<f5>" . modus-themes-toggle)
+;;   :config
+;;   (setq modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs nil
+;;         modus-themes-mode-line '(accented borderless padded)
+;;         modus-themes-completions '((t . (extrabold)))
+;;         modus-themes-prompts '(extrabold))
+;;   (setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
 
-  (load-theme 'modus-operandi-tinted t))
+;;   (load-theme 'modus-operandi-tinted t))
+
+(use-package ef-themes
+  :ensure t
+  :init
+  (ef-themes-take-over-modus-themes-mode 1)
+  :bind
+  (("<f5>" . modus-themes-rotate)
+   ("C-<f5>" . modus-themes-select)
+   ("M-<f5>" . modus-themes-load-random))
+  :config
+  ;; All customisations here.
+  (setq modus-themes-mixed-fonts t)
+  (setq modus-themes-italic-constructs t)
+
+  ;; Finally, load your theme of choice (or a random one with
+  ;; `modus-themes-load-random', `modus-themes-load-random-dark',
+  ;; `modus-themes-load-random-light').
+  (modus-themes-load-theme 'ef-owl))
 
 ;; =======================================
 ;;; Helpful
@@ -402,7 +421,6 @@
   ;; Magit이 전체 화면을 차지하지 않고, 현재 창 구성을 최대한 유지
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
-
 ;; =======================================
 ;;; expand-region
 ;; =======================================
@@ -410,3 +428,5 @@
   :ensure nil
   :bind (("C-=" . er/expand-region)
          ("C-M-=" . er/contract-region)))
+
+

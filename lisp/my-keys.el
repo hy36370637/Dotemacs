@@ -6,7 +6,9 @@
 (defvar-keymap my-edit-prefix-map
   :name "Edit"
   "a" #'my-newline-above
-  "l" #'my-select-current-line
+  "c" #'my-select-current-line
+  "l" #'my-select-line-left
+  "r" #'my-select-line-right
   "n" #'my-newline
   "t" #'my-today-stamp
   "w" #'my-pair-pairs-wrap)
@@ -14,7 +16,7 @@
 (defvar-keymap my-capture-prefix-map
   :name "Capture"
   "c" #'org-capture
-  "a" #'my-capture-cReading-access
+;;  "a" #'my-capture-cReading-access
   "d" (lambda () (interactive) (org-capture nil "d"))
   "t" (lambda () (interactive) (org-capture nil "t"))
   "r" (lambda () (interactive) (org-capture nil "r"))
@@ -44,7 +46,6 @@
   :name "Master"
   "b" #'consult-bookmark
   "c" my-capture-prefix-map
-  "C" #'my-capture-cReading-access
   "e" my-edit-prefix-map
   "i" my-image-prefix-map
   "r" #'jump-to-register
@@ -58,14 +59,15 @@
 ;; =======================================
 (which-key-add-keymap-based-replacements my-edit-prefix-map
   "a" "lineAbove"
-  "l" "selLine"
+  "c" "CurrentLine"
+  "l" "selLeft"
+  "r" "selRight"
   "n" "Newline"
   "t" "Today"
-  "w" "pairWrap")
+  "w" "Wrap")
 
 (which-key-add-keymap-based-replacements my-capture-prefix-map
   "c" "Capture Menu"
-  "a" "cReadNow"
   "d" "Daily"
   "t" "Tasks"
   "r" "Reading"
@@ -89,7 +91,6 @@
 (which-key-add-keymap-based-replacements my-emacs-prefix-map
   "b" "Bookmark"
   "c" "Capture"
-  "C" "Reading"
   "e" "Edit"
   "i" "Images"
   "r" "Register"

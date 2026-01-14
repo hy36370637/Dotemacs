@@ -136,10 +136,9 @@
   :ensure nil
   :defer t
   :mode ("\\.org\\'" . org-mode)
+  :hook (org-mode . (lambda () (text-scale-increase 2)))
   :bind (("C-c a" . org-agenda)
-         ("C-c c" . org-capture)
-	 :map org-mode-map
-         ("M-g w" . my-pair-pairs-wrap))  ;; my-completion
+         ("C-c c" . org-capture))
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org"))
   (org-startup-indented t)             ;시작때 indent mode enable
@@ -193,24 +192,24 @@
 	   ,(concat "| %^{구분} | %^{일자|" (format-time-string "%Y.%m.%d") "} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
            :prepend nil))))
 
-(defun my-capture-cReading-access ()
-  "Access cReading.org right away"
-  (interactive)
-  (require 'org)
-  (require 'org-capture)
-  (let ((org-capture-templates
-         `(("r" "Reading" entry
-            (file ,(my-org-person-file-path "cReading.org"))
-            "* %^{제목}\n%^{내용}\n기록일: %U"
-            :empty-lines-after 1
-            :immediate-finish t)))
-        (org-capture-after-finalize-hook
-         (list (lambda ()
-                 (when (get-buffer "*Org Select*")
-                   (kill-buffer "*Org Select*"))
-                 (when (get-buffer "CAPTURE-cReading.org")
-                   (kill-buffer "CAPTURE-cReading.org"))))))
-    (org-capture nil "r")))
+;; (defun my-capture-cReading-access ()
+;;   "Access cReading.org right away"
+;;   (interactive)
+;;   (require 'org)
+;;   (require 'org-capture)
+;;   (let ((org-capture-templates
+;;          `(("r" "Reading" entry
+;;             (file ,(my-org-person-file-path "cReading.org"))
+;;             "* %^{제목}\n%^{내용}\n기록일: %U"
+;;             :empty-lines-after 1
+;;             :immediate-finish t)))
+;;         (org-capture-after-finalize-hook
+;;          (list (lambda ()
+;;                  (when (get-buffer "*Org Select*")
+;;                    (kill-buffer "*Org Select*"))
+;;                  (when (get-buffer "CAPTURE-cReading.org")
+;;                    (kill-buffer "CAPTURE-cReading.org"))))))
+;;     (org-capture nil "r")))
 
 ;; ======================================
 ;;; org-superstar
