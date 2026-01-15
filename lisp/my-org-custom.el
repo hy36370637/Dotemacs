@@ -18,6 +18,18 @@
   "Construct the full path for a personal org file FILENAME."
   (expand-file-name filename my/org-person-dir))
 
+(defun my-org-latex-prettify-symbols ()
+  "Prettify specific LaTeX spacing commands in Org mode."
+  ;; setq-local을 사용하여 현재 버퍼에만 적용되도록 함
+  (setq-local prettify-symbols-alist
+              '(("#+LATEX: \\medskip" . "⁘")
+                ("#+LATEX: \\bigskip" . "⫶")
+                ("#+LATEX: \\vspace{\\baselineskip}" . "↕")))
+  (prettify-symbols-mode 1)
+  ;; 설정 즉시 화면에 반영되도록 강제 리프레시
+  (when (fboundp 'font-lock-flush)
+    (font-lock-flush)))
+
 ;;; ###autoload
 (defun my-org-insert-image ()
   "Insert and display image"
@@ -150,9 +162,7 @@
   :ensure nil
   :defer t
   :mode ("\\.org\\'" . org-mode)
-  ;; :hook ((org-mode . (lambda () (text-scale-increase 2)))
-  ;;        (kill-buffer . my/org-bookmark-on-leave)
-  ;;        (after-save . my/org-bookmark-on-leave))
+  :hook (org-mode . my-org-latex-prettify-symbols)
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture))
   :custom
@@ -164,6 +174,8 @@
   (org-indent-indentation-per-level 2)
   (org-edit-src-content-indentation 0)
   (org-image-actual-width 400)
+  (org-startup-with-drawer t)          ; 파일을 열 때 Drawer를 자동으로 접음
+  (org-startup-folded t)               ; 헤드라인도 기본적으로 접음
   (org-log-into-drawer t)
   (org-log-done 'time)
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
@@ -231,10 +243,8 @@
 ;;; org-superstar
 ;; ======================================
 (use-package org-superstar
-  :ensure t
-  :hook (org-mode . org-superstar-mode)
-  :config
-  (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "▶" "▷" "►")))
+  :ensure nil
+  :hook (org-mode . org-superstar-mode))
 
 ;; ======================================
 ;;; ox-latex
