@@ -7,8 +7,10 @@
   :name "Edit"
   "a" #'my-newline-above
   "c" #'my-select-current-line
+  "d" #'my-duplicate-dwim
   "l" #'my-select-line-left
   "r" #'my-select-line-right
+  "R" #'my-query-replace-regexp-dwim
   "n" #'my-newline
   "t" #'my-today-stamp
   "w" #'my-pair-pairs-wrap)
@@ -16,7 +18,6 @@
 (defvar-keymap my-capture-prefix-map
   :name "Capture"
   "c" #'org-capture
-;;  "a" #'my-capture-cReading-access
   "d" (lambda () (interactive) (org-capture nil "d"))
   "t" (lambda () (interactive) (org-capture nil "t"))
   "r" (lambda () (interactive) (org-capture nil "r"))
@@ -33,8 +34,10 @@
   "r" #'my-search-in-range
   "w" #'my-search-weather)
 
-(defvar-keymap my-image-prefix-map
-  :name "Image"
+(defvar-keymap my-media-prefix-map
+  :name "Media"
+  "P" #'my-radio-play 
+  "S" #'my-radio-stop
   "i" #'my-org-insert-image
   "p" #'my-insert-image-path
   "s" #'my-org-screenshot)
@@ -47,22 +50,22 @@
   "b" #'consult-bookmark
   "c" my-capture-prefix-map
   "e" my-edit-prefix-map
-  "i" my-image-prefix-map
+  "m" my-media-prefix-map
   "r" #'jump-to-register
   "s" my-search-prefix-map
-  "t" #'my-todays-pop
-  "p" #'my-radio-play 
-  "k" #'my-radio-stop)
+  "t" #'my-todays-pop)
 
 ;; =======================================
 ;;; Which-key lable
 ;; =======================================
 (which-key-add-keymap-based-replacements my-edit-prefix-map
-  "a" "lineAbove"
-  "c" "CurrentLine"
-  "l" "selLeft"
-  "r" "selRight"
-  "n" "Newline"
+  "a" "Above line"
+  "c" "Current Line"
+  "d" "Duplicate"
+  "l" "Left select"
+  "r" "Right select"
+  "R" "Regexp replace"
+  "n" "New line"
   "t" "Today"
   "w" "Wrap")
 
@@ -80,30 +83,29 @@
   "l" "Line"
   "o" "Outline"
   "m" "Imenu"
-  "r" "sRange"
+  "r" "Range"
   "w" "Weather")
 
-(which-key-add-keymap-based-replacements my-image-prefix-map
-  "i" "Insert"
-  "p" "Path"
+(which-key-add-keymap-based-replacements my-media-prefix-map
+  "P" "Play radio"
+  "S" "Stop radio"
+  "i" "Insert img"
+  "p" "Path img"
   "s" "Screenshot")
 
 (which-key-add-keymap-based-replacements my-emacs-prefix-map
   "b" "Bookmark"
   "c" "Capture"
   "e" "Edit"
-  "i" "Images"
+  "m" "Media"
   "r" "Register"
   "s" "Search"
-  "p" "Radio Play"
-  "k" "Radio Stop"
   "t" "Today's")
 
 ;; =======================================
 ;;; Key-binding
 ;; =======================================
-(keymap-set global-map "M-SPC" my-emacs-prefix-map)
-
+ (keymap-set global-map "M-SPC" my-emacs-prefix-map)
 
 
 (provide 'my-keys)

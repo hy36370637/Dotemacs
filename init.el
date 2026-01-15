@@ -96,8 +96,8 @@
   (setq ns-option-modifier 'super)
   (setq ns-command-modifier 'meta)
   ;; [오른쪽] Cmd(Meta) / Opt(Control)
-  (setq ns-right-command-modifier 'meta)
-  (setq ns-right-option-modifier 'control))
+  (setq ns-right-command-modifier 'meta)  ;'meta
+  (setq ns-right-option-modifier 'control)) ;'control
 
 ;; =======================================
 ;;; macOS Input Source Control (im-select)
@@ -155,6 +155,7 @@
    ("C-x m" . nil)
    ("C-x z" . nil)
    ("M-;" . comment-line)
+   ("<escape>" . keyboard-quit)
    ("C-\\" . my-pair-pairs-wrap)
    ("C-c 9" . toggle-frame-maximized)
    ("C-c 0" . toggle-frame-fullscreen)))
@@ -187,7 +188,7 @@
 ;;; Bookmark
 ;; =======================================
 (use-package bookmark
-  :ensure nil                               ; built in
+  :ensure nil
   :custom
   (bookmark-save-flag 1)
   (bookmark-sort-flag nil)
@@ -229,34 +230,29 @@
 (use-package emacs
   :if (display-graphic-p)
   :config
-  (set-face-attribute 'default nil :family "Menlo" :height 160)
-  (set-face-attribute 'fixed-pitch nil :family "Noto Sans Mono CJK KR")
-  (set-fontset-font t 'hangul (font-spec :family "Noto Sans KR"))
+  (set-face-attribute 'default nil :family "Menlo" :height 180)
+  (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 1.0)
+  (set-fontset-font t 'hangul (font-spec :family "Noto Sans Mono CJK KR"))
   (set-face-attribute 'variable-pitch nil :family "Noto Sans KR" :height 1.0)
-;;  (setq face-font-rescale-alist '(("Noto Sans KR" . 0.95)))
+  (setq face-font-rescale-alist '(("Noto Sans Mono CJK KR" . 0.95)
+                                  ("Noto Sans KR" . 0.95)))
   (add-hook 'org-mode-hook
             (lambda ()
               (variable-pitch-mode 1)
               (mapc (lambda (face)
                       (set-face-attribute face nil :inherit 'fixed-pitch))
-                    '(org-table org-code org-block org-checkbox org-date org-link)))))
+                    '(org-table 
+                      org-code 
+                      org-block 
+                      org-block-begin-line 
+                      org-block-end-line 
+                      org-checkbox 
+                      org-date 
+                      org-link)))))
 
 ;; =======================================
 ;;; Theme
 ;; =======================================
-;; (use-package emacs
-;;   :bind 
-;;   ("<f5>" . modus-themes-toggle)
-;;   :config
-;;   (setq modus-themes-italic-constructs t
-;;         modus-themes-bold-constructs nil
-;;         modus-themes-mode-line '(accented borderless padded)
-;;         modus-themes-completions '((t . (extrabold)))
-;;         modus-themes-prompts '(extrabold))
-;;   (setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
-
-;;   (load-theme 'modus-operandi-tinted t))
-
 (use-package ef-themes
   :ensure t
   :init
@@ -297,6 +293,7 @@
   :demand t
   :custom
   (history-length 10)
+;;  (savehist-additional-variables '(register-alist))
   :init (savehist-mode 1))
 
 (use-package saveplace
@@ -331,7 +328,7 @@
    ("<s-down>" . windmove-down)))
 
 ;; =======================================
-;;; windmove
+;;; winner
 ;; =======================================
 (use-package winner
   :ensure nil    ;built-in
