@@ -67,15 +67,15 @@
       (error "클립보드 이미지 없음 or pngpaste 실행 실패"))))
 
 ;;; ###autoload
-(defun my/org-bookmark-on-leave ()
-  "Auto-bookmarking modified Org buffer, excluding org-capture."
-  (when (and (derived-mode-p 'org-mode)
-             (not (bound-and-true-p org-capture-mode)) ; capture 모드 제외
-             buffer-file-name)
-    (let ((bname (concat "Auto_" (file-name-nondirectory buffer-file-name))))
-      (bookmark-set bname)
-      (bookmark-save)
-      (message "Auto-bookmark updated: %s" bname))))
+;; (defun my/org-bookmark-on-leave ()
+;;   "Auto-bookmarking modified Org buffer, excluding org-capture."
+;;   (when (and (derived-mode-p 'org-mode)
+;;              (not (bound-and-true-p org-capture-mode)) ; capture 모드 제외
+;;              buffer-file-name)
+;;     (let ((bname (concat "Auto_" (file-name-nondirectory buffer-file-name))))
+;;       (bookmark-set bname)
+;;       (bookmark-save)
+;;       (message "Auto-bookmark updated: %s" bname))))
 
 ;; (defun my-org-generate-toc ()
 ;;   "Auto-generate table of contents(PDF Export 제외)."
@@ -150,9 +150,9 @@
   :ensure nil
   :defer t
   :mode ("\\.org\\'" . org-mode)
-  :hook (;;(org-mode . (lambda () (text-scale-increase 2)))
-         (kill-buffer . my/org-bookmark-on-leave)
-         (after-save . my/org-bookmark-on-leave))
+  ;; :hook ((org-mode . (lambda () (text-scale-increase 2)))
+  ;;        (kill-buffer . my/org-bookmark-on-leave)
+  ;;        (after-save . my/org-bookmark-on-leave))
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture))
   :custom

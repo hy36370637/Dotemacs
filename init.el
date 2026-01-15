@@ -117,7 +117,8 @@
       (call-process my/im-select-path nil 0 nil "com.apple.keylayout.ABC"))))
 
 (add-hook 'focus-in-hook #'my/mac-switch-to-english)
-(add-hook 'focus-out-hook #'my/mac-switch-to-english) 
+(add-hook 'focus-out-hook #'my/mac-switch-to-english)
+
 ;; =======================================
 ;;; Emacs UI and behavior
 ;; =======================================
@@ -272,20 +273,6 @@
   (modus-themes-load-theme 'ef-owl))
 
 ;; =======================================
-;;; Helpful
-;; =======================================
-(use-package helpful
-  :bind
-  (("C-h f" . helpful-callable)   ; 함수, 매크로 등 호출 가능한 모든 것
-   ("C-h v" . helpful-variable)   ; 변수 설정 확인 시 유용
-   ("C-h k" . helpful-key)        ; 특정 키가 어떤 기능을 하는지 확인
-   ("C-h x" . helpful-command)    ; M-x 명령 확인
-   ("C-c C-d" . helpful-at-point) ; 현재 커서 아래의 심볼 바로 확인
-   ("C-h F" . helpful-function))  ; 호출 가능 여부와 상관없이 '함수'만 확인
-  :custom
-  (helpful-max-lines 50))
-
-;; =======================================
 ;;; Session and Place Persistence
 ;; =======================================
 (use-package savehist
@@ -426,4 +413,24 @@
   :bind (("C-=" . er/expand-region)
          ("C-M-=" . er/contract-region)))
 
+;; =======================================
+;;; eldoc
+;; =======================================
+(use-package eldoc
+  :ensure nil
+  :diminish eldoc-mode
+  :hook (emacs-lisp-mode . eldoc-mode))
 
+;; =======================================
+;;; Helpful
+;; =======================================
+(use-package helpful
+  :bind
+  (("C-h f" . helpful-callable)   ; 함수, 매크로 등 호출 가능한 모든 것
+   ("C-h v" . helpful-variable)   ; 변수 설정 확인 시 유용
+   ("C-h k" . helpful-key)        ; 특정 키가 어떤 기능을 하는지 확인
+   ("C-h x" . helpful-command)    ; M-x 명령 확인
+   ("C-c C-d" . helpful-at-point) ; 현재 커서 아래의 심볼 바로 확인
+   ("C-h F" . helpful-function))  ; 호출 가능 여부와 상관없이 '함수'만 확인
+  :custom
+  (helpful-max-lines 50))

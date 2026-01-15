@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t; -*-
 ;; .emacs.d/lisp/my-completion.el
+
+
 ;; ======================================
 ;;; vertico
 ;; ======================================
@@ -9,30 +11,6 @@
   (vertico-resize nil)
   (vertico-cycle t)
   (vertico-count 15))
-
-(use-package vertico-posframe
-  :ensure t
-  :after vertico
-  :custom
-  (vertico-posframe-poshandler #'posframe-poshandler-frame-center)
-  (vertico-posframe-width 100)
-  (vertico-posframe-border-width 2)
-  (vertico-posframe-parameters
-   '((left-fringe . 20)
-     (right-fringe . 20)))
-  :init
-  (defun my-vertico-posframe-update-border-color ()
-    "Apply current theme's highlight color to vertico-posframe border."
-    (when (facep 'vertico-posframe-border)
-      (set-face-attribute 'vertico-posframe-border nil 
-                          :background (face-attribute 'highlight :background nil t))))
-  :config
-  ;; Ensure center position
-  (setq vertico-posframe-poshandler #'posframe-poshandler-frame-center)
-  (vertico-posframe-mode 1)
-  ;; Apply initially and register hook
-  (my-vertico-posframe-update-border-color)
-  (add-hook 'after-load-theme-hook #'my-vertico-posframe-update-border-color))
 
 ;; ======================================
 ;;; marginalia
@@ -71,8 +49,17 @@
 				     consult--source-recent-file)))
 
 ;; =======================================
+;;; wgrep
+;; =======================================
+(use-package wgrep
+  :ensure nil
+  :config
+  (setq wgrep-auto-save-buffer t)
+  (setq wgrep-change-readonly-file t))
+
+;; =======================================
 ;;; embark
-;; ======================================-
+;; =======================================
 (use-package embark
   :ensure t
   :bind (("C-." . embark-act)         ;; 가장 기본적인 '행동'
@@ -80,7 +67,7 @@
          ("C-h B" . embark-bindings)) ;; 현재 모드에서 가능한 모든 키 바인딩 확인
   :init
   ;; 미니버퍼 내에서 도움말 역할을 하도록 설정
-(setq prefix-help-command #'embark-prefix-help-command))
+  (setq prefix-help-command #'embark-prefix-help-command))
 
 (use-package embark-consult
   :ensure t
@@ -88,34 +75,23 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-;; =======================================
-;;; electric-pair-mode
-;; ======================================-
-(use-package electric
-  :ensure nil
-  :init
-  (electric-pair-mode t)
-  :custom
-  ;; 모든 모드에서 공통으로 사용할 기본 괄호 설정
-  (electric-pair-pairs '((?\" . ?\")
-                         (?\' . ?\')
-                         (?\{ . ?\})
-                         (?\[ . ?\])
-                         (?\( . ?\))))
-  :hook
-  ;; Org-mode가 실행될 때만 실행될 로직
-  (org-mode . (lambda ()
-                (setq-local electric-pair-pairs 
-                            (append electric-pair-pairs
-                                    '((?* . ?*)   
-                                      (?/ . ?/)   
-                                      (?= . ?=)   
-                                      (?~ . ?~)   
-                                      (?+ . ?+)))))))
 
 ;; =======================================
-;;; 특수문자 입력
-;; ======================================-
+;;; electric-pair-mode
+;; =======================================
+;; (use-package electric
+;;   :ensure nil
+;;   :hook (prog-mode . electric-pair-mode)
+;;   :custom
+;;   (electric-pair-pairs '((?\" . ?\")
+;;                          (?\' . ?\')
+;;                          (?\{ . ?\})
+;;                          (?\[ . ?\])
+;;                          (?\( . ?\)))))
+
+;; =======================================
+;;; pair-pair-wrap
+;; =======================================
 ;;inspire https://protesilaos.com
 (defcustom my-pair-pairs
   '((?* :description "Bold"           :pair ?*)
@@ -144,13 +120,14 @@
      map)
    t))
 
-(defun my-pair-pairs-wrap (char)
+(defun my-pair-pairs-wrap (char &optional _target) ; _target 인자 추가 (Embark용)
   "Enclose the active region or the word at point with a pair of CHARs."
   (interactive "c기호 입력 (*, /, =, ~, (, [, <, > ...): ")
   (let* ((entry (assoc char my-pair-pairs))
          (pair-data (plist-get (cdr entry) :pair))
          (open (if (consp pair-data) (car pair-data) pair-data))
          (close (if (consp pair-data) (cdr pair-data) pair-data))
+         ;; Embark가 region 정보를 주면 그것을 우선 사용, 아니면 symbol 추출
          (bounds (if (use-region-p)
                      (cons (region-beginning) (region-end))
                    (or (bounds-of-thing-at-point 'symbol)
@@ -161,21 +138,26 @@
     (if (not pair-data)
         (message "Undefined symbol: %c" char)
       (save-excursion
-        ;; 닫는 기호 삽입
         (goto-char end)
         (insert (if (characterp close) (char-to-string close) close))
-        ;; 여는 기호 삽입
         (goto-char start)
         (insert (if (characterp open) (char-to-string open) open)))
       
-      ;; 커서 위치 조정 및 TAB 탈출 기능 활성화
       (unless (use-region-p) (goto-char (1+ end)))
       (my--enable-tab-escape)
       (message "'%s' 완료 (TAB으로 탈출)" (plist-get (cdr entry) :description)))))
 
+(with-eval-after-load 'embark
+  ;; 1. Wrap the symbol at point when pressing 'w' after 'C-.'
+  (define-key embark-symbol-map (kbd "w") #'my-pair-pairs-wrap)
+  ;; 2. Wrap the active region when pressing 'w' after 'C-.'
+  (define-key embark-region-map (kbd "w") #'my-pair-pairs-wrap)
+  ;; 3. Register 'w' for the general map as well
+  (define-key embark-general-map (kbd "w") #'my-pair-pairs-wrap))
+
 ;; =======================================
 ;;; Hunspell 설정
-;; ======================================-
+;; =======================================
 (defun my-korean-spell-check ()
   "Set hunspell as the default spell checker for Korean"
   (interactive)
@@ -197,7 +179,7 @@
 
 ;; =======================================
 ;;; completion-preview
-;; ======================================-
+;; =======================================
 (use-package completion-preview
   :ensure nil
   :init (global-completion-preview-mode)
@@ -205,16 +187,8 @@
   (push 'org-self-insert-command completion-preview-commands))
 
 ;; =======================================
-;;; eldoc
-;; ======================================-
-(use-package eldoc
-  :ensure nil
-  :diminish eldoc-mode
-  :hook (emacs-lisp-mode . eldoc-mode))
-
-;; =======================================
 ;;; abbrev
-;; ======================================-
+;; =======================================
 (use-package abbrev
   :ensure nil
   :hook (org-mode . abbrev-mode)
