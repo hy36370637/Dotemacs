@@ -53,7 +53,8 @@
   "m" my-media-prefix-map
   "r" #'jump-to-register
   "s" my-search-prefix-map
-  "t" #'my-todays-pop)
+  "t" #'my-todays-pop
+  "v" #'view-mode)
 
 ;; =======================================
 ;;; Which-key lable
@@ -100,8 +101,8 @@
   "m" "Media"
   "r" "Register"
   "s" "Search"
-  "t" "Today's")
-
+  "t" "Today's"
+  "v" "View-mode")
 ;; =======================================
 ;;; Key-binding
 ;; =======================================

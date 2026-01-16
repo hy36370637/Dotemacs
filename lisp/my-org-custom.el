@@ -233,14 +233,53 @@
 ;; ======================================
 (use-package org-appear
   :ensure t
-  :after org
   :hook (org-mode . org-appear-mode)
   :config
-  (setq org-hide-emphasis-markers t)
-  (setq org-appear-autoemphasis t   ;; *굵게*, /기울임/ 등
-        org-appear-autolinks t      ;; [[링크]]
-        org-appear-autosubmarkers t ;; x_2 (아래첨자)
-        org-appear-delay 0))        ;; 기다리지 않고 즉시(0초) 보여주기
+  (setq org-hide-emphasis-markers t     ;; 먼저 선언 필수
+	org-appear-autoemphasis t
+	org-appear-autolinks t
+        org-appear-autosubmarkers t
+        org-appear-delay 0.2))
+
+;; ======================================
+;;; visual-fill-column
+;; ======================================
+(use-package visual-fill-column
+  :ensure t
+  :hook (org-mode . visual-fill-column-mode)
+  :config
+  (setq visual-fill-column-width 110)      ; 본문 폭 (숫자가 작을수록 여백이 넓어짐)
+  (setq visual-fill-column-center-text t)) ; 텍스트를 화면 중앙에 배치
+
+;; ======================================
+;;; View Mode
+;; ======================================
+;; Enable read-only protection when entering view-mode
+(setq view-read-only t) 
+
+(defun my-view-mode-edit-instantly ()
+  "Disable view-mode immediately and switch to edit mode."
+  (interactive)
+  (when view-mode
+    (view-mode -1)
+    (message "Switched to Edit Mode")))
+
+;; View-mode Configuration
+(with-eval-after-load 'view
+  ;; Assign 'e' key for instant transition to editing
+  (define-key view-mode-map (kbd "e") 'my-view-mode-edit-instantly))
+
+;; Visual enhancements when toggling view-mode
+(add-hook 'view-mode-hook
+          (lambda ()
+            (if view-mode
+                (progn
+                  (hl-line-mode 1)               ; Enable line highlighting
+                  (setq-local cursor-type 'bar)  ; Change cursor to a bar for reading
+                  ;; Set a subtle, modern background for the active line
+                  (set-face-background 'hl-line "#2d333b"))
+              (hl-line-mode -1)                 ; Disable line highlighting
+              (setq-local cursor-type 'box))))   ; Restore box cursor for editing
 
 ;; ======================================
 ;;; ox-latex
@@ -268,7 +307,7 @@
   (setq denote-directory (expand-file-name "denote" org-directory))
   (setq denote-file-type nil)
   (unless (file-exists-p denote-directory)
-    (make-directory denote-directory t)))  
+    (make-directory denote-directory t)))
 
 ;; ======================================
 ;;; ox-md
