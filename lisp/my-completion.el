@@ -124,15 +124,11 @@
     (if (not pair-data)
         (message "Undefined symbol: %c" char)
       (save-excursion
-        ;; 1. 뒤쪽 닫는 기호 삽입
-        (goto-char end)
+        (goto-char end)              ;뒤쪽 닫는 기호 삽입
         (insert (if (characterp close) (char-to-string close) close))
-        ;; 2. 앞쪽 여는 기호 삽입
-        (goto-char start)
+        (goto-char start)            ;앞쪽 여는 기호 삽입
         (insert (if (characterp open) (char-to-string open) open)))
-      
-      ;; 3. 커서 위치 조정
-      (if (eq char ?p)
+      (if (eq char ?p)               ;커서 위치 조정
           (progn 
             (goto-char start)
             (forward-line 1)
@@ -145,8 +141,8 @@
 
 (with-eval-after-load 'embark
   (define-key embark-symbol-map (kbd "w") #'my-pair-pairs-wrap)
-  (define-key embark-region-map (kbd "w") #'my-pair-pairs-wrap))
-  ;; (define-key embark-general-map (kbd "w") #'my-pair-pairs-wrap))
+  (define-key embark-region-map (kbd "w") #'my-pair-pairs-wrap)
+  (define-key embark-general-map (kbd "w") #'my-pair-pairs-wrap))
 
 ;; =======================================
 ;;; Hunspell 설정

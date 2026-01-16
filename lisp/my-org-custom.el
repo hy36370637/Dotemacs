@@ -117,28 +117,8 @@
 ;;         (insert "\n\n"))))
 ;;   (message "목차 생성 완료"))
 
-;; (defun my-set-latex-cover-image ()
-;;   "표지 이미지를 선택하고 LaTeX title-command를 설정합니다. 이미지 너비를 지정할 수 있습니다."
-;;   (interactive)
-;;   (let* ((cover-img-dir (expand-file-name "img/imgCover/" org-directory))
-;;          (selected-file (read-file-name "표지 이미지 선택: " cover-img-dir nil t))
-;;          ;; 너비를 입력받되, 기본값으로 14.7cm를 제시합니다.
-;;          (img-width (read-string "이미지 너비 (기본 14.7cm): " nil nil "14.7cm")))
-;;     (when (and selected-file (not (file-directory-p selected-file)))
-;;       ;; 버퍼 로컬 변수로 설정 (현재 파일에만 적용)
-;;       (make-variable-buffer-local 'org-latex-title-command)
-      
-;;       ;; \vspace를 제거하고 \vfill을 사용하여 상하 균형을 맞춥니다.
-;;       (setq org-latex-title-command
-;;             (format "\\begin{titlepage}\n\\centering\n\\vfill\n\\includegraphics[width=%s]{%s}\n\\vfill\n\\end{titlepage}\n"
-;;                     img-width
-;;                     (file-relative-name selected-file)))
-;;       (message "LaTeX 표지 설정 완료: %s (너비: %s)" 
-;;                (file-name-nondirectory selected-file) 
-;;                img-width))))
-
 ;; (defun cal-fixLayout () 
-;;   "Fix calendar layout for monospace Korean font."
+;;   "Fix calendar layout"
 ;;   (face-remap-add-relative 'default 
 ;;                            '(:family "Noto Sans Mono CJK KR" :height 160)))
 
@@ -174,8 +154,8 @@
   (org-indent-indentation-per-level 2)
   (org-edit-src-content-indentation 0)
   (org-image-actual-width 400)
-  (org-startup-with-drawer t)          ; 파일을 열 때 Drawer를 자동으로 접음
-  (org-startup-folded t)               ; 헤드라인도 기본적으로 접음
+  (org-startup-with-drawer t)          ;파일을 열 때 Drawer를 자동으로 접음
+  (org-startup-folded t)               ;헤드라인도 기본적으로 접음
   (org-log-into-drawer t)
   (org-log-done 'time)
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
@@ -244,7 +224,23 @@
 ;; ======================================
 (use-package org-superstar
   :ensure nil
-  :hook (org-mode . org-superstar-mode))
+  :hook (org-mode . org-superstar-mode)
+  :config
+  (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "▶" "▷" "►")))
+
+;; ======================================
+;;; ox-appear
+;; ======================================
+(use-package org-appear
+  :ensure t
+  :after org
+  :hook (org-mode . org-appear-mode)
+  :config
+  (setq org-hide-emphasis-markers t)
+  (setq org-appear-autoemphasis t   ;; *굵게*, /기울임/ 등
+        org-appear-autolinks t      ;; [[링크]]
+        org-appear-autosubmarkers t ;; x_2 (아래첨자)
+        org-appear-delay 0))        ;; 기다리지 않고 즉시(0초) 보여주기
 
 ;; ======================================
 ;;; ox-latex
@@ -277,9 +273,9 @@
 ;; ======================================
 ;;; ox-md
 ;; ======================================
-(use-package ox-md
-  :ensure nil
-  :after org)
+;; (use-package ox-md
+;;   :ensure nil
+;;   :after org)
 
 ;; ======================================
 ;;; Performance Optimizations
