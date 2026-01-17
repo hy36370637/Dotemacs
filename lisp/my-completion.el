@@ -45,8 +45,10 @@
          ("M-s o" . consult-outline)
 	 ("M-g M-g" . consult-goto-line))
   :config
+  (setq consult-preview-key "M-.") 'default 'any
   (setq consult-buffer-sources (list consult--source-buffer
 				     consult--source-recent-file)))
+
 
 ;; =======================================
 ;;; wgrep

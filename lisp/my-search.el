@@ -6,6 +6,7 @@
 (require 'url)
 (require 'dom)
 (require 'cl-lib)
+(require 'consult)
 
 ;; ======================================
 ;;; Configuration
@@ -16,6 +17,17 @@
     ("Google" . "https://www.google.com/search?q=%s")
     ("Namuwiki" .  "https://namu.wiki/w/%s"))
   "Each element is of the form (NAME . URL/TYPE).")
+
+(defvar my-docs-root "~/Dropbox/Docs/" "Docs root")
+
+(defvar my-search-path-targets
+  '(("Docs (All)"    . "~/Dropbox/Docs/")
+    ("Org Files"     . "~/Dropbox/Docs/org/")
+    ("PDF Files"     . "~/Dropbox/Docs/pdf/")      ;find err
+    ("Notes/Person"  . "~/Dropbox/Docs/Person/")
+    ("Denote"        . "~/Dropbox/Docs/org/denote/")
+    ("Emacs Config"  . "~/.emacs.d/"))
+  "List of main directories for ripgrep search.")
 
 ;; ======================================
 ;;; Helper Functions
@@ -35,9 +47,15 @@
       (call-process "open" nil 0 nil url)
     (browse-url url)))
 
+(defun my--ripgrep-in-dir (dir)
+  "Helper to run consult-ripgrep in a specific DIR."
+  (let ((default-directory (expand-file-name dir)))
+    (consult-ripgrep default-directory)))
+
 ;; ======================================
 ;;; Main Function
 ;; ======================================
+;;; ###autoload
 (defun my-search-in-range ()
   "Search within the selected range using various engines."
   (interactive)
@@ -53,16 +71,33 @@
       (my--open-url url)
     (message "Please select the text")))
 
-(defun my-consult-ripgrep-selected-dir ()
-  "Search for a string in a directory using consult-ripgrep."
+(defun my-search-unified ()
+  "Search content in a selected directory from `my-search-path-targets`."
   (interactive)
-  (let* ((default-dir "~/Dropbox/Docs/org/")
-         (selected-dir (read-directory-name "Select directory to search: " default-dir default-dir t)))
-    (consult-ripgrep selected-dir)))
+  (let* ((choice (completing-read "Search Content in: " my-search-path-targets))
+         (path (cdr (assoc choice my-search-path-targets))))
+    (my--ripgrep-in-dir path)))
+
+(defun my-consult-ripgrep-docs ()
+  "Search content in the entire personal documentation root."
+  (interactive)
+  (my--ripgrep-in-dir my-docs-root))
+
+(defun my-consult-search-emacs-config ()
+  "Search content within Emacs configuration files."
+  (interactive)
+  (my--ripgrep-in-dir "~/.emacs.d/"))
+
+(defun my-consult-ripgrep-selected-dir ()
+  "Search in a directory manually selected by the user."
+  (interactive)
+  (let ((selected-dir (read-directory-name "Select directory: " "~/Dropbox/Docs/org/")))
+    (my--ripgrep-in-dir selected-dir)))
 
 ;; ======================================
 ;;; Weather Search Functions
 ;; ======================================
+;;; ### autoload
 (defun my--parse-weather-data (dom city)
   "Extract weather data from Naver's DOM and visualize it in a dedicated buffer."
   (let* ((buffer-name (format "*날씨: %s*" city))
@@ -131,6 +166,7 @@
         (setq-local truncate-lines t))
       (pop-to-buffer (current-buffer)))))
 
+;;; ###autoload
 (defun my-naver-weather-search (city)
   "Search Naver weather information for CITY."
   (let ((encoded-city (url-hexify-string city)))

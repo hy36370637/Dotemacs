@@ -21,10 +21,10 @@
 (defvar-keymap my-search-prefix-map
   :name "Search"
   "f" #'consult-find
-  "g" #'my-consult-ripgrep-selected-dir
-  "G" #'consult-grep
+  "g" #'consult-grep
   "l" #'consult-line
   "o" #'consult-outline
+  "u" #'my-search-unified
   "m" #'consult-imenu
   "r" #'my-search-in-range
   "w" #'my-search-weather)
@@ -68,10 +68,10 @@
 
 (which-key-add-keymap-based-replacements my-search-prefix-map
   "f" "Find"
-  "g" "ripGrep"
-  "G" "Grep"
+  "g" "Grep"
   "l" "Line"
   "o" "Outline"
+  "u" "Unified Search"
   "m" "Imenu"
   "r" "Range"
   "w" "Weather")
