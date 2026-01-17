@@ -26,7 +26,7 @@
   "o" #'consult-outline
   "u" #'my-search-unified
   "m" #'consult-imenu
-  "r" #'my-search-in-range
+  ;; "r" #'my-search-in-range
   "w" #'my-search-weather)
 
 (defvar-keymap my-media-prefix-map
@@ -73,7 +73,7 @@
   "o" "Outline"
   "u" "Unified Search"
   "m" "Imenu"
-  "r" "Range"
+  ;; "r" "Range"
   "w" "Weather")
 
 (which-key-add-keymap-based-replacements my-media-prefix-map

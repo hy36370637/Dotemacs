@@ -18,12 +18,12 @@
     ("Namuwiki" .  "https://namu.wiki/w/%s"))
   "Each element is of the form (NAME . URL/TYPE).")
 
-(defvar my-docs-root "~/Dropbox/Docs/" "Docs root")
+(defvar my-docs-root "~/Dropbox/Docs/" "Root directory for documentation files.")
 
 (defvar my-search-path-targets
   '(("Docs (All)"    . "~/Dropbox/Docs/")
     ("Org Files"     . "~/Dropbox/Docs/org/")
-    ("PDF Files"     . "~/Dropbox/Docs/pdf/")      ;find err
+    ;; ("PDF Files"     . "~/Dropbox/Docs/pdf/")      ;find err
     ("Notes/Person"  . "~/Dropbox/Docs/Person/")
     ("Denote"        . "~/Dropbox/Docs/org/denote/")
     ("Emacs Config"  . "~/.emacs.d/"))
@@ -42,13 +42,13 @@
           (format url-template (url-hexify-string query)))))))
 
 (defun my--open-url (url)
-  "Open the specified URL in the default web browser."
+  "Open URL in the default web browser."
   (if (string-prefix-p "dict://" url)
       (call-process "open" nil 0 nil url)
     (browse-url url)))
 
 (defun my--ripgrep-in-dir (dir)
-  "Helper to run consult-ripgrep in a specific DIR."
+  "Run consult-ripgrep in DIR."
   (let ((default-directory (expand-file-name dir)))
     (consult-ripgrep default-directory)))
 
@@ -56,20 +56,20 @@
 ;;; Main Function
 ;; ======================================
 ;;; ###autoload
-(defun my-search-in-range ()
-  "Search within the selected range using various engines."
-  (interactive)
-  (if-let* ((query (and (use-region-p)
-                        (buffer-substring-no-properties 
-                         (region-beginning) (region-end))))
-            ((not (string-empty-p query)))
-            (engine (completing-read 
-                     "Search engine: " 
-                     (mapcar #'car my-search-engines)))
-            (url (my--get-search-url engine query))
-            ((not (string-empty-p url))))
-      (my--open-url url)
-    (message "Please select the text")))
+;; (defun my-search-in-range ()
+;;   "Search within the selected range using various engines."
+;;   (interactive)
+;;   (if-let* ((query (and (use-region-p)
+;;                         (buffer-substring-no-properties 
+;;                          (region-beginning) (region-end))))
+;;             ((not (string-empty-p query)))
+;;             (engine (completing-read 
+;;                      "Search engine: " 
+;;                      (mapcar #'car my-search-engines)))
+;;             (url (my--get-search-url engine query))
+;;             ((not (string-empty-p url))))
+;;       (my--open-url url)
+;;     (message "Please select the text")))
 
 (defun my-search-unified ()
   "Search content in a selected directory from `my-search-path-targets`."
@@ -78,26 +78,26 @@
          (path (cdr (assoc choice my-search-path-targets))))
     (my--ripgrep-in-dir path)))
 
-(defun my-consult-ripgrep-docs ()
-  "Search content in the entire personal documentation root."
-  (interactive)
-  (my--ripgrep-in-dir my-docs-root))
+;; (defun my-consult-ripgrep-docs ()
+;;   "Search content in the entire personal documentation root."
+;;   (interactive)
+;;   (my--ripgrep-in-dir my-docs-root))
 
-(defun my-consult-search-emacs-config ()
-  "Search content within Emacs configuration files."
-  (interactive)
-  (my--ripgrep-in-dir "~/.emacs.d/"))
+;; (defun my-consult-search-emacs-config ()
+;;   "Search content within Emacs configuration files."
+;;   (interactive)
+;;   (my--ripgrep-in-dir "~/.emacs.d/"))
 
-(defun my-consult-ripgrep-selected-dir ()
-  "Search in a directory manually selected by the user."
-  (interactive)
-  (let ((selected-dir (read-directory-name "Select directory: " "~/Dropbox/Docs/org/")))
-    (my--ripgrep-in-dir selected-dir)))
+;; (defun my-consult-ripgrep-selected-dir ()
+;;   "Search in a directory manually selected by the user."
+;;   (interactive)
+;;   (let ((selected-dir (read-directory-name "Select directory: " "~/Dropbox/Docs/org/")))
+;;     (my--ripgrep-in-dir selected-dir)))
 
 ;; ======================================
 ;;; Weather Search Functions
 ;; ======================================
-;;; ### autoload
+;;; ###autoload
 (defun my--parse-weather-data (dom city)
   "Extract weather data from Naver's DOM and visualize it in a dedicated buffer."
   (let* ((buffer-name (format "*날씨: %s*" city))
@@ -196,7 +196,7 @@
 ;; ======================================
 (with-eval-after-load 'embark
   (defun my-embark-web-search (query)
-    "Select a search engine and execute a search based on the QUERY provided by Embark."
+    "Execute web search for QUERY via Embark."
     (interactive "sSearch query: ")
     (let* ((engine (completing-read "Search engine: " (mapcar #'car my-search-engines)))
            (url (my--get-search-url engine query)))
@@ -204,20 +204,12 @@
           (my--open-url url)
         (message "Invalid search query or URL."))))
 
-  ;; (defun my-embark-weather-search (city)
-  ;;   "Search for weather using the city name provided by Embark."
-  ;;   (interactive "sCity: ")
-  ;;   (my-naver-weather-search city))
-
-  ;; identifier-map works on words; region-map works on selected blocks.
   (let ((target-maps (list embark-identifier-map embark-region-map)))
     (dolist (map target-maps)
       (define-key map (kbd "S") #'my-embark-web-search)))
-  ;;    (define-key map (kbd "W") #'my-embark-weather-search)))
 
-  ;; Add descriptions to the Embark menu for better readability
   (add-to-list 'embark-keymap-alist '(my-search)))
-  ;; (add-to-list 'embark-keymap-alist '(my-search . my-embark-web-search)))
+
 
 
 (provide 'my-search)

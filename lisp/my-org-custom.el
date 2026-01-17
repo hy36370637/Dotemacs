@@ -149,7 +149,8 @@
   :ensure nil
   :defer t
   :mode ("\\.org\\'" . org-mode)
-  :hook (org-mode . my-org-latex-prettify-symbols)
+  :hook ((org-mode . my-org-latex-prettify-symbols)
+	 (org-mode . (lambda () (text-scale-increase 2))))
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture))
   :custom
@@ -157,12 +158,11 @@
   (org-startup-indented t)             ;시작때 indent mode enable
   (org-startup-with-inline-images nil)
   (org-startup-folded t)
+  (org-startup-with-drawer t)          ;파일을 열 때 Drawer를 자동으로 접음
   (org-adapt-indentation nil)          ;indent의 실제 공백 nil 
   (org-indent-indentation-per-level 2)
   (org-edit-src-content-indentation 0)
   (org-image-actual-width 400)
-  (org-startup-with-drawer t)          ;파일을 열 때 Drawer를 자동으로 접음
-  (org-startup-folded t)               ;헤드라인도 기본적으로 접음
   (org-log-into-drawer t)
   (org-log-done 'time)
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
@@ -228,48 +228,6 @@
 	org-appear-autolinks t
         org-appear-autosubmarkers t
         org-appear-delay 0.2))
-
-;; ======================================
-;;; visual-fill-column
-;; ======================================
-;; (use-package visual-fill-column
-;;   :ensure t
-;;   :hook (org-mode . visual-fill-column-mode)
-;;   :config
-;;   (setq visual-fill-column-width 140)
-;;   (setq visual-fill-column-center-text t)
-
-;;   ;; Org-capture 창에서는 visual-fill-column을 비활성화
-;;   (add-hook 'org-capture-mode-hook (lambda () (visual-fill-column-mode -1))))
-
-;; ======================================
-;;; View Mode
-;; ======================================
-;; Enable read-only protection when entering view-mode
-(setq view-read-only t) 
-
-(defun my-view-mode-edit-instantly ()
-  "Disable view-mode immediately and switch to edit mode."
-  (interactive)
-  (when view-mode
-    (view-mode -1)
-    (message "Switched to Edit Mode")))
-
-;; View-mode Configuration
-(with-eval-after-load 'view
-  ;; Assign 'e' key for instant transition to editing
-  (define-key view-mode-map (kbd "e") 'my-view-mode-edit-instantly))
-
-;; Visual enhancements when toggling view-mode
-(add-hook 'view-mode-hook
-          (lambda ()
-            (if view-mode
-                (progn
-                  (hl-line-mode 1)               ; Enable line highlighting
-                  (setq-local cursor-type 'bar))  ; Change cursor to a bar for reading
-	      	  ;; (set-face-background 'hl-line (face-background color-lighten)))
-              (hl-line-mode -1)                 ; Disable line highlighting
-              (setq-local cursor-type 'box))))   ; Restore box cursor for editing
 
 ;; ======================================
 ;;; ox-latex
