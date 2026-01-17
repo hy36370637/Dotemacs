@@ -5,29 +5,24 @@
 ;; =======================================
 (defvar-keymap my-edit-prefix-map
   :name "Edit"
+  "r" #'my-query-replace-regexp-dwim
+  "t" #'my-today-stamp
+  "w" #'my-pair-pairs-wrap)
+
+(defvar-keymap my-line-prefix-map
+  :name "Line"
   "a" #'my-newline-above
   "c" #'my-select-current-line
   "d" #'my-duplicate-dwim
   "l" #'my-select-line-left
   "r" #'my-select-line-right
-  "R" #'my-query-replace-regexp-dwim
-  "n" #'my-newline
-  "t" #'my-today-stamp
-  "w" #'my-pair-pairs-wrap)
-
-(defvar-keymap my-capture-prefix-map
-  :name "Capture"
-  "c" #'org-capture
-  "d" (lambda () (interactive) (org-capture nil "d"))
-  "t" (lambda () (interactive) (org-capture nil "t"))
-  "r" (lambda () (interactive) (org-capture nil "r"))
-  "m" (lambda () (interactive) (org-capture nil "m")))
+  "n" #'my-newline)
 
 (defvar-keymap my-search-prefix-map
   :name "Search"
-  "c" #'my-consult-ripgrep-selected-dir
   "f" #'consult-find
-  "g" #'consult-grep
+  "g" #'my-consult-ripgrep-selected-dir
+  "G" #'consult-grep
   "l" #'consult-line
   "o" #'consult-outline
   "m" #'consult-imenu
@@ -47,9 +42,8 @@
 ;; =======================================
 (defvar-keymap my-emacs-prefix-map
   :name "Master"
-  "b" #'consult-bookmark
-  "c" my-capture-prefix-map
   "e" my-edit-prefix-map
+  "l" my-line-prefix-map
   "m" my-media-prefix-map
   "r" #'jump-to-register
   "s" my-search-prefix-map
@@ -60,27 +54,22 @@
 ;;; Which-key lable
 ;; =======================================
 (which-key-add-keymap-based-replacements my-edit-prefix-map
+  "r" "Regexp replace"
+  "t" "Today stamp"
+  "w" "pairs Wrap")
+
+(which-key-add-keymap-based-replacements my-line-prefix-map
   "a" "Above line"
   "c" "Current Line"
   "d" "Duplicate"
   "l" "Left select"
   "r" "Right select"
-  "R" "Regexp replace"
-  "n" "New line"
-  "t" "Today"
-  "w" "Wrap")
-
-(which-key-add-keymap-based-replacements my-capture-prefix-map
-  "c" "Capture Menu"
-  "d" "Daily"
-  "t" "Tasks"
-  "r" "Reading"
-  "m" "경조사")
+  "n" "New line")
 
 (which-key-add-keymap-based-replacements my-search-prefix-map
-  "c" "ripgrep"
   "f" "Find"
-  "g" "Grep"
+  "g" "ripGrep"
+  "G" "Grep"
   "l" "Line"
   "o" "Outline"
   "m" "Imenu"
@@ -95,14 +84,14 @@
   "s" "Screenshot")
 
 (which-key-add-keymap-based-replacements my-emacs-prefix-map
-  "b" "Bookmark"
-  "c" "Capture"
   "e" "Edit"
+  "l" "Line"
   "m" "Media"
   "r" "Register"
   "s" "Search"
   "t" "Today's"
-  "v" "View-mode")
+  "v" "Viewer")
+
 ;; =======================================
 ;;; Key-binding
 ;; =======================================
@@ -110,4 +99,4 @@
 
 
 (provide 'my-keys)
-;;; my-keys end here
+;;; my-keys.el end here

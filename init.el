@@ -152,22 +152,24 @@
   ;; (setq enable-recursive-minibuffers t)
   ;; (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
   :bind
-  (("C-x f" . nil)
+  (("C-x f" . toggle-frame-fullscreen)
    ("C-x m" . nil)
    ("C-x z" . nil)
    ("M-;" . comment-line)
    ("<escape>" . keyboard-quit)
    ("C-\\" . my-pair-pairs-wrap)
-   ("C-c 9" . toggle-frame-maximized)
-   ("C-c 0" . toggle-frame-fullscreen)))
+   ("C-x <down>" . shrink-window)
+   ("C-x <up>" . enlarge-window)
+   ("C-x <left>" . shrink-window-horizontally)
+   ("C-x <right>" . enlarge-window-horizontally)))
 
 (use-package time
   :ensure nil
   :custom
-  (display-time-24hr-format t)                      ; 24-hour system
+  (display-time-24hr-format t)      ; 24-hour system
   (display-time-format "%Y-%m-%d (%a) %H:%M")
   (display-time-day-and-date t)
-  (display-time-load-average nil))                  ; mode-line-misc-info average nil
+  (display-time-load-average nil))  ; mode-line-misc-info average nil
 
 ;; ========================================================
 ;; Window Management (Macbook Air 13")
@@ -254,14 +256,16 @@
 ;; =======================================
 ;;; Theme
 ;; =======================================
+(use-package modus-themes
+  :ensure t) ;; 내장 버전 대신 최신 버전을 설치해서 사용
+
 (use-package ef-themes
   :ensure t
   :init
   (ef-themes-take-over-modus-themes-mode 1)
   :bind
   (("<f5>" . modus-themes-rotate)
-   ("C-<f5>" . modus-themes-select)
-   ("M-<f5>" . modus-themes-load-random))
+   ("C-<f5>" . modus-themes-select))
   :config
   ;; All customisations here.
   (setq modus-themes-mixed-fonts t)
@@ -434,3 +438,29 @@
    ("C-h F" . helpful-function))  ; 호출 가능 여부와 상관없이 '함수'만 확인
   :custom
   (helpful-max-lines 50))
+
+;; =======================================
+;;; Manual Session Management
+;; =======================================
+(use-package desktop
+  :ensure nil
+  :custom
+  (desktop-path (list user-emacs-directory))
+  (desktop-save 'if-exists)
+  (desktop-buffers-not-to-save "\\(^\\*\\|\\.log$\\)")
+  (desktop-save-mode nil) 
+  :config
+  (defun my/desktop-save-at-point ()
+    "Save all current buffers and window configurations."
+    (interactive)
+    (desktop-save user-emacs-directory)
+    (message "✅ [Layout Saved] Current configuration has been recorded."))
+
+  (defun my/desktop-read-at-point ()
+    "Restore the saved desktop session."
+    (interactive)
+    (desktop-read user-emacs-directory)
+    (message "✅ [Layout Restored] Previous session has been restored."))
+  :bind
+  (("C-x r S" . my/desktop-save-at-point)  ; Save Layout
+   ("C-x r R" . my/desktop-read-at-point))) ; Restore Layout

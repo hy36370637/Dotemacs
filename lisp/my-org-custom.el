@@ -20,13 +20,13 @@
 
 (defun my-org-latex-prettify-symbols ()
   "Prettify specific LaTeX spacing commands in Org mode."
-  ;; setq-local을 사용하여 현재 버퍼에만 적용되도록 함
+  ;; Use setq-local to ensure settings apply only to the current buffer
   (setq-local prettify-symbols-alist
               '(("#+LATEX: \\medskip" . "⁘")
                 ("#+LATEX: \\bigskip" . "⫶")
                 ("#+LATEX: \\vspace{\\baselineskip}" . "↕")))
   (prettify-symbols-mode 1)
-  ;; 설정 즉시 화면에 반영되도록 강제 리프레시
+  ;; Force a font-lock refresh to apply changes immediately
   (when (fboundp 'font-lock-flush)
     (font-lock-flush)))
 
@@ -35,7 +35,7 @@
   "Insert and display image"
   (interactive)
   (let* ((img-base-dir (expand-file-name "img/" org-directory))
-         (selected-file (read-file-name "이미지 선택: " img-base-dir nil t)))
+         (selected-file (read-file-name "Select image: " img-base-dir nil t)))
     (when (and selected-file (not (file-directory-p selected-file)))
       (insert (format "[[file:%s]]\n" selected-file))
       (org-display-inline-images))))
@@ -45,7 +45,7 @@
   "Insert relative image path"
   (interactive)
   (let* ((base-dir (expand-file-name "img/" org-directory))
-         (selected-file (read-file-name "img 선택: " base-dir nil t))
+         (selected-file (read-file-name "Select image: " base-dir nil t))
          (relative-path (when (and selected-file (file-exists-p selected-file))
                           (file-relative-name selected-file))))
     (if relative-path
@@ -59,24 +59,31 @@
   "pngpaste executable path.")
 ;;; ###autoload
 (defun my-org-screenshot (chdir name)
-  "Insert screenshot from clipboard"
+  "Insert a screenshot from the clipboard into the current Org buffer."
   (interactive 
    (let* ((default-dir (file-name-concat org-directory "img/"))
-          (chosen-dir (read-directory-name "저장 폴더: " default-dir default-dir t))
-          (default-name (format-time-string "%Y%m%d_%H%M%S")) ;; 현재 날짜_시간 생성
-          (file-name (read-string (format "파일 이름 입력(기본값 %s, 확장자 제외): " default-name) 
+          ;; Prompt user for the target directory
+          (chosen-dir (read-directory-name "Target directory: " default-dir default-dir t))
+          ;; Generate default filename based on current timestamp
+          (default-name (format-time-string "%Y%m%d_%H%M%S"))
+          ;; Prompt user for filename (defaults to timestamp)
+          (file-name (read-string (format "Enter filename (default %s, exclude extension): " default-name) 
                                   nil nil default-name)))
      (list chosen-dir file-name)))  
   (let* ((pngpaste-bin (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste"))
          (path (expand-file-name (concat name ".png") chdir)))
+    ;; Ensure the target directory exists
     (make-directory chdir t)
+    ;; Attempt to paste from clipboard using pngpaste
     (if (zerop (shell-command (format "%s %s" pngpaste-bin (shell-quote-argument path))))
         (progn
+          ;; Insert Org-mode syntax with LaTeX attributes and a caption
           (insert (format "\n#+ATTR_LATEX: :width 0.5\\textwidth\n#+CAPTION: %s\n[[file:%s]]\n" 
                           name path))
+          ;; Refresh inline images display
           (org-display-inline-images)
-          (message "이미지 저장 성공: %s" path))
-      (error "클립보드 이미지 없음 or pngpaste 실행 실패"))))
+          (message "Image saved successfully: %s" path))
+      (error "No image in clipboard or pngpaste execution failed"))))
 
 ;;; ###autoload
 ;; (defun my/org-bookmark-on-leave ()
@@ -200,25 +207,6 @@
 	   ,(concat "| %^{구분} | %^{일자|" (format-time-string "%Y.%m.%d") "} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
            :prepend nil))))
 
-;; (defun my-capture-cReading-access ()
-;;   "Access cReading.org right away"
-;;   (interactive)
-;;   (require 'org)
-;;   (require 'org-capture)
-;;   (let ((org-capture-templates
-;;          `(("r" "Reading" entry
-;;             (file ,(my-org-person-file-path "cReading.org"))
-;;             "* %^{제목}\n%^{내용}\n기록일: %U"
-;;             :empty-lines-after 1
-;;             :immediate-finish t)))
-;;         (org-capture-after-finalize-hook
-;;          (list (lambda ()
-;;                  (when (get-buffer "*Org Select*")
-;;                    (kill-buffer "*Org Select*"))
-;;                  (when (get-buffer "CAPTURE-cReading.org")
-;;                    (kill-buffer "CAPTURE-cReading.org"))))))
-;;     (org-capture nil "r")))
-
 ;; ======================================
 ;;; org-superstar
 ;; ======================================
@@ -244,12 +232,15 @@
 ;; ======================================
 ;;; visual-fill-column
 ;; ======================================
-(use-package visual-fill-column
-  :ensure t
-  :hook (org-mode . visual-fill-column-mode)
-  :config
-  (setq visual-fill-column-width 110)      ; 본문 폭 (숫자가 작을수록 여백이 넓어짐)
-  (setq visual-fill-column-center-text t)) ; 텍스트를 화면 중앙에 배치
+;; (use-package visual-fill-column
+;;   :ensure t
+;;   :hook (org-mode . visual-fill-column-mode)
+;;   :config
+;;   (setq visual-fill-column-width 140)
+;;   (setq visual-fill-column-center-text t)
+
+;;   ;; Org-capture 창에서는 visual-fill-column을 비활성화
+;;   (add-hook 'org-capture-mode-hook (lambda () (visual-fill-column-mode -1))))
 
 ;; ======================================
 ;;; View Mode
@@ -275,9 +266,8 @@
             (if view-mode
                 (progn
                   (hl-line-mode 1)               ; Enable line highlighting
-                  (setq-local cursor-type 'bar)  ; Change cursor to a bar for reading
-                  ;; Set a subtle, modern background for the active line
-                  (set-face-background 'hl-line "#2d333b"))
+                  (setq-local cursor-type 'bar))  ; Change cursor to a bar for reading
+	      	  ;; (set-face-background 'hl-line (face-background color-lighten)))
               (hl-line-mode -1)                 ; Disable line highlighting
               (setq-local cursor-type 'box))))   ; Restore box cursor for editing
 
