@@ -288,15 +288,15 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
   (format "Copyright © 1996-%s,  Free Software Foundation, Inc."
           (format-time-string "%Y")))
 
-(defun my-Ddays ()
-  "Calculate days until/since 2024-12-31."
-  (let ((diff-days (floor (/ (float-time (time-subtract (current-time)
-                                                        (encode-time 0 0 0 16 12 2025)))
-;;                                                      (encode-time 0 0 0 31 12 2024)))
-                             86400))))
-    (if (> diff-days 0)
-        (format "/  %d일 경과" diff-days)
-      (format "/ D-day %d일前" (- diff-days)))))
+;; (defun my-Ddays ()
+;;   "Calculate days until/since 2024-12-31."
+;;   (let ((diff-days (floor (/ (float-time (time-subtract (current-time)
+;;                                                         (encode-time 0 0 0 16 12 2025)))
+;; ;;                                                      (encode-time 0 0 0 31 12 2024)))
+;;                              86400))))
+;;     (if (> diff-days 0)
+;;         (format "/  %d일 경과" diff-days)
+;;       (format "/ D-day %d일前" (- diff-days)))))
 
 (defun my-format-agenda-string ()
   "Get formatted 3-day agenda with bullets, removing trailing empty lines."
@@ -317,7 +317,7 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
   (let* ((buffer (get-buffer-create "*Today info*"))
          (current-date (format-time-string "● 오늘: %Y-%m-%d (%a) /"))
          (lunar-date (my-lunar-date-string))
-         (d-day (my-Ddays))
+         ;; (d-day (my-Ddays))
          (weather-data (my--get-weather-info-sync))
          (today-weather (when weather-data (car weather-data)))
          (weekly-weather (when weather-data (cdr weather-data)))
@@ -339,7 +339,8 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
         (insert indent-8 (my-emacs-copyright) "\n")
         
         ;; Date (without inline weather)
-        (insert indent-4 current-date lunar-date " " d-day "\n")
+        ;; (insert indent-4 current-date lunar-date " " d-day "\n")
+        (insert indent-4 current-date lunar-date "\n")
         
         ;; Weather Section
         (when (and today-weather weekly-weather)

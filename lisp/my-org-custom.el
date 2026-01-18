@@ -11,6 +11,10 @@
 (defvar my/org-person-dir (expand-file-name "~/Dropbox/Docs/Person/")
   "Directory for personal org files.")
 
+(defvar my/pngpaste-bin 
+  (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste")
+  "pngpaste executable path.")
+
 ;; ======================================
 ;;; Helper Functions
 ;; ======================================
@@ -54,9 +58,6 @@
           (message "완료: %s" relative-path))
       (message "선택 취소되었습니다."))))
 
-(defvar my/pngpaste-bin 
-  (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste")
-  "pngpaste executable path.")
 ;;; ###autoload
 (defun my-org-screenshot (chdir name)
   "Insert a screenshot from the clipboard into the current Org buffer."
@@ -84,6 +85,11 @@
           (org-display-inline-images)
           (message "Image saved successfully: %s" path))
       (error "No image in clipboard or pngpaste execution failed"))))
+
+(defun my-org-insert-properties-drawer ()
+  "Insert a PROPERTIES drawer immediately without prompting."
+  (interactive)
+  (org-insert-drawer nil "PROPERTIES"))
 
 ;;; ###autoload
 ;; (defun my/org-bookmark-on-leave ()
@@ -150,9 +156,12 @@
   :defer t
   :mode ("\\.org\\'" . org-mode)
   :hook ((org-mode . my-org-latex-prettify-symbols)
-	 (org-mode . (lambda () (text-scale-increase 2))))
-  :bind (("C-c a" . org-agenda)
-         ("C-c c" . org-capture))
+	 (org-mode . (lambda () (text-scale-increase 1))))
+  :bind (;; Global Key Bindings
+         ("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
+         :map org-mode-map
+         ("C-c C-x D" . my-org-insert-properties-drawer))
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org"))
   (org-startup-indented t)             ;시작때 indent mode enable

@@ -380,7 +380,7 @@
                 mode-line-buffer-identification
                 mode-line-frame-identification
                 "  "
-                mode-line-modes
+                ;; mode-line-modes
                 mode-line-format-right-align
                 mode-line-position
                 " Ⓨ "

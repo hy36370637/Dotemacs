@@ -93,9 +93,9 @@
     (?\[ :description " [] "          :pair (?\[ . ?\]))
     (?{  :description " {} "          :pair (?{ . ?}))
     (?<  :description "「」"          :pair ("「" . "」"))
-    (?>  :description "『』"          :pair ("『" . "』"))
-    (?p  :description "Properties"    :pair (":PROPERTIES:\n" . "\n:END:")))
-;;    (?M  :description "《》"          :pair ("《" . "》")))
+    (?>  :description "『』"          :pair ("『" . "』")))
+    ;; (?p  :description "Properties"    :pair (":PROPERTIES:\n" . "\n:END:")))
+    ;; (?M  :description "《》"          :pair ("《" . "》")))
   "List of Org-mode emphasis markers and special bracket pairs."
   :group 'editing
   :type '(alist :key-type character :value-type (plist)))
@@ -111,7 +111,7 @@
 
 (defun my-pair-pairs-wrap (char &optional _target)
   "Enclose the active region or the word at point with a pair of CHARs."
-  (interactive "c기호 입력 (*, /, =, ~, p...): ")
+  (interactive "c기호 입력 (*, /, =, (, <...): ")
   (let* ((entry (assoc char my-pair-pairs))
          (pair-data (plist-get (cdr entry) :pair))
          (open (if (consp pair-data) (car pair-data) pair-data))
@@ -130,13 +130,13 @@
         (insert (if (characterp close) (char-to-string close) close))
         (goto-char start)            ;앞쪽 여는 기호 삽입
         (insert (if (characterp open) (char-to-string open) open)))
-      (if (eq char ?p)               ;커서 위치 조정
-          (progn 
-            (goto-char start)
-            (forward-line 1)
-            (org-cycle-hide-drawers 'all)) 
-        (unless (use-region-p) 
-          (goto-char (+ start (if (stringp open) (length open) 1)))))
+      ;; (if (eq char ?p)               ;커서 위치 조정
+      ;;     (progn 
+      ;;       (goto-char start)
+      ;;       (forward-line 1)
+      ;;       (org-cycle-hide-drawers 'all)) 
+      ;;   (unless (use-region-p) 
+      ;;     (goto-char (+ start (if (stringp open) (length open) 1)))))
 
       (my--enable-tab-escape)
       (message "'%s' 완료 (TAB으로 탈출)" (plist-get (cdr entry) :description)))))
