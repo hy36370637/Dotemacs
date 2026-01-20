@@ -36,7 +36,7 @@
   (dired-free-space nil)
   :bind
   (:map dired-mode-map
-   ("C-<return>" . dired-do-open)
+   ("<return>" . dired-do-open)
    ("M" . my-dired-move-to-pdf-folder-safe)
    ("/" . consult-line)))
 

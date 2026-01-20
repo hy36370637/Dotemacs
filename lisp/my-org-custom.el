@@ -86,21 +86,19 @@
           (message "Image saved successfully: %s" path))
       (error "No image in clipboard or pngpaste execution failed"))))
 
-(defun my-org-insert-properties-drawer ()
-  "Insert a PROPERTIES drawer immediately without prompting."
-  (interactive)
-  (org-insert-drawer nil "PROPERTIES"))
-
 ;;; ###autoload
-;; (defun my/org-bookmark-on-leave ()
-;;   "Auto-bookmarking modified Org buffer, excluding org-capture."
-;;   (when (and (derived-mode-p 'org-mode)
-;;              (not (bound-and-true-p org-capture-mode)) ; capture 모드 제외
-;;              buffer-file-name)
-;;     (let ((bname (concat "Auto_" (file-name-nondirectory buffer-file-name))))
-;;       (bookmark-set bname)
-;;       (bookmark-save)
-;;       (message "Auto-bookmark updated: %s" bname))))
+(defun my-org-insert-drawer-custom (&optional arg drawer)
+  "Prompt the user to select and insert a drawer from an expanded list.
+Includes system-reserved drawers (PROPERTIES, LOGBOOK, RESULTS) and 
+common user-defined drawers (MEMO, NOTE, DETAIL).
+If ARG is non-nil, insert at the end of the current outline node."
+  (interactive "P")
+  (let* ((choices '("PROPERTIES" "LOGBOOK" "MEMO" "NOTE" "CONTEXT" "DETAIL" "SOLUTION"))
+         (name (or drawer
+                   (completing-read "Drawer name (Select or Type): " 
+                                    choices nil nil))))
+    (org-insert-drawer arg name)))
+
 
 ;; (defun my-org-generate-toc ()
 ;;   "Auto-generate table of contents(PDF Export 제외)."
@@ -161,7 +159,7 @@
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture)
          :map org-mode-map
-         ("C-c C-x D" . my-org-insert-properties-drawer))
+         ("C-c C-x d" . my-org-insert-drawer-custom))
   :custom
   (org-directory (expand-file-name "~/Dropbox/Docs/org"))
   (org-startup-indented t)             ;시작때 indent mode enable

@@ -25,7 +25,7 @@
 (defvar nokdong-tide-obs-code "SO_0761" 
   "Nokdong port observation code for tide forecast API.")
 
-(defvar my-weather-location "북부동" 	;도양읍
+(defvar my-weather-location "도양읍" 	;도양읍
   "Default location for weather information.")
 
 (defvar my-weather-format-template "- %s, 최저/최고 %s/%s, 어제보다 %s"

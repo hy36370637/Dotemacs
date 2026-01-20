@@ -45,9 +45,7 @@
          ("M-s o" . consult-outline)
 	 ("M-g M-g" . consult-goto-line))
   :config
-  (setq consult-preview-key "M-.") 'default 'any
-  (setq consult-buffer-sources (list consult--source-buffer
-				     consult--source-recent-file)))
+  (setq consult-preview-key '(:debounce 0.5 any)))    ;default 'any
 
 
 ;; =======================================
@@ -141,10 +139,27 @@
       (my--enable-tab-escape)
       (message "'%s' 완료 (TAB으로 탈출)" (plist-get (cdr entry) :description)))))
 
+;;; ###autoload
+(defun my-pair-delete ()
+  "Delete the pair at point.
+- If at the end of a pair (e.g., `[text]▮`), delete the preceding pair.
+- If at the start of a pair (e.g., `▮[text]`), delete the following pair.
+- Otherwise, show a message and do nothing."
+  (interactive)
+  (condition-case nil
+      (let ((bounds (bounds-of-thing-at-point 'sexp)))
+        (if (and bounds
+                 (or (eq (point) (car bounds))
+                     (eq (point) (cdr bounds))))
+            (delete-pair (if (eq (point) (cdr bounds)) -1 1))
+          (message "Cursor not at pair boundary.")))
+    (error (message "Unbalanced or invalid pair."))))
+
 (with-eval-after-load 'embark
-  (define-key embark-symbol-map (kbd "w") #'my-pair-pairs-wrap)
-  (define-key embark-region-map (kbd "w") #'my-pair-pairs-wrap)
-  (define-key embark-general-map (kbd "w") #'my-pair-pairs-wrap))
+  (dolist (map (list embark-symbol-map
+                     embark-region-map
+                     embark-general-map))
+    (define-key map (kbd "w") #'my-pair-pairs-wrap)))
 
 ;; =======================================
 ;;; Hunspell 설정
@@ -200,7 +215,7 @@
         ("Setfile" "#+SETUPFILE: setLTH/Header.org")
         ("Center" "#+BEGIN_CENTER\n· · ·\n#+END_CENTER")
         ("Nonum" ":PROPERTIES:\n:UNNUMBERED: t\n:END:")
-        ("Option" "#+OPTIONS: toc:2 num:2")
+        ("Option" "#+OPTIONS: toc:2 num:2 d:nil")
         ("Grayq" "#+ATTR_LATEX: :environment grayquote")
         ("Doimg" "#+ATTR_LATEX: :width 0.5\\textwidth\n#+CAPTION: \n")
 	("Right" "#+BEGIN_EXPORT latex\n\\begin{flushright}\n\n\\end{flushright}\n#+END_EXPORT")

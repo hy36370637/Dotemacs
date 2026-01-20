@@ -152,12 +152,12 @@
   ;; (setq enable-recursive-minibuffers t)
   ;; (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
   :bind
-  (("C-x f" . toggle-frame-fullscreen)
-   ("C-x m" . nil)
+  (("C-x m" . nil)
    ("C-x z" . nil)
    ("M-;" . comment-line)
    ("<escape>" . keyboard-quit)
    ("C-\\" . my-pair-pairs-wrap)
+   ("C-x f" . toggle-frame-fullscreen)
    ("C-x <down>" . shrink-window)
    ("C-x <up>" . enlarge-window)
    ("C-x <left>" . shrink-window-horizontally)
@@ -209,7 +209,8 @@
     (set-register ?l `(file . ,(expand-file-name "lisp/" conf-dir)))
     (set-register ?r `(file . ,(concat org-dir "cReading.org")))
     (set-register ?d `(file . ,(concat org-dir "Daily.org")))
-    (set-register ?n `(file . ,(concat org-dir "cNotes.org"))))
+    (set-register ?n `(file . ,(concat org-dir "cNotes.org")))
+    (set-register ?p `(file . ,(expand-file-name "~/Dropbox/Docs/pdf"))))
   (set-register ?o `(file . ,default-directory))
   :custom
   (register-preview-delay 0.5))
@@ -244,7 +245,7 @@
               (variable-pitch-mode 1)
               (mapc (lambda (face)
                       (set-face-attribute face nil :inherit 'fixed-pitch))
-                    '(org-table 
+                    '(org-table
                       org-code 
                       org-block 
                       org-block-begin-line 

@@ -5,6 +5,7 @@
 ;; =======================================
 (defvar-keymap my-edit-prefix-map
   :name "Edit"
+  "d" #'my-pair-delete
   "r" #'my-query-replace-regexp-dwim
   "t" #'my-today-stamp
   "w" #'my-pair-pairs-wrap)
@@ -26,7 +27,6 @@
   "o" #'consult-outline
   "u" #'my-search-unified
   "m" #'consult-imenu
-  ;; "r" #'my-search-in-range
   "w" #'my-search-weather)
 
 (defvar-keymap my-media-prefix-map
@@ -54,6 +54,7 @@
 ;;; Which-key lable
 ;; =======================================
 (which-key-add-keymap-based-replacements my-edit-prefix-map
+  "d" "pairs delete"
   "r" "Regexp replace"
   "t" "Today stamp"
   "w" "pairs Wrap")
@@ -73,7 +74,6 @@
   "o" "Outline"
   "u" "Unified Search"
   "m" "Imenu"
-  ;; "r" "Range"
   "w" "Weather")
 
 (which-key-add-keymap-based-replacements my-media-prefix-map
