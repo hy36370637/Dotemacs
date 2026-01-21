@@ -22,17 +22,14 @@
   "Construct the full path for a personal org file FILENAME."
   (expand-file-name filename my/org-person-dir))
 
-(defun my-org-latex-prettify-symbols ()
-  "Prettify specific LaTeX spacing commands in Org mode."
-  ;; Use setq-local to ensure settings apply only to the current buffer
-  (setq-local prettify-symbols-alist
-              '(("#+LATEX: \\medskip" . "⁘")
-                ("#+LATEX: \\bigskip" . "⫶")
-                ("#+LATEX: \\vspace{\\baselineskip}" . "↕")))
-  (prettify-symbols-mode 1)
-  ;; Force a font-lock refresh to apply changes immediately
-  (when (fboundp 'font-lock-flush)
-    (font-lock-flush)))
+;; (defun my-org-latex-prettify-symbols ()
+;;   "Prettify specific LaTeX spacing commands in Org mode."
+;;   (setq-local prettify-symbols-alist
+;;               (append prettify-symbols-alist
+;;                       '(("#+LATEX: \\bigskip" . ?⫶)
+;;                         ("#+LATEX: \\medskip" . ?⁘)
+;;                         ("#+LATEX: \\vspace{\\baselineskip}" . ?↕))))
+;;   (prettify-symbols-mode 1))
 
 ;;; ###autoload
 (defun my-org-insert-image ()
@@ -153,7 +150,7 @@ If ARG is non-nil, insert at the end of the current outline node."
   :ensure nil
   :defer t
   :mode ("\\.org\\'" . org-mode)
-  :hook ((org-mode . my-org-latex-prettify-symbols)
+  :hook (;;(org-mode . my-org-latex-prettify-symbols)
 	 (org-mode . (lambda () (text-scale-increase 1))))
   :bind (;; Global Key Bindings
          ("C-c a" . org-agenda)
@@ -187,7 +184,8 @@ If ARG is non-nil, insert at the end of the current outline node."
   (org-agenda-restore-windows-after-quit t)
   (org-agenda-window-setup 'current-window)
   :config
-;;  (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
+  ;;  (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
+  
   (setq org-agenda-files
         (seq-filter #'file-exists-p
                     (list (my-org-person-file-path "Holidays.org")

@@ -5,7 +5,7 @@
 ;; =======================================
 (defvar-keymap my-edit-prefix-map
   :name "Edit"
-  "d" #'my-pair-delete
+  ;; "d" #'my-pair-delete
   "r" #'my-query-replace-regexp-dwim
   "t" #'my-today-stamp
   "w" #'my-pair-pairs-wrap)
@@ -54,7 +54,7 @@
 ;;; Which-key lable
 ;; =======================================
 (which-key-add-keymap-based-replacements my-edit-prefix-map
-  "d" "pairs delete"
+  ;; "d" "pairs delete"
   "r" "Regexp replace"
   "t" "Today stamp"
   "w" "pairs Wrap")

@@ -14,6 +14,7 @@
 (defvar my-search-engines
   '(("macOS Dictionary" . dict)
     ("Naver" .  "https://search.naver.com/search.naver?query=%s")
+    ("Naver Hanja" . "https://hanja.dict.naver.com/#/search?range=all&query=%s")
     ("Google" . "https://www.google.com/search?q=%s")
     ("Namuwiki" .  "https://namu.wiki/w/%s"))
   "Each element is of the form (NAME . URL/TYPE).")

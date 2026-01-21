@@ -85,6 +85,7 @@
     (?= :description "Verbatim"       :pair ?=)
     (?~ :description "Code"           :pair ?~)
     (?+ :description "Strike"         :pair ?+)
+    (?_ :description "Under Line"     :pair ?_)
     (?\" :description "Double Quotes" :pair ?\")
     (?\' :description "Single Quotes" :pair ?\')
     (?\( :description " () "          :pair (?\( . ?\)))
@@ -92,7 +93,6 @@
     (?{  :description " {} "          :pair (?{ . ?}))
     (?<  :description "「」"          :pair ("「" . "」"))
     (?>  :description "『』"          :pair ("『" . "』")))
-    ;; (?p  :description "Properties"    :pair (":PROPERTIES:\n" . "\n:END:")))
     ;; (?M  :description "《》"          :pair ("《" . "》")))
   "List of Org-mode emphasis markers and special bracket pairs."
   :group 'editing
@@ -140,20 +140,20 @@
       (message "'%s' 완료 (TAB으로 탈출)" (plist-get (cdr entry) :description)))))
 
 ;;; ###autoload
-(defun my-pair-delete ()
-  "Delete the pair at point.
-- If at the end of a pair (e.g., `[text]▮`), delete the preceding pair.
-- If at the start of a pair (e.g., `▮[text]`), delete the following pair.
-- Otherwise, show a message and do nothing."
-  (interactive)
-  (condition-case nil
-      (let ((bounds (bounds-of-thing-at-point 'sexp)))
-        (if (and bounds
-                 (or (eq (point) (car bounds))
-                     (eq (point) (cdr bounds))))
-            (delete-pair (if (eq (point) (cdr bounds)) -1 1))
-          (message "Cursor not at pair boundary.")))
-    (error (message "Unbalanced or invalid pair."))))
+;; (defun my-pair-delete ()
+;;   "Delete the pair at point.
+;; - If at the end of a pair (e.g., `[text]▮`), delete the preceding pair.
+;; - If at the start of a pair (e.g., `▮[text]`), delete the following pair.
+;; - Otherwise, show a message and do nothing."
+;;   (interactive)
+;;   (condition-case nil
+;;       (let ((bounds (bounds-of-thing-at-point 'sexp)))
+;;         (if (and bounds
+;;                  (or (eq (point) (car bounds))
+;;                      (eq (point) (cdr bounds))))
+;;             (delete-pair (if (eq (point) (cdr bounds)) -1 1))
+;;           (message "Cursor not at pair boundary.")))
+;;     (error (message "Unbalanced or invalid pair."))))
 
 (with-eval-after-load 'embark
   (dolist (map (list embark-symbol-map
