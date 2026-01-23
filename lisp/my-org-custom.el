@@ -185,7 +185,6 @@ If ARG is non-nil, insert at the end of the current outline node."
   (org-agenda-window-setup 'current-window)
   :config
   ;;  (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
-  
   (setq org-agenda-files
         (seq-filter #'file-exists-p
                     (list (my-org-person-file-path "Holidays.org")
@@ -205,6 +204,7 @@ If ARG is non-nil, insert at the end of the current outline node."
           ("r" "Reading" entry
            (file ,(my-org-person-file-path "cReading.org"))
            "* %?\n기록일: %U"
+   	   :unnarrowed t
            :empty-lines-after 1)
 
 	  ("m" "경조사" table-line
