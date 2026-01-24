@@ -87,6 +87,15 @@ If ARG is non-nil, insert at the end of the current outline node."
                                     choices nil nil))))
     (org-insert-drawer arg name)))
 
+(defun my-org-popup-capture ()
+  "Launch `org-capture' in a dedicated popup frame.
+Utilizes `my-window-with-popup-frame' for an isolated workflow.
+Falls back to standard `org-capture' if the popup macro is unavailable."
+  (interactive)
+  (if (fboundp 'my-window-with-popup-frame)
+      (my-window-with-popup-frame "Capture" (org-capture))
+    (org-capture))) ; 만약 my-window 로드 실패 시 일반 capture 실행
+
 
 ;; (defun my-org-generate-toc ()
 ;;   "Auto-generate table of contents(PDF Export 제외)."
@@ -144,10 +153,11 @@ If ARG is non-nil, insert at the end of the current outline node."
   :hook (org-mode . (lambda () (text-scale-increase 1)))
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
+	 ("C-c C" . my-org-popup-capture)
          :map org-mode-map
          ("C-c C-x d" . my-org-insert-drawer-custom))
   :custom
-  (org-directory (expand-file-name "~/Dropbox/Docs/org"))
+  ;; (org-directory (expand-file-name "~/Dropbox/Docs/org"))
   (org-startup-indented t)             ;시작때 indent mode enable
   (org-startup-with-inline-images nil)
   (org-startup-folded t)
@@ -200,6 +210,7 @@ If ARG is non-nil, insert at the end of the current outline node."
 	   (file ,(my-org-person-file-path "aMoney.org"))
 	   ,(concat "| %^{구분} | %^{일자|" (format-time-string "%Y.%m.%d") "} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
            :prepend nil))))
+
 
 ;; ======================================
 ;;; org-superstar
