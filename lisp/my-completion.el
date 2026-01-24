@@ -66,8 +66,8 @@
          ("M-." . embark-dwim)        ;; 알아서 가장 적절한 '행동' 수행
          ("C-h B" . embark-bindings)) ;; 현재 모드에서 가능한 모든 키 바인딩 확인
   :init
-  ;; 미니버퍼 내에서 도움말 역할을 하도록 설정
-  (setq prefix-help-command #'embark-prefix-help-command))
+  (setq prefix-help-command #'embark-prefix-help-command)         ;; 미니버퍼 내에서 도움말 가능하도록
+  (advice-add 'embark-act :before #'my/deactivate-input-method))  ;; 기본(en) input-method 전환
 
 (use-package embark-consult
   :ensure t
@@ -128,32 +128,9 @@
         (insert (if (characterp close) (char-to-string close) close))
         (goto-char start)            ;앞쪽 여는 기호 삽입
         (insert (if (characterp open) (char-to-string open) open)))
-      ;; (if (eq char ?p)               ;커서 위치 조정
-      ;;     (progn 
-      ;;       (goto-char start)
-      ;;       (forward-line 1)
-      ;;       (org-cycle-hide-drawers 'all)) 
-      ;;   (unless (use-region-p) 
-      ;;     (goto-char (+ start (if (stringp open) (length open) 1)))))
 
       (my--enable-tab-escape)
       (message "'%s' 완료 (TAB으로 탈출)" (plist-get (cdr entry) :description)))))
-
-;;; ###autoload
-;; (defun my-pair-delete ()
-;;   "Delete the pair at point.
-;; - If at the end of a pair (e.g., `[text]▮`), delete the preceding pair.
-;; - If at the start of a pair (e.g., `▮[text]`), delete the following pair.
-;; - Otherwise, show a message and do nothing."
-;;   (interactive)
-;;   (condition-case nil
-;;       (let ((bounds (bounds-of-thing-at-point 'sexp)))
-;;         (if (and bounds
-;;                  (or (eq (point) (car bounds))
-;;                      (eq (point) (cdr bounds))))
-;;             (delete-pair (if (eq (point) (cdr bounds)) -1 1))
-;;           (message "Cursor not at pair boundary.")))
-;;     (error (message "Unbalanced or invalid pair."))))
 
 (with-eval-after-load 'embark
   (dolist (map (list embark-symbol-map

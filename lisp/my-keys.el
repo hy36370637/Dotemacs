@@ -1,5 +1,12 @@
 ;;; my-keys.el --- Simplified keybindings -*- lexical-binding: t; -*-
 
+;; ======================================
+;;; Helper Functions
+;; ======================================
+(defun my/invoke-my-prefix ()
+  (interactive)
+  (my/prefix-with-english my-emacs-prefix-map))
+
 ;; =======================================
 ;;; Sub-Prefix Maps
 ;; =======================================
@@ -95,7 +102,9 @@
 ;; =======================================
 ;;; Key-binding
 ;; =======================================
- (keymap-set global-map "M-SPC" my-emacs-prefix-map)
+(keymap-set global-map "M-SPC" #'my/invoke-my-prefix)
+
+
 
 
 (provide 'my-keys)

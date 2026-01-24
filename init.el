@@ -152,11 +152,10 @@
   ;; (setq enable-recursive-minibuffers t)
   ;; (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
   :bind
-  (("C-x m" . nil)
-   ("C-x z" . nil)
+  (("C-x z" . nil)
    ("M-;" . comment-line)
    ("<escape>" . keyboard-quit)
-   ("C-\\" . my-pair-pairs-wrap)
+   ("C-x m" . my-pair-pairs-wrap)
    ("C-x f" . toggle-frame-fullscreen)
    ("C-x <down>" . shrink-window)
    ("C-x <up>" . enlarge-window)

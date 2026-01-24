@@ -80,6 +80,17 @@
       (goto-char start)
       (call-interactively #'query-replace-regexp))))
 
+(defun my/deactivate-input-method (&rest _args)
+  "Deactivate current input method"
+  (when current-input-method
+    (deactivate-input-method)))
+
+(defun my/prefix-with-english (keymap)
+  "Invoke prefix KEYMAP with English input method"
+  (interactive)
+  (my/deactivate-input-method)
+  (set-transient-map keymap))
+
 ;; ======================================
 ;;; View Mode
 ;; ======================================
