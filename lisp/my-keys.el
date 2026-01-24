@@ -3,9 +3,9 @@
 ;; ======================================
 ;;; Helper Functions
 ;; ======================================
-(defun my/invoke-my-prefix ()
-  (interactive)
-  (my/prefix-with-english my-emacs-prefix-map))
+;; (defun my/invoke-my-prefix ()
+;;   (interactive)
+;;   (my/prefix-with-english my-emacs-prefix-map))
 
 ;; =======================================
 ;;; Sub-Prefix Maps
@@ -102,9 +102,7 @@
 ;; =======================================
 ;;; Key-binding
 ;; =======================================
-(keymap-set global-map "M-SPC" #'my/invoke-my-prefix)
-
-
+(keymap-set global-map "M-SPC" my-emacs-prefix-map)
 
 
 (provide 'my-keys)

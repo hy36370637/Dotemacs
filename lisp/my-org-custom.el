@@ -153,11 +153,10 @@ Falls back to standard `org-capture' if the popup macro is unavailable."
   :hook (org-mode . (lambda () (text-scale-increase 1)))
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
-	 ("C-c C" . my-org-popup-capture)
          :map org-mode-map
          ("C-c C-x d" . my-org-insert-drawer-custom))
   :custom
-  ;; (org-directory (expand-file-name "~/Dropbox/Docs/org"))
+  ;; (org-directory (expand-file-name "~/Dropbox/Docs/org")) ; -> init.el
   (org-startup-indented t)             ;시작때 indent mode enable
   (org-startup-with-inline-images nil)
   (org-startup-folded t)
@@ -282,6 +281,37 @@ Falls back to standard `org-capture' if the popup macro is unavailable."
   (setq org-fontify-whole-heading-line nil
         org-fontify-done-headline t
         org-fontify-quote-and-verse-blocks t))
+
+
+;; ;; ======================================
+;; ;;; View Mode
+;; ;; ======================================
+;; Enable read-only protection when entering view-mode
+(setq view-read-only t) 
+
+(defun my-view-mode-edit-instantly ()
+  "Disable view-mode immediately and switch to edit mode."
+  (interactive)
+  (when view-mode
+    (view-mode -1)
+    (message "Switched to Edit Mode")))
+
+;; View-mode Configuration
+(with-eval-after-load 'view
+  ;; Assign 'e' key for instant transition to editing
+  (define-key view-mode-map (kbd "e") 'my-view-mode-edit-instantly))
+
+;; Visual enhancements when toggling view-mode
+(add-hook 'view-mode-hook
+          (lambda ()
+            (if view-mode
+                (progn
+                  (hl-line-mode 1)               ; Enable line highlighting
+                  (setq-local cursor-type 'bar))  ; Change cursor to a bar for reading
+	      	  ;; (set-face-background 'hl-line (face-background color-lighten)))
+              (hl-line-mode -1)                 ; Disable line highlighting
+              (setq-local cursor-type 'box))))   ; Restore box cursor for editing
+
 
 
 

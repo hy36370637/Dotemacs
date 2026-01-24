@@ -9,7 +9,6 @@
   "Directory for personal org files.")
 (setq org-directory (expand-file-name "~/Dropbox/Docs/org"))
 
-
 ;; =======================================
 ;;; Custom file
 ;; =======================================
@@ -82,7 +81,6 @@
 
 (require 'my-completion)
 (require 'my-dired-custom)
-(require 'my-window)
 (require 'my-org-custom)
 (require 'my-useful-custom)
 (require 'my-search)
@@ -158,9 +156,6 @@
   (("C-x z" . nil)
    ("M-;" . comment-line)
    ("<escape>" . keyboard-quit)
-   ("C-c E" . my-window-popup-eshell)
-   ("C-c D" . my-window-popup-dired)
-   ("C-c N" . my-window-popup-denote)
    ("C-x m" . my-pair-pairs-wrap)
    ("C-x f" . toggle-frame-fullscreen)
    ("C-x <down>" . shrink-window)
