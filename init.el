@@ -5,14 +5,17 @@
 ;; =======================================
 (defvar my/lisp-path (expand-file-name "lisp/" user-emacs-directory)
   "Path to the user's personal lisp directory.")
+
 (defvar my/org-person-dir "~/Dropbox/Docs/Person/"
   "Directory for personal org files.")
+
 (setq org-directory (expand-file-name "~/Dropbox/Docs/org"))
 
 ;; =======================================
 ;;; Custom file
 ;; =======================================
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
 (load custom-file t t)
@@ -81,6 +84,7 @@
 
 (require 'my-completion)
 (require 'my-dired-custom)
+(require 'my-window)
 (require 'my-org-custom)
 (require 'my-useful-custom)
 (require 'my-search)
@@ -156,6 +160,7 @@
   (("C-x z" . nil)
    ("M-;" . comment-line)
    ("<escape>" . keyboard-quit)
+   ("C-c E". my-window-popup-eshell)
    ("C-x m" . my-pair-pairs-wrap)
    ("C-x f" . toggle-frame-fullscreen)
    ("C-x <down>" . shrink-window)

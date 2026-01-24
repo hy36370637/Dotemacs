@@ -87,16 +87,6 @@ If ARG is non-nil, insert at the end of the current outline node."
                                     choices nil nil))))
     (org-insert-drawer arg name)))
 
-(defun my-org-popup-capture ()
-  "Launch `org-capture' in a dedicated popup frame.
-Utilizes `my-window-with-popup-frame' for an isolated workflow.
-Falls back to standard `org-capture' if the popup macro is unavailable."
-  (interactive)
-  (if (fboundp 'my-window-with-popup-frame)
-      (my-window-with-popup-frame "Capture" (org-capture))
-    (org-capture))) ; 만약 my-window 로드 실패 시 일반 capture 실행
-
-
 ;; (defun my-org-generate-toc ()
 ;;   "Auto-generate table of contents(PDF Export 제외)."
 ;;   (interactive)
@@ -153,6 +143,7 @@ Falls back to standard `org-capture' if the popup macro is unavailable."
   :hook (org-mode . (lambda () (text-scale-increase 1)))
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
+	 ("C-c C" . my-org-popup-capture)
          :map org-mode-map
          ("C-c C-x d" . my-org-insert-drawer-custom))
   :custom
@@ -247,21 +238,6 @@ Falls back to standard `org-capture' if the popup macro is unavailable."
    '("latexmk -pdflatex='xelatex -shell-escape -interaction=nonstopmode' -pdf -f %f")))
 
 ;; ======================================
-;;; denote
-;; ======================================
-(use-package denote
-  :bind
-  (("C-c n n" . denote)                       ; 새 노트 생성
-   ("C-c n i" . denote-link)                  ; 현재 노트에 다른 노트 링크 삽입
-   ("C-c n b" . denote-show-backlinks-buffer) ; 현재 노트를 참조하는 다른 노트들 보기
-   ("C-c n r" . denote-rename-file))          ; 기존 파일 이름을 denote 형식으로 변경
-  :config
-  (setq denote-directory (expand-file-name "denote" org-directory))
-  (setq denote-file-type nil)
-  (unless (file-exists-p denote-directory)
-    (make-directory denote-directory t)))
-
-;; ======================================
 ;;; ox-md
 ;; ======================================
 ;; (use-package ox-md
@@ -282,10 +258,25 @@ Falls back to standard `org-capture' if the popup macro is unavailable."
         org-fontify-done-headline t
         org-fontify-quote-and-verse-blocks t))
 
+;; ======================================
+;;; denote
+;; ======================================
+(use-package denote
+  :bind
+  (("C-c n n" . denote)                       ; 새 노트 생성
+   ("C-c n N" . my-window-popup-denote)       ; Pop-up
+   ("C-c n i" . denote-link)                  ; 현재 노트에 다른 노트 링크 삽입
+   ("C-c n b" . denote-show-backlinks-buffer) ; 현재 노트를 참조하는 다른 노트들 보기
+   ("C-c n r" . denote-rename-file))          ; 기존 파일 이름을 denote 형식으로 변경
+  :config
+  (setq denote-directory (expand-file-name "denote" org-directory))
+  (setq denote-file-type nil)
+  (unless (file-exists-p denote-directory)
+    (make-directory denote-directory t)))
 
-;; ;; ======================================
-;; ;;; View Mode
-;; ;; ======================================
+;; ======================================
+;;; View-mode Custom
+;; ======================================
 ;; Enable read-only protection when entering view-mode
 (setq view-read-only t) 
 
