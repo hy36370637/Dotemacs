@@ -22,15 +22,6 @@
   "Construct the full path for a personal org file FILENAME."
   (expand-file-name filename my/org-person-dir))
 
-;; (defun my-org-latex-prettify-symbols ()
-;;   "Prettify specific LaTeX spacing commands in Org mode."
-;;   (setq-local prettify-symbols-alist
-;;               (append prettify-symbols-alist
-;;                       '(("#+LATEX: \\bigskip" . ?⫶)
-;;                         ("#+LATEX: \\medskip" . ?⁘)
-;;                         ("#+LATEX: \\vspace{\\baselineskip}" . ?↕))))
-;;   (prettify-symbols-mode 1))
-
 ;;; ###autoload
 (defun my-org-insert-image ()
   "Insert and display image"
@@ -150,10 +141,8 @@ If ARG is non-nil, insert at the end of the current outline node."
   :ensure nil
   :defer t
   :mode ("\\.org\\'" . org-mode)
-  :hook (;;(org-mode . my-org-latex-prettify-symbols)
-	 (org-mode . (lambda () (text-scale-increase 1))))
-  :bind (;; Global Key Bindings
-         ("C-c a" . org-agenda)
+  :hook (org-mode . (lambda () (text-scale-increase 1)))
+  :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
          :map org-mode-map
          ("C-c C-x d" . my-org-insert-drawer-custom))
