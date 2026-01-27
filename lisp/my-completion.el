@@ -15,7 +15,6 @@
 ;; ======================================
 ;;; marginalia
 ;; ======================================
-;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   :init (marginalia-mode)
   :custom
@@ -37,7 +36,7 @@
   :ensure t
   :bind (("C-x b" . consult-buffer)
 	 ("C-x C-r" . consult-recent-file)
-	 ("C-c b" . consult-bookmark)
+	 ("C-c B" . consult-bookmark)
 	 ("M-y" . consult-yank-pop)
 	 ("M-s g" . consult-ripgrep)
 	 ("M-s l" . consult-line)
@@ -46,7 +45,6 @@
 	 ("M-g M-g" . consult-goto-line))
   :config
   (setq consult-preview-key '(:debounce 0.5 any)))    ;default 'any
-
 
 ;; =======================================
 ;;; wgrep
@@ -63,7 +61,7 @@
 (use-package embark
   :ensure t
   :bind (("C-." . embark-act)         ;; 가장 기본적인 '행동'
-         ("M-." . embark-dwim)        ;; 알아서 가장 적절한 '행동' 수행
+         ;; ("M-." . embark-dwim)        ;; 알아서 가장 적절한 '행동' 수행
          ("C-h B" . embark-bindings)) ;; 현재 모드에서 가능한 모든 키 바인딩 확인
   :init
   (setq prefix-help-command #'embark-prefix-help-command)         ;; 미니버퍼 내에서 도움말 가능하도록

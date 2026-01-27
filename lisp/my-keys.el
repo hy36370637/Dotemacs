@@ -28,7 +28,6 @@
 
 (defvar-keymap my-search-prefix-map
   :name "Search"
-  "f" #'consult-find
   "g" #'consult-grep
   "l" #'consult-line
   "o" #'consult-outline
@@ -75,7 +74,6 @@
   "n" "New line")
 
 (which-key-add-keymap-based-replacements my-search-prefix-map
-  "f" "Find"
   "g" "Grep"
   "l" "Line"
   "o" "Outline"

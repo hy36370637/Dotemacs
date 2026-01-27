@@ -86,10 +86,11 @@
   (when current-input-method
     (deactivate-input-method)))
 
+;;; ###autoload
 (defun my-open-in-finder ()
-     "Open current file in Finder"
-     (interactive)
-     (shell-command (concat "open -R " (shell-quote-argument buffer-file-name))))
+  "Open current file in Finder"
+  (interactive)
+  (shell-command (concat "open -R " (shell-quote-argument buffer-file-name))))
   
 
 
