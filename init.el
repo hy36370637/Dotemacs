@@ -84,7 +84,7 @@
 
 (require 'my-completion)
 (require 'my-dired-custom)
-(require 'my-window)
+;; (require 'my-window)
 (require 'my-org-custom)
 (require 'my-useful-custom)
 (require 'my-search)
@@ -131,7 +131,8 @@
   :init
   (setq default-directory (expand-file-name "~/Dropbox/Docs/org")
         temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
-  :hook (text-mode . visual-line-mode)
+  :hook ((text-mode . visual-line-mode)
+         (focus-in-hook . my/deactivate-input-method)) ; 포커스 때 입력기 EN
   :custom
   ;; UI 및 상태 정보 관련
   (use-short-answers t)               ; y/n으로 대답 단축
@@ -160,13 +161,9 @@
   (("C-x z" . nil)
    ("M-;" . comment-line)
    ("<escape>" . keyboard-quit)
-   ("C-c E". my-window-popup-eshell)
+   ;; ("C-c E". my-window-popup-eshell)
    ("C-x m" . my-pair-pairs-wrap)
-   ("C-x f" . toggle-frame-fullscreen)
-   ("C-x <down>" . shrink-window)
-   ("C-x <up>" . enlarge-window)
-   ("C-x <left>" . shrink-window-horizontally)
-   ("C-x <right>" . enlarge-window-horizontally)))
+   ("C-x f" . toggle-frame-fullscreen)))
 
 (use-package time
   :ensure nil
@@ -263,7 +260,7 @@
 ;;; Theme
 ;; =======================================
 (use-package modus-themes
-  :ensure t) ;; 내장 버전 대신 최신 버전을 설치해서 사용
+  :ensure nil) ;; 내장 버전 대신 최신 버전을 설치해서 사용
 
 (use-package ef-themes
   :ensure t
@@ -273,13 +270,8 @@
   (("<f5>" . modus-themes-rotate)
    ("C-<f5>" . modus-themes-select))
   :config
-  ;; All customisations here.
   (setq modus-themes-mixed-fonts t)
   (setq modus-themes-italic-constructs t)
-
-  ;; Finally, load your theme of choice (or a random one with
-  ;; `modus-themes-load-random', `modus-themes-load-random-dark',
-  ;; `modus-themes-load-random-light').
   (modus-themes-load-theme 'ef-owl))
 
 ;; =======================================
@@ -288,10 +280,9 @@
 (use-package savehist
   :ensure nil
   :demand t
+  :init (savehist-mode 1)
   :custom
-  (history-length 10)
-;;  (savehist-additional-variables '(register-alist))
-  :init (savehist-mode 1))
+  (history-length 10))
 
 (use-package saveplace
   :ensure nil
@@ -319,10 +310,10 @@
 (use-package windmove
   :ensure nil   ;built-in
   :bind
-  (("<s-left>" . windmove-left)
-   ("<s-right>" . windmove-right)
-   ("<s-up>" . windmove-up)
-   ("<s-down>" . windmove-down)))
+  (("C-x <left>" . windmove-left)
+   ("C-x <right>" . windmove-right)
+   ("C-x <up>" . windmove-up)
+   ("C-x <down>" . windmove-down)))
 
 ;; =======================================
 ;;; winner

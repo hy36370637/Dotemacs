@@ -92,8 +92,8 @@
     (?\[ :description " [] "          :pair (?\[ . ?\]))
     (?{  :description " {} "          :pair (?{ . ?}))
     (?<  :description "「」"          :pair ("「" . "」"))
-    (?>  :description "『』"          :pair ("『" . "』")))
-    ;; (?M  :description "《》"          :pair ("《" . "》")))
+    (?>  :description "『』"          :pair ("『" . "』"))
+    (?M  :description "《》"          :pair ("《" . "》")))
   "List of Org-mode emphasis markers and special bracket pairs."
   :group 'editing
   :type '(alist :key-type character :value-type (plist)))

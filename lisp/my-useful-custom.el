@@ -86,15 +86,11 @@
   (when current-input-method
     (deactivate-input-method)))
 
-;; (defun my/prefix-with-english (keymap)
-;;   "Invoke prefix KEYMAP with English input method"
-;;   (interactive)
-;;   (my/deactivate-input-method)
-;;   (set-transient-map keymap))
-
-
-
-
+(defun my-open-in-finder ()
+     "Open current file in Finder"
+     (interactive)
+     (shell-command (concat "open -R " (shell-quote-argument buffer-file-name))))
+  
 
 
 

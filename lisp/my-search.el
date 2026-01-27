@@ -24,7 +24,7 @@
 (defvar my-search-path-targets
   '(("Docs (All)"    . "~/Dropbox/Docs/")
     ("Org Files"     . "~/Dropbox/Docs/org/")
-    ;; ("PDF Files"     . "~/Dropbox/Docs/pdf/")      ;find err
+    ("PDF Files"     . "~/Dropbox/Docs/pdf/") 
     ("Notes/Person"  . "~/Dropbox/Docs/Person/")
     ("Denote"        . "~/Dropbox/Docs/org/denote/")
     ("Emacs Config"  . "~/.emacs.d/"))
@@ -53,47 +53,24 @@
   (let ((default-directory (expand-file-name dir)))
     (consult-ripgrep default-directory)))
 
+(defun my-consult-ripgrep-pdf ()
+  "Search PDFs using ripgrep-all"   
+  (interactive)
+  (let* ((pdf-dir (alist-get "PDF Files" my-search-path-targets nil nil #'string=))
+         (consult-ripgrep-args "rga --null --line-buffered --color=never --max-columns=1000 --path-separator / --smart-case --no-heading --line-number"))
+    (consult-ripgrep pdf-dir)))
+
 ;; ======================================
 ;;; Main Function
 ;; ======================================
-;;; ###autoload
-;; (defun my-search-in-range ()
-;;   "Search within the selected range using various engines."
-;;   (interactive)
-;;   (if-let* ((query (and (use-region-p)
-;;                         (buffer-substring-no-properties 
-;;                          (region-beginning) (region-end))))
-;;             ((not (string-empty-p query)))
-;;             (engine (completing-read 
-;;                      "Search engine: " 
-;;                      (mapcar #'car my-search-engines)))
-;;             (url (my--get-search-url engine query))
-;;             ((not (string-empty-p url))))
-;;       (my--open-url url)
-;;     (message "Please select the text")))
-
 (defun my-search-unified ()
   "Search content in a selected directory from `my-search-path-targets`."
   (interactive)
   (let* ((choice (completing-read "Search Content in: " my-search-path-targets))
          (path (cdr (assoc choice my-search-path-targets))))
-    (my--ripgrep-in-dir path)))
-
-;; (defun my-consult-ripgrep-docs ()
-;;   "Search content in the entire personal documentation root."
-;;   (interactive)
-;;   (my--ripgrep-in-dir my-docs-root))
-
-;; (defun my-consult-search-emacs-config ()
-;;   "Search content within Emacs configuration files."
-;;   (interactive)
-;;   (my--ripgrep-in-dir "~/.emacs.d/"))
-
-;; (defun my-consult-ripgrep-selected-dir ()
-;;   "Search in a directory manually selected by the user."
-;;   (interactive)
-;;   (let ((selected-dir (read-directory-name "Select directory: " "~/Dropbox/Docs/org/")))
-;;     (my--ripgrep-in-dir selected-dir)))
+    (if (string-match-p "PDF" choice)
+        (my-consult-ripgrep-pdf)
+      (my--ripgrep-in-dir path))))
 
 ;; ======================================
 ;;; Weather Search Functions

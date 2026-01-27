@@ -143,9 +143,10 @@ If ARG is non-nil, insert at the end of the current outline node."
   :hook (org-mode . (lambda () (text-scale-increase 1)))
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
-	 ("C-c C" . my-org-popup-capture)
+	 ;; ("C-c C" . my-org-popup-capture)
          :map org-mode-map
-         ("C-c C-x d" . my-org-insert-drawer-custom))
+         ("C-c C-x d" . my-org-insert-drawer-custom)
+	 ("M-," . org-insert-structure-template))
   :custom
   ;; (org-directory (expand-file-name "~/Dropbox/Docs/org")) ; -> init.el
   (org-startup-indented t)             ;시작때 indent mode enable
@@ -264,7 +265,7 @@ If ARG is non-nil, insert at the end of the current outline node."
 (use-package denote
   :bind
   (("C-c n n" . denote)                       ; 새 노트 생성
-   ("C-c n N" . my-window-popup-denote)       ; Pop-up
+   ;; ("C-c n N" . my-window-popup-denote)       ; Pop-up
    ("C-c n i" . denote-link)                  ; 현재 노트에 다른 노트 링크 삽입
    ("C-c n b" . denote-show-backlinks-buffer) ; 현재 노트를 참조하는 다른 노트들 보기
    ("C-c n r" . denote-rename-file))          ; 기존 파일 이름을 denote 형식으로 변경
