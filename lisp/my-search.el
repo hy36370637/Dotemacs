@@ -56,7 +56,7 @@
 (defun my-consult-ripgrep-pdf-grouped ()
   "Search PDFs with file grouping - first show files, then lines within file"
   (interactive)
-  (let* ((default-directory "~/Dropbox/Docs/pdf/")
+  (let* ((default-directory (cdr (assoc "PDF Files" my-search-path-targets)))
          (search-term (read-string "Search PDFs: "))
          (results (split-string 
                    (shell-command-to-string 
@@ -75,8 +75,8 @@
                               (shell-quote-argument full-path)))
                      "\n" t))
              (selected-line (completing-read 
-                            (format "Results in %s: " (file-name-nondirectory selected-file))
-                            lines)))
+                             (format "Results in %s: " (file-name-nondirectory selected-file))
+                             lines)))
         (when selected-line
           (call-process "open" nil 0 nil full-path))))))
 
