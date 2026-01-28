@@ -59,7 +59,7 @@
   (let* ((default-directory (cdr (assoc "PDF Files" my-search-path-targets)))
          (search-term (read-string "Search PDFs: "))
          (results (split-string 
-                   (shell-command-to-string 
+                   (shell-command-to-string     ;;brew install ripgrep-all
                     (format "rga -l %s ." 
                             (shell-quote-argument search-term)))
                    "\n" t))

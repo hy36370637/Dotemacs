@@ -121,8 +121,8 @@
     (when my/im-select-path
       (call-process my/im-select-path nil 0 nil "com.apple.keylayout.ABC"))))
 
-(add-hook 'focus-in-hook #'my/mac-switch-to-english)
-(add-hook 'focus-out-hook #'my/mac-switch-to-english)
+(add-hook 'focus-in-hook #'my/mac-switch-to-english)   ;; macOS input-method
+(add-hook 'focus-in-hook #'my/deactivate-input-method) ;; emacs input-method
 
 ;; =======================================
 ;;; Emacs UI and behavior
@@ -131,8 +131,7 @@
   :init
   (setq default-directory (expand-file-name "~/Dropbox/Docs/org")
         temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
-  :hook ((text-mode . visual-line-mode)
-         (focus-in-hook . my/deactivate-input-method)) ; 포커스 때 입력기 EN
+  :hook (text-mode . visual-line-mode)
   :custom
   ;; UI 및 상태 정보 관련
   (use-short-answers t)               ; y/n으로 대답 단축
