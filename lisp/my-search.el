@@ -53,12 +53,32 @@
   (let ((default-directory (expand-file-name dir)))
     (consult-ripgrep default-directory)))
 
-(defun my-consult-ripgrep-pdf ()
-  "Search PDFs using ripgrep-all"   
+(defun my-consult-ripgrep-pdf-grouped ()
+  "Search PDFs with file grouping - first show files, then lines within file"
   (interactive)
-  (let* ((pdf-dir (alist-get "PDF Files" my-search-path-targets nil nil #'string=))
-         (consult-ripgrep-args "rga --null --line-buffered --color=never --max-columns=1000 --path-separator / --smart-case --no-heading --line-number"))
-    (consult-ripgrep pdf-dir)))
+  (let* ((default-directory "~/Dropbox/Docs/pdf/")
+         (search-term (read-string "Search PDFs: "))
+         (results (split-string 
+                   (shell-command-to-string 
+                    (format "rga -l %s ." 
+                            (shell-quote-argument search-term)))
+                   "\n" t))
+         (selected-file (completing-read 
+                        (format "Files containing '%s': " search-term)
+                        results)))
+    (when selected-file
+      (let* ((full-path (expand-file-name selected-file default-directory))
+             (lines (split-string
+                     (shell-command-to-string
+                      (format "rga -n %s %s"
+                              (shell-quote-argument search-term)
+                              (shell-quote-argument full-path)))
+                     "\n" t))
+             (selected-line (completing-read 
+                            (format "Results in %s: " (file-name-nondirectory selected-file))
+                            lines)))
+        (when selected-line
+          (call-process "open" nil 0 nil full-path))))))
 
 ;; ======================================
 ;;; Main Function
@@ -69,7 +89,7 @@
   (let* ((choice (completing-read "Search Content in: " my-search-path-targets))
          (path (cdr (assoc choice my-search-path-targets))))
     (if (string-match-p "PDF" choice)
-        (my-consult-ripgrep-pdf)
+	(my-consult-ripgrep-pdf-grouped)
       (my--ripgrep-in-dir path))))
 
 ;; ======================================
