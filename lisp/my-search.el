@@ -53,32 +53,49 @@
   (let ((default-directory (expand-file-name dir)))
     (consult-ripgrep default-directory)))
 
+
 (defun my-consult-ripgrep-pdf-grouped ()
-  "Search PDFs with file grouping - first show files, then lines within file"
+  "Search PDFs with file grouping - file -> line, C-g in line goes back"
   (interactive)
   (let* ((default-directory (cdr (assoc "PDF Files" my-search-path-targets)))
          (search-term (read-string "Search PDFs: "))
-         (results (split-string 
-                   (shell-command-to-string     ;;brew install ripgrep-all
-                    (format "rga -l %s ." 
+         (results (split-string
+                   (shell-command-to-string
+                    (format "rga -l %s ."
                             (shell-quote-argument search-term)))
-                   "\n" t))
-         (selected-file (completing-read 
-                        (format "Files containing '%s': " search-term)
-                        results)))
-    (when selected-file
-      (let* ((full-path (expand-file-name selected-file default-directory))
-             (lines (split-string
-                     (shell-command-to-string
-                      (format "rga -n %s %s"
-                              (shell-quote-argument search-term)
-                              (shell-quote-argument full-path)))
-                     "\n" t))
-             (selected-line (completing-read 
-                             (format "Results in %s: " (file-name-nondirectory selected-file))
-                             lines)))
-        (when selected-line
-          (call-process "open" nil 0 nil full-path))))))
+                   "\n" t)))
+    (catch 'exit
+      (while t
+        ;; ---------- 1단계 ----------
+        (let ((selected-file
+               (condition-case nil
+                   (completing-read
+                    (format "Files containing '%s': " search-term)
+                    results nil t)
+                 (quit (throw 'exit nil)))))  ;; ← 전체 종료
+
+          ;; ---------- 2단계 ----------
+          (condition-case nil
+              (let* ((full-path (expand-file-name selected-file default-directory))
+                     (lines (split-string
+                             (shell-command-to-string
+                              (format "rga -n %s %s"
+                                      (shell-quote-argument search-term)
+                                      (shell-quote-argument full-path)))
+                             "\n" t))
+                     (selected-line
+                      (completing-read
+                       (format "Results in %s (C-g=back): "
+                               (file-name-nondirectory selected-file))
+                       lines nil t)))
+                ;; 성공 → 파일 열고 종료
+                (call-process "open" nil 0 nil full-path)
+                (throw 'exit nil))
+            (quit
+             ;; 2단계 C-g → 아무것도 안 하고 while 계속
+             (message "Back to file list"))))))))
+
+
 
 ;; ======================================
 ;;; Main Function
