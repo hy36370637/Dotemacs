@@ -1,5 +1,4 @@
 ;;; my-todays-pop.el --- Today's information display -*- lexical-binding: t; -*-
-;; Author: Ho Young <hy36370637@gmail.com>
 
 ;;; Commentary:
 ;; Display today's date, agenda, and random quotes from cReading.org

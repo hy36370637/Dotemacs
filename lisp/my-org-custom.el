@@ -48,7 +48,8 @@
 
 ;;; ###autoload
 (defun my-org-screenshot (chdir name)
-  "Insert a screenshot from the clipboard into the current Org buffer."
+  "Insert a screenshot from the clipboard into the current Org buffer.
+   Requires: brew install pngpaste"
   (interactive 
    (let* ((default-dir (file-name-concat org-directory "img/"))
           ;; Prompt user for the target directory
@@ -86,6 +87,21 @@ If ARG is non-nil, insert at the end of the current outline node."
                    (completing-read "Drawer name (Select or Type): " 
                                     choices nil nil))))
     (org-insert-drawer arg name)))
+
+(defun my-org-daily-info()
+  "Generate lunar date and tide information string for org-capture."
+  (let* ((lunar-str (my-lunar-date-string))
+         (lunar-cleaned (string-trim (replace-regexp-in-string "(음) " "" lunar-str)))
+         (tide-result (my-format-tide-info))
+         (tide-times (car tide-result))
+         (muldae (string-trim (cdr tide-result))))
+    (format "\n- 음력: %s | 물때: %s\n%s"
+            lunar-cleaned
+            (if (string-match "(\\(.*\\))" muldae)
+                (match-string 1 muldae)
+              muldae)
+            tide-times)))
+
 
 ;; (defun my-org-generate-toc ()
 ;;   "Auto-generate table of contents(PDF Export 제외)."
@@ -183,7 +199,8 @@ If ARG is non-nil, insert at the end of the current outline node."
   (setq org-capture-templates
         `(("d" "Daily" entry
            (file+datetree ,(my-org-person-file-path "Daily.org"))
-           "* %?"
+           ;; "* %?"                          ;; 음력제외
+	   "* %?\n%(my-org-daily-info)" 
            :empty-lines-after 1)
           
           ("t" "Tasks" entry
