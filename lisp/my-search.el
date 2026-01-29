@@ -53,10 +53,23 @@
   (let ((default-directory (expand-file-name dir)))
     (consult-ripgrep default-directory)))
 
+(defun my-rga-skim-search ()
+  "Search PDF contents using `rga` with a two-step grouping process.
 
-(defun my-consult-ripgrep-pdf-grouped ()
-  ;;brew install ripgrep-all
-  "Search PDFs with file grouping - file -> line, C-g in line goes back"
+  Requirements:
+  - Install `ripgrep-all` via Homebrew: `brew install ripgrep-all`.
+  - macOS with Skim PDF reader for page-specific jumping.
+
+  Workflow:
+  - Step 1: Select a file from the list of PDFs containing the search term.
+  - Step 2: Select a specific line/page within the chosen file.
+
+  Navigation:
+  - If a page number (e.g., \"Page 5:\") is detected, it opens the file at 
+    the specific page in Skim via AppleScript.
+  - If no page number is found, it opens the file using the system default app.
+  - Press `C-g` during line selection to return to the file list."
+  
   (interactive)
   (let* ((default-directory (cdr (assoc "PDF Files" my-search-path-targets)))
          (search-term (read-string "Search PDFs: "))
@@ -67,14 +80,14 @@
                    "\n" t)))
     (catch 'exit
       (while t
-        ;; ---------- 1단계 ----------
+        ;; ---------- Step 1 ----------
         (let ((selected-file
                (condition-case nil
                    (completing-read
                     (format "Files containing '%s': " search-term)
                     results nil t)
                  (quit (throw 'exit nil)))))
-          ;; ---------- 2단계 ----------
+        ;; ---------- Step 2 ----------
           (condition-case nil
               (let* ((full-path (expand-file-name selected-file default-directory))
                      (lines (split-string
@@ -88,67 +101,27 @@
                        (format "Results in %s (C-g=back): "
                                (file-name-nondirectory selected-file))
                        lines nil t)))
-                ;; 페이지 번호 추출 시도 (예: "Page 5:" 형식)
+		;; Copy search term to system clipboard
+                (kill-new search-term)
+                (message "Copied '%s' to clipboard" search-term)
+		
+                ;; Attempt to extract page number (e.g., "Page 5:" format).
                 (let ((page-num
                        (when (string-match "Page \\([0-9]+\\)" selected-line)
                          (string-to-number (match-string 1 selected-line)))))
                   (if page-num
-                      ;; Skim으로 특정 페이지 열기
+                ;; Open a specific page in Skim.
                       (do-applescript
                        (format "tell application \"Skim\"
     activate
     open POSIX file \"%s\"
     tell front document to go to page %d
 end tell" full-path page-num))
-                    ;; 페이지 번호 없으면 기본 앱으로
+                ;; Use the default application if the page number is missing.
                     (call-process "open" nil 0 nil full-path)))
                 (throw 'exit nil))
             (quit
              (message "Back to file list"))))))))
-
-;; (defun my-consult-ripgrep-pdf-grouped ()
-;;   ;;brew install ripgrep-all
-;;   "Search PDFs with file grouping - file -> line, C-g in line goes back"
-;;   (interactive)
-;;   (let* ((default-directory (cdr (assoc "PDF Files" my-search-path-targets)))
-;;          (search-term (read-string "Search PDFs: "))
-;;          (results (split-string
-;;                    (shell-command-to-string
-;;                     (format "rga -l %s ."
-;;                             (shell-quote-argument search-term)))
-;;                    "\n" t)))
-;;     (catch 'exit
-;;       (while t
-;;         ;; ---------- 1단계 ----------
-;;         (let ((selected-file
-;;                (condition-case nil
-;;                    (completing-read
-;;                     (format "Files containing '%s': " search-term)
-;;                     results nil t)
-;;                  (quit (throw 'exit nil)))))  ;; ← 전체 종료
-
-;;           ;; ---------- 2단계 ----------
-;;           (condition-case nil
-;;               (let* ((full-path (expand-file-name selected-file default-directory))
-;;                      (lines (split-string
-;;                              (shell-command-to-string
-;;                               (format "rga -n %s %s"
-;;                                       (shell-quote-argument search-term)
-;;                                       (shell-quote-argument full-path)))
-;;                              "\n" t))
-;;                      (selected-line
-;;                       (completing-read
-;;                        (format "Results in %s (C-g=back): "
-;;                                (file-name-nondirectory selected-file))
-;;                        lines nil t)))
-;;                 ;; 성공 → 파일 열고 종료
-;;                 (call-process "open" nil 0 nil full-path)
-;;                 (throw 'exit nil))
-;;             (quit
-;;              ;; 2단계 C-g → 아무것도 안 하고 while 계속
-;;              (message "Back to file list"))))))))
-
-
 
 ;; ======================================
 ;;; Main Function
@@ -159,7 +132,7 @@ end tell" full-path page-num))
   (let* ((choice (completing-read "Search Content in: " my-search-path-targets))
          (path (cdr (assoc choice my-search-path-targets))))
     (if (string-match-p "PDF" choice)
-	(my-consult-ripgrep-pdf-grouped)
+	(my-rga-skim-search)
       (my--ripgrep-in-dir path))))
 
 ;; ======================================
