@@ -105,33 +105,14 @@
   (setq ns-right-option-modifier 'control)) ;'control
 
 ;; =======================================
-;;; macOS Input Source Control (im-select)
-;; =======================================
-;; im-select 설치를 위한 탭 추가 및 설치
-;; brew tap daipeihust/tap
-;; brew install im-select
-(defvar my/im-select-path nil
-  "im-select 실행 파일 경로 캐시")
-
-(defun my/mac-switch-to-english ()
-  "Switches macOS input method to English when Emacs gains focus."
-  (when (and my-macOS-p (display-graphic-p))
-    (unless my/im-select-path
-      (setq my/im-select-path (executable-find "im-select")))
-    (when my/im-select-path
-      (call-process my/im-select-path nil 0 nil "com.apple.keylayout.ABC"))))
-
-(add-hook 'focus-in-hook #'my/mac-switch-to-english)   ;; macOS input-method
-(add-hook 'focus-in-hook #'my/deactivate-input-method) ;; emacs input-method
-
-;; =======================================
 ;;; Emacs UI and behavior
 ;; =======================================
 (use-package emacs
   :init
   (setq default-directory (expand-file-name "~/Dropbox/Docs/org")
         temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
-  :hook (text-mode . visual-line-mode)
+  :hook ((text-mode . visual-line-mode)
+	 (focus-in . my/deactivate-input-method))
   :custom
   ;; UI 및 상태 정보 관련
   (use-short-answers t)               ; y/n으로 대답 단축
