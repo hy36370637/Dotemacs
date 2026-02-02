@@ -96,14 +96,14 @@
   :group 'editing
   :type '(alist :key-type character :value-type (plist)))
 
-(defun my--enable-tab-escape ()
-  "Enable a temporary TAB binding to jump out of brackets or emphasis markers"
-  (set-transient-map
-   (let ((map (make-sparse-keymap)))
-     (define-key map (kbd "TAB")
-                 (lambda () (interactive) (forward-char 1)))
-     map)
-   t))
+;; (defun my--enable-tab-escape ()
+;;   "Enable a temporary TAB binding to jump out of brackets or emphasis markers"
+;;   (set-transient-map
+;;    (let ((map (make-sparse-keymap)))
+;;      (define-key map (kbd "TAB")
+;;                  (lambda () (interactive) (forward-char 1)))
+;;      map)
+;;    t))
 
 (defun my-pair-pairs-wrap (char &optional _target)
   "Enclose the active region or the word at point with a pair of CHARs."
@@ -127,8 +127,8 @@
         (goto-char start)            ;앞쪽 여는 기호 삽입
         (insert (if (characterp open) (char-to-string open) open)))
 
-      (my--enable-tab-escape)
-      (message "'%s' 완료 (TAB으로 탈출)" (plist-get (cdr entry) :description)))))
+      ;; (my--enable-tab-escape)
+      (message "'%s' 완료" (plist-get (cdr entry) :description)))))
 
 (with-eval-after-load 'embark
   (dolist (map (list embark-symbol-map

@@ -90,13 +90,14 @@ end tell" full-path page-num))
 ;; ======================================
 ;;; Main Function
 ;; ======================================
+
 ;;; ###autoload
 (defun my-search-unified (&optional query)
   "Unified search interface for Web and Local files.
 Select between Web engines or Local paths for the given QUERY."
   (interactive 
    (list (read-string "Search query: " (thing-at-point 'symbol t))))
-  (let* (;; 전달받은 query가 없으면(직접 실행 시) interactive에서 받은 값 사용
+  (let* (;; Use the provided query; if nil, fall back to the symbol at point.
          (search-term (or query (thing-at-point 'symbol t)))
          (web-options (mapcar #'car my-search-engines))
          (local-options (mapcar #'car my-search-path-targets))
@@ -105,23 +106,23 @@ Select between Web engines or Local paths for the given QUERY."
          (web-config (assoc choice my-search-engines))
          (local-path (cdr (assoc choice my-search-path-targets))))
     (cond
-     ;; CASE 1: 웹 엔진 선택
+     ;; CASE 1: Web Engine Selection
      (web-config
       (let ((url (my--get-search-url choice search-term)))
         (if (and url (not (string-empty-p url)))
             (my--open-url url)
-          (message "잘못된 URL 설정."))))
+          (message "Invalid URL configuration."))))
      
-     ;; CASE 2: PDF 로컬 경로 선택
+     ;; CASE 2: Local PDF Path Selection
      ((and local-path (string-match-p "PDF" choice))
       (my-rga-skim-search search-term))
      
-     ;; CASE 3: 일반 로컬 경로 선택
+     ;; CASE 3: Standard Local Path Selection
      (local-path
       (let ((default-directory (expand-file-name local-path)))
         (consult-ripgrep default-directory search-term)))
      
-     (t (message "알 수 없는 선택.")))))
+     (t (message "Unknown selection.")))))
 
 ;; ======================================
 ;;; Embark Integration

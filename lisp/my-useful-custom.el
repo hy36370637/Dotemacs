@@ -82,8 +82,9 @@
       (call-interactively #'query-replace-regexp))))
 
 (defun my/deactivate-input-method (&rest _args)
-  "Deactivate current input method"
-  (when current-input-method
+  "Deactivate current input method."
+  (interactive)
+  (when (and (boundp 'current-input-method) current-input-method)
     (deactivate-input-method)))
 
 ;;; ###autoload

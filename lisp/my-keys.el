@@ -3,9 +3,13 @@
 ;; ======================================
 ;;; Helper Functions
 ;; ======================================
-;; (defun my/invoke-my-prefix ()
-;;   (interactive)
-;;   (my/prefix-with-english my-emacs-prefix-map))
+(defun my/prefix-with-ime-deactivation ()
+  "Deactivate the input method and enable 'my-emacs-prefix-map'.
+This ensures a clean English input state before executing prefix commands."
+  (interactive)
+  (my/deactivate-input-method)
+  (let ((map (symbol-value 'my-emacs-prefix-map)))
+    (set-transient-map map t)))
 
 ;; =======================================
 ;;; Sub-Prefix Maps
@@ -100,7 +104,8 @@
 ;; =======================================
 ;;; Key-binding
 ;; =======================================
-(keymap-set global-map "M-SPC" my-emacs-prefix-map)
+;; (keymap-set global-map "M-SPC" my-emacs-prefix-map)
+(keymap-set global-map "M-SPC" #'my/prefix-with-ime-deactivation)
 
 
 (provide 'my-keys)

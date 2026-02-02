@@ -111,6 +111,7 @@
   :init
   (setq default-directory (expand-file-name "~/Dropbox/Docs/org")
         temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
+  
   :hook ((text-mode . visual-line-mode)
 	 (focus-in . my/deactivate-input-method))
   :custom
@@ -134,9 +135,9 @@
   (kill-whole-line 1)                 ; 줄 전체 삭제 시 줄바꿈까지 삭제
   (global-auto-revert-mode t)         ; 외부에서 변경된 파일 자동 새로고침
   (next-line-add-newlines nil)        ; 문서 끝에서 C-n 눌러도 새 줄 추가 안 함
-  ;; :config
-  ;; (setq enable-recursive-minibuffers t)
-  ;; (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
+  (enable-recursive-minibuffers t)    ; 미니버퍼 내에서 다른 미니버퍼 호출 허용
+  :config
+  (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
   :bind
   (("C-x z" . nil)
    ("M-;" . comment-line)
