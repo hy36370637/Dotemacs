@@ -3,20 +3,19 @@
 ;; ======================================
 ;;; Helper Functions
 ;; ======================================
-(defun my/prefix-with-ime-deactivation ()
+(defun my-prefix-with-ime-deactivation ()
   "Deactivate the input method and enable 'my-emacs-prefix-map'.
 This ensures a clean English input state before executing prefix commands."
   (interactive)
   (my/deactivate-input-method)
-  (let ((map (symbol-value 'my-emacs-prefix-map)))
-    (set-transient-map map t)))
+  (which-key-show-keymap 'my-emacs-prefix-map my-emacs-prefix-map)
+  (set-transient-map my-emacs-prefix-map t))
 
 ;; =======================================
 ;;; Sub-Prefix Maps
 ;; =======================================
 (defvar-keymap my-edit-prefix-map
   :name "Edit"
-  ;; "d" #'my-pair-delete
   "r" #'my-query-replace-regexp-dwim
   "t" #'my-today-stamp
   "w" #'my-pair-pairs-wrap)
@@ -71,7 +70,7 @@ This ensures a clean English input state before executing prefix commands."
 
 (which-key-add-keymap-based-replacements my-line-prefix-map
   "a" "Above line"
-  "c" "Current Line"
+  "c" "Current line"
   "d" "Duplicate"
   "l" "Left select"
   "r" "Right select"
@@ -99,13 +98,13 @@ This ensures a clean English input state before executing prefix commands."
   "r" "Register"
   "s" "Search"
   "t" "Today's"
-  "v" "Viewer")
+  "v" "ViewMode")
 
 ;; =======================================
 ;;; Key-binding
 ;; =======================================
 ;; (keymap-set global-map "M-SPC" my-emacs-prefix-map)
-(keymap-set global-map "M-SPC" #'my/prefix-with-ime-deactivation)
+ (keymap-set global-map "M-SPC" #'my-prefix-with-ime-deactivation)
 
 
 (provide 'my-keys)

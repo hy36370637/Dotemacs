@@ -141,6 +141,7 @@
   :bind
   (("C-x z" . nil)
    ("M-;" . comment-line)
+   ("M-s u" . my-search-unified)
    ("<escape>" . keyboard-quit)
    ;; ("C-c E". my-window-popup-eshell)
    ("C-x m" . my-pair-pairs-wrap)
@@ -319,7 +320,9 @@
 (use-package which-key
   :ensure nil
   :init (which-key-mode)
-  :custom (which-key-idle-delay 0.2))
+  :custom
+  (which-key-show-transient-maps t)
+  (which-key-idle-delay 0.2))
 
 ;; =======================================
 ;;; Eshell
