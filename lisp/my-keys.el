@@ -1,111 +1,79 @@
-;;; my-keys.el --- Simplified keybindings -*- lexical-binding: t; -*-
+;;; my-keys.el --- Optimized keybindings -*- lexical-binding: t; -*-
 
 ;; ======================================
 ;;; Helper Functions
 ;; ======================================
+(defmacro my/defkeymap (name map-name &rest bindings)
+  "Define keymap with NAME and BINDINGS, automatically setting up which-key labels."
+  (declare (indent 2))
+  `(progn
+     (defvar-keymap ,name
+       :name ,map-name
+       ,@(mapcan (lambda (binding)
+                   (list (car binding) (caddr binding)))
+                 bindings))
+     (which-key-add-keymap-based-replacements ,name
+       ,@(mapcan (lambda (binding)
+                   (list (car binding) (cadr binding)))
+                 bindings))))
+
+
 (defun my-prefix-with-ime-deactivation ()
-  "Deactivate the input method and enable 'my-emacs-prefix-map'.
-This ensures a clean English input state before executing prefix commands."
+  "Deactivate IME and show master keymap."
   (interactive)
   (my/deactivate-input-method)
   (which-key-show-keymap 'my-emacs-prefix-map my-emacs-prefix-map)
   (set-transient-map my-emacs-prefix-map t))
 
-;; =======================================
-;;; Sub-Prefix Maps
-;; =======================================
-(defvar-keymap my-edit-prefix-map
-  :name "Edit"
-  "r" #'my-query-replace-regexp-dwim
-  "t" #'my-today-stamp
-  "w" #'my-pair-pairs-wrap)
+;; ======================================
+;;; Keymap Definitions
+;; ======================================
+(my/defkeymap my-edit-prefix-map "Edit"
+  ("i" "Indent dwim"      #'my-simple-indent-dwim)
+  ("r" "Regexp replace"   #'my-query-replace-regexp-dwim)
+  ("d" "Today stamp"      #'my-today-stamp)
+  ("w" "Pairs wrap"       #'my-pair-pairs-wrap))
 
-(defvar-keymap my-line-prefix-map
-  :name "Line"
-  "a" #'my-newline-above
-  "c" #'my-select-current-line
-  "d" #'my-duplicate-dwim
-  "l" #'my-select-line-left
-  "r" #'my-select-line-right
-  "n" #'my-newline)
+(my/defkeymap my-line-prefix-map "Line"
+  ("a" "Above line"       #'my-newline-above)
+  ("c" "Current line"     #'my-select-current-line)
+  ("d" "Duplicate"        #'my-duplicate-dwim)
+  ("l" "Left select"      #'my-select-line-left)
+  ("r" "Right select"     #'my-select-line-right)
+  ("n" "New line"         #'my-newline))
 
-(defvar-keymap my-search-prefix-map
-  :name "Search"
-  "g" #'consult-grep
-  "l" #'consult-line
-  "o" #'consult-outline
-  "u" #'my-search-unified
-  "m" #'consult-imenu
-  "w" #'my-search-weather)
+(my/defkeymap my-search-prefix-map "Search"
+  ("g" "Grep"             #'consult-grep)
+  ("l" "Line"             #'consult-line)
+  ("o" "Outline"          #'consult-outline)
+  ("u" "Unified search"   #'my-search-unified)
+  ("m" "Imenu"            #'consult-imenu)
+  ("w" "Weather"          #'my-search-weather))
 
-(defvar-keymap my-media-prefix-map
-  :name "Media"
-  "P" #'my-radio-play 
-  "S" #'my-radio-stop
-  "i" #'my-org-insert-image
-  "p" #'my-insert-image-path
-  "s" #'my-org-screenshot)
+(my/defkeymap my-media-prefix-map "Media"
+  ("P" "Play radio"       #'my-radio-play)
+  ("S" "Stop radio"       #'my-radio-stop)
+  ("i" "Insert img"       #'my-org-insert-image)
+  ("p" "Path img"         #'my-insert-image-path)
+  ("s" "Screenshot"       #'my-org-screenshot))
 
-;; =======================================
-;;; Master Keymap
-;; =======================================
-(defvar-keymap my-emacs-prefix-map
-  :name "Master"
-  "e" my-edit-prefix-map
-  "l" my-line-prefix-map
-  "m" my-media-prefix-map
-  "r" #'jump-to-register
-  "s" my-search-prefix-map
-  "t" #'my-todays-pop
-  "v" #'view-mode)
+(my/defkeymap my-emacs-prefix-map "Master"
+  ("d" "Today's"          #'my-todays-pop)
+  ("e" "Edit"             my-edit-prefix-map)
+  ("f" "Full"             #'toggle-frame-fullscreen)
+  ("l" "Line"             my-line-prefix-map)
+  ("m" "Media"            my-media-prefix-map)
+  ("r" "Register"         #'jump-to-register)
+  ("s" "Search"           my-search-prefix-map)
+  ("u" "Usearch"          #'my-search-unified))
 
-;; =======================================
-;;; Which-key lable
-;; =======================================
-(which-key-add-keymap-based-replacements my-edit-prefix-map
-  ;; "d" "pairs delete"
-  "r" "Regexp replace"
-  "t" "Today stamp"
-  "w" "pairs Wrap")
+;; ======================================
+;;; Global Binding
+;; ======================================
+(keymap-set global-map "M-SPC" #'my-prefix-with-ime-deactivation)
 
-(which-key-add-keymap-based-replacements my-line-prefix-map
-  "a" "Above line"
-  "c" "Current line"
-  "d" "Duplicate"
-  "l" "Left select"
-  "r" "Right select"
-  "n" "New line")
 
-(which-key-add-keymap-based-replacements my-search-prefix-map
-  "g" "Grep"
-  "l" "Line"
-  "o" "Outline"
-  "u" "Unified Search"
-  "m" "Imenu"
-  "w" "Weather")
-
-(which-key-add-keymap-based-replacements my-media-prefix-map
-  "P" "Play radio"
-  "S" "Stop radio"
-  "i" "Insert img"
-  "p" "Path img"
-  "s" "Screenshot")
-
-(which-key-add-keymap-based-replacements my-emacs-prefix-map
-  "e" "Edit"
-  "l" "Line"
-  "m" "Media"
-  "r" "Register"
-  "s" "Search"
-  "t" "Today's"
-  "v" "ViewMode")
-
-;; =======================================
-;;; Key-binding
-;; =======================================
-;; (keymap-set global-map "M-SPC" my-emacs-prefix-map)
- (keymap-set global-map "M-SPC" #'my-prefix-with-ime-deactivation)
 
 
 (provide 'my-keys)
-;;; my-keys.el end here
+;;; my-keys.el ends here

@@ -140,12 +140,12 @@
   (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
   :bind
   (("C-x z" . nil)
+   ("C-x m" . nil)
+   ("C-x f" . nil)
    ("M-;" . comment-line)
    ("M-s u" . my-search-unified)
-   ("<escape>" . keyboard-quit)
+   ("<escape>" . keyboard-quit)))
    ;; ("C-c E". my-window-popup-eshell)
-   ("C-x m" . my-pair-pairs-wrap)
-   ("C-x f" . toggle-frame-fullscreen)))
 
 (use-package time
   :ensure nil
@@ -254,7 +254,7 @@
   :config
   (setq modus-themes-mixed-fonts t)
   (setq modus-themes-italic-constructs t)
-  (modus-themes-load-theme 'ef-owl))
+  (modus-themes-load-theme 'ef-symbiosis))
 
 ;; =======================================
 ;;; Session and Place Persistence

@@ -87,12 +87,24 @@
     (deactivate-input-method)))
 
 ;;; ###autoload
-(defun my-open-in-finder ()
-  "Open current file in Finder"
-  (interactive)
-  (shell-command (concat "open -R " (shell-quote-argument buffer-file-name))))
-  
+;; (defun-open-in-finder ()
+;;   "Open current file in Finder"
+;;   (interactive)
+;;   (shell-command (concat "open -R " (shell-quote-argument buffer-file-name))))
 
+;;https://github.com/protesilaos/dotfiles
+;;;###autoload
+(defun my-simple-indent-dwim ()
+  "Indent the current defun in `prog-mode' or paragraph in `text-mode'."
+  (interactive)
+  (save-excursion
+    (cond
+     ((derived-mode-p 'prog-mode)
+      (mark-defun))
+     ((derived-mode-p 'text-mode)
+      (mark-paragraph)))
+    (indent-for-tab-command)
+    (deactivate-mark)))
 
 
 (provide 'my-useful-custom)

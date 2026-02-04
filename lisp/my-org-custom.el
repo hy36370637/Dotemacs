@@ -162,6 +162,7 @@ If ARG is non-nil, insert at the end of the current outline node."
 	 ;; ("C-c C" . my-org-popup-capture)
          :map org-mode-map
          ("C-c C-x d" . my-org-insert-drawer-custom)
+	 ("C-," . my-pair-pairs-wrap)
 	 ("M-," . org-insert-structure-template))
   :custom
   ;; (org-directory (expand-file-name "~/Dropbox/Docs/org")) ; -> init.el
