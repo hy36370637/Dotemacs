@@ -102,6 +102,16 @@ If ARG is non-nil, insert at the end of the current outline node."
               muldae)
             tide-times)))
 
+(defun my-paste-with-parentheses ()
+  "Insert the clipboard content enclosed in parentheses ().
+Supports both the macOS and the Emacs kill ring."
+  (interactive)
+  (let ((text (gui-get-selection 'CLIPBOARD 'STRING)))
+    (unless text
+      (setq text (current-kill 0)))
+    (if (and text (not (string-empty-p text)))
+        (insert (format "(%s)" text))
+      (message "Clipboard is empty."))))
 
 ;; (defun my-org-generate-toc ()
 ;;   "Auto-generate table of contents(PDF Export 제외)."
@@ -163,6 +173,7 @@ If ARG is non-nil, insert at the end of the current outline node."
          :map org-mode-map
          ("C-c C-x d" . my-org-insert-drawer-custom)
 	 ("C-," . my-pair-pairs-wrap)
+	 ("C-M-y" . my-paste-with-parentheses)
 	 ("M-," . org-insert-structure-template))
   :custom
   ;; (org-directory (expand-file-name "~/Dropbox/Docs/org")) ; -> init.el

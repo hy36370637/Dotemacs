@@ -32,7 +32,8 @@
   ("i" "Indent dwim"      #'my-simple-indent-dwim)
   ("r" "Regexp replace"   #'my-query-replace-regexp-dwim)
   ("d" "Today stamp"      #'my-today-stamp)
-  ("w" "Pairs wrap"       #'my-pair-pairs-wrap))
+  ("w" "Pairs wrap"       #'my-pair-pairs-wrap)
+  ("%" "Replace"          #'query-replace))
 
 (my/defkeymap my-line-prefix-map "Line"
   ("a" "Above line"       #'my-newline-above)
@@ -60,7 +61,7 @@
 (my/defkeymap my-emacs-prefix-map "Master"
   ("d" "Today's"          #'my-todays-pop)
   ("e" "Edit"             my-edit-prefix-map)
-  ("f" "Full"             #'toggle-frame-fullscreen)
+  ("F" "Full"             #'toggle-frame-fullscreen)
   ("l" "Line"             my-line-prefix-map)
   ("m" "Media"            my-media-prefix-map)
   ("r" "Register"         #'jump-to-register)
