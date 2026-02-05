@@ -56,10 +56,12 @@ Format placeholders:
 (unless kasi-api-key
   (kasi-load-api-key))
 
+
 (defun kasi-get-xml-text (item-node tag)
   "Extract text content from TAG in ITEM-NODE."
   (when-let ((child (car (xml-get-children item-node tag))))
     (car (xml-node-children child))))
+
 
 (defun kasi-get-lunar-date (year month day)
   "Fetch lunar date for given YEAR, MONTH, DAY from KASI API."
@@ -83,6 +85,7 @@ Format placeholders:
                     :leap (kasi-get-xml-text item 'lunLeapmonth)))))
       (kill-buffer buffer))))
 
+
 (defun my-calculate-muldae (lunar-day)
   "Calculate tide cycle position from LUNAR-DAY (8-cycle system for Nokdong)."
   (let ((day (string-to-number lunar-day)))
@@ -94,6 +97,7 @@ Format placeholders:
      ((= day 23) 0)
      ((<= 24 day 30) (- day 23))
      (t 1))))
+
 
 (defun my-lunar-date-string ()
   "Return today's lunar date string in format: (음) YYYY-MM-DD."
@@ -128,6 +132,7 @@ Format placeholders:
             (list :data (if (listp tide-data) tide-data (list tide-data))))))
     (error nil)))
 
+
 (defun nokdong-tide-format-tide-times (tide-data date-str)
   "Format TIDE-DATA for DATE-STR into (HIGH-TIMES . LOW-TIMES) cons."
   (let ((target-date (format "%s-%s-%s" 
@@ -147,6 +152,7 @@ Format placeholders:
     (cons (string-join (sort high-times #'string<) " ")
           (string-join (sort low-times #'string<) " "))))
 
+
 (defun nokdong-tide-fetch-tide-times (date-str)
   "Fetch tide times for DATE-STR and return (HIGH-TIMES . LOW-TIMES)."
   (when-let ((buffer (url-retrieve-synchronously 
@@ -164,23 +170,27 @@ Format placeholders:
               (nokdong-tide-format-tide-times tide-data date-str))))
       (kill-buffer buffer))))
 
-(defun my-format-tide-info ()
-  "Return today's tide info as (TIDE-STRING . MULDAE-STRING)."
-  (let* ((now (decode-time))
-         (year (format "%04d" (nth 5 now)))
-         (month (format "%02d" (nth 4 now)))
-         (day (format "%02d" (nth 3 now)))
+
+(defun my-format-tide-info (&optional days-offset)
+  "Return tide info for today + DAYS-OFFSET as (TIDE-STRING . MULDAE-STRING).
+DAYS-OFFSET is an integer (0 for today, 1 for tomorrow, etc.)."
+  (let* ((offset (or days-offset 0))
+         (target-time (time-add (current-time) (days-to-time offset)))
+         (decoded (decode-time target-time))
+         (year (format "%04d" (nth 5 decoded)))
+         (month (format "%02d" (nth 4 decoded)))
+         (day (format "%02d" (nth 3 decoded)))
          (date-str (concat year month day))
          (lunar (kasi-get-lunar-date year month day))
          (muldae-str " (물때 정보 없음)")
          (tide-string "- 조석 정보 조회 실패"))
     
-    ;; Get Muldae
+    ;; 물때 계산 (음력 기준)
     (when lunar
       (let ((muldae (my-calculate-muldae (plist-get lunar :day))))
         (setq muldae-str (format " (%s)" (if (zerop muldae) "조금" (format "%d물" muldae))))))
     
-    ;; Get Tide Times
+    ;; 조석 시각 조회 (KASI API)
     (when-let ((tide-times (nokdong-tide-fetch-tide-times date-str)))
       (let ((high (if (string-empty-p (car tide-times)) "정보 없음" (car tide-times)))
             (low (if (string-empty-p (cdr tide-times)) "정보 없음" (cdr tide-times))))
@@ -216,6 +226,7 @@ Format placeholders:
                         (t "어제와 같아요"))))
       (format my-weather-format-template weather-normalized lowest highest comparison))))
 
+
 (defun my--format-weekly-weather (dom)
   "Extract and format weekly weather forecast from DOM."
   (when-let* ((weekly-forecast (dom-by-class dom "week_item"))
@@ -229,8 +240,9 @@ Format placeholders:
                                      (highest (string-trim (string-replace "최고기온" "" 
                                                                            (dom-texts (dom-by-class day "highest"))))))
                                 (format "- %s: %s, 최저/최고 %s/%s" date weather lowest highest)))
-                            (seq-take (cdr weekly-forecast) 6))))  ; Skip today, take next 6 days
+                            (seq-take (cdr weekly-forecast) 4))))  ; Skip today, take next 6 days
     (string-join weekly-data "\n")))
+
 
 (defun my--get-weather-info-sync ()
   "Get weather info synchronously with caching (5-minute cache).
@@ -282,20 +294,7 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
             (replace-regexp-in-string "[ \t\n\*]+$" "" raw-result))
         "No quotes found in cReading.org"))))
 
-(defun my-emacs-copyright ()
-  "Return Emacs copyright with current year."
-  (format "Copyright © 1996-%s,  Free Software Foundation, Inc."
-          (format-time-string "%Y")))
 
-;; (defun my-Ddays ()
-;;   "Calculate days until/since 2024-12-31."
-;;   (let ((diff-days (floor (/ (float-time (time-subtract (current-time)
-;;                                                         (encode-time 0 0 0 16 12 2025)))
-;; ;;                                                      (encode-time 0 0 0 31 12 2024)))
-;;                              86400))))
-;;     (if (> diff-days 0)
-;;         (format "/  %d일 경과" diff-days)
-;;       (format "/ D-day %d일前" (- diff-days)))))
 
 (defun my-format-agenda-string ()
   "Get formatted 3-day agenda with bullets, removing trailing empty lines."
@@ -311,18 +310,19 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
 ;;; Main Function
 ;; ======================================
 (defun my-todays-pop ()
-  "Display today's info in a popup buffer."
+  "Display today's and tomorrow's info in a popup buffer."
   (interactive)
   (let* ((buffer (get-buffer-create "*Today info*"))
          (current-date (format-time-string "● 오늘: %Y-%m-%d (%a) /"))
          (lunar-date (my-lunar-date-string))
-         ;; (d-day (my-Ddays))
          (weather-data (my--get-weather-info-sync))
          (today-weather (when weather-data (car weather-data)))
          (weekly-weather (when weather-data (cdr weather-data)))
-         (tide-result (my-format-tide-info))
-         (tide-info (car tide-result))
-         (muldae-str (cdr tide-result))
+         
+         ;; 오늘 및 내일 조석 정보 가져오기
+         (tide-today (my-format-tide-info 0))
+         (tide-tomorrow (my-format-tide-info 1))
+         
          (agenda (my-format-agenda-string))
          (quote (get-random-quote-from-creading))
          (indent-4 "    ")
@@ -331,14 +331,11 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
     (with-current-buffer buffer
       (let ((inhibit-read-only t))
         (erase-buffer)
-      ;;  (buffer-face-set 'fixed-pitch)       ; 버퍼 전체에 고정폭 폰트(Noto Sans Mono CJK KR) 적용
         
         ;; Header
-	;;   (fancy-splash-head)
         (insert indent-8 (my-emacs-copyright) "\n")
         
-        ;; Date (without inline weather)
-        ;; (insert indent-4 current-date lunar-date " " d-day "\n")
+        ;; Date
         (insert indent-4 current-date lunar-date "\n")
         
         ;; Weather Section
@@ -347,16 +344,20 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
           (insert indent-8 today-weather "\n")
           (insert (replace-regexp-in-string "^" indent-8 weekly-weather)))
         
-        ;; Tide
-        (insert (format "\n%s● 조석: %s\n" indent-4 
-                        (substring muldae-str 2 -1)))  ; Remove " (" and ")"
-        (insert (replace-regexp-in-string "^" indent-8 tide-info))
-	
+        ;; Tide Section (Today & Tomorrow)
+        (insert (format "\n%s● 조석 (오늘): %s\n" indent-4 
+                        (substring (cdr tide-today) 2 -1)))
+        (insert (replace-regexp-in-string "^" indent-8 (car tide-today)))
+        
+        (insert (format "\n%s● 조석 (내일): %s\n" indent-4 
+                        (substring (cdr tide-tomorrow) 2 -1)))
+        (insert (replace-regexp-in-string "^" indent-8 (car tide-tomorrow)))
+        
         ;; Agenda
         (insert (format "\n%s● 일정\n" indent-4))
         (insert (replace-regexp-in-string "^" indent-8 agenda))
         
-	;; Quote
+        ;; Quote
         (insert (format "\n%s● 글말: " indent-4))
         (let* ((quote-lines (split-string quote "\n"))
                (title (car quote-lines))
@@ -366,12 +367,11 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
             (dolist (line content-lines)
               (let ((trimmed (string-trim line)))
                 (unless (string-empty-p trimmed)
-                  ;; 줄 시작이 '-'가 아니면 "- "를 붙여서 출력
                   (let ((formatted-line (if (string-prefix-p "-" trimmed)
                                             trimmed
                                           (concat "- " trimmed))))
                     (insert (format "%s%s\n" indent-8 formatted-line))))))))
-	
+        
         ;; Setup buffer
         (goto-char (point-min))
         (forward-line 1)

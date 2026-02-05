@@ -5,7 +5,7 @@
 ;; ======================================
 (defvar my-radio-process-name "my-radio-mpv")
 (defvar my-radio-mmslist (expand-file-name "mmslist" (or (bound-and-true-p my/lisp-path) user-emacs-directory)))
-(defvar my-radio-default-volume 70 "Default startup volume (0-100)")
+(defvar my-radio-default-volume 80 "Default startup volume (0-100)")
 
 ;; ======================================
 ;;; Core Functions
