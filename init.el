@@ -90,6 +90,7 @@
 (require 'my-search)
 (require 'my-todays-pop)
 (require 'my-radio-direct)
+(require 'my-viewmode-custom)
 (require 'my-keys)
 
 ;; =======================================
