@@ -115,6 +115,7 @@
   
   :hook ((text-mode . visual-line-mode)
 	 (focus-in . my/deactivate-input-method))
+  
   :custom
   ;; UI 및 상태 정보 관련
   (use-short-answers t)               ; y/n으로 대답 단축
@@ -134,15 +135,15 @@
   (global-mark-ring-max 32)           ; 전체 버퍼 마크 저장 개수
   ;; 편집 행동 관련
   (kill-whole-line 1)                 ; 줄 전체 삭제 시 줄바꿈까지 삭제
-  (global-auto-revert-mode t)         ; 외부에서 변경된 파일 자동 새로고침
   (next-line-add-newlines nil)        ; 문서 끝에서 C-n 눌러도 새 줄 추가 안 함
   (enable-recursive-minibuffers t)    ; 미니버퍼 내에서 다른 미니버퍼 호출 허용
+  (create-lockfiles nil)
   :config
   (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
   :bind
   (("C-x z" . nil)
    ("C-x m" . nil)
-   ("C-x f" . nil)
+   ("C-x f" . toggle-frame-fullscreen)
    ("M-;" . comment-line)
    ("M-s u" . my-search-unified)
    ("<escape>" . keyboard-quit)))
@@ -156,6 +157,21 @@
   (display-time-day-and-date t)
   (display-time-load-average nil))  ; mode-line-misc-info average nil
 
+
+;; =======================================
+;;; Auto-revert (Dropbox Sync Optimization)
+;; =======================================
+(use-package autorevert
+  :ensure nil
+  :custom
+  (auto-revert-interval 60)         ; 60초 간격
+  (auto-revert-check-vc-info t)
+  (global-auto-revert-non-file-buffers t)
+  :hook (focus-in . (lambda ()
+                      (when (fboundp 'auto-revert-buffers)
+                        (auto-revert-buffers))))
+  :config
+  (global-auto-revert-mode t))
 ;; ========================================================
 ;; Window Management (Macbook Air 13")
 ;; ========================================================
