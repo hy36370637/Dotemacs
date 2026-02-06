@@ -77,6 +77,31 @@
       (setq insert-directory-program (or gls-prog "ls")
             dired-use-ls-dired (if gls-prog t nil)))))
 
+
+;; =======================================
+;;; Native Compilation Settings 
+;; =======================================
+(when (and my-macOS-p (fboundp 'native-comp-available-p) (native-comp-available-p))
+  (let* ((gcc-bin "/opt/homebrew/bin/gcc-15")
+         (gcc-lib-1 "/opt/homebrew/lib/gcc/15")
+         (gcc-lib-2 "/opt/homebrew/Cellar/gcc/15.2.0/lib/gcc/current/gcc/aarch64-apple-darwin24/15")
+         (sdk-lib "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"))
+
+    ;; 1. 컴파일러 실행 파일 경로 설정
+    (setq native-comp-driver-path gcc-bin)
+
+    ;; 2. LIBRARY_PATH 통합 설정
+    ;; gcc 내부 라이브러리(emutls_w)와 시스템 SDK(System) 경로를 모두 포함합니다.
+    (setenv "LIBRARY_PATH" 
+            (concat (getenv "LIBRARY_PATH") ":" 
+                    gcc-lib-1 ":" 
+                    gcc-lib-2 ":" 
+                    sdk-lib))
+
+    ;; 3. 비동기 컴파일 경고/에러 팝업 억제
+    (setq native-comp-async-report-warnings-errors 'silent)))
+
+
 ;; =======================================
 ;;; Load custom packages
 ;; =======================================
