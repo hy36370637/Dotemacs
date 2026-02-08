@@ -125,12 +125,14 @@
 
 (defun my-open-pdf-with-external-app ()
   "Open PDF files via macOS default application and terminate the Emacs buffer.
-This bypasses DocView by delegating PDF rendering to the system viewer."
+This ensures a seamless transition to the system viewer for reliable rendering."
   (interactive)
   (let ((file-path (buffer-file-name)))
-    (when (and file-path (string-equal (file-name-extension file-path) "pdf"))
-      (kill-buffer (current-buffer))
-      (start-process "pdf-external-open" nil "open" file-path))))
+    (if (and file-path (file-exists-p file-path))
+        (progn
+          (start-process "pdf-external-open" nil "open" file-path)
+          (kill-buffer (current-buffer)))
+      (message "Error: Invalid file path or file does not exist."))))
 
 (add-to-list 'auto-mode-alist '("\\.pdf\\'" . my-open-pdf-with-external-app))
 
