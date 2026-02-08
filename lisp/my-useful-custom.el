@@ -18,6 +18,7 @@
           (insert (funcall action))
         (insert (format-time-string action))))))
 
+
 ;;; ###autoload
 (defun my-select-current-line ()
  "Select the entire current line as an active region."
@@ -120,6 +121,19 @@
   "Return Emacs copyright with current year."
   (format "Copyright © 1996-%s,  Free Software Foundation, Inc."
           (format-time-string "%Y")))
+
+
+(defun my-open-pdf-with-external-app ()
+  "Open PDF files via macOS default application and terminate the Emacs buffer.
+This bypasses DocView by delegating PDF rendering to the system viewer."
+  (interactive)
+  (let ((file-path (buffer-file-name)))
+    (when (and file-path (string-equal (file-name-extension file-path) "pdf"))
+      (kill-buffer (current-buffer))
+      (start-process "pdf-external-open" nil "open" file-path))))
+
+(add-to-list 'auto-mode-alist '("\\.pdf\\'" . my-open-pdf-with-external-app))
+
 
 
 ;; (defun my-Ddays ()
