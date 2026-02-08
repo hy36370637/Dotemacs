@@ -124,8 +124,7 @@
 
 
 (defun my-open-pdf-with-external-app ()
-  "Open PDF files via macOS default application and terminate the Emacs buffer.
-This ensures a seamless transition to the system viewer for reliable rendering."
+  "Open PDF with macOS default app and close buffer."
   (interactive)
   (let ((file-path (buffer-file-name)))
     (if (and file-path (file-exists-p file-path))
@@ -134,7 +133,6 @@ This ensures a seamless transition to the system viewer for reliable rendering."
           (kill-buffer (current-buffer)))
       (message "Error: Invalid file path or file does not exist."))))
 
-(add-to-list 'auto-mode-alist '("\\.pdf\\'" . my-open-pdf-with-external-app))
 
 
 

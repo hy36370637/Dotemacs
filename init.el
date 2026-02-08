@@ -11,6 +11,7 @@
 
 (setq org-directory (expand-file-name "~/Dropbox/Docs/org"))
 
+
 ;; =======================================
 ;;; Custom file
 ;; =======================================
@@ -19,6 +20,7 @@
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
 (load custom-file t t)
+
 
 ;; =======================================
 ;;; Package initialization
@@ -44,11 +46,13 @@
 
 (package-initialize)
 
+
 ;; =======================================
 ;;; System info
 ;; =======================================
 (defvar my-macOS-p (eq system-type 'darwin))
 (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
+
 
 ;; =======================================
 ;;; exec-path-from-shell
@@ -59,6 +63,7 @@
   :config
   (setq exec-path-from-shell-variables '("PATH" "MANPATH" "LIBRARY_PATH"))
   (exec-path-from-shell-initialize))
+
 
 ;; =======================================
 ;;; macOS PATH
@@ -118,6 +123,7 @@
 (require 'my-viewmode-custom)
 (require 'my-keys)
 
+
 ;; =======================================
 ;;; MacOS keyboard
 ;; =======================================
@@ -130,6 +136,7 @@
   (setq ns-right-command-modifier 'meta)  ;'meta
   (setq ns-right-option-modifier 'control)) ;'control
 
+
 ;; =======================================
 ;;; Emacs UI and behavior
 ;; =======================================
@@ -137,6 +144,8 @@
   :init
   (setq default-directory (expand-file-name "~/Dropbox/Docs/org")
         temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
+
+  (add-to-list 'auto-mode-alist '("\\.pdf\\'" . my-open-pdf-with-external-app))
   
   :hook ((text-mode . visual-line-mode)
 	 (focus-in . my/deactivate-input-method))
@@ -174,6 +183,7 @@
    ("<escape>" . keyboard-quit)))
    ;; ("C-c E". my-window-popup-eshell)
 
+
 (use-package time
   :ensure nil
   :custom
@@ -197,11 +207,13 @@
                         (auto-revert-buffers))))
   :config
   (global-auto-revert-mode t))
+
+
 ;; ========================================================
 ;; Window Management (Macbook Air 13")
 ;; ========================================================
 (use-package emacs
-  :if my-Macbook-p
+  :if my-macOS-p
   :custom
   (split-window-preferred-direction 'horizontal)
   (window-combination-resize t)
@@ -213,6 +225,7 @@
   (window-min-height 3)
   (window-min-width 30))
 
+
 ;; =======================================
 ;;; Bookmark
 ;; =======================================
@@ -222,6 +235,7 @@
   (bookmark-save-flag 1)
   (bookmark-sort-flag nil)
   (bookmark-default-file (expand-file-name "bookmarks" user-emacs-directory)))
+
 
 ;; =======================================
 ;;; Register
@@ -241,6 +255,7 @@
   :custom
   (register-preview-delay 0.5))
 
+
 ;; =======================================
 ;;; Locale and Korean settings
 ;; =======================================
@@ -253,6 +268,7 @@
   (default-input-method "korean-hangul")
   (input-method-verbose-flag nil)
   (input-method-highlight-flag nil))
+
 
 ;; =======================================
 ;;; Fonts
@@ -280,6 +296,7 @@
                       org-date 
                       org-link)))))
 
+
 ;; =======================================
 ;;; Theme
 ;; =======================================
@@ -298,6 +315,7 @@
   (setq modus-themes-italic-constructs t)
   (modus-themes-load-theme 'ef-symbiosis))
 
+
 ;; =======================================
 ;;; Session and Place Persistence
 ;; =======================================
@@ -311,6 +329,7 @@
 (use-package saveplace
   :ensure nil
   :config (save-place-mode 1))
+
 
 ;; =======================================
 ;;; Icons
@@ -328,6 +347,7 @@
   :after (marginalia nerd-icons)
   :config  (nerd-icons-completion-mode 1))
 
+
 ;; =======================================
 ;;; windmove
 ;; =======================================
@@ -339,6 +359,7 @@
    ("C-x <up>" . windmove-up)
    ("C-x <down>" . windmove-down)))
 
+
 ;; =======================================
 ;;; winner
 ;; =======================================
@@ -346,6 +367,7 @@
   :ensure nil    ;built-in
   :init
   (winner-mode 1))
+
 
 ;; =======================================
 ;;; recentF
@@ -355,6 +377,7 @@
   :custom
   (recentf-max-menu-items 15)
   (recentf-max-saved-items 15))
+
 
 ;; ======================================
 ;;; which-key
@@ -366,6 +389,7 @@
   (which-key-show-transient-maps t)
   (which-key-idle-delay 0.2))
 
+
 ;; =======================================
 ;;; Eshell
 ;; =======================================
@@ -373,6 +397,7 @@
   :defer t
   :custom
   (eshell-destroy-buffer-when-process-dies t))
+
 
 ;; =======================================
 ;;; Modeline
@@ -409,6 +434,7 @@
                 " Ⓨ "
                 mode-line-misc-info))
 
+
 ;; =======================================
 ;;; Battery display
 ;; =======================================
@@ -422,6 +448,7 @@
   :init
   (display-battery-mode 1))
 
+
 ;; =======================================
 ;;; magit
 ;; =======================================
@@ -432,6 +459,7 @@
   ;; Magit이 전체 화면을 차지하지 않고, 현재 창 구성을 최대한 유지
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
+
 ;; =======================================
 ;;; expand-region
 ;; =======================================
@@ -440,6 +468,7 @@
   :bind (("C-=" . er/expand-region)
          ("C-M-=" . er/contract-region)))
 
+
 ;; =======================================
 ;;; eldoc
 ;; =======================================
@@ -447,6 +476,7 @@
   :ensure nil
   :diminish eldoc-mode
   :hook (emacs-lisp-mode . eldoc-mode))
+
 
 ;; =======================================
 ;;; Helpful
@@ -461,6 +491,7 @@
    ("C-h F" . helpful-function))  ; 호출 가능 여부와 상관없이 '함수'만 확인
   :custom
   (helpful-max-lines 50))
+
 
 ;; =======================================
 ;;; Manual Session Management
