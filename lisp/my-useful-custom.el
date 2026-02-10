@@ -29,40 +29,6 @@
 
 
 ;;; ###autoload
-(defun my-newline ()
-  "Insert a new indented line below the current one."
-  (interactive)
-  (move-end-of-line nil)
-  (newline-and-indent))
-
-
-;;; ###autoload
-(defun my-newline-above ()
-  "Insert a new indented line above the current one."
-  (interactive)
-  (move-beginning-of-line nil)
-  (newline-and-indent)
-  (forward-line -1)
-  (indent-according-to-mode))
-
-
-;;; ###autoload
-(defun my-select-line-left ()
-  "Select the region from the current point to the beginning of the line."
-  (interactive)
-  (set-mark (line-beginning-position))
-  (message "Selected to the beginning of the line."))
-
-
-;;; ###autoload
-(defun my-select-line-right ()
-  "Select the region from the current point to the end of the line."
-  (interactive)
-  (set-mark (line-end-position))
-  (message "Selected to the end of the line."))
-
-
-;;; ###autoload
 (defun my-duplicate-dwim ()
   "Duplicate the current region if active, otherwise duplicate the current line."
   (interactive)
@@ -117,7 +83,7 @@
     (deactivate-mark)))
 
 
-(defun my-emacs-copyright ()
+(defun my/emacs-copyright ()
   "Return Emacs copyright with current year."
   (format "Copyright © 1996-%s,  Free Software Foundation, Inc."
           (format-time-string "%Y")))
@@ -132,7 +98,6 @@
           (start-process "pdf-external-open" nil "open" file-path)
           (kill-buffer (current-buffer)))
       (message "Error: Invalid file path or file does not exist."))))
-
 
 
 

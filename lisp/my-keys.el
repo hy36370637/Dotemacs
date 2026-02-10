@@ -31,17 +31,11 @@
 (my/defkeymap my-edit-prefix-map "Edit"
   ("i" "Indent dwim"      #'my-simple-indent-dwim)
   ("r" "Regexp replace"   #'my-query-replace-regexp-dwim)
-  ("d" "Today stamp"      #'my-today-stamp)
-  ("w" "Pairs wrap"       #'my-pair-pairs-wrap)
-  ("%" "Replace"          #'query-replace))
-
-(my/defkeymap my-line-prefix-map "Line"
-  ("a" "Above line"       #'my-newline-above)
   ("c" "Current line"     #'my-select-current-line)
   ("d" "Duplicate"        #'my-duplicate-dwim)
-  ("l" "Left select"      #'my-select-line-left)
-  ("r" "Right select"     #'my-select-line-right)
-  ("n" "New line"         #'my-newline))
+  ("D" "Today stamp"      #'my-today-stamp)
+  ("w" "Pairs wrap"       #'my-pair-pairs-wrap)
+  ("%" "Replace"          #'query-replace))
 
 (my/defkeymap my-search-prefix-map "Search"
   ("g" "Grep"             #'consult-grep)
@@ -62,7 +56,6 @@
   ("d" "Today's"          #'my-todays-pop)
   ("e" "Edit"             my-edit-prefix-map)
   ("F" "Full"             #'toggle-frame-fullscreen)
-  ("l" "Line"             my-line-prefix-map)
   ("m" "Media"            my-media-prefix-map)
   ("r" "Register"         #'jump-to-register)
   ("s" "Search"           my-search-prefix-map)
