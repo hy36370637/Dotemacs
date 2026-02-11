@@ -265,7 +265,27 @@ Supports both the macOS and the Emacs kill ring."
   (org-latex-title-command "\\maketitle\\newpage")
   (org-latex-toc-command "\\tableofcontents\\newpage")
   (org-latex-pdf-process
-   '("latexmk -pdflatex='xelatex -shell-escape -interaction=nonstopmode' -pdf -f %f")))
+   '("latexmk -pdflatex='xelatex -shell-escape -interaction=nonstopmode' -pdf -f %f"))
+  :config
+  (add-to-list 'org-export-options-alist
+               '(:quote-style "QUOTE_STYLE" nil nil t))
+  
+  (defun my/org-latex-filter-blocks (text backend info)
+    "Apply global style to quote/verse blocks based on :quote-style option."
+    (when (org-export-derived-backend-p backend 'latex)
+      ;; (message "DEBUG style: %s" (plist-get info :quote-style))  ;; debug
+      (let ((style (plist-get info :quote-style)))
+	((string= style "1") (format "{\\small\n%s}" text))
+	((string= style "2") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\\small\n%s\\end{tcolorbox}" text))
+	((string= style "3") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\n%s\\end{tcolorbox}" text))
+	((string= style "4") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\\small\n%s\\end{tcolorbox}" text))
+	((string= style "5") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\n%s\\end{tcolorbox}" text))
+	(t text)))))
+
+(add-to-list 'org-export-filter-quote-block-functions
+             #'my/org-latex-filter-blocks)
+(add-to-list 'org-export-filter-verse-block-functions
+             #'my/org-latex-filter-blocks))
 
 ;; ======================================
 ;;; ox-md
