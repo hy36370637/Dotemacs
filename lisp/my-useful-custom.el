@@ -100,6 +100,30 @@
       (message "Error: Invalid file path or file does not exist."))))
 
 
+(defun my-keyboard-quit-dwim ()
+  "Do-what-I-mean quit behavior.
+Handle 'keyboard-quit' based on the current context, such as an active region, open minibuffer, or the Completions buffer."
+  (interactive)
+  (cond
+   ((region-active-p) ; 1. 블록이 잡혀있으면 블록 해제
+    (keyboard-quit))
+   ((derived-mode-p 'completion-list-mode) ; 2. 완성 목록창이 떠 있으면 닫기
+    (delete-completion-window))
+   ((> (minibuffer-depth) 0) ; 3. 미니버퍼가 열려있으면 (포커스 상관없이) 닫기
+    (abort-recursive-edit))
+   (t ; 4. 그 외에는 일반적인 Quit
+    (keyboard-quit))))
+
+
+(defun my-smart-beginning-of-line ()
+  "Move point to first non-whitespace character or `beginning-of-line'."
+  (interactive)
+  (let ((oldpos (point)))
+    (call-interactively 'back-to-indentation)
+    (and (<= oldpos (point))
+	 (/= (line-beginning-position) oldpos)
+	 (call-interactively 'beginning-of-line))))
+
 
 ;; (defun my-Ddays ()
 ;;   "Calculate days until/since 2024-12-31."

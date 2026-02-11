@@ -180,7 +180,9 @@
    ("C-x f" . toggle-frame-fullscreen)
    ("M-;" . comment-line)
    ("M-s u" . my-search-unified)
-   ("<escape>" . keyboard-quit)))
+   ("C-a"      . my-smart-beginning-of-line)
+   ("C-g"      . my-keyboard-quit-dwim)
+   ("<escape>" . my-keyboard-quit-dwim)))
    ;; ("C-c E". my-window-popup-eshell)
 
 
@@ -264,6 +266,11 @@
   (setenv "LANG" "ko_KR.UTF-8")
   (setenv "LC_COLLATE" "C")
   (set-locale-environment "ko_KR.UTF-8")
+  (prefer-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
   :custom
   (default-input-method "korean-hangul")
   (input-method-verbose-flag nil)

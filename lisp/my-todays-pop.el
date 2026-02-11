@@ -47,7 +47,7 @@ Format placeholders:
                                     (file-name-directory 
                                      (or load-file-name buffer-file-name)))))
     (unless (file-exists-p key-file)
-      (error "Not found lunar_api: %s" key-file))
+      (error "lunar_api 파일을 찾을 수 없습니다: %s" key-file))
     (with-temp-buffer
       (insert-file-contents key-file)
       (setq kasi-api-key (string-trim (buffer-string))))))
@@ -69,7 +69,7 @@ Format placeholders:
   (when-let ((buffer (url-retrieve-synchronously 
                       (format "http://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService/getLunCalInfo?solYear=%s&solMonth=%s&solDay=%s&ServiceKey=%s"
                               year month day kasi-api-key)
-                      t nil 5)))    ;최대 5초 기다림
+                      t nil 5)))
     (unwind-protect
         (with-current-buffer buffer
           (goto-char (point-min))
@@ -156,9 +156,9 @@ Format placeholders:
 (defun nokdong-tide-fetch-tide-times (date-str)
   "Fetch tide times for DATE-STR and return (HIGH-TIMES . LOW-TIMES)."
   (when-let ((buffer (url-retrieve-synchronously 
-                      (format "https://apis.data.go.kr/1192136/tideFcstHghLw/GetTideFcstHghLwApiService?serviceKey=%s&obsCode=%s&reqDate=%s&type=json&numOfRows=10"
+                      (format "https://apis.data.go.kr/1192136/tideFcstHghLw/GetTideFcstHghLwApiService?serviceKey=%s&obsCode=%s&reqDate=%s&type=json&numOfRows=5"
                               kasi-api-key nokdong-tide-obs-code date-str)
-                      t nil 5)))    ;최대 5초 기다림
+                      t nil 5)))
     (unwind-protect
         (with-current-buffer buffer
           (goto-char (point-min))
@@ -172,7 +172,7 @@ Format placeholders:
 
 
 (defun my-format-tide-info (&optional days-offset)
-  "음력(물때)과 조석 시각 반환합니다."
+  "음력(물때)과 조석 시각을 각각 독립적으로 시도하여 결과를 반환합니다."
   (let* ((offset (or days-offset 0))
          (target-time (time-add (current-time) (days-to-time offset)))
          (decoded (decode-time target-time))
@@ -180,36 +180,25 @@ Format placeholders:
          (month (format "%02d" (nth 4 decoded)))
          (day (format "%02d" (nth 3 decoded)))
          (date-str (concat year month day))
-         
-         ;; lunar info
-         (lunar (condition-case nil 
-                    (kasi-get-lunar-date year month day) 
-                  (error nil)))
-         
-         ;; tide info 
-         (tide-times (condition-case nil 
-                         (nokdong-tide-fetch-tide-times date-str) 
-                       (error nil)))
-         
+         ;; 1. 음력 데이터 가져오기 (실패해도 진행)
+         (lunar (condition-case nil (kasi-get-lunar-date year month day) (error nil)))
+         ;; 2. 조석 시각 가져오기 (실패해도 진행)
+         (tide-times (condition-case nil (nokdong-tide-fetch-tide-times date-str) (error nil)))
          (muldae-str " (물때 정보 없음)")
          (tide-string "- 조석 정보 조회 실패"))
 
-    ;; lunar string
+    ;; 물때 계산 (음력이 있을 때만)
     (when lunar
       (let ((muldae (my-calculate-muldae (plist-get lunar :day))))
         (setq muldae-str (format " (%s)" (if (zerop muldae) "조금" (format "%d물" muldae))))))
+    
+    ;; 조석 시각 포맷팅 (조석 정보가 있을 때만)
+    (when tide-times
+      (let ((high (if (string-empty-p (car tide-times)) "정보 없음" (car tide-times)))
+            (low (if (string-empty-p (cdr tide-times)) "정보 없음" (cdr tide-times))))
+        (setq tide-string (format "- 간조: %s\n- 만조: %s" low high))))
 
-    ;; tide-time string
-    (if tide-times
-        (let ((high (if (string-empty-p (car tide-times)) "정보 없음" (car tide-times)))
-              (low (if (string-empty-p (cdr tide-times)) "정보 없음" (cdr tide-times))))
-          (setq tide-string (format "- 간조: %s\n- 만조: %s" low high)))
-      ;; 조석 API 호출 자체가 실패한 경우의 메시지
-      (setq tide-string "- 조석 API 응답 없음 (네트워크 확인)"))
-
-    ;; (조석시각 . 물때문자열) 쌍으로 반환
     (cons tide-string muldae-str)))
-
 
 ;; ======================================
 ;;; Weather Functions
@@ -266,9 +255,9 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
              (< (- current-time (car my--weather-cache)) 300))
         (cdr my--weather-cache)
       (when-let ((buffer (url-retrieve-synchronously 
-                          (format "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%s%%20날씨" 
+                          (format "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%s%%20날씨"
                                   (url-hexify-string my-weather-location))
-                          t nil 10)))
+                          t nil 5)))
         (unwind-protect
             (with-current-buffer buffer
               (goto-char (point-min))
@@ -281,7 +270,6 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
                     (setq my--weather-cache (cons current-time result))
                     result))))
           (kill-buffer buffer))))))
-
 
 ;; ======================================
 ;;; Helper Functions
@@ -310,6 +298,7 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
         "No quotes found in cReading.org"))))
 
 
+
 (defun my-format-agenda-string ()
   "Get formatted 3-day agenda with bullets, removing trailing empty lines."
   (with-temp-buffer
@@ -319,7 +308,6 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
     (let ((content (buffer-substring-no-properties (point) (point-max))))
       ;; 마지막 개행 및 공백 제거 후 각 줄 처음에 "- " 추가
       (replace-regexp-in-string "^" "- " (string-trim-right content)))))
-
 
 ;; ======================================
 ;;; Main Function
