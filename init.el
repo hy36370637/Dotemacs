@@ -175,14 +175,15 @@
   :config
   (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
   :bind
-  (("C-x z" . nil)
-   ("C-x m" . nil)
-   ("C-x f" . toggle-frame-fullscreen)
-   ("M-;" . comment-line)
-   ("M-s u" . my-search-unified)
-   ("C-a"      . my-smart-beginning-of-line)
-   ("C-g"      . my-keyboard-quit-dwim)
-   ("<escape>" . my-keyboard-quit-dwim)))
+  (("C-x z"     . nil)
+   ("C-x m"     . nil)
+   ("C-x f"     . toggle-frame-fullscreen)
+   ("C-c C-x w" . my-toggle-window-split-ratio)
+   ("M-;"       . comment-line)
+   ("M-s u"     . my-search-unified)
+   ("C-a"       . my-smart-beginning-of-line)
+   ("C-g"       . my-keyboard-quit-dwim)
+   ("<escape>"  . my-keyboard-quit-dwim)))
    ;; ("C-c E". my-window-popup-eshell)
 
 
@@ -286,9 +287,10 @@
   (set-face-attribute 'default nil :family "Menlo" :height 180)
   (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 1.0)
   (set-fontset-font t 'hangul (font-spec :family "Noto Sans Mono CJK KR"))
-  (set-face-attribute 'variable-pitch nil :family "Noto Sans KR" :height 1.0)
+  (set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR" :height 1.0)
   (setq face-font-rescale-alist '(("Noto Sans Mono CJK KR" . 0.95)
-                                  ("Noto Sans KR" . 0.95)))
+                                  ("Noto Sans CJK KR" . 0.95))) ; KR을 CJK KR로 변경
+  
   (add-hook 'org-mode-hook
             (lambda ()
               (variable-pitch-mode 1)

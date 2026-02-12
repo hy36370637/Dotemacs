@@ -15,12 +15,14 @@
   (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste")
   "pngpaste executable path.")
 
+
 ;; ======================================
 ;;; Helper Functions
 ;; ======================================
 (defun my-org-person-file-path (filename)
   "Construct the full path for a personal org file FILENAME."
   (expand-file-name filename my/org-person-dir))
+
 
 ;;; ###autoload
 (defun my-org-insert-image ()
@@ -31,6 +33,7 @@
     (when (and selected-file (not (file-directory-p selected-file)))
       (insert (format "[[file:%s]]\n" selected-file))
       (org-display-inline-images))))
+
 
 ;;; ###autoload
 (defun my-insert-image-path ()
@@ -45,6 +48,7 @@
           (insert (concat "./" relative-path))
           (message "완료: %s" relative-path))
       (message "선택 취소되었습니다."))))
+
 
 ;;; ###autoload
 (defun my-org-screenshot (chdir name)
@@ -75,6 +79,7 @@
           (message "Image saved successfully: %s" path))
       (error "No image in clipboard or pngpaste execution failed"))))
 
+
 ;;; ###autoload
 (defun my-org-insert-drawer-custom (&optional arg drawer)
   "Prompt the user to select and insert a drawer from an expanded list.
@@ -87,6 +92,7 @@ If ARG is non-nil, insert at the end of the current outline node."
                    (completing-read "Drawer name (Select or Type): " 
                                     choices nil nil))))
     (org-insert-drawer arg name)))
+
 
 (defun my-org-daily-info()
   "Generate lunar date and tide information string for org-capture."
@@ -102,6 +108,7 @@ If ARG is non-nil, insert at the end of the current outline node."
               muldae)
             tide-times)))
 
+
 (defun my-paste-with-parentheses ()
   "Insert the clipboard content enclosed in parentheses ().
 Supports both the macOS and the Emacs kill ring."
@@ -113,38 +120,12 @@ Supports both the macOS and the Emacs kill ring."
         (insert (format "(%s)" text))
       (message "Clipboard is empty."))))
 
-;; (defun my-org-generate-toc ()
-;;   "Auto-generate table of contents(PDF Export 제외)."
-;;   (interactive)
-;;   (save-excursion
-;;     (goto-char (point-min))
-;;     ;; 기존 목차 삭제
-;;     (when (re-search-forward "^\\* 목차.*: noexport:" nil t)
-;;       (org-cut-subtree))
-;;     ;; 새 목차 생성
-;;     (goto-char (point-min))
-;;     (when (re-search-forward "^\\* " nil t)
-;;       (beginning-of-line)
-;;       (insert "* 목차 : noexport:\n")
-;;       (let ((toc-items '()))
-;;         (org-map-entries
-;;          (lambda ()
-;;            (let* ((level (org-current-level))
-;;                   (title (org-get-heading t t t t)))
-;;              (when (> level 1)
-;;                (push (format "%s- [[*%s][%s]]"
-;;                              (make-string (* 2 (1- level)) ?\s)
-;;                              title title)
-;;                      toc-items))))
-;;          nil 'file)
-;;         (insert (mapconcat #'identity (reverse toc-items) "\n"))
-;;         (insert "\n\n"))))
-;;   (message "목차 생성 완료"))
 
 ;; (defun cal-fixLayout () 
 ;;   "Fix calendar layout"
 ;;   (face-remap-add-relative 'default 
 ;;                            '(:family "Noto Sans Mono CJK KR" :height 160)))
+
 
 ;; ======================================
 ;;; Calendar
@@ -158,6 +139,7 @@ Supports both the macOS and the Emacs kill ring."
   (calendar-month-name-array 
    ["1월" "2월" "3월" "4월" "5월" "6월" 
     "7월" "8월" "9월" "10월" "11월" "12월"]))
+
 
 ;; ======================================
 ;;; org-mode
@@ -197,6 +179,9 @@ Supports both the macOS and the Emacs kill ring."
 	    ("v" . "verse")
 	    ("x" . "example")))
   (org-export-with-drawers nil)
+  (org-export-with-smart-quotes t)           ; ""
+  (org-export-with-special-strings t)        ; - -- ---
+  (org-export-with-sub-superscripts '{})     ; _
   (org-agenda-format-date "%Y-%m-%d (%a)")
   (org-agenda-current-time-string "← now ─────────")
   (org-agenda-restore-windows-after-quit t)
@@ -212,7 +197,7 @@ Supports both the macOS and the Emacs kill ring."
         `(("d" "Daily" entry
            (file+datetree ,(my-org-person-file-path "Daily.org"))
            ;; "* %?"                          ;; 음력제외
-	   "* %?\n%(my-org-daily-info)" 
+	   "* %?\n%(my-org-daily-info)\n기록일: %U" 
            :empty-lines-after 1)
           
           ("t" "Tasks" entry
@@ -241,6 +226,7 @@ Supports both the macOS and the Emacs kill ring."
   :config
   (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "▶" "▷" "►")))
 
+
 ;; ======================================
 ;;; ox-appear
 ;; ======================================
@@ -253,6 +239,7 @@ Supports both the macOS and the Emacs kill ring."
 	org-appear-autolinks t
         org-appear-autosubmarkers t
         org-appear-delay 0.2))
+
 
 ;; ======================================
 ;;; ox-latex
@@ -271,21 +258,22 @@ Supports both the macOS and the Emacs kill ring."
                '(:quote-style "QUOTE_STYLE" nil nil t))
   
   (defun my/org-latex-filter-blocks (text backend info)
-  "Apply global style to quote/verse blocks based on :quote-style option."
-  (when (org-export-derived-backend-p backend 'latex)
-    (let ((style (plist-get info :quote-style)))
-      (cond
-       ((string= style "1") (format "{\\small\n%s}" text))
-       ((string= style "2") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\\small\n%s\\end{tcolorbox}" text))
-       ((string= style "3") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\n%s\\end{tcolorbox}" text))
-       ((string= style "4") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\\small\n%s\\end{tcolorbox}" text))
-       ((string= style "5") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\n%s\\end{tcolorbox}" text))
-       (t text)))))
+    "Apply global style to quote/verse blocks based on :quote-style option."
+    (when (org-export-derived-backend-p backend 'latex)
+      (let ((style (plist-get info :quote-style)))
+	(cond
+	 ((string= style "1") (format "{\\small\n%s}" text))
+	 ((string= style "2") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\\small\n%s\\end{tcolorbox}" text))
+	 ((string= style "3") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\n%s\\end{tcolorbox}" text))
+	 ((string= style "4") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\\small\n%s\\end{tcolorbox}" text))
+	 ((string= style "5") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\n%s\\end{tcolorbox}" text))
+	 (t text)))))
 
-(add-to-list 'org-export-filter-quote-block-functions
-             #'my/org-latex-filter-blocks)
-(add-to-list 'org-export-filter-verse-block-functions
-             #'my/org-latex-filter-blocks))
+  (add-to-list 'org-export-filter-quote-block-functions
+               #'my/org-latex-filter-blocks)
+  (add-to-list 'org-export-filter-verse-block-functions
+               #'my/org-latex-filter-blocks))
+
 
 ;; ======================================
 ;;; ox-md
@@ -293,6 +281,7 @@ Supports both the macOS and the Emacs kill ring."
 ;; (use-package ox-md
 ;;   :ensure nil
 ;;   :after org)
+
 
 ;; ======================================
 ;;; Performance Optimizations
@@ -307,6 +296,7 @@ Supports both the macOS and the Emacs kill ring."
   (setq org-fontify-whole-heading-line nil
         org-fontify-done-headline t
         org-fontify-quote-and-verse-blocks t))
+
 
 ;; ======================================
 ;;; denote

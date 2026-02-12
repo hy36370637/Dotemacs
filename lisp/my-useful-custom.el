@@ -125,6 +125,27 @@ Handle 'keyboard-quit' based on the current context, such as an active region, o
 	 (call-interactively 'beginning-of-line))))
 
 
+;;;###autoload
+(defun my-toggle-window-split-ratio ()
+  "Cycle the current window's width between 1/3, 2/3, and 1/2 of the frame."
+  (interactive)
+  (let* ((total-width (frame-width))
+         (one-third (round (* total-width 0.33)))
+         (one-half (round (* total-width 0.5)))
+         (two-thirds (round (* total-width 0.66)))
+         (current-width (window-total-width))
+         ;; 현재 너비에 따라 다음 목표 비율 설정 (순환 구조)
+         (target-width (cond ((< current-width (* total-width 0.4)) two-thirds) ; 1/3 근처면 2/3로
+                             ((< current-width (* total-width 0.6)) one-third)  ; 1/2 근처면 1/3로
+                             (t one-half)))                                     ; 그 외(2/3)면 1/2로
+         (delta (- target-width current-width)))
+    (window-resize nil delta t)
+    (message "Window width: %s" 
+             (cond ((= target-width one-third) "1/3")
+                   ((= target-width one-half) "1/2 (Balanced)")
+                   (t "2/3")))))
+
+
 ;; (defun my-Ddays ()
 ;;   "Calculate days until/since 2024-12-31."
 ;;   (let ((diff-days (floor (/ (float-time (time-subtract (current-time)
