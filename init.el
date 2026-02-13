@@ -131,10 +131,10 @@
   (setq mac-pass-command-to-system nil)
   ;; [왼쪽] Opt(Super) / Cmd(Meta)
   (setq ns-option-modifier 'super)
-  (setq ns-command-modifier 'meta)
+  (setq ns-command-modifier 'meta))
   ;; [오른쪽] Cmd(Meta) / Opt(Control)
-  (setq ns-right-command-modifier 'meta)  ;'meta
-  (setq ns-right-option-modifier 'control)) ;'control
+  ;; (setq ns-right-command-modifier 'meta)  ;'meta
+  ;; (setq ns-right-option-modifier 'control)) ;'control
 
 
 ;; =======================================
@@ -178,7 +178,6 @@
   (("C-x z"     . nil)
    ("C-x m"     . nil)
    ("C-x f"     . toggle-frame-fullscreen)
-   ("C-c C-x w" . my-toggle-window-split-ratio)
    ("M-;"       . comment-line)
    ("M-s u"     . my-search-unified)
    ("C-a"       . my-smart-beginning-of-line)
@@ -282,15 +281,18 @@
 ;;; Fonts
 ;; =======================================  
 (use-package emacs
-  :if (display-graphic-p)
+  ;; :if (display-graphic-p)
   :config
   (set-face-attribute 'default nil :family "Menlo" :height 180)
   (set-face-attribute 'fixed-pitch nil :family "Menlo" :height 1.0)
   (set-fontset-font t 'hangul (font-spec :family "Noto Sans Mono CJK KR"))
   (set-face-attribute 'variable-pitch nil :family "Noto Sans CJK KR" :height 1.0)
+  (set-fontset-font "fontset-default" 'hangul 
+                    (font-spec :family "Noto Sans CJK KR") 
+                    nil 'prepend)
   (setq face-font-rescale-alist '(("Noto Sans Mono CJK KR" . 0.95)
-                                  ("Noto Sans CJK KR" . 0.95))) ; KR을 CJK KR로 변경
-  
+                                  ("Noto Sans CJK KR" . 0.95)))
+
   (add-hook 'org-mode-hook
             (lambda ()
               (variable-pitch-mode 1)
@@ -310,14 +312,14 @@
 ;;; Theme
 ;; =======================================
 (use-package modus-themes
-  :ensure nil) ;; 내장 버전 대신 최신 버전을 설치해서 사용
+  :ensure nil)
 
 (use-package ef-themes
   :ensure t
   :init
   (ef-themes-take-over-modus-themes-mode 1)
   :bind
-  (("<f5>" . modus-themes-rotate)
+  (("<f5>"   . modus-themes-rotate)
    ("C-<f5>" . modus-themes-select))
   :config
   (setq modus-themes-mixed-fonts t)
@@ -344,15 +346,15 @@
 ;;; Icons
 ;; =======================================
 (use-package nerd-icons
-  :if (display-graphic-p)
+  ;; :if (display-graphic-p)
   :custom (nerd-icons-font-family "Symbols Nerd Font"))
 
 (use-package nerd-icons-dired
-  :if (display-graphic-p)
+  ;; :if (display-graphic-p)
   :hook (dired-mode . nerd-icons-dired-mode))
 
 (use-package nerd-icons-completion
-  :if (display-graphic-p)
+  ;; :if (display-graphic-p)
   :after (marginalia nerd-icons)
   :config  (nerd-icons-completion-mode 1))
 
@@ -363,10 +365,10 @@
 (use-package windmove
   :ensure nil   ;built-in
   :bind
-  (("C-x <left>" . windmove-left)
+  (("C-x <left>"  . windmove-left)
    ("C-x <right>" . windmove-right)
-   ("C-x <up>" . windmove-up)
-   ("C-x <down>" . windmove-down)))
+   ("C-x <up>"    . windmove-up)
+   ("C-x <down>"  . windmove-down)))
 
 
 ;; =======================================

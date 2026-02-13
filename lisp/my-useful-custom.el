@@ -3,20 +3,20 @@
 
 
 ;;; ###autoload
-(defun my-today-stamp ()
-  "Prompt for a date format and insert it at point."
-  (interactive)
-  (let* ((formats `(("ISO (YYYY-MM-DD)"       . "%Y-%m-%d")
-                    ("Dot (YYYY.MM.DD)"       . "%Y.%m.%d")
-                    ("DateTime (ISO + Time)"  . "%Y-%m-%d %R")
-                    ("Weekday (ISO + Day)"    . ,(lambda () 
-                                                   (format-time-string "%Y-%m-%d %A")))))
-         (choice (completing-read "Select date format: " (mapcar #'car formats) nil t))
-         (action (cdr (assoc choice formats))))
-    (when action
-      (if (functionp action)
-          (insert (funcall action))
-        (insert (format-time-string action))))))
+;; (defun my-today-stamp ()
+;;   "Prompt for a date format and insert it at point."
+;;   (interactive)
+;;   (let* ((formats `(("ISO (YYYY-MM-DD)"       . "%Y-%m-%d")
+;;                     ("Dot (YYYY.MM.DD)"       . "%Y.%m.%d")
+;;                     ("DateTime (ISO + Time)"  . "%Y-%m-%d %R")
+;;                     ("Weekday (ISO + Day)"    . ,(lambda () 
+;;                                                    (format-time-string "%Y-%m-%d %A")))))
+;;          (choice (completing-read "Select date format: " (mapcar #'car formats) nil t))
+;;          (action (cdr (assoc choice formats))))
+;;     (when action
+;;       (if (functionp action)
+;;           (insert (funcall action))
+;;         (insert (format-time-string action))))))
 
 
 ;;; ###autoload
@@ -134,7 +134,7 @@ Handle 'keyboard-quit' based on the current context, such as an active region, o
          (one-half (round (* total-width 0.5)))
          (two-thirds (round (* total-width 0.66)))
          (current-width (window-total-width))
-         ;; 현재 너비에 따라 다음 목표 비율 설정 (순환 구조)
+
          (target-width (cond ((< current-width (* total-width 0.4)) two-thirds) ; 1/3 근처면 2/3로
                              ((< current-width (* total-width 0.6)) one-third)  ; 1/2 근처면 1/3로
                              (t one-half)))                                     ; 그 외(2/3)면 1/2로
@@ -144,6 +144,39 @@ Handle 'keyboard-quit' based on the current context, such as an active region, o
              (cond ((= target-width one-third) "1/3")
                    ((= target-width one-half) "1/2 (Balanced)")
                    (t "2/3")))))
+
+
+;;;###autoload
+(defun my-toggle-window-height-ratio ()
+  "Toggle the current window's height between 1/3 and 2/3 of the frame.
+This function preserves all buffer contents and works regardless of 
+the number of open windows. It only adjusts the window's boundary."
+  (interactive)
+  (let* ((total-height (frame-height))
+         (one-third (round (* total-height 0.33)))
+         (two-thirds (round (* total-height 0.66)))
+         (current-height (window-total-height))
+
+         (target-height (if (< (abs (- current-height one-third)) 
+                              (abs (- current-height two-thirds)))
+                           two-thirds
+                         one-third))
+         (delta (- target-height current-height)))
+    ;; window-resize의 세 번째 인자가 nil이면 세로(높이) 조절입니다.
+    (window-resize nil delta nil)
+    (message "Window height toggled to approx %s" 
+             (if (= target-height one-third) "1/3" "2/3"))))
+
+
+;;;###autoload
+(defun my-toggle-window-dedicated ()
+  "Toggle whether the current window is dedicated to its current buffer.
+A dedicated window will not be used by Emacs to display other buffers."
+  (interactive)
+  (set-window-dedicated-p (selected-window) (not (window-dedicated-p)))
+  (message "Window is %s dedicated" 
+           (if (window-dedicated-p) "NOW" "NO LONGER")))
+
 
 
 ;; (defun my-Ddays ()

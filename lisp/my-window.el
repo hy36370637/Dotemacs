@@ -34,7 +34,6 @@
 ;; ======================================
 ;;; Core Logic
 ;; ======================================
-
 ;;; ###autoload
 (defmacro my-window-with-popup-frame (name-str &rest body)
   "Execute BODY within a new isolated popup frame.

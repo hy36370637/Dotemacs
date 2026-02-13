@@ -33,7 +33,7 @@
   ("r" "Regexp replace"   #'my-query-replace-regexp-dwim)
   ("c" "Current line"     #'my-select-current-line)
   ("d" "Duplicate"        #'my-duplicate-dwim)
-  ("D" "Today stamp"      #'my-today-stamp)
+  ;; ("D" "Today stamp"      #'my-today-stamp)
   ("w" "Pairs wrap"       #'my-pair-pairs-wrap)
   ("%" "Replace"          #'query-replace))
 
@@ -52,6 +52,11 @@
   ("p" "Path img"         #'my-insert-image-path)
   ("s" "Screenshot"       #'my-org-screenshot))
 
+(my/defkeymap my-window-prefix-map "Window"
+  ("j" "Width 1/3-2/3"     #'my-toggle-window-split-ratio)
+  ("i" "Height 1/3-2/3"    #'my-toggle-window-height-ratio)
+  ("k" "Pin/Unpin"         #'my-toggle-window-dedicated))
+  
 (my/defkeymap my-emacs-prefix-map "Master"
   ("d" "Today's"          #'my-todays-pop)
   ("e" "Edit"             my-edit-prefix-map)
@@ -59,7 +64,8 @@
   ("m" "Media"            my-media-prefix-map)
   ("r" "Register"         #'jump-to-register)
   ("s" "Search"           my-search-prefix-map)
-  ("u" "Usearch"          #'my-search-unified))
+  ("u" "Usearch"          #'my-search-unified)
+  ("w" "Window"           my-window-prefix-map))
 
 ;; ======================================
 ;;; Global Binding
