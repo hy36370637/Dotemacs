@@ -55,7 +55,9 @@
 (my/defkeymap my-window-prefix-map "Window"
   ("j" "Width 1/3-2/3"     #'my-toggle-window-split-ratio)
   ("i" "Height 1/3-2/3"    #'my-toggle-window-height-ratio)
-  ("k" "Pin/Unpin"         #'my-toggle-window-dedicated))
+  ("k" "Pin/Unpin"         #'my-toggle-window-dedicated)
+  ("l" "3-Win Layout"      #'my-layout-3-windows-center-focus)
+  ("m" "Split 3-Column"    #'my-split-window-three-column))
   
 (my/defkeymap my-emacs-prefix-map "Master"
   ("d" "Today's"          #'my-todays-pop)

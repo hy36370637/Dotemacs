@@ -127,23 +127,19 @@ Handle 'keyboard-quit' based on the current context, such as an active region, o
 
 ;;;###autoload
 (defun my-toggle-window-split-ratio ()
-  "Cycle the current window's width between 1/3, 2/3, and 1/2 of the frame."
+  "Toggle the current window's width between 1/3 and 2/3 of the frame.
+Does not include 1/2 ratio; use `balance-windows' (C-x +) for equal splits.
+Preserves all buffer contents during the resize."
   (interactive)
   (let* ((total-width (frame-width))
-         (one-third (round (* total-width 0.33)))
-         (one-half (round (* total-width 0.5)))
-         (two-thirds (round (* total-width 0.66)))
          (current-width (window-total-width))
-
-         (target-width (cond ((< current-width (* total-width 0.4)) two-thirds) ; 1/3 근처면 2/3로
-                             ((< current-width (* total-width 0.6)) one-third)  ; 1/2 근처면 1/3로
-                             (t one-half)))                                     ; 그 외(2/3)면 1/2로
+         ;; 현재 비율이 50%보다 작으면 2/3로, 크면 1/3로 목표 설정
+         (target-width (if (< (/ (float current-width) total-width) 0.5)
+                           (round (* total-width 0.66))
+                         (round (* total-width 0.33))))
          (delta (- target-width current-width)))
     (window-resize nil delta t)
-    (message "Window width: %s" 
-             (cond ((= target-width one-third) "1/3")
-                   ((= target-width one-half) "1/2 (Balanced)")
-                   (t "2/3")))))
+    (message "Window width toggled (1/3 <-> 2/3)")))
 
 
 ;;;###autoload
@@ -156,7 +152,7 @@ the number of open windows. It only adjusts the window's boundary."
          (one-third (round (* total-height 0.33)))
          (two-thirds (round (* total-height 0.66)))
          (current-height (window-total-height))
-
+         ;; 현재 높이가 1/3에 가까우면 2/3로, 아니면 1/3로 목표 설정
          (target-height (if (< (abs (- current-height one-third)) 
                               (abs (- current-height two-thirds)))
                            two-thirds
@@ -176,6 +172,47 @@ A dedicated window will not be used by Emacs to display other buffers."
   (set-window-dedicated-p (selected-window) (not (window-dedicated-p)))
   (message "Window is %s dedicated" 
            (if (window-dedicated-p) "NOW" "NO LONGER")))
+
+
+;;;###autoload
+(defun my-layout-3-windows-center-focus ()
+  "Set a 25% | 50% | 25% layout for 3 windows, regardless of cursor position.
+Windows are sorted by their horizontal position on the frame."
+  (interactive)
+  (let ((windows (window-list)))
+    (if (= (length windows) 3)
+        ;; 창들을 왼쪽 좌표(edges) 기준으로 정렬
+        (let* ((sorted-windows (sort windows (lambda (w1 w2)
+                                               (< (car (window-edges w1))
+                                                  (car (window-edges w2))))))
+               (total-width (frame-width))
+               (side-width (round (* total-width 0.25)))
+               (center-width (- total-width (* side-width 2)))
+               (win-left (nth 0 sorted-windows))
+               (win-center (nth 1 sorted-windows))
+               (win-right (nth 2 sorted-windows)))
+          
+          ;; 1. 왼쪽 창 크기 고정
+          (window-resize win-left (- side-width (window-total-width win-left)) t)
+          ;; 2. 가운데 창 크기 조절 (나머지는 오른쪽 창이 됨)
+          (window-resize win-center (- center-width (window-total-width win-center)) t)
+          
+          (message "Layout fixed: 25%% | 50%% | 25%% (Sorted by position)"))
+      (message "Requires exactly 3 windows (current: %d)." (length windows)))))
+
+
+;;;###autoload
+(defun my-split-window-three-column ()
+  "Split the current window into three columns with 25:50:25 ratio.
+If more than one window exists, it will first delete other windows."
+  (interactive)
+  (delete-other-windows)
+  ;; 1. 일단 3개로 분할
+  (split-window-right)
+  (split-window-right)
+  ;; 2. 이전에 만든 25:50:25 레이아웃 함수 호출
+  (my-layout-3-windows-center-focus)
+  (message "Three-column layout initialized."))
 
 
 
