@@ -151,19 +151,17 @@ Supports both the macOS and the Emacs kill ring."
   :hook (org-mode . (lambda () (text-scale-increase 1)))
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
-	 ;; ("C-c C" . my-org-popup-capture)
          :map org-mode-map
          ("C-c C-x d" . my-org-insert-drawer-custom)
-	 ("C-," . my-pair-pairs-wrap)
-	 ("C-M-y" . my-paste-with-parentheses)
-	 ("M-," . org-insert-structure-template))
+         ("C-," . my-pair-pairs-wrap)
+         ("C-M-y" . my-paste-with-parentheses)
+         ("M-," . org-insert-structure-template))
   :custom
-  ;; (org-directory (expand-file-name "~/Dropbox/Docs/org")) ; -> init.el
-  (org-startup-indented t)             ;시작때 indent mode enable
+  (org-startup-indented t)
   (org-startup-with-inline-images nil)
   (org-startup-folded t)
-  (org-startup-with-drawer t)          ;파일을 열 때 Drawer를 자동으로 접음
-  (org-adapt-indentation nil)          ;indent의 실제 공백 nil 
+  (org-startup-with-drawer t)
+  (org-adapt-indentation nil)
   (org-indent-indentation-per-level 2)
   (org-edit-src-content-indentation 0)
   (org-image-actual-width 400)
@@ -171,51 +169,51 @@ Supports both the macOS and the Emacs kill ring."
   (org-log-done 'time)
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
   (org-structure-template-alist
-          '(("c" . "center")
-            ("C" . "comment")
-            ("e" . "src emacs-lisp")
-	    ("s" . "src")
-            ("q" . "quote")
-	    ("v" . "verse")
-	    ("x" . "example")))
+   '(("c" . "center")
+     ("C" . "comment")
+     ("e" . "src emacs-lisp")
+     ("s" . "src")
+     ("q" . "quote")
+     ("v" . "verse")
+     ("x" . "example")))
   (org-export-with-drawers nil)
-  (org-export-with-smart-quotes t)           ; ""
-  (org-export-with-special-strings t)        ; - -- ---
-  (org-export-with-sub-superscripts '{})     ; _
+  (org-export-with-smart-quotes t)
+  (org-export-with-special-strings t)
+  (org-export-with-sub-superscripts '{})
   (org-agenda-format-date "%Y-%m-%d (%a)")
   (org-agenda-current-time-string "← now ─────────")
   (org-agenda-restore-windows-after-quit t)
   (org-agenda-window-setup 'current-window)
+  ;; Performance optimizations
+  (org-agenda-inhibit-startup t)
+  (org-agenda-use-tag-inheritance nil)
+  (org-agenda-dim-blocked-tasks nil)
+  (org-fontify-whole-heading-line nil)
+  (org-fontify-done-headline t)
+  (org-fontify-quote-and-verse-blocks t)
   :config
   ;;  (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
-  (setq org-agenda-files
-        (seq-filter #'file-exists-p
-                    (list (my-org-person-file-path "Holidays.org")
-                          (my-org-person-file-path "Tasks.org")
-                          (my-org-person-file-path "Daily.org"))))
   (setq org-capture-templates
-        `(("d" "Daily" entry
-           (file+datetree ,(my-org-person-file-path "Daily.org"))
-           ;; "* %?"                          ;; 음력제외
-	   "* %?\n%(my-org-daily-info)\n기록일: %U" 
-           :empty-lines-after 1)
-          
-          ("t" "Tasks" entry
-           (file ,(my-org-person-file-path "Tasks.org"))
-           "* TODO %?\nSCHEDULED: %t"
-           :empty-lines-after 1)
-          
-          ("r" "Reading" entry
-           (file ,(my-org-person-file-path "cReading.org"))
-           "* %?\n기록일: %U"
-   	   :unnarrowed t
-           :empty-lines-after 1)
+      (let* ((p-dir my/org-person-dir)
+             (f-daily (expand-file-name "Daily.org" p-dir))
+             (f-tasks (expand-file-name "Tasks.org" p-dir))
+             (f-read  (expand-file-name "cReading.org" p-dir))
+             (f-money (expand-file-name "aMoney.org" p-dir))
+             ;; 공통 날짜 포맷팅
+             (today (format-time-string "%Y-%m-%d")))
+        
+        `(("d" "Daily" entry (file+datetree ,f-daily)
+           "* %?\n%(my-org-daily-info)\n기록일: %U" :empty-lines-after 1)
 
-	  ("m" "경조사" table-line
-	   (file ,(my-org-person-file-path "aMoney.org"))
-	   ,(concat "| %^{구분} | %^{일자|" (format-time-string "%Y.%m.%d") "} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
-           :prepend nil))))
+          ("t" "Tasks" entry (file ,f-tasks)
+           "* TODO %?\nSCHEDULED: %t" :empty-lines-after 1)
 
+          ("r" "Reading" entry (file ,f-read)
+           "* %?\n기록일: %U" :unnarrowed t :empty-lines-after 1)
+
+          ("m" "경조사" table-line (file ,f-money)
+           ,(concat "| %^{구분} | %^{일자|" today "} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
+           :prepend nil)))))
 
 ;; ======================================
 ;;; org-superstar
@@ -254,26 +252,25 @@ Supports both the macOS and the Emacs kill ring."
   (org-latex-pdf-process
    '("latexmk -pdflatex='xelatex -shell-escape -interaction=nonstopmode' -pdf -f %f"))
   :config
-  (add-to-list 'org-export-options-alist
-               '(:quote-style "QUOTE_STYLE" nil nil t))
-  
+  ;; 1. 함수 정의 (로직 분리)
   (defun my/org-latex-filter-blocks (text backend info)
     "Apply global style to quote/verse blocks based on :quote-style option."
     (when (org-export-derived-backend-p backend 'latex)
-      (let ((style (plist-get info :quote-style)))
-	(cond
-	 ((string= style "1") (format "{\\small\n%s}" text))
-	 ((string= style "2") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\\small\n%s\\end{tcolorbox}" text))
-	 ((string= style "3") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\n%s\\end{tcolorbox}" text))
-	 ((string= style "4") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\\small\n%s\\end{tcolorbox}" text))
-	 ((string= style "5") (format "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\n%s\\end{tcolorbox}" text))
-	 (t text)))))
+      (let* ((style (plist-get info :quote-style))
+             (style-alist
+              '(("1" . "{\\small\n%s}")
+                ("2" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\\small\n%s\\end{tcolorbox}")
+                ("3" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\n%s\\end{tcolorbox}")
+                ("4" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\\small\n%s\\end{tcolorbox}")
+                ("5" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\n%s\\end{tcolorbox}")))
+             (template (cdr (assoc style style-alist))))
+        (if template (format template text) text))))
 
-  (add-to-list 'org-export-filter-quote-block-functions
-               #'my/org-latex-filter-blocks)
-  (add-to-list 'org-export-filter-verse-block-functions
-               #'my/org-latex-filter-blocks))
-
+  ;; 2. 설정 등록 (함수를 호출하도록 연결)
+  (add-to-list 'org-export-options-alist '(:quote-style "QUOTE_STYLE" nil nil t))
+  (add-to-list 'org-export-filter-quote-block-functions #'my/org-latex-filter-blocks)
+  (add-to-list 'org-export-filter-verse-block-functions #'my/org-latex-filter-blocks))
+  
 
 ;; ======================================
 ;;; ox-md
@@ -284,27 +281,11 @@ Supports both the macOS and the Emacs kill ring."
 
 
 ;; ======================================
-;;; Performance Optimizations
-;; ======================================
-(with-eval-after-load 'org
-  ;; Agenda 성능 향상
-  (setq org-agenda-inhibit-startup t
-        org-agenda-use-tag-inheritance nil
-        org-agenda-dim-blocked-tasks nil)
-  
-  ;; Fontification 성능 개선
-  (setq org-fontify-whole-heading-line nil
-        org-fontify-done-headline t
-        org-fontify-quote-and-verse-blocks t))
-
-
-;; ======================================
 ;;; denote
 ;; ======================================
 (use-package denote
   :bind
   (("C-c n n" . denote)                       ; 새 노트 생성
-   ;; ("C-c n N" . my-window-popup-denote)       ; Pop-up
    ("C-c n i" . denote-link)                  ; 현재 노트에 다른 노트 링크 삽입
    ("C-c n b" . denote-show-backlinks-buffer) ; 현재 노트를 참조하는 다른 노트들 보기
    ("C-c n r" . denote-rename-file))          ; 기존 파일 이름을 denote 형식으로 변경

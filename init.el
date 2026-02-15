@@ -30,10 +30,10 @@
 ;; 저장소 목록 및 우선순위 설정
 (setq package-archives
       '(("gnu-elpa" . "https://elpa.gnu.org/packages/")
-        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("nongnu"   . "https://elpa.nongnu.org/nongnu/")
         ("melpa-stable" . "https://stable.melpa.org/packages/"))
       package-archive-priorities
-      '(("nongnu" . 20)
+      '(("nongnu"   . 20)
         ("gnu-elpa" . 10)
         ("melpa-stable" . 5)))
 
@@ -114,7 +114,6 @@
 
 (require 'my-completion)
 (require 'my-dired-custom)
-;; (require 'my-window)
 (require 'my-org-custom)
 (require 'my-useful-custom)
 (require 'my-search)
@@ -145,10 +144,10 @@
   (setq default-directory (expand-file-name "~/Dropbox/Docs/org")
         temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
 
-  (add-to-list 'auto-mode-alist '("\\.pdf\\'" . my-open-pdf-with-external-app))
+  :mode ("\\.pdf\\'" . my-open-pdf-with-external-app)
   
-  :hook ((text-mode . visual-line-mode)
-	 (focus-in . my/deactivate-input-method))
+  :hook ((text-mode  . visual-line-mode)
+	 (focus-in   . my/deactivate-input-method))
   
   :custom
   ;; UI 및 상태 정보 관련
@@ -172,6 +171,7 @@
   (next-line-add-newlines nil)        ; 문서 끝에서 C-n 눌러도 새 줄 추가 안 함
   (enable-recursive-minibuffers t)    ; 미니버퍼 내에서 다른 미니버퍼 호출 허용
   (create-lockfiles nil)
+  (context-menu-mode 1)               ; 마우스 오른쪽 메뉴
   :config
   (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
   :bind
@@ -183,7 +183,6 @@
    ("C-a"       . my-smart-beginning-of-line)
    ("C-g"       . my-keyboard-quit-dwim)
    ("<escape>"  . my-keyboard-quit-dwim)))
-   ;; ("C-c E". my-window-popup-eshell)
 
 
 (use-package time
@@ -212,10 +211,10 @@
 
 
 ;; ========================================================
-;; Window Management (Macbook Air 13")
+;; Window Management
 ;; ========================================================
 (use-package emacs
-  :if my-macOS-p
+  :if my-Macbook-p
   :custom
   (split-window-preferred-direction 'horizontal)
   (window-combination-resize t)
@@ -316,14 +315,15 @@
 
 (use-package ef-themes
   :ensure t
+  :demand t
   :init
   (ef-themes-take-over-modus-themes-mode 1)
   :bind
   (("<f5>"   . modus-themes-rotate)
    ("C-<f5>" . modus-themes-select))
   :config
-  (setq modus-themes-mixed-fonts t)
-  (setq modus-themes-italic-constructs t)
+  (setq modus-themes-mixed-fonts t
+        modus-themes-italic-constructs t)
   (modus-themes-load-theme 'ef-symbiosis))
 
 
@@ -365,10 +365,10 @@
 (use-package windmove
   :ensure nil   ;built-in
   :bind
-  (("C-x <left>"  . windmove-left)
-   ("C-x <right>" . windmove-right)
-   ("C-x <up>"    . windmove-up)
-   ("C-x <down>"  . windmove-down)))
+  (("C-x j" . windmove-left)
+   ("C-x l" . windmove-right)
+   ("C-x i" . windmove-up)
+   ("C-x m" . windmove-down)))
 
 
 ;; =======================================
@@ -415,10 +415,10 @@
 ;; =======================================
 (defvar my/indicator-image-dir 
   (expand-file-name "img-indicator/" user-emacs-directory))
-(defvar ko-indicator 
+(defvar ko-img 
   (create-image (expand-file-name "han2.tiff" my/indicator-image-dir) 
                 'tiff nil :ascent 'center))
-(defvar en-indicator 
+(defvar en-img 
   (create-image (expand-file-name "qwerty.tiff" my/indicator-image-dir) 
                 'tiff nil :ascent 'center))
 (defvar mode-line-use-images-p 
@@ -432,7 +432,7 @@
                         (label (if is-ko "KO" "EN")))
                    (propertize label
                                'display (when mode-line-use-images-p 
-                                          (if is-ko ko-indicator en-indicator))
+                                          (if is-ko ko-img en-img))
                                'help-echo label)))
                 "   "
                 "Ⓗ "
@@ -464,7 +464,8 @@
 ;;; magit
 ;; =======================================
 (use-package magit
-  :ensure t
+  :if my-Macbook-p
+  :ensure nil
   :bind ("C-x g" . magit-status)
   :custom
   ;; Magit이 전체 화면을 차지하지 않고, 현재 창 구성을 최대한 유지
@@ -476,7 +477,7 @@
 ;; =======================================
 (use-package expand-region
   :ensure nil
-  :bind (("C-=" . er/expand-region)
+  :bind (("C-="   . er/expand-region)
          ("C-M-=" . er/contract-region)))
 
 
@@ -527,6 +528,6 @@
     (desktop-read user-emacs-directory)
     (message "✅ [Layout Restored] Previous session has been restored."))
   :bind
-  (("C-x r S" . my/desktop-save-at-point)  ; Save Layout
+  (("C-x r S" . my/desktop-save-at-point)   ; Save Layout
    ("C-x r R" . my/desktop-read-at-point))) ; Restore Layout
 
