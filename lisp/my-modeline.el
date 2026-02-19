@@ -15,6 +15,7 @@
                 'tiff nil :ascent 'center))
 (defvar mode-line-use-images-p 
   (and (display-graphic-p) (image-type-available-p 'tiff)))
+
 (setq mode-line-right-align-edge 'right-margin)
 (setq-default mode-line-format
               '("%e "
@@ -26,18 +27,18 @@
                                'display (when mode-line-use-images-p 
                                           (if is-ko ko-img en-img))
                                'help-echo label)))
-                "   "
+                "  "
                 "Ⓗ "
                 mode-line-buffer-identification
                 mode-line-frame-identification
-                "  "
+                " "
                 ;; mode-line-modes
                 mode-line-format-right-align
                 mode-line-position
-                " Ⓨ "
-                mode-line-misc-info))
-
+                " "
+                mode-line-misc-info
+		"Ⓨ"))
 
 
 (provide 'my-modeline)
-;; end here
+;; my-modeline.el end here

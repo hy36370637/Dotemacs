@@ -121,6 +121,20 @@ Supports both the macOS and the Emacs kill ring."
       (message "Clipboard is empty."))))
 
 
+(defun my/org-latex-filter-blocks (text backend info)
+    "Apply global style to quote/verse blocks based on :quote-style option."
+    (when (org-export-derived-backend-p backend 'latex)
+      (let* ((style (plist-get info :quote-style))
+             (style-alist
+              '(("1" . "{\\small\n%s}")
+                ("2" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\\small\n%s\\end{tcolorbox}")
+                ("3" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\n%s\\end{tcolorbox}")
+                ("4" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\\small\n%s\\end{tcolorbox}")
+                ("5" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\n%s\\end{tcolorbox}")))
+             (template (cdr (assoc style style-alist))))
+        (if template (format template text) text))))
+
+
 ;; (defun cal-fixLayout () 
 ;;   "Fix calendar layout"
 ;;   (face-remap-add-relative 'default 
@@ -153,15 +167,16 @@ Supports both the macOS and the Emacs kill ring."
          ("C-c c" . org-capture)
          :map org-mode-map
          ("C-c C-x d" . my-org-insert-drawer-custom)
-         ("C-," . my-pair-pairs-wrap)
-         ("C-M-y" . my-paste-with-parentheses)
-         ("M-," . org-insert-structure-template))
+	 ("C-," . my-pair-pairs-wrap)
+	 ("C-M-y" . my-paste-with-parentheses)
+	 ("M-," . org-insert-structure-template))
   :custom
-  (org-startup-indented t)
+  ;; (org-directory (expand-file-name "~/Dropbox/Docs/org")) ; -> init.el
+  (org-startup-indented t)             ;시작때 indent mode enable
   (org-startup-with-inline-images nil)
   (org-startup-folded t)
-  (org-startup-with-drawer t)
-  (org-adapt-indentation nil)
+  (org-startup-with-drawer t)          ;파일을 열 때 Drawer를 자동으로 접음
+  (org-adapt-indentation nil)          ;indent의 실제 공백 nil 
   (org-indent-indentation-per-level 2)
   (org-edit-src-content-indentation 0)
   (org-image-actual-width 400)
@@ -169,28 +184,28 @@ Supports both the macOS and the Emacs kill ring."
   (org-log-done 'time)
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
   (org-structure-template-alist
-   '(("c" . "center")
-     ("C" . "comment")
-     ("e" . "src emacs-lisp")
-     ("s" . "src")
-     ("q" . "quote")
-     ("v" . "verse")
-     ("x" . "example")))
+          '(("c" . "center")
+            ("C" . "comment")
+            ("e" . "src emacs-lisp")
+	    ("s" . "src")
+            ("q" . "quote")
+	    ("v" . "verse")
+	    ("x" . "example")))
   (org-export-with-drawers nil)
-  (org-export-with-smart-quotes t)
-  (org-export-with-special-strings t)
-  (org-export-with-sub-superscripts '{})
+  (org-export-with-smart-quotes t)           ; ""
+  (org-export-with-special-strings t)        ; - -- ---
+  (org-export-with-sub-superscripts '{})     ; _
   (org-agenda-format-date "%Y-%m-%d (%a)")
   (org-agenda-current-time-string "← now ─────────")
   (org-agenda-restore-windows-after-quit t)
   (org-agenda-window-setup 'current-window)
-  ;; Performance optimizations
   (org-agenda-inhibit-startup t)
   (org-agenda-use-tag-inheritance nil)
   (org-agenda-dim-blocked-tasks nil)
   (org-fontify-whole-heading-line nil)
   (org-fontify-done-headline t)
   (org-fontify-quote-and-verse-blocks t)
+  
   :config
   ;;  (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
   (setq org-capture-templates
@@ -252,21 +267,7 @@ Supports both the macOS and the Emacs kill ring."
   (org-latex-pdf-process
    '("latexmk -pdflatex='xelatex -shell-escape -interaction=nonstopmode' -pdf -f %f"))
   :config
-  ;; 1. 함수 정의 (로직 분리)
-  (defun my/org-latex-filter-blocks (text backend info)
-    "Apply global style to quote/verse blocks based on :quote-style option."
-    (when (org-export-derived-backend-p backend 'latex)
-      (let* ((style (plist-get info :quote-style))
-             (style-alist
-              '(("1" . "{\\small\n%s}")
-                ("2" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\\small\n%s\\end{tcolorbox}")
-                ("3" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\n%s\\end{tcolorbox}")
-                ("4" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\\small\n%s\\end{tcolorbox}")
-                ("5" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\n%s\\end{tcolorbox}")))
-             (template (cdr (assoc style style-alist))))
-        (if template (format template text) text))))
-
-  ;; 2. 설정 등록 (함수를 호출하도록 연결)
+  ;; Export filter
   (add-to-list 'org-export-options-alist '(:quote-style "QUOTE_STYLE" nil nil t))
   (add-to-list 'org-export-filter-quote-block-functions #'my/org-latex-filter-blocks)
   (add-to-list 'org-export-filter-verse-block-functions #'my/org-latex-filter-blocks))
