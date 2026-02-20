@@ -53,12 +53,12 @@
 ;; =======================================
 ;;; exec-path-from-shell
 ;; =======================================
-(use-package exec-path-from-shell
-  :defer 2
-  ;; :if my-macOS-p
-  :config
-  (setq exec-path-from-shell-variables '("PATH" "MANPATH" "LIBRARY_PATH"))
-  (exec-path-from-shell-initialize))
+;; (use-package exec-path-from-shell
+;;   :defer 2
+;;   ;; :if my-macOS-p
+;;   :config
+;;   (setq exec-path-from-shell-variables '("PATH" "MANPATH" "LIBRARY_PATH"))
+;;   (exec-path-from-shell-initialize))
 
 
 ;; =======================================
@@ -108,17 +108,15 @@
 ;; =======================================
 (add-to-list 'load-path my/lisp-path)
 
+(require 'my-keys)
 (require 'my-completion)
+(require 'my-useful-custom)
 (require 'my-dired-custom)
 (require 'my-org-custom)
-(require 'my-useful-custom)
 (require 'my-search)
 (require 'my-todays-pop)
 (require 'my-radio-direct)
 (require 'my-app)
-(require 'my-keys)
-(require 'my-modeline)
-
 
 ;; =======================================
 ;;; MacOS keyboard
@@ -312,6 +310,185 @@
 
 
 ;; =======================================
+;;; Modeline
+;; =======================================
+
+(defvar my/indicator-image-dir 
+  (expand-file-name "img-indicator/" user-emacs-directory))
+
+(defvar ko-img 
+  (create-image (expand-file-name "han2.tiff" my/indicator-image-dir) 
+                'tiff nil :ascent 'center))
+(defvar en-img 
+  (create-image (expand-file-name "qwerty.tiff" my/indicator-image-dir) 
+                'tiff nil :ascent 'center))
+
+(defvar mode-line-use-images-p 
+  (and (display-graphic-p) (image-type-available-p 'tiff)))
+
+(setq mode-line-right-align-edge 'right-margin)
+(setq-default mode-line-format
+              '("%e "
+                mode-line-front-space
+                (:eval
+                 (let* ((is-ko (equal current-input-method "korean-hangul"))
+                        (label (if is-ko "KO" "EN")))
+                   (propertize label
+                               'display (when mode-line-use-images-p 
+                                          (if is-ko ko-img en-img))
+                               'help-echo label)))
+                "  "
+                "Ⓗ "
+                mode-line-buffer-identification
+                mode-line-frame-identification
+                " "
+                ;; mode-line-modes
+                mode-line-format-right-align
+                mode-line-position
+                " "
+                mode-line-misc-info
+		"Ⓨ"))
+
+
+;; =======================================
+;;; Session and Place Persistence
+;; =======================================
+(use-package savehist
+  :ensure nil
+  :defer 1
+  :init (savehist-mode 1)
+  :custom
+  (history-length 10))
+
+(use-package saveplace
+  :ensure nil
+  :defer 1
+  :config (save-place-mode 1))
+
+
+;; =======================================
+;;; Bookmark
+;; =======================================
+(use-package bookmark
+  :ensure nil
+  :custom
+  (bookmark-save-flag 1)
+  (bookmark-sort-flag nil)
+  (bookmark-default-file (expand-file-name "bookmarks" user-emacs-directory)))
+
+
+;; =======================================
+;;; Register
+;; =======================================
+(use-package register
+  :ensure nil
+  :config
+  (let ((org-dir my/org-person-dir)
+	(conf-dir user-emacs-directory))
+    (set-register ?i `(file . ,(expand-file-name "init.el" conf-dir)))
+    (set-register ?l `(file . ,(expand-file-name "lisp/" conf-dir)))
+    (set-register ?r `(file . ,(concat org-dir "cReading.org")))
+    (set-register ?d `(file . ,(concat org-dir "Daily.org")))
+    (set-register ?n `(file . ,(concat org-dir "cNotes.org")))
+    (set-register ?p `(file . ,(expand-file-name "~/Dropbox/Docs/pdf"))))
+  (set-register ?o `(file . ,default-directory))
+  :custom
+  (register-preview-delay 0.5))
+
+
+;; =======================================
+;;; windmove
+;; =======================================
+(use-package windmove
+  :ensure nil   ;built-in
+  :bind
+  (("C-x j" . windmove-left)
+   ("C-x l" . windmove-right)
+   ("C-x i" . windmove-up)
+   ("C-x m" . windmove-down)))
+
+
+;; =======================================
+;;; winner
+;; =======================================
+(use-package winner
+  :ensure nil    ;built-in
+  :defer 1
+  :config
+  (winner-mode 1))
+
+
+;; =======================================
+;;; recentF
+;; =======================================
+(use-package recentf
+  :defer 1
+  :config (recentf-mode 1)
+  :custom
+  (recentf-max-menu-items 15)
+  (recentf-max-saved-items 15))
+
+
+;; ======================================
+;;; which-key
+;; ======================================
+(use-package which-key
+  :ensure nil
+  :defer 2
+  :init (which-key-mode)
+  :custom
+  (which-key-show-transient-maps t)
+  (which-key-idle-delay 0.2))
+
+
+;; =======================================
+;;; Eshell
+;; =======================================
+(use-package eshell
+  :defer t
+  :custom
+  (eshell-destroy-buffer-when-process-dies t))
+
+
+;; =======================================
+;;; Battery
+;; =======================================
+(use-package battery
+  :if my-Macbook-p
+  :ensure nil
+  :demand t
+  :custom
+  (battery-status-function 'battery-pmset)
+  (battery-mode-line-format "Ⓑ %p%% ")
+  :init
+  (display-battery-mode 1))
+
+
+;; =======================================
+;;; eldoc
+;; =======================================
+(use-package eldoc
+  :ensure nil
+  :diminish eldoc-mode
+  :hook (emacs-lisp-mode . eldoc-mode))
+
+
+;; =======================================
+;;; Helpful
+;; =======================================
+(use-package helpful
+  :bind
+  (("C-h f" . helpful-callable)   ; 함수, 매크로 등 호출 가능한 모든 것
+   ("C-h v" . helpful-variable)   ; 변수 설정 확인 시 유용
+   ("C-h k" . helpful-key)        ; 특정 키가 어떤 기능을 하는지 확인
+   ("C-h x" . helpful-command)    ; M-x 명령 확인
+   ("C-c C-d" . helpful-at-point) ; 현재 커서 아래의 심볼 바로 확인
+   ("C-h F" . helpful-function))  ; 호출 가능 여부와 상관없이 '함수'만 확인
+  :custom
+  (helpful-max-lines 50))
+
+
+;; =======================================
 ;;; Manual Session Management
 ;; =======================================
 (use-package desktop
@@ -336,4 +513,3 @@
   :bind
   (("C-x r S" . my/desktop-save-at-point)   ; Save Layout
    ("C-x r R" . my/desktop-read-at-point))) ; Restore Layout
-
