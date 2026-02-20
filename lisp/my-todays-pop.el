@@ -345,7 +345,7 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
 (defun my-format-agenda-string ()
   "Get formatted 3-day agenda with bullets, removing trailing empty lines."
   (with-temp-buffer
-    (org-agenda-list 3)
+    (org-agenda-list 5)
     (goto-char (point-min))
     (forward-line 1) ; 첫 줄(헤더) 제외
     (let ((content (buffer-substring-no-properties (point) (point-max))))

@@ -1,8 +1,5 @@
-;;; my-app.el --- configuration -*- lexical-binding: t; -*-
+;;; my-viewmode-custom.el --- configuration -*- lexical-binding: t; -*-
 
-;; =======================================
-;;; View-mode
-;; =======================================
 ;; Enable read-only protection when entering view-mode
 (use-package view
   :ensure nil
@@ -36,30 +33,6 @@
     (view-mode -1)
     (message "📝 편집 모드")))
 
-;; =======================================
-;;; magit
-;; =======================================
-(use-package magit
-  :if my-Macbook-p
-  :ensure nil
-  :bind ("C-x g" . magit-status)
-  :custom
-  ;; Magit이 전체 화면을 차지하지 않고, 현재 창 구성을 최대한 유지
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
-
-;; =======================================
-;;; expand-region
-;; =======================================
-(use-package expand-region
-  :ensure nil
-  :bind (("C-="   . er/expand-region)
-         ("C-M-=" . er/contract-region)))
-
-
-
-
-
-
-(provide 'my-app)
-;;; my-app.el ends here
+(provide 'my-viewmode-custom)
+;;; my-viewmode-custom.el ends here

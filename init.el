@@ -1,15 +1,16 @@
 ;; -*- lexical-binding: t -*-
-;;  emacs-config for macOS
-
+;;  emacs for macOS
 ;; =======================================
 ;; Global variables
 ;; =======================================
 (defvar my/lisp-path (expand-file-name "lisp/" user-emacs-directory)
   "Path to the user's personal lisp directory.")
+
 (defvar my/org-person-dir "~/Dropbox/Docs/Person/"
   "Directory for personal org files.")
 
 (defvar my-macOS-p (eq system-type 'darwin))
+
 (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
 (setq org-directory (expand-file-name "~/Dropbox/Docs/org"))
@@ -55,7 +56,7 @@
 ;; =======================================
 ;; (use-package exec-path-from-shell
 ;;   :defer 2
-;;   ;; :if my-macOS-p
+;;   :if my-macOS-p
 ;;   :config
 ;;   (setq exec-path-from-shell-variables '("PATH" "MANPATH" "LIBRARY_PATH"))
 ;;   (exec-path-from-shell-initialize))
@@ -108,15 +109,16 @@
 ;; =======================================
 (add-to-list 'load-path my/lisp-path)
 
-(require 'my-keys)
 (require 'my-completion)
-(require 'my-useful-custom)
 (require 'my-dired-custom)
 (require 'my-org-custom)
+(require 'my-useful-custom)
 (require 'my-search)
 (require 'my-todays-pop)
 (require 'my-radio-direct)
-(require 'my-app)
+(require 'my-viewmode-custom)
+(require 'my-keys)
+
 
 ;; =======================================
 ;;; MacOS keyboard
@@ -166,7 +168,7 @@
   (next-line-add-newlines nil)        ; 문서 끝에서 C-n 눌러도 새 줄 추가 안 함
   (enable-recursive-minibuffers t)    ; 미니버퍼 내에서 다른 미니버퍼 호출 허용
   (create-lockfiles nil)
-  ;; (context-menu-mode 1)               ; 마우스 오른쪽 메뉴
+  (context-menu-mode 1)               ; 마우스 오른쪽 메뉴
   :config
   (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
   :bind
@@ -220,6 +222,36 @@
   (split-width-threshold 85)     ; 가로가 85자 이상이면 가로 분할 선호
   (window-min-height 3)
   (window-min-width 30))
+
+
+;; =======================================
+;;; Bookmark
+;; =======================================
+(use-package bookmark
+  :ensure nil
+  :custom
+  (bookmark-save-flag 1)
+  (bookmark-sort-flag nil)
+  (bookmark-default-file (expand-file-name "bookmarks" user-emacs-directory)))
+
+
+;; =======================================
+;;; Register
+;; =======================================
+(use-package register
+  :ensure nil
+  :config
+  (let ((org-dir my/org-person-dir)
+	(conf-dir user-emacs-directory))
+    (set-register ?i `(file . ,(expand-file-name "init.el" conf-dir)))
+    (set-register ?l `(file . ,(expand-file-name "lisp/" conf-dir)))
+    (set-register ?r `(file . ,(concat org-dir "cReading.org")))
+    (set-register ?d `(file . ,(concat org-dir "Daily.org")))
+    (set-register ?n `(file . ,(concat org-dir "cNotes.org")))
+    (set-register ?p `(file . ,(expand-file-name "~/Dropbox/Docs/pdf"))))
+  (set-register ?o `(file . ,default-directory))
+  :custom
+  (register-preview-delay 0.5))
 
 
 ;; =======================================
@@ -293,6 +325,21 @@
 
 
 ;; =======================================
+;;; Session and Place Persistence
+;; =======================================
+(use-package savehist
+  :ensure nil
+  :demand t
+  :init (savehist-mode 1)
+  :custom
+  (history-length 10))
+
+(use-package saveplace
+  :ensure nil
+  :config (save-place-mode 1))
+
+
+;; =======================================
 ;;; Icons
 ;; =======================================
 (use-package nerd-icons
@@ -307,93 +354,6 @@
   ;; :if (display-graphic-p)
   :after (marginalia nerd-icons)
   :config  (nerd-icons-completion-mode 1))
-
-
-;; =======================================
-;;; Modeline
-;; =======================================
-
-(defvar my/indicator-image-dir 
-  (expand-file-name "img-indicator/" user-emacs-directory))
-
-(defvar ko-img 
-  (create-image (expand-file-name "han2.tiff" my/indicator-image-dir) 
-                'tiff nil :ascent 'center))
-(defvar en-img 
-  (create-image (expand-file-name "qwerty.tiff" my/indicator-image-dir) 
-                'tiff nil :ascent 'center))
-
-(defvar mode-line-use-images-p 
-  (and (display-graphic-p) (image-type-available-p 'tiff)))
-
-(setq mode-line-right-align-edge 'right-margin)
-(setq-default mode-line-format
-              '("%e "
-                mode-line-front-space
-                (:eval
-                 (let* ((is-ko (equal current-input-method "korean-hangul"))
-                        (label (if is-ko "KO" "EN")))
-                   (propertize label
-                               'display (when mode-line-use-images-p 
-                                          (if is-ko ko-img en-img))
-                               'help-echo label)))
-                "  "
-                "Ⓗ "
-                mode-line-buffer-identification
-                mode-line-frame-identification
-                " "
-                ;; mode-line-modes
-                mode-line-format-right-align
-                mode-line-position
-                " "
-                mode-line-misc-info
-		"Ⓨ"))
-
-
-;; =======================================
-;;; Session and Place Persistence
-;; =======================================
-(use-package savehist
-  :ensure nil
-  :defer 1
-  :init (savehist-mode 1)
-  :custom
-  (history-length 10))
-
-(use-package saveplace
-  :ensure nil
-  :defer 1
-  :config (save-place-mode 1))
-
-
-;; =======================================
-;;; Bookmark
-;; =======================================
-(use-package bookmark
-  :ensure nil
-  :custom
-  (bookmark-save-flag 1)
-  (bookmark-sort-flag nil)
-  (bookmark-default-file (expand-file-name "bookmarks" user-emacs-directory)))
-
-
-;; =======================================
-;;; Register
-;; =======================================
-(use-package register
-  :ensure nil
-  :config
-  (let ((org-dir my/org-person-dir)
-	(conf-dir user-emacs-directory))
-    (set-register ?i `(file . ,(expand-file-name "init.el" conf-dir)))
-    (set-register ?l `(file . ,(expand-file-name "lisp/" conf-dir)))
-    (set-register ?r `(file . ,(concat org-dir "cReading.org")))
-    (set-register ?d `(file . ,(concat org-dir "Daily.org")))
-    (set-register ?n `(file . ,(concat org-dir "cNotes.org")))
-    (set-register ?p `(file . ,(expand-file-name "~/Dropbox/Docs/pdf"))))
-  (set-register ?o `(file . ,default-directory))
-  :custom
-  (register-preview-delay 0.5))
 
 
 ;; =======================================
@@ -413,8 +373,7 @@
 ;; =======================================
 (use-package winner
   :ensure nil    ;built-in
-  :defer 1
-  :config
+  :init
   (winner-mode 1))
 
 
@@ -422,8 +381,7 @@
 ;;; recentF
 ;; =======================================
 (use-package recentf
-  :defer 1
-  :config (recentf-mode 1)
+  :init (recentf-mode 1)
   :custom
   (recentf-max-menu-items 15)
   (recentf-max-saved-items 15))
@@ -434,7 +392,6 @@
 ;; ======================================
 (use-package which-key
   :ensure nil
-  :defer 2
   :init (which-key-mode)
   :custom
   (which-key-show-transient-maps t)
@@ -451,7 +408,43 @@
 
 
 ;; =======================================
-;;; Battery
+;;; Modeline
+;; =======================================
+(defvar my/indicator-image-dir 
+  (expand-file-name "img-indicator/" user-emacs-directory))
+(defvar ko-img 
+  (create-image (expand-file-name "han2.tiff" my/indicator-image-dir) 
+                'tiff nil :ascent 'center))
+(defvar en-img 
+  (create-image (expand-file-name "qwerty.tiff" my/indicator-image-dir) 
+                'tiff nil :ascent 'center))
+(defvar mode-line-use-images-p 
+  (and (display-graphic-p) (image-type-available-p 'tiff)))
+(setq mode-line-right-align-edge 'right-margin)
+(setq-default mode-line-format
+              '("%e "
+                mode-line-front-space
+                (:eval
+                 (let* ((is-ko (equal current-input-method "korean-hangul"))
+                        (label (if is-ko "KO" "EN")))
+                   (propertize label
+                               'display (when mode-line-use-images-p 
+                                          (if is-ko ko-img en-img))
+                               'help-echo label)))
+                "   "
+                "Ⓗ "
+                mode-line-buffer-identification
+                mode-line-frame-identification
+                "  "
+                ;; mode-line-modes
+                mode-line-format-right-align
+                mode-line-position
+                " Ⓨ "
+                mode-line-misc-info))
+
+
+;; =======================================
+;;; Battery display
 ;; =======================================
 (use-package battery
   :if my-Macbook-p
@@ -462,6 +455,27 @@
   (battery-mode-line-format "Ⓑ %p%% ")
   :init
   (display-battery-mode 1))
+
+
+;; =======================================
+;;; magit
+;; =======================================
+(use-package magit
+  :if my-Macbook-p
+  :ensure nil
+  :bind ("C-x g" . magit-status)
+  :custom
+  ;; Magit이 전체 화면을 차지하지 않고, 현재 창 구성을 최대한 유지
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+
+;; =======================================
+;;; expand-region
+;; =======================================
+(use-package expand-region
+  :ensure nil
+  :bind (("C-="   . er/expand-region)
+         ("C-M-=" . er/contract-region)))
 
 
 ;; =======================================
@@ -513,3 +527,4 @@
   :bind
   (("C-x r S" . my/desktop-save-at-point)   ; Save Layout
    ("C-x r R" . my/desktop-read-at-point))) ; Restore Layout
+
