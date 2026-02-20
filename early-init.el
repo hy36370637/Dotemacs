@@ -1,5 +1,9 @@
 ;;; early-init.el --- Early initialization -*- lexical-binding: t -*-
 
+;; ======================================
+;;; Benchmaking
+;; ======================================
+;; (profiler-start 'cpu)
 
 ;; ======================================
 ;;; GC 최적화

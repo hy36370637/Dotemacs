@@ -15,6 +15,9 @@
   (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste")
   "pngpaste executable path.")
 
+(defvar my/org-health-file (expand-file-name "Health.org" my/org-person-dir)
+  "File for health tracking (Blood Pressure, Habits).")
+
 
 ;; ======================================
 ;;; Helper Functions
@@ -214,8 +217,8 @@ Supports both the macOS and the Emacs kill ring."
              (f-tasks (expand-file-name "Tasks.org" p-dir))
              (f-read  (expand-file-name "cReading.org" p-dir))
              (f-money (expand-file-name "aMoney.org" p-dir))
-             ;; 공통 날짜 포맷팅
-             (today (format-time-string "%Y-%m-%d")))
+	     (f-health my/org-health-file)
+             (today (format-time-string "%Y-%m-%d")))        ;; 공통 날짜 포맷팅
         
         `(("d" "Daily" entry (file+datetree ,f-daily)
            "* %?\n%(my-org-daily-info)\n기록일: %U" :empty-lines-after 1)
@@ -223,12 +226,19 @@ Supports both the macOS and the Emacs kill ring."
           ("t" "Tasks" entry (file ,f-tasks)
            "* TODO %?\nSCHEDULED: %t" :empty-lines-after 1)
 
+	  ("b" "Blood Pressure" table-line (file+headline ,f-health "혈압 데이터")
+           "| %U | %^{수축기} | %^{이완기} | %^{맥박} | %^{메모} |" :immediate-finish t)
+          
+          ("h" "Habit: 혈압" entry (file+headline ,f-health "습관 관리")
+           "* TODO 혈압 측정하기\nSCHEDULED: %t\n:PROPERTIES:\n:STYLE: habit\n:END:" :immediate-finish t)
+
           ("r" "Reading" entry (file ,f-read)
            "* %?\n기록일: %U" :unnarrowed t :empty-lines-after 1)
 
           ("m" "경조사" table-line (file ,f-money)
            ,(concat "| %^{구분} | %^{일자|" today "} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
            :prepend nil)))))
+
 
 ;; ======================================
 ;;; org-superstar

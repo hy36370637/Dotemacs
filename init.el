@@ -116,7 +116,7 @@
 (require 'my-search)
 (require 'my-todays-pop)
 (require 'my-radio-direct)
-(require 'my-viewmode-custom)
+;; (require 'my-viewmode-custom)
 (require 'my-keys)
 
 
@@ -168,7 +168,7 @@
   (next-line-add-newlines nil)        ; 문서 끝에서 C-n 눌러도 새 줄 추가 안 함
   (enable-recursive-minibuffers t)    ; 미니버퍼 내에서 다른 미니버퍼 호출 허용
   (create-lockfiles nil)
-  (context-menu-mode 1)               ; 마우스 오른쪽 메뉴
+  ;; (context-menu-mode 1)               ; 마우스 오른쪽 메뉴
   :config
   (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
   :bind
@@ -528,3 +528,8 @@
   (("C-x r S" . my/desktop-save-at-point)   ; Save Layout
    ("C-x r R" . my/desktop-read-at-point))) ; Restore Layout
 
+
+;; ======================================
+;;; Benchmaking
+;; ======================================
+;; (add-hook 'emacs-startup-hook 'profiler-report)
