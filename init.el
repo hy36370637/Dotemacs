@@ -6,8 +6,8 @@
 (defvar my/lisp-path (expand-file-name "lisp/" user-emacs-directory)
   "Path to the user's personal lisp directory.")
 
-(defvar my/org-person-dir "~/Dropbox/Docs/Person/"
-  "Directory for personal org files.")
+;; (defvar my/org-person-dir "~/Dropbox/Docs/Person/"
+;;   "Directory for personal org files.")
 
 (defvar my-macOS-p (eq system-type 'darwin))
 
@@ -116,7 +116,7 @@
 (require 'my-search)
 (require 'my-todays-pop)
 (require 'my-radio-direct)
-;; (require 'my-viewmode-custom)
+(require 'my-app)
 (require 'my-keys)
 
 
@@ -455,18 +455,6 @@
   (battery-mode-line-format "Ⓑ %p%% ")
   :init
   (display-battery-mode 1))
-
-
-;; =======================================
-;;; magit
-;; =======================================
-(use-package magit
-  :if my-Macbook-p
-  :ensure nil
-  :bind ("C-x g" . magit-status)
-  :custom
-  ;; Magit이 전체 화면을 차지하지 않고, 현재 창 구성을 최대한 유지
-  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
 
 ;; =======================================

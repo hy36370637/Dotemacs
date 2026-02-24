@@ -48,6 +48,7 @@
 (my/defkeymap my-media-prefix-map "Media"
   ("P" "Play radio"       #'my-radio-play)
   ("S" "Stop radio"       #'my-radio-stop)
+  ("b" "Bp average"       #'my-org-health-bp-average)
   ("i" "Insert img"       #'my-org-insert-image)
   ("p" "Path img"         #'my-insert-image-path)
   ("s" "Screenshot"       #'my-org-screenshot))

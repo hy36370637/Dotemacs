@@ -11,12 +11,12 @@
 (defvar my/org-person-dir (expand-file-name "~/Dropbox/Docs/Person/")
   "Directory for personal org files.")
 
+;; (defvar my/org-health-file (expand-file-name "Health.org" my/org-person-dir)
+;;   "File for health tracking (Blood Pressure, Habits).")
+
 (defvar my/pngpaste-bin 
   (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste")
   "pngpaste executable path.")
-
-(defvar my/org-health-file (expand-file-name "Health.org" my/org-person-dir)
-  "File for health tracking (Blood Pressure, Habits).")
 
 
 ;; ======================================
@@ -138,24 +138,28 @@ Supports both the macOS and the Emacs kill ring."
         (if template (format template text) text))))
 
 
+;;;###autoload
+(defun my-org-health-bp-average ()
+  "Display average blood pressure from Health.org table."
+  (interactive)
+  (let* ((table (org-table-to-lisp))
+         (data (seq-filter (lambda (x)
+                             (and (listp x)
+                                  (not (string-match "일시\\|평균" (car x)))))
+                           table))
+         (sys-list (mapcar (lambda (row) (string-to-number (string-trim (nth 1 row)))) data))
+         (dia-list (mapcar (lambda (row) (string-to-number (string-trim (nth 2 row)))) data))
+         (pul-list (mapcar (lambda (row) (string-to-number (string-trim (nth 3 row)))) data))
+         (n (float (length data)))
+         (avg-sys (/ (apply '+ sys-list) n))
+         (avg-dia (/ (apply '+ dia-list) n))
+         (avg-pul (/ (apply '+ pul-list) n)))
+    (message "평균 혈압: %.1f / %.1f  맥박: %.0f  (기록 %d건)"
+             avg-sys avg-dia avg-pul (length data))))
 ;; (defun cal-fixLayout () 
 ;;   "Fix calendar layout"
 ;;   (face-remap-add-relative 'default 
 ;;                            '(:family "Noto Sans Mono CJK KR" :height 160)))
-
-
-;; ======================================
-;;; Calendar
-;; ======================================
-(use-package calendar
-  :ensure nil
-;; :hook (calendar-mode . cal-fixLayout)
-  :custom
-  (calendar-week-start-day 0)  ; Start week on Sunday
-  (calendar-date-style 'iso)   ; YYYY-MM-DD 형식
-  (calendar-month-name-array 
-   ["1월" "2월" "3월" "4월" "5월" "6월" 
-    "7월" "8월" "9월" "10월" "11월" "12월"]))
 
 
 ;; ======================================
@@ -169,11 +173,14 @@ Supports both the macOS and the Emacs kill ring."
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
          :map org-mode-map
-         ("C-c C-x d" . my-org-insert-drawer-custom)
-	 ("C-," . my-pair-pairs-wrap)
+         ("C-,"   . my-pair-pairs-wrap)
 	 ("C-M-y" . my-paste-with-parentheses)
-	 ("M-," . org-insert-structure-template))
+	 ("M-,"   . org-insert-structure-template)
+	 ("C-c C-x d" . my-org-insert-drawer-custom))
   :custom
+  (org-agenda-files (list (expand-file-name "Tasks.org" my/org-person-dir)
+                          (expand-file-name "Daily.org" my/org-person-dir)
+                          (expand-file-name "Health.org" my/org-person-dir)))
   ;; (org-directory (expand-file-name "~/Dropbox/Docs/org")) ; -> init.el
   (org-startup-indented t)             ;시작때 indent mode enable
   (org-startup-with-inline-images nil)
@@ -208,16 +215,21 @@ Supports both the macOS and the Emacs kill ring."
   (org-fontify-whole-heading-line nil)
   (org-fontify-done-headline t)
   (org-fontify-quote-and-verse-blocks t)
-  
+  (org-habit-preceding-days 7)               ;과거 7일치만 보여줌
+  (org-habit-following-days 1)               ;미래 1일치만 보여줌
+  (org-habit-show-habits-only-for-today t)   ;today일 경우만 아젠다 뷰 보임
+
   :config
+  (add-to-list 'org-modules 'org-habit)
   ;;  (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
+  
   (setq org-capture-templates
       (let* ((p-dir my/org-person-dir)
              (f-daily (expand-file-name "Daily.org" p-dir))
              (f-tasks (expand-file-name "Tasks.org" p-dir))
              (f-read  (expand-file-name "cReading.org" p-dir))
              (f-money (expand-file-name "aMoney.org" p-dir))
-	     (f-health my/org-health-file)
+             (f-health (expand-file-name "Health.org" p-dir))
              (today (format-time-string "%Y-%m-%d")))        ;; 공통 날짜 포맷팅
         
         `(("d" "Daily" entry (file+datetree ,f-daily)
@@ -282,6 +294,20 @@ Supports both the macOS and the Emacs kill ring."
   (add-to-list 'org-export-filter-quote-block-functions #'my/org-latex-filter-blocks)
   (add-to-list 'org-export-filter-verse-block-functions #'my/org-latex-filter-blocks))
   
+
+;; ======================================
+;;; Calendar
+;; ======================================
+(use-package calendar
+  :ensure nil
+;; :hook (calendar-mode . cal-fixLayout)
+  :custom
+  (calendar-week-start-day 0)  ; Start week on Sunday
+  (calendar-date-style 'iso)   ; YYYY-MM-DD 형식
+  (calendar-month-name-array 
+   ["1월" "2월" "3월" "4월" "5월" "6월" 
+    "7월" "8월" "9월" "10월" "11월" "12월"]))
+
 
 ;; ======================================
 ;;; ox-md
