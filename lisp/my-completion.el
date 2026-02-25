@@ -173,41 +173,85 @@
 (use-package abbrev
   :ensure nil
   :hook (org-mode . abbrev-mode)
-  :custom (save-abbrevs nil)
+  :custom
+  (save-abbrevs nil)
   :config
   (with-eval-after-load 'org
-    ;; (abbrev-table-put org-mode-abbrev-table 
-    ;;                   :regexp "\\(?:^\\|[\t\s]+\\)\\(?1::.*\\)")
-    (define-abbrev-table 'org-mode-abbrev-table
-      '(;; 특수문자
-        ("rA" "→")("lA" "←") ("rrA" "⇒")("llA" "⇐")("lS" "―") ("lT" "……")
-        ("lG" "「") ("rG" "」") ("cD" "·") ("llG" "『") ("rrG" "』")
-        ;; Org-mode 설정
-        ("Dsc"     "#+DESCRIPTION: ")
-        ("Title"   "#+TITLE: ")
-        ("Author"  "#+AUTHOR: ")
-        ("Keyword" "#+KEYWORDS: ")
-        ("Setfile" "#+SETUPFILE: setLTH/Header.org")
-        ("Center"  "#+BEGIN_CENTER\n· · ·\n#+END_CENTER")
-        ("Nonum"   ":PROPERTIES:\n:UNNUMBERED: t\n:END:")
-        ("Option"  "#+OPTIONS: toc:2 num:2 d:nil")
-	("Qsty"    "#+QUOTE_STYLE:")
-        ("Grayq"   "#+ATTR_LATEX: :environment grayquote")
-        ("Doimg"   "#+ATTR_LATEX: :width 0.5\\textwidth\n#+CAPTION: \n")
-	("Right"   "#+BEGIN_EXPORT latex\n\\begin{flushright}\n\n\\end{flushright}\n#+END_EXPORT")
-	("Cover" "#+begin_src emacs-lisp :exports results :results none :eval export
-                  (make-variable-buffer-local 'org-latex-title-command)
-                  (setq org-latex-title-command (concat
-                        \"\\\\begin{titlepage}\\n\"
-                        \"\\\\includegraphics[width=14.7cm]{./img/PATH}\\n\"
-                        \"\\\\end{titlepage}\\n\"))
-                  #+end_src")
-	("Bskip" "#+LATEX: \\bigskip")
-	("Mskip" "#+LATEX: \\medskip")
-	("Nskip" "#+LATEX: \\vspace{\\baselineskip}")
-        ("Notoc" "#+LATEX: \\addcontentsline{toc}{section}{}" 
-         (lambda () (backward-char 1)))))))
-
+    ;; 기본 설정
+    (abbrev-table-put org-mode-abbrev-table :case-fixed t)
+    ;; 특수기호
+    (dolist (pair
+             '(("lS"  "―") ("lT"  "……")
+               ("lG"  "「") ("rG"  "」")
+               ("llG" "『") ("rrG" "』")
+               ("cD"  "·")))
+      (define-abbrev org-mode-abbrev-table
+        (car pair) (cadr pair)))
+    ;; Org 템플릿 세트
+    (dolist (pair
+             '(("Dsc"     "#+DESCRIPTION: ")
+               ("Title"   "#+TITLE: ")
+               ("Author"  "#+AUTHOR: ")
+               ("Keyword" "#+KEYWORDS: ")
+               ("Setfile" "#+SETUPFILE: setLTH/Header.org")
+               ("Center"  "#+BEGIN_CENTER\n· · ·\n#+END_CENTER")
+               ("Nonum"   ":PROPERTIES:\n:UNNUMBERED: t\n:END:")
+               ("Option"  "#+OPTIONS: toc:2 num:2 d:nil")
+               ("Qsty"    "#+QUOTE_STYLE:")
+               ("Grayq"   "#+ATTR_LATEX: :environment grayquote")
+               ("Doimg"   "#+ATTR_LATEX: :width 0.5\\textwidth\n#+CAPTION: \n")
+               ("Right"   "#+BEGIN_EXPORT latex\n\\begin{flushright}\n\n\\end{flushright}\n#+END_EXPORT")
+               ("Bskip"   "#+LATEX: \\bigskip")
+               ("Mskip"   "#+LATEX: \\medskip")
+               ("Nskip"   "#+LATEX: \\vspace{\\baselineskip}")))
+      (define-abbrev org-mode-abbrev-table
+        (car pair) (cadr pair)))
+    ;; Notoc (section에서 제외)
+    (define-abbrev
+      org-mode-abbrev-table
+      "Notoc"
+      "#+LATEX: \\addcontentsline{toc}{section}{}"
+      (lambda () (backward-char 1)))
+    ;; Cover (titlepage 삽입용)
+    (define-abbrev
+      org-mode-abbrev-table
+      "Cover"
+      "#+begin_src emacs-lisp :exports results :results none :eval export
+(make-variable-buffer-local 'org-latex-title-command)
+(setq org-latex-title-command
+      (concat
+       \"\\\\begin{titlepage}\n\"
+       \"\\\\includegraphics[width=14.7cm]{./img/PATH}\n\"
+       \"\\\\end{titlepage}\n\"))
+#+end_src")
+    ;; 코딩식 자동 즉시 변환
+    (defun my-org-auto-symbol-replace ()
+      (when (and (not (org-in-src-block-p))
+                 (not (org-at-table-p))
+                 (not (org-in-verbatim-emphasis)))
+        (let ((pairs '(("->"  . "→") ("<-"  . "←")
+                       ("=>"  . "⇒") ("<="  . "⇐")
+                       ("<_"  . "≤") (">_"  . "≥")
+                       ("!="  . "≠") ("=="  . "≡")
+                       ("~="  . "≈") ("+-"  . "±"))))
+          (catch 'done
+            (dolist (pair pairs)
+              (let* ((key (car pair))
+                     (val (cdr pair))
+                     (len (length key)))
+                (when (and (>= (point) len)
+                           (string=
+                            key
+                            (buffer-substring-no-properties
+                             (- (point) len) (point))))
+                  (delete-region (- (point) len) (point))
+                  (insert val)
+                  (throw 'done nil))))))))
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (add-hook 'post-self-insert-hook
+                          #'my-org-auto-symbol-replace
+                          nil t)))))
 
 
 
