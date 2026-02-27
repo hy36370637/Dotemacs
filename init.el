@@ -170,6 +170,7 @@
   (create-lockfiles nil)
   ;; (context-menu-mode 1)               ; 마우스 오른쪽 메뉴
   :config
+  (global-font-lock-mode 1)
   (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
   :bind
   (("C-x z"     . nil)

@@ -97,19 +97,19 @@ If ARG is non-nil, insert at the end of the current outline node."
     (org-insert-drawer arg name)))
 
 
-(defun my-org-daily-info()
-  "Generate lunar date and tide information string for org-capture."
-  (let* ((lunar-str (my-lunar-date-string))
-         (lunar-cleaned (string-trim (replace-regexp-in-string "(음) " "" lunar-str)))
-         (tide-result (my-format-tide-info))
-         (tide-times (car tide-result))
-         (muldae (string-trim (cdr tide-result))))
-    (format "\n- 음력: %s | 물때: %s\n%s"
-            lunar-cleaned
-            (if (string-match "(\\(.*\\))" muldae)
-                (match-string 1 muldae)
-              muldae)
-            tide-times)))
+;; (defun my-org-daily-info()
+;;   "Generate lunar date and tide information string for org-capture."
+;;   (let* ((lunar-str (my-lunar-date-string))
+;;          (lunar-cleaned (string-trim (replace-regexp-in-string "(음) " "" lunar-str)))
+;;          (tide-result (my-format-tide-info))
+;;          (tide-times (car tide-result))
+;;          (muldae (string-trim (cdr tide-result))))
+;;     (format "\n- 음력: %s | 물때: %s\n%s"
+;;             lunar-cleaned
+;;             (if (string-match "(\\(.*\\))" muldae)
+;;                 (match-string 1 muldae)
+;;               muldae)
+;;             tide-times)))
 
 
 (defun my-paste-with-parentheses ()
@@ -156,6 +156,8 @@ Supports both the macOS and the Emacs kill ring."
          (avg-pul (/ (apply '+ pul-list) n)))
     (message "평균 혈압: %.1f / %.1f  맥박: %.0f  (기록 %d건)"
              avg-sys avg-dia avg-pul (length data))))
+
+
 ;; (defun cal-fixLayout () 
 ;;   "Fix calendar layout"
 ;;   (face-remap-add-relative 'default 
@@ -233,7 +235,8 @@ Supports both the macOS and the Emacs kill ring."
              (today (format-time-string "%Y-%m-%d")))        ;; 공통 날짜 포맷팅
         
         `(("d" "Daily" entry (file+datetree ,f-daily)
-           "* %?\n%(my-org-daily-info)\n기록일: %U" :empty-lines-after 1)
+	   "* %?\n기록일: %U" :empty-lines-after 1)
+           ;; "* %?\n%(my-org-daily-info)\n기록일: %U" :empty-lines-after 1)
 
           ("t" "Tasks" entry (file ,f-tasks)
            "* TODO %?\nSCHEDULED: %t" :empty-lines-after 1)
