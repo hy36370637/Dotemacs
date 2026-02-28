@@ -18,12 +18,21 @@
                  bindings))))
 
 
+(defvar my-prefix-map-active nil)
+
 (defun my-prefix-with-ime-deactivation ()
-  "Deactivate IME and show master keymap."
+  "Deactivate IME and toggle master keymap."
   (interactive)
-  (my/deactivate-input-method)
-  (which-key-show-keymap 'my-emacs-prefix-map my-emacs-prefix-map)
-  (set-transient-map my-emacs-prefix-map t))
+  (if my-prefix-map-active
+      (progn
+        (setq my-prefix-map-active nil)
+        (which-key--hide-popup))
+    (setq my-prefix-map-active t)
+    (my/deactivate-input-method)
+    (which-key-show-keymap 'my-emacs-prefix-map my-emacs-prefix-map)
+    (set-transient-map my-emacs-prefix-map
+                       (lambda () t)
+                       (lambda () (setq my-prefix-map-active nil)))))
 
 ;; ======================================
 ;;; Keymap Definitions
@@ -73,8 +82,8 @@
 ;; ======================================
 ;;; Global Binding
 ;; ======================================
-(keymap-set global-map "M-SPC" #'my-prefix-with-ime-deactivation)
-
+(keymap-set global-map "C-z" #'my-prefix-with-ime-deactivation)
+;; (keymap-set global-map "S-SPC" #'my-prefix-with-ime-deactivation)
 
 
 

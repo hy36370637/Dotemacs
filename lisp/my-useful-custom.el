@@ -217,6 +217,26 @@ If more than one window exists, it will first delete other windows."
   (message "Three-column layout initialized."))
 
 
+(defun my-hanja-word-convert-smart ()
+  "커서 왼쪽의 한글 단어를 인식하여 한 글자씩 연속으로 변환합니다."
+  (interactive)
+  (let ((end (point))
+        (start (save-excursion
+                 (skip-chars-backward "가-힣")
+                 (point))))
+    (if (= start end)
+        (message "변환할 한글이 없습니다.")
+      (goto-char start)
+      (while (< (point) end)
+        (forward-char 1)
+        ;; korea-util.el에 정의된 기본 변환 함수 호출
+        (call-interactively 'hangul-to-hanja-conversion)))))
+
+;; 단축키를 새 함수로 교체합니다.
+(with-eval-after-load 'korea-util
+  (define-key global-map [f9] 'my-hanja-word-convert-smart)
+  (define-key global-map [Hangul_Hanja] 'my-hanja-word-convert-smart))
+
 
 ;; (defun my-Ddays ()
 ;;   "Calculate days until/since 2024-12-31."

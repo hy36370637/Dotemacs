@@ -127,10 +127,10 @@
   (setq mac-pass-command-to-system nil)
   ;; [왼쪽] Opt(Super) / Cmd(Meta)
   (setq ns-option-modifier 'super)
-  (setq ns-command-modifier 'meta))
+  (setq ns-command-modifier 'meta)
   ;; [오른쪽] Cmd(Meta) / Opt(Control)
-  ;; (setq ns-right-command-modifier 'meta)  ;'meta
-  ;; (setq ns-right-option-modifier 'control)) ;'control
+  (setq ns-right-command-modifier 'meta)  ;'meta
+  (setq ns-right-option-modifier 'control)) ;'control
 
 
 ;; =======================================
@@ -269,10 +269,10 @@
   (set-keyboard-coding-system 'utf-8)
   (set-selection-coding-system 'utf-8)
   :custom
-  (default-input-method "korean-hangul")
+  (default-input-method "korean-hangul")              ;korean-input nil
   (input-method-verbose-flag nil)
   (input-method-highlight-flag nil))
-
+  
 
 ;; =======================================
 ;;; Fonts
