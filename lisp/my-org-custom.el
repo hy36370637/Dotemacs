@@ -223,7 +223,7 @@ Supports both the macOS and the Emacs kill ring."
 
   :config
   (add-to-list 'org-modules 'org-habit)
-  ;;  (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
+  (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
   
   (setq org-capture-templates
       (let* ((p-dir my/org-person-dir)
@@ -313,11 +313,10 @@ Supports both the macOS and the Emacs kill ring."
 
 
 ;; ======================================
-;;; ox-md
+;;; valign
 ;; ======================================
-;; (use-package ox-md
-;;   :ensure nil
-;;   :after org)
+(use-package valign
+  :hook (org-mode . valign-mode))  
 
 
 ;; ======================================

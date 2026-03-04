@@ -1,5 +1,7 @@
 ;; -*- lexical-binding: t -*-
 ;;  emacs for macOS
+
+;;
 ;; =======================================
 ;; Global variables
 ;; =======================================
@@ -114,7 +116,7 @@
 (require 'my-org-custom)
 (require 'my-useful-custom)
 (require 'my-search)
-(require 'my-todays-pop)
+;; (require 'my-todays-pop)
 (require 'my-radio-direct)
 (require 'my-app)
 (require 'my-keys)
@@ -129,7 +131,7 @@
   (setq ns-option-modifier 'super)
   (setq ns-command-modifier 'meta)
   ;; [오른쪽] Cmd(Meta) / Opt(Control)
-  (setq ns-right-command-modifier 'meta)  ;'meta
+  (setq ns-right-command-modifier 'meta)    ;'meta
   (setq ns-right-option-modifier 'control)) ;'control
 
 
@@ -156,9 +158,9 @@
   (text-scale-mode-step 1.02)         ; 텍스트 크기 조절 단계
   (frame-resize-pixelwise t)          ; pixcel 단위
   ;; 스크롤, 탐색
-  (scroll-margin 3)                   ; 상하 2줄 여백 유지하며 스크롤
-  (scroll-conservatively 101)         ; 화면 점프 없이 부드럽게 한 줄씩 스크롤
-  (scroll-error-top-bottom t)         ; 문서 끝에서 방향키 입력 시 커서 이동 후 경고
+  (pixel-scroll-precision-mode t)             ; 정밀 스크롤 자체를 켬
+  (pixel-scroll-precision-use-momentum t)     ; 손을 떼도 부드럽게 밀리는 관성 추가
+  (pixel-scroll-precision-interpolate-page t) ; 페이지 단위 이동 시 툭 끊기지 않게 함
   ;;마크, 히스토리 
   (set-mark-command-repeat-pop t)     ; C-u C-SPC 이후 C-SPC만으로 계속 점프
   (mark-ring-max 16)                  ; 버퍼 내 마크 저장 개수
@@ -169,13 +171,17 @@
   (enable-recursive-minibuffers t)    ; 미니버퍼 내에서 다른 미니버퍼 호출 허용
   (create-lockfiles nil)
   ;; (context-menu-mode 1)               ; 마우스 오른쪽 메뉴
+
   :config
   (global-font-lock-mode 1)
   (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
+
   :bind
   (("C-x z"     . nil)
    ("C-x m"     . nil)
    ("C-x f"     . toggle-frame-fullscreen)
+   ("C-x <left>"  . tile-frame-left)
+   ("C-x <right>" . tile-frame-right)
    ("M-;"       . comment-line)
    ("M-s u"     . my-search-unified)
    ("C-a"       . my-smart-beginning-of-line)
@@ -272,7 +278,7 @@
   (default-input-method "korean-hangul")              ;korean-input nil
   (input-method-verbose-flag nil)
   (input-method-highlight-flag nil))
-  
+
 
 ;; =======================================
 ;;; Fonts
@@ -516,9 +522,3 @@
   :bind
   (("C-x r S" . my/desktop-save-at-point)   ; Save Layout
    ("C-x r R" . my/desktop-read-at-point))) ; Restore Layout
-
-
-;; ======================================
-;;; Benchmaking
-;; ======================================
-;; (add-hook 'emacs-startup-hook 'profiler-report)

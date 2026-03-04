@@ -217,25 +217,46 @@ If more than one window exists, it will first delete other windows."
   (message "Three-column layout initialized."))
 
 
-(defun my-hanja-word-convert-smart ()
-  "커서 왼쪽의 한글 단어를 인식하여 한 글자씩 연속으로 변환합니다."
-  (interactive)
-  (let ((end (point))
-        (start (save-excursion
-                 (skip-chars-backward "가-힣")
-                 (point))))
-    (if (= start end)
-        (message "변환할 한글이 없습니다.")
-      (goto-char start)
-      (while (< (point) end)
-        (forward-char 1)
-        ;; korea-util.el에 정의된 기본 변환 함수 호출
-        (call-interactively 'hangul-to-hanja-conversion)))))
+(defun my/get-display-workarea ()
+  "Returns the usable work area of the current monitor,
+excluding the Dock and Menu bar."
+  (let* ((attrs (frame-monitor-attributes))
+         (workarea (alist-get 'workarea attrs)))
+    ;; workarea: (x y width height)
+    (list (nth 0 workarea)
+          (nth 1 workarea)
+          (nth 2 workarea)
+          (nth 3 workarea))))
 
-;; 단축키를 새 함수로 교체합니다.
-(with-eval-after-load 'korea-util
-  (define-key global-map [f9] 'my-hanja-word-convert-smart)
-  (define-key global-map [Hangul_Hanja] 'my-hanja-word-convert-smart))
+
+;;;###autoload
+(defun tile-frame-left ()
+  "Snap the Emacs frame to the Left half of the screen."
+  (interactive)
+  (let* ((area (my/get-display-workarea))
+         (x      (nth 0 area))
+         (y      (nth 1 area))
+         (width  (nth 2 area))
+         (height (nth 3 area))
+         (half-w (/ width 2)))
+    (set-frame-position nil x y)
+    (set-frame-size nil half-w height t)) ; t = pixel 단위
+  (message "◧ Moved to Left Half"))
+
+
+;;;###autoload
+(defun tile-frame-right ()
+  "Snap the Emacs frame to the Right half of the screen."
+  (interactive)
+  (let* ((area (my/get-display-workarea))
+         (x      (nth 0 area))
+         (y      (nth 1 area))
+         (width  (nth 2 area))
+         (height (nth 3 area))
+         (half-w (/ width 2)))
+    (set-frame-position nil (+ x half-w) y)
+    (set-frame-size nil half-w height t))
+  (message "◨ Moved to Right Half"))
 
 
 ;; (defun my-Ddays ()

@@ -18,21 +18,18 @@
                  bindings))))
 
 
-(defvar my-prefix-map-active nil)
+(defun my/deactivate-input-method (&rest _args)
+  "Deactivate current input method."
+  (when (and (boundp 'current-input-method) current-input-method)
+    (deactivate-input-method)))
+
 
 (defun my-prefix-with-ime-deactivation ()
-  "Deactivate IME and toggle master keymap."
+  "Deactivate IME and show master keymap."
   (interactive)
-  (if my-prefix-map-active
-      (progn
-        (setq my-prefix-map-active nil)
-        (which-key--hide-popup))
-    (setq my-prefix-map-active t)
-    (my/deactivate-input-method)
-    (which-key-show-keymap 'my-emacs-prefix-map my-emacs-prefix-map)
-    (set-transient-map my-emacs-prefix-map
-                       (lambda () t)
-                       (lambda () (setq my-prefix-map-active nil)))))
+  (my/deactivate-input-method)
+  (which-key-show-keymap 'my-emacs-prefix-map my-emacs-prefix-map)
+  (set-transient-map my-emacs-prefix-map t))
 
 ;; ======================================
 ;;; Keymap Definitions
@@ -63,16 +60,16 @@
   ("s" "Screenshot"       #'my-org-screenshot))
 
 (my/defkeymap my-window-prefix-map "Window"
-  ("j" "Width 1/3-2/3"     #'my-toggle-window-split-ratio)
-  ("i" "Height 1/3-2/3"    #'my-toggle-window-height-ratio)
-  ("k" "Pin/Unpin"         #'my-toggle-window-dedicated)
-  ("l" "3-Win Layout"      #'my-layout-3-windows-center-focus)
-  ("m" "Split 3-Column"    #'my-split-window-three-column))
+  ("j" "Width 1/3-2/3"    #'my-toggle-window-split-ratio)
+  ("i" "Height 1/3-2/3"   #'my-toggle-window-height-ratio)
+  ("k" "Pin/Unpin"        #'my-toggle-window-dedicated)
+  ("l" "3-Win Layout"     #'my-layout-3-windows-center-focus)
+  ("m" "Split 3-Column"   #'my-split-window-three-column))
   
 (my/defkeymap my-emacs-prefix-map "Master"
-  ("d" "Today's"          #'my-todays-pop)
+  ;; ("d" "Today's"          #'my-todays-pop)
   ("e" "Edit"             my-edit-prefix-map)
-  ("F" "Full"             #'toggle-frame-fullscreen)
+  ;; ("F" "Full"             #'toggle-frame-fullscreen)
   ("m" "Media"            my-media-prefix-map)
   ("r" "Register"         #'jump-to-register)
   ("s" "Search"           my-search-prefix-map)
@@ -82,8 +79,7 @@
 ;; ======================================
 ;;; Global Binding
 ;; ======================================
-(keymap-set global-map "C-z" #'my-prefix-with-ime-deactivation)
-;; (keymap-set global-map "S-SPC" #'my-prefix-with-ime-deactivation)
+(keymap-set global-map "M-m" #'my-prefix-with-ime-deactivation)
 
 
 
