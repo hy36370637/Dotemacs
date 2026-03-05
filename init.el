@@ -86,23 +86,26 @@
 ;;; Native Compilation Settings 
 ;; =======================================
 (when (and my-macOS-p (fboundp 'native-comp-available-p) (native-comp-available-p))
-  (let* ((gcc-bin "/opt/homebrew/bin/gcc-15")
-         (gcc-lib-1 "/opt/homebrew/lib/gcc/15")
-         (gcc-lib-2 "/opt/homebrew/Cellar/gcc/15.2.0/lib/gcc/current/gcc/aarch64-apple-darwin24/15")
+  (let* (;; 순수 Elisp glob — 속도 부담 없음
+         (gcc-bin (car (file-expand-wildcards "/opt/homebrew/bin/gcc-[0-9]*")))
+         (gcc-lib-1 "/opt/homebrew/lib/gcc/current")
+         (gcc-lib-2 (car (file-expand-wildcards
+                          "/opt/homebrew/Cellar/gcc/*/lib/gcc/current/gcc/aarch64-apple-darwin*/[0-9]*")))
+         ;; sdk는 변경 빈도 낮아 하드코딩 유지
          (sdk-lib "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"))
 
-    ;; 1. 컴파일러 실행 파일 경로 설정
-    (setq native-comp-driver-path gcc-bin)
+    (when gcc-bin
+      (setq native-comp-driver-path gcc-bin))
 
-    ;; 2. LIBRARY_PATH 통합 설정
-    ;; gcc 내부 라이브러리(emutls_w)와 시스템 SDK(System) 경로를 모두 포함합니다.
-    (setenv "LIBRARY_PATH" 
-            (concat (getenv "LIBRARY_PATH") ":" 
-                    gcc-lib-1 ":" 
-                    gcc-lib-2 ":" 
-                    sdk-lib))
+    (setenv "LIBRARY_PATH"
+            (string-join
+             (seq-uniq
+              (seq-filter #'file-directory-p
+                          (append
+                           (split-string (or (getenv "LIBRARY_PATH") "") ":" t)
+                           (list gcc-lib-1 gcc-lib-2 sdk-lib))))
+             ":"))
 
-    ;; 3. 비동기 컴파일 경고/에러 팝업 억제
     (setq native-comp-async-report-warnings-errors 'silent)))
 
 
@@ -130,6 +133,8 @@
   ;; [왼쪽] Opt(Super) / Cmd(Meta)
   (setq ns-option-modifier 'super)
   (setq ns-command-modifier 'meta)
+  ;; Fn
+  ;; (setq ns-function-modifier 'hyper)
   ;; [오른쪽] Cmd(Meta) / Opt(Control)
   (setq ns-right-command-modifier 'meta)    ;'meta
   (setq ns-right-option-modifier 'control)) ;'control
@@ -178,10 +183,11 @@
 
   :bind
   (("C-x z"     . nil)
-   ("C-x m"     . nil)
    ("C-x f"     . toggle-frame-fullscreen)
    ("C-x <left>"  . tile-frame-left)
    ("C-x <right>" . tile-frame-right)
+   ("C-x <down>"  . tile-frame-center)
+   ("C-x <up>"  . toggle-frame-maximized)
    ("M-;"       . comment-line)
    ("M-s u"     . my-search-unified)
    ("C-a"       . my-smart-beginning-of-line)
@@ -193,7 +199,8 @@
   :ensure nil
   :custom
   (display-time-24hr-format t)      ; 24-hour system
-  (display-time-format "%Y-%m-%d (%a) %H:%M")
+  (display-time-format "%y.%m.%d(%a)%H:%M")
+  ;; (display-time-format "%Y-%m-%d (%a) %H:%M")
   (display-time-day-and-date t)
   (display-time-load-average nil))  ; mode-line-misc-info average nil
 
@@ -275,7 +282,7 @@
   (set-keyboard-coding-system 'utf-8)
   (set-selection-coding-system 'utf-8)
   :custom
-  (default-input-method "korean-hangul")              ;korean-input nil
+  (default-input-method "korean-hangul")
   (input-method-verbose-flag nil)
   (input-method-highlight-flag nil))
 
@@ -447,6 +454,7 @@
                 mode-line-format-right-align
                 mode-line-position
                 " Ⓨ "
+		;; (:eval (format-time-string "%H:%M  "))
                 mode-line-misc-info))
 
 

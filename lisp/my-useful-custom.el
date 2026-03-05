@@ -259,6 +259,22 @@ excluding the Dock and Menu bar."
   (message "◨ Moved to Right Half"))
 
 
+;;;###autoload
+(defun tile-frame-center ()
+  "Snap the Emacs frame to the center 2/3 of the screen."
+  (interactive)
+  (let* ((area   (my/get-display-workarea))
+         (x      (nth 0 area))
+         (y      (nth 1 area))
+         (width  (nth 2 area))
+         (height (nth 3 area))
+         (two-thirds-w (/ (* width 2) 3))
+         (offset-x    (/ (- width two-thirds-w) 2)))
+    (set-frame-position nil (+ x offset-x) y)
+    (set-frame-size nil two-thirds-w height t))
+  (message "▣ center 2/3"))
+
+
 ;; (defun my-Ddays ()
 ;;   "Calculate days until/since 2024-12-31."
 ;;   (let ((diff-days (floor (/ (float-time (time-subtract (current-time)
