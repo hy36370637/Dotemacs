@@ -264,15 +264,15 @@ excluding the Dock and Menu bar."
   (message "▣ center 2/3"))
 
 
-;; (defun my-Ddays ()
-;;   "Calculate days until/since 2024-12-31."
-;;   (let ((diff-days (floor (/ (float-time (time-subtract (current-time)
-;;                                                         (encode-time 0 0 0 16 12 2025)))
-;; ;;                                                      (encode-time 0 0 0 31 12 2024)))
-;;                              86400))))
-;;     (if (> diff-days 0)
-;;         (format "/  %d일 경과" diff-days)
-;;       (format "/ D-day %d일前" (- diff-days)))))
+(defun my-Bdays ()
+  "2026-03-04를 1일로 하여 오늘까지의 경과일 메시지로 표시."
+  (interactive)
+  (let* ((target-date (encode-time 0 0 0 4 3 2026))
+         ;; 현재 시간과 기준 시간의 차이를 일 단위로 변환 (기준일 포함을 위해 1 더함)
+         (diff-days (1+ (floor (/ (float-time (time-subtract (current-time) target-date)) 
+                                  86400)))))
+    (message "혈압약 💊 %d일" diff-days)
+    diff-days))
 
 
 

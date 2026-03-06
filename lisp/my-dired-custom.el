@@ -3,7 +3,7 @@
 ;; ======================================
 ;;; Helfer Function
 ;; ======================================
-(defcustom my-dired-external-regexp "\\.pdf\\|\\.docx\\|\\.xlsx\\|\\.hwp\\|\\.hwpx\\|\\.mp4\\|\\.png\\|\\.jpg"
+(defcustom my-dired-external-regexp "\\.pdf\\|\\.docx\\|\\.xlsx\\|\\.hwp\\|\\.hwpx"
   "외부 프로그램으로 연결할 확장자 목록."
   :type 'string
   :group 'dired)
@@ -34,8 +34,6 @@
       (make-directory expanded-target t))
     (condition-case nil
         (progn
-          ;; dired-do-rename-regexp는 복잡할 수 있으므로 
-          ;; 단순히 마킹된 파일을 옮기려면 dired-do-rename을 고려
           (dired-do-rename-regexp ".*" expanded-target nil t)
           (revert-buffer)
           (message "%d files moved to %s." (length files) target-dir))
