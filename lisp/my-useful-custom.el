@@ -89,17 +89,6 @@
           (format-time-string "%Y")))
 
 
-(defun my-open-pdf-with-external-app ()
-  "Open PDF with macOS default app and close buffer."
-  (interactive)
-  (let ((file-path (buffer-file-name)))
-    (if (and file-path (file-exists-p file-path))
-        (progn
-          (start-process "pdf-external-open" nil "open" file-path)
-          (kill-buffer (current-buffer)))
-      (message "Error: Invalid file path or file does not exist."))))
-
-
 (defun my-keyboard-quit-dwim ()
   "Do-what-I-mean quit behavior.
 Handle 'keyboard-quit' based on the current context, such as an active region, open minibuffer, or the Completions buffer."

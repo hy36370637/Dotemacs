@@ -133,8 +133,6 @@
   ;; [왼쪽] Opt(Super) / Cmd(Meta)
   (setq ns-option-modifier 'super)
   (setq ns-command-modifier 'meta)
-  ;; Fn
-  ;; (setq ns-function-modifier 'hyper)
   ;; [오른쪽] Cmd(Meta) / Opt(Control)
   (setq ns-right-command-modifier 'meta)    ;'meta
   (setq ns-right-option-modifier 'control)) ;'control
@@ -148,8 +146,6 @@
   (setq default-directory (expand-file-name "~/Dropbox/Docs/org")
         temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
 
-  :mode ("\\.pdf\\'" . my-open-pdf-with-external-app)
-  
   :hook ((text-mode  . visual-line-mode)
 	 (focus-in   . my/deactivate-input-method))
   
