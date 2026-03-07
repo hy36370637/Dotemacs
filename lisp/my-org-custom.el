@@ -228,10 +228,10 @@ If ARG is non-nil, insert at the end of the current outline node."
   :custom
   (org-agenda-files (list my/f-tasks my/f-daily my/f-health))
   (org-startup-indented t)
-  (org-startup-with-inline-images nil)
+  ;; (org-startup-with-inline-images nil)   ;default
   (org-startup-folded t)
-  (org-adapt-indentation nil)          ;indent의 실제 공백 nil 
-  (org-indent-indentation-per-level 2)
+  (org-adapt-indentation nil)               ;indent의 실제 공백 nil 
+  ;; (org-indent-indentation-per-level 2)   ;default
   (org-edit-src-content-indentation 0)
   (org-image-actual-width 400)
   (org-startup-with-drawer t)
@@ -245,7 +245,7 @@ If ARG is non-nil, insert at the end of the current outline node."
             ("q" . "quote")
 	    ("v" . "verse")
 	    ("x" . "example")))
-  (org-export-with-drawers nil)
+  ;; (org-export-with-drawers nil)           ;default
   (org-export-with-smart-quotes t)           ; ""
   (org-export-with-special-strings t)        ; - -- ---
   (org-export-with-sub-superscripts '{})     ; _
@@ -255,8 +255,8 @@ If ARG is non-nil, insert at the end of the current outline node."
   (org-agenda-window-setup 'current-window)
   (org-agenda-inhibit-startup t)
   (org-agenda-use-tag-inheritance nil)
-  (org-agenda-dim-blocked-tasks nil)
-  (org-fontify-whole-heading-line nil)
+  ;; (org-agenda-dim-blocked-tasks nil)      ;default
+  ;; (org-fontify-whole-heading-line nil)    ;default
   (org-fontify-done-headline t)
   (org-fontify-quote-and-verse-blocks t)
   (org-habit-preceding-days 7)
