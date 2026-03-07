@@ -1,18 +1,21 @@
 ;;; my-org-custom.el --- Optimized Org-mode configuration -*- lexical-binding: t; -*-
 
 ;;; Commentary:
-;; Personal Org-mode configuration with optimized performance and structure
+;; Personal Org-mode configuration with centralized file paths and health tracking.
 
 ;;; Code:
 
 ;; ======================================
-;;; Variables
+;;; 1. Variables & File Paths
 ;; ======================================
 (defvar my/org-person-dir (expand-file-name "~/Dropbox/Docs/Person/")
   "Directory for personal org files.")
 
-;; (defvar my/org-health-file (expand-file-name "Health.org" my/org-person-dir)
-;;   "File for health tracking (Blood Pressure, Habits).")
+(defvar my/f-daily  (expand-file-name "Daily.org"  my/org-person-dir))
+(defvar my/f-tasks  (expand-file-name "Tasks.org"  my/org-person-dir))
+(defvar my/f-health (expand-file-name "Health.org" my/org-person-dir))
+(defvar my/f-read   (expand-file-name "cReading.org" my/org-person-dir))
+(defvar my/f-money  (expand-file-name "aMoney.org"  my/org-person-dir))
 
 (defvar my/pngpaste-bin 
   (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste")
@@ -20,7 +23,7 @@
 
 
 ;; ======================================
-;;; Helper Functions
+;;; 2. Helper Functions
 ;; ======================================
 (defun my-org-person-file-path (filename)
   "Construct the full path for a personal org file FILENAME."
@@ -97,75 +100,119 @@ If ARG is non-nil, insert at the end of the current outline node."
     (org-insert-drawer arg name)))
 
 
-;; (defun my-org-daily-info()
-;;   "Generate lunar date and tide information string for org-capture."
-;;   (let* ((lunar-str (my-lunar-date-string))
-;;          (lunar-cleaned (string-trim (replace-regexp-in-string "(음) " "" lunar-str)))
-;;          (tide-result (my-format-tide-info))
-;;          (tide-times (car tide-result))
-;;          (muldae (string-trim (cdr tide-result))))
-;;     (format "\n- 음력: %s | 물때: %s\n%s"
-;;             lunar-cleaned
-;;             (if (string-match "(\\(.*\\))" muldae)
-;;                 (match-string 1 muldae)
-;;               muldae)
-;;             tide-times)))
-
-
 (defun my-paste-with-parentheses ()
-  "Insert the clipboard content enclosed in parentheses ().
-Supports both the macOS and the Emacs kill ring."
+  "Insert the clipboard content enclosed in parentheses ()."
   (interactive)
   (let ((text (gui-get-selection 'CLIPBOARD 'STRING)))
-    (unless text
-      (setq text (current-kill 0)))
+    (unless text (setq text (current-kill 0)))
     (if (and text (not (string-empty-p text)))
         (insert (format "(%s)" text))
       (message "Clipboard is empty."))))
 
 
 (defun my/org-latex-filter-blocks (text backend info)
-    "Apply global style to quote/verse blocks based on :quote-style option."
-    (when (org-export-derived-backend-p backend 'latex)
-      (let* ((style (plist-get info :quote-style))
-             (style-alist
-              '(("1" . "{\\small\n%s}")
-                ("2" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\\small\n%s\\end{tcolorbox}")
-                ("3" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\n%s\\end{tcolorbox}")
-                ("4" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\\small\n%s\\end{tcolorbox}")
-                ("5" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\n%s\\end{tcolorbox}")))
-             (template (cdr (assoc style style-alist))))
-        (if template (format template text) text))))
-
-
-;;;###autoload
-(defun my-org-health-bp-average ()
-  "Display average blood pressure from Health.org table."
-  (interactive)
-  (let* ((table (org-table-to-lisp))
-         (data (seq-filter (lambda (x)
-                             (and (listp x)
-                                  (not (string-match "일시\\|평균" (car x)))))
-                           table))
-         (sys-list (mapcar (lambda (row) (string-to-number (string-trim (nth 1 row)))) data))
-         (dia-list (mapcar (lambda (row) (string-to-number (string-trim (nth 2 row)))) data))
-         (pul-list (mapcar (lambda (row) (string-to-number (string-trim (nth 3 row)))) data))
-         (n (float (length data)))
-         (avg-sys (/ (apply '+ sys-list) n))
-         (avg-dia (/ (apply '+ dia-list) n))
-         (avg-pul (/ (apply '+ pul-list) n)))
-    (message "평균 혈압: %.1f / %.1f  맥박: %.0f  (기록 %d건)"
-             avg-sys avg-dia avg-pul (length data))))
-
-
-;; (defun cal-fixLayout () 
-;;   "Fix calendar layout"
-;;   (face-remap-add-relative 'default 
-;;                            '(:family "Noto Sans Mono CJK KR" :height 160)))
+  "Apply global style to quote/verse blocks based on :quote-style option."
+  (when (org-export-derived-backend-p backend 'latex)
+    (let* ((style (plist-get info :quote-style))
+           (style-alist
+            '(("1" . "{\\small\n%s}")
+              ("2" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\\small\n%s\\end{tcolorbox}")
+              ("3" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0.5pt, arc=0pt]\n%s\\end{tcolorbox}")
+              ("4" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\\small\n%s\\end{tcolorbox}")
+              ("5" . "\\begin{tcolorbox}[colback=gray!10, boxrule=0pt, arc=0pt]\n%s\\end{tcolorbox}")))
+           (template (cdr (assoc style style-alist))))
+      (if template (format template text) text))))
 
 
 ;; ======================================
-;;; org-mode
+;;; 3. Health & Blood Pressure Logic
+;; ======================================
+
+(defun my/get-bp-stats ()
+  "Reads the overall average blood pressure data from the Health.org table."
+  (let ((file my/f-health))
+    (when (file-exists-p file)
+      (with-current-buffer (find-file-noselect file)
+        (org-with-wide-buffer
+         (goto-char (point-min))
+         (when (re-search-forward "^|\\s-*\\[" nil t)
+           (goto-char (match-beginning 0))
+           (let* ((table (org-table-to-lisp))
+                  (data (seq-filter (lambda (x)
+                                      (and (listp x)
+                                           (not (string-match "일시\\|평균\\|--" (car x)))))
+                                    table))
+                  (sys-list (mapcar (lambda (row) (string-to-number (string-trim (nth 1 row)))) data))
+                  (dia-list (mapcar (lambda (row) (string-to-number (string-trim (nth 2 row)))) data))
+                  (pul-list (mapcar (lambda (row) (string-to-number (string-trim (nth 3 row)))) data))
+                  (n (float (length data))))
+             (if (> n 0)
+                 (list (/ (apply '+ sys-list) n) 
+                       (/ (apply '+ dia-list) n) 
+                       (/ (apply '+ pul-list) n) 
+                       (length data))
+               nil))))))))
+
+
+(defun my/Bdays ()
+  "Returns a string in the format 'BP💊 nD: [TimeOfDay]/'."
+  (let* ((target-date (encode-time 0 0 0 4 3 2026))
+         (diff-days (1+ (floor (/ (float-time (time-subtract (current-time) target-date)) 86400))))
+         (hour (string-to-number (format-time-string "%H")))
+         (time-tag (cond ((< hour 6)  "새벽") ((< hour 12) "오전") ((< hour 14) "점심")
+                         ((< hour 18) "오후") ((< hour 22) "저녁") (t "밤"))))
+    (format "BP💊 %dD: %s/" diff-days time-tag)))
+
+
+(defun my/get-recent-bp-stats (days-offset &optional period)
+  "Calculates blood pressure averages for a specific period (default: 7 days)."
+  (let* ((period (or period 7))
+         (file my/f-health)
+         (now (current-time))
+         (end-date (time-subtract now (days-to-time days-offset)))
+         (start-date (time-subtract end-date (days-to-time period)))
+         (sys-list nil))
+    (when (file-exists-p file)
+      (with-current-buffer (find-file-noselect file)
+        (org-with-wide-buffer
+         (goto-char (point-min))
+         (while (re-search-forward "^|\\s-*\\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)" nil t)
+           (let* ((row-date (date-to-time (match-string 1)))
+                  (cols (org-split-string (thing-at-point 'line) "|"))
+                  (sys-str (and (> (length cols) 1) (nth 1 cols)))
+                  (sys-val (when sys-str (string-to-number (string-trim sys-str)))))
+             (when (and sys-val (> sys-val 0)
+                        (time-less-p start-date row-date)
+                        (time-less-p row-date end-date))
+               (push sys-val sys-list)))))))
+    (if sys-list (/ (apply '+ sys-list) (float (length sys-list))) nil)))
+
+
+(defun my-bp-report ()
+  "Displays a weekly blood pressure report in the echo area."
+  (interactive)
+  (let* ((this-week (my/get-recent-bp-stats 0))
+         (last-week (my/get-recent-bp-stats 7))
+         (diff (when (and this-week last-week) (- this-week last-week))))
+    (cond
+     (this-week
+      (message "📊 주간 BP 리포트: 이번주 %.1f %s"
+               this-week
+               (if last-week
+                   (format "(지난주 %.1f 대비 %+.1f %s)" 
+                           last-week diff (if (<= diff 0) "▼ 개선!" "▲ 주의"))
+                 "(지난주 데이터 없음)")))
+     (t (message "No BP data found.")))))
+
+
+(defun my/org-capture-finish-bp-report ()
+  "Run BP report if the capture key is 'b'."
+  (when (string= (org-capture-get :key) "b")
+    (run-with-timer 0.5 nil #'my-bp-report)))
+
+
+;; ======================================
+;;; 4. Main Org Configuration
 ;; ======================================
 (use-package org
   :ensure nil
@@ -175,89 +222,54 @@ Supports both the macOS and the Emacs kill ring."
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
          :map org-mode-map
-         ("C-,"   . my-pair-pairs-wrap)
-	 ("C-M-y" . my-paste-with-parentheses)
-	 ("M-,"   . org-insert-structure-template)
-	 ("C-c C-x d" . my-org-insert-drawer-custom))
+         ("C-M-y" . my-paste-with-parentheses)
+         ("M-,"   . org-insert-structure-template)
+         ("C-c C-x d" . my-org-insert-drawer-custom))
   :custom
-  (org-agenda-files (list (expand-file-name "Tasks.org" my/org-person-dir)
-                          (expand-file-name "Daily.org" my/org-person-dir)
-                          (expand-file-name "Health.org" my/org-person-dir)))
-  ;; (org-directory (expand-file-name "~/Dropbox/Docs/org")) ; -> init.el
-  (org-startup-indented t)             ;시작때 indent mode enable
-  (org-startup-with-inline-images nil)
+  (org-agenda-files (list my/f-tasks my/f-daily my/f-health))
+  (org-startup-indented t)
   (org-startup-folded t)
-  (org-startup-with-drawer t)          ;파일을 열 때 Drawer를 자동으로 접음
-  (org-adapt-indentation nil)          ;indent의 실제 공백 nil 
-  (org-indent-indentation-per-level 2)
-  (org-edit-src-content-indentation 0)
-  (org-image-actual-width 400)
-  (org-log-into-drawer t)
+  (org-startup-with-drawer t)
   (org-log-done 'time)
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
-  (org-structure-template-alist
-          '(("c" . "center")
-            ("C" . "comment")
-            ("e" . "src emacs-lisp")
-	    ("s" . "src")
-            ("q" . "quote")
-	    ("v" . "verse")
-	    ("x" . "example")))
-  (org-export-with-drawers nil)
-  (org-export-with-smart-quotes t)           ; ""
-  (org-export-with-special-strings t)        ; - -- ---
-  (org-export-with-sub-superscripts '{})     ; _
-  (org-agenda-format-date "%Y-%m-%d (%a)")
-  (org-agenda-current-time-string "← now ─────────")
-  (org-agenda-restore-windows-after-quit t)
-  (org-agenda-window-setup 'current-window)
-  (org-agenda-inhibit-startup t)
-  (org-agenda-use-tag-inheritance nil)
-  (org-agenda-dim-blocked-tasks nil)
-  (org-fontify-whole-heading-line nil)
-  (org-fontify-done-headline t)
-  (org-fontify-quote-and-verse-blocks t)
-  (org-habit-preceding-days 7)               ;과거 7일치만 보여줌
-  (org-habit-following-days 1)               ;미래 1일치만 보여줌
-  (org-habit-show-habits-only-for-today t)   ;today일 경우만 아젠다 뷰 보임
-
+  (org-habit-preceding-days 7)
+  (org-habit-following-days 1)
   :config
+  (add-hook 'org-capture-after-finalize-hook #'my/org-capture-finish-bp-report)
   (add-to-list 'org-modules 'org-habit)
-  (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
   
   (setq org-capture-templates
-      (let* ((p-dir my/org-person-dir)
-             (f-daily (expand-file-name "Daily.org" p-dir))
-             (f-tasks (expand-file-name "Tasks.org" p-dir))
-             (f-read  (expand-file-name "cReading.org" p-dir))
-             (f-money (expand-file-name "aMoney.org" p-dir))
-             (f-health (expand-file-name "Health.org" p-dir))
-             (today (format-time-string "%Y-%m-%d")))        ;; 공통 날짜 포맷팅
-        
-        `(("d" "Daily" entry (file+datetree ,f-daily)
-	   "* %?\n기록일: %U" :empty-lines-after 1)
-           ;; "* %?\n%(my-org-daily-info)\n기록일: %U" :empty-lines-after 1)
+        (let ((today (format-time-string "%Y-%m-%d")))
+          `( ;; "d" Daily
+            ("d" "Daily" entry (file+datetree ,my/f-daily)
+             "* %?\n기록일: %U" :empty-lines-after 1)
+            
+            ;; "t" Tasks
+            ("t" "Tasks" entry (file ,my/f-tasks)
+             "* TODO %?\nSCHEDULED: %t" :empty-lines-after 1)
+      
+            ("b" "Blood Pressure" table-line (file+headline ,my/f-health "혈압 데이터")
+             "| %U | %^{수축기} | %^{이완기} | %^{맥박} | %(my/Bdays)%^{상태|일반|기상직후|복용전|식후|운동후} %(let ((s (my/get-bp-stats))) (if s (format \" (Avg:%d)\" (truncate (car s))) \"\")) %^{메모} |" 
+             :prepend t :immediate-finish t)
 
-          ("t" "Tasks" entry (file ,f-tasks)
-           "* TODO %?\nSCHEDULED: %t" :empty-lines-after 1)
+            ;; "h" Habit
+            ("h" "Habit: 혈압" entry (file+headline ,my/f-health "습관 관리")
+             "* TODO 혈압 측정\nSCHEDULED: %t\n:PROPERTIES:\n:STYLE: habit\n:END:" :immediate-finish t)
 
-	  ("b" "Blood Pressure" table-line (file+headline ,f-health "혈압 데이터")
-           "| %U | %^{수축기} | %^{이완기} | %^{맥박} | %^{메모} |" :immediate-finish t)
-          
-          ("h" "Habit: 혈압" entry (file+headline ,f-health "습관 관리")
-           "* TODO 혈압 측정하기\nSCHEDULED: %t\n:PROPERTIES:\n:STYLE: habit\n:END:" :immediate-finish t)
+            ;; "r" Reading
+            ("r" "Reading" entry (file ,my/f-read)
+             "* %?\n기록일: %U" :unnarrowed t :empty-lines-after 1)
 
-          ("r" "Reading" entry (file ,f-read)
-           "* %?\n기록일: %U" :unnarrowed t :empty-lines-after 1)
-
-          ("m" "경조사" table-line (file ,f-money)
-           ,(concat "| %^{구분} | %^{일자|" today "} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
-           :prepend nil)))))
+            ;; "m" 경조사
+            ("m" "경조사" table-line (file ,my/f-money)
+             ,(concat "| %^{구분} | %^{일자|" today "} | %^{이름} | %^{연락처} | %^{관계} | %^{종류} | %^{금액} | %^{메모} |")
+             :prepend nil)))))
 
 
 ;; ======================================
-;;; org-superstar
+;;; 5. External Packages
 ;; ======================================
+
 (use-package org-superstar
   :ensure nil
   :hook (org-mode . org-superstar-mode)
@@ -265,23 +277,17 @@ Supports both the macOS and the Emacs kill ring."
   (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "▶" "▷" "►")))
 
 
-;; ======================================
-;;; ox-appear
-;; ======================================
 (use-package org-appear
   :ensure t
   :hook (org-mode . org-appear-mode)
   :config
-  (setq org-hide-emphasis-markers t     ;; 먼저 선언 필수
-	org-appear-autoemphasis t
-	org-appear-autolinks t
+  (setq org-hide-emphasis-markers t
+        org-appear-autoemphasis t
+        org-appear-autolinks t
         org-appear-autosubmarkers t
         org-appear-delay 0.2))
 
 
-;; ======================================
-;;; ox-latex
-;; ======================================
 (use-package ox-latex
   :ensure nil
   :after org
@@ -298,12 +304,8 @@ Supports both the macOS and the Emacs kill ring."
   (add-to-list 'org-export-filter-verse-block-functions #'my/org-latex-filter-blocks))
   
 
-;; ======================================
-;;; Calendar
-;; ======================================
 (use-package calendar
   :ensure nil
-;; :hook (calendar-mode . cal-fixLayout)
   :custom
   (calendar-week-start-day 0)  ; Start week on Sunday
   (calendar-date-style 'iso)   ; YYYY-MM-DD 형식
@@ -312,11 +314,8 @@ Supports both the macOS and the Emacs kill ring."
     "7월" "8월" "9월" "10월" "11월" "12월"]))
 
 
-;; ======================================
-;;; valign
-;; ======================================
 (use-package valign
-  :hook (org-mode . valign-mode))  
+  :hook (org-mode . valign-mode))
 
 
 ;; ======================================
@@ -333,7 +332,6 @@ Supports both the macOS and the Emacs kill ring."
   (setq denote-file-type nil)
   (unless (file-exists-p denote-directory)
     (make-directory denote-directory t)))
-
 
 
 (provide 'my-org-custom)

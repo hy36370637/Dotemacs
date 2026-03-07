@@ -3,17 +3,18 @@
 ;; ======================================
 ;;; Helper Function
 ;; ======================================
-(defcustom my-dired-external-regexp "\\.pdf\\|\\.docx\\|\\.xlsx\\|\\.hwp\\|\\.hwpx"
+(defcustom my/dired-external-regexp "\\.pdf\\|\\.docx\\|\\.xlsx\\|\\.hwp\\|\\.hwpx"
   "List of file extensions to be opened with an external program."
   :type 'string
   :group 'dired)
+
 
 (defun my-dired-open-dwim ()
   "Open file in Emacs or via macOS 'open' command based on its extension."
   (interactive)
   (let* ((file (dired-get-file-for-visit))
          (ext (file-name-extension file t)))
-    (if (and ext (string-match-p my-dired-external-regexp ext))
+    (if (and ext (string-match-p my/dired-external-regexp ext))
 	;; Open with external app (macOS 'open' command)
         (progn
           (start-process "dired-external-open" nil "open" file)
@@ -39,6 +40,7 @@
           (message "%d files moved to %s." (length files) target-dir))
       (quit (message "Move canceled."))
       (error (message "Error occurred during move.")))))
+
 
 ;; ======================================
 ;;; Dired Main Configuration

@@ -264,15 +264,16 @@ excluding the Dock and Menu bar."
   (message "▣ center 2/3"))
 
 
-(defun my-Bdays ()
-  "2026-03-04를 1일로 하여 오늘까지의 경과일 메시지로 표시."
-  (interactive)
-  (let* ((target-date (encode-time 0 0 0 4 3 2026))
-         ;; 현재 시간과 기준 시간의 차이를 일 단위로 변환 (기준일 포함을 위해 1 더함)
-         (diff-days (1+ (floor (/ (float-time (time-subtract (current-time) target-date)) 
-                                  86400)))))
-    (message "혈압약 💊 %d일" diff-days)
-    diff-days))
+
+;; (defun my/Bdays ()
+;;   "Return the elapsed days of BP medication since 2024-12-31 as a string.
+;; This is a helper function for Org-capture templates."
+;;   (let* ((target-date (encode-time 0 0 0 4 3 2026)) ; 기준일: 2026년 3월 4일
+;;          ;; 기준일을 1일로 포함하여 경과일 계산
+;;          (diff-days (1+ (floor (/ (float-time (time-subtract (current-time) target-date)) 
+;;                                   86400)))))
+;;     (format "Day %d: BP 💊" diff-days)))
+
 
 
 
