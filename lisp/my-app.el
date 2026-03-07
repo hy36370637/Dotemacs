@@ -25,8 +25,6 @@
 ;; =======================================
 ;;; view-mode
 ;; =======================================
-
-;; Enable read-only protection when entering view-mode
 (use-package view
   :ensure nil
   :bind

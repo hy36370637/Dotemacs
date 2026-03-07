@@ -25,35 +25,25 @@
 ;; ======================================
 ;;; 2. Helper Functions
 ;; ======================================
-(defun my-org-person-file-path (filename)
-  "Construct the full path for a personal org file FILENAME."
-  (expand-file-name filename my/org-person-dir))
-
+;; (defun my-org-person-file-path (filename)
+;;   "Construct the full path for a personal org file FILENAME."
+;;   (expand-file-name filename my/org-person-dir))
 
 ;;; ###autoload
 (defun my-org-insert-image ()
-  "Insert and display image"
+  "Insert an image. Select [inline] or [path] with arrow keys."
   (interactive)
-  (let* ((img-base-dir (expand-file-name "img/" org-directory))
-         (selected-file (read-file-name "Select image: " img-base-dir nil t)))
-    (when (and selected-file (not (file-directory-p selected-file)))
-      (insert (format "[[file:%s]]\n" selected-file))
-      (org-display-inline-images))))
-
-
-;;; ###autoload
-(defun my-insert-image-path ()
-  "Insert relative image path"
-  (interactive)
-  (let* ((base-dir (expand-file-name "img/" org-directory))
-         (selected-file (read-file-name "Select image: " base-dir nil t))
-         (relative-path (when (and selected-file (file-exists-p selected-file))
-                          (file-relative-name selected-file))))
-    (if relative-path
-        (progn
-          (insert (concat "./" relative-path))
-          (message "완료: %s" relative-path))
-      (message "선택 취소되었습니다."))))
+  (let* ((choice (completing-read "Insert type: " '("inline" "path") nil t))
+         (base-dir (expand-file-name "img/" org-directory))
+         (file (read-file-name "Select image: " base-dir nil t)))
+    (when (and file (not (file-directory-p file)))
+      (cond
+       ((equal choice "inline")
+        (insert (format "[[file:%s]]\n" file))
+        (org-display-inline-images))
+       ((equal choice "path")
+        (insert (concat "./" (file-relative-name file))))
+       (t (message "Cancelled."))))))
 
 
 ;;; ###autoload
@@ -62,25 +52,17 @@
    Requires: brew install pngpaste"
   (interactive 
    (let* ((default-dir (file-name-concat org-directory "img/"))
-          ;; Prompt user for the target directory
           (chosen-dir (read-directory-name "Target directory: " default-dir default-dir t))
-          ;; Generate default filename based on current timestamp
           (default-name (format-time-string "%Y%m%d_%H%M%S"))
-          ;; Prompt user for filename (defaults to timestamp)
           (file-name (read-string (format "Enter filename (default %s, exclude extension): " default-name) 
                                   nil nil default-name)))
      (list chosen-dir file-name)))  
-  (let* ((pngpaste-bin (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste"))
-         (path (expand-file-name (concat name ".png") chdir)))
-    ;; Ensure the target directory exists
+  (let* ((path (expand-file-name (concat name ".png") chdir)))
     (make-directory chdir t)
-    ;; Attempt to paste from clipboard using pngpaste
-    (if (zerop (shell-command (format "%s %s" pngpaste-bin (shell-quote-argument path))))
+    (if (zerop (shell-command (format "%s %s" my/pngpaste-bin (shell-quote-argument path))))
         (progn
-          ;; Insert Org-mode syntax with LaTeX attributes and a caption
           (insert (format "\n#+ATTR_LATEX: :width 0.5\\textwidth\n#+CAPTION: %s\n[[file:%s]]\n" 
                           name path))
-          ;; Refresh inline images display
           (org-display-inline-images)
           (message "Image saved successfully: %s" path))
       (error "No image in clipboard or pngpaste execution failed"))))
@@ -100,6 +82,7 @@ If ARG is non-nil, insert at the end of the current outline node."
     (org-insert-drawer arg name)))
 
 
+;;; ###autoload
 (defun my-paste-with-parentheses ()
   "Insert the clipboard content enclosed in parentheses ()."
   (interactive)
@@ -127,7 +110,6 @@ If ARG is non-nil, insert at the end of the current outline node."
 ;; ======================================
 ;;; 3. Health & Blood Pressure Logic
 ;; ======================================
-
 (defun my/get-bp-stats ()
   "Reads the overall average blood pressure data from the Health.org table."
   (let ((file my/f-health))
@@ -154,13 +136,17 @@ If ARG is non-nil, insert at the end of the current outline node."
                nil))))))))
 
 
+(defvar my/bp-start-date (encode-time 0 0 0 4 3 2026)
+  "BP💊 start date.")
+
 (defun my/Bdays ()
   "Returns a string in the format 'BP💊 nD: [TimeOfDay]/'."
-  (let* ((target-date (encode-time 0 0 0 4 3 2026))
-         (diff-days (1+ (floor (/ (float-time (time-subtract (current-time) target-date)) 86400))))
+  (let* ((diff-days (1+ (floor (/ (float-time 
+                                   (time-subtract (current-time) my/bp-start-date)) 
+                                  86400))))
          (hour (string-to-number (format-time-string "%H")))
          (time-tag (cond ((< hour 6)  "새벽") ((< hour 12) "오전") ((< hour 14) "점심")
-                         ((< hour 18) "오후") ((< hour 22) "저녁") (t "밤"))))
+                         ((< hour 18) "오후") ((< hour 20) "저녁") (t "밤"))))
     (format "BP💊 %dD: %s/" diff-days time-tag)))
 
 
@@ -196,7 +182,7 @@ If ARG is non-nil, insert at the end of the current outline node."
          (diff (when (and this-week last-week) (- this-week last-week))))
     (cond
      (this-week
-      (message "📊 주간 BP 리포트: 이번주 %.1f %s"
+      (message "📎주간 BP 리포트: 이번주 %.1f %s"
                this-week
                (if last-week
                    (format "(지난주 %.1f 대비 %+.1f %s)" 
@@ -216,7 +202,6 @@ If ARG is non-nil, insert at the end of the current outline node."
 ;; ======================================
 (use-package org
   :ensure nil
-  :defer t
   :mode ("\\.org\\'" . org-mode)
   :hook (org-mode . (lambda () (text-scale-increase 1)))
   :bind (("C-c a" . org-agenda)
@@ -245,7 +230,7 @@ If ARG is non-nil, insert at the end of the current outline node."
             ("q" . "quote")
 	    ("v" . "verse")
 	    ("x" . "example")))
-  ;; (org-export-with-drawers nil)           ;default
+  ;; (org-export-with-drawers nil)           ; default
   (org-export-with-smart-quotes t)           ; ""
   (org-export-with-special-strings t)        ; - -- ---
   (org-export-with-sub-superscripts '{})     ; _
@@ -255,6 +240,7 @@ If ARG is non-nil, insert at the end of the current outline node."
   (org-agenda-window-setup 'current-window)
   (org-agenda-inhibit-startup t)
   (org-agenda-use-tag-inheritance nil)
+  (org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
   ;; (org-agenda-dim-blocked-tasks nil)      ;default
   ;; (org-fontify-whole-heading-line nil)    ;default
   (org-fontify-done-headline t)
@@ -266,8 +252,6 @@ If ARG is non-nil, insert at the end of the current outline node."
   :config
   (add-to-list 'org-modules 'org-habit)
   (add-hook 'org-capture-after-finalize-hook #'my/org-capture-finish-bp-report)
-
-  (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
   
   (setq org-capture-templates
         (let ((today (format-time-string "%Y-%m-%d")))
@@ -300,7 +284,6 @@ If ARG is non-nil, insert at the end of the current outline node."
 ;; ======================================
 ;;; 5. External Packages
 ;; ======================================
-
 (use-package org-superstar
   :ensure nil
   :hook (org-mode . org-superstar-mode)

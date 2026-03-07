@@ -31,6 +31,7 @@
   (which-key-show-keymap 'my-emacs-prefix-map my-emacs-prefix-map)
   (set-transient-map my-emacs-prefix-map t))
 
+
 ;; ======================================
 ;;; Keymap Definitions
 ;; ======================================
@@ -39,7 +40,6 @@
   ("r" "Regexp replace"   #'my-query-replace-regexp-dwim)
   ("c" "Current line"     #'my-select-current-line)
   ("d" "Duplicate"        #'my-duplicate-dwim)
-  ;; ("D" "Today stamp"      #'my-today-stamp)
   ("w" "Pairs wrap"       #'my-pair-pairs-wrap)
   ("%" "Replace"          #'query-replace))
 
@@ -56,7 +56,6 @@
   ("S" "Stop radio"       #'my-radio-stop)
   ("b" "Bp report"        #'my-bp-report)
   ("i" "Insert img"       #'my-org-insert-image)
-  ("p" "Path img"         #'my-insert-image-path)
   ("s" "Screenshot"       #'my-org-screenshot))
 
 (my/defkeymap my-window-prefix-map "Window"
@@ -67,20 +66,12 @@
   ("m" "Split 3-Column"   #'my-split-window-three-column))
   
 (my/defkeymap my-emacs-prefix-map "Master"
-  ;; ("d" "Today's"          #'my-todays-pop)
   ("e" "Edit"             my-edit-prefix-map)
-  ;; ("F" "Full"             #'toggle-frame-fullscreen)
   ("m" "Media"            my-media-prefix-map)
   ("r" "Register"         #'jump-to-register)
   ("s" "Search"           my-search-prefix-map)
   ("u" "Usearch"          #'my-search-unified)
   ("w" "Window"           my-window-prefix-map))
-
-;; ======================================
-;;; Global Binding
-;; ======================================
-(keymap-set global-map "M-m" #'my-prefix-with-ime-deactivation)
-
 
 
 (provide 'my-keys)

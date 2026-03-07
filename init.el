@@ -184,6 +184,7 @@
    ("C-x <right>" . tile-frame-right)
    ("C-x <down>"  . tile-frame-center)
    ("C-x <up>"  . toggle-frame-maximized)
+   ("M-m"       . my-prefix-with-ime-deactivation)
    ("M-;"       . comment-line)
    ("M-s u"     . my-search-unified)
    ("C-a"       . my-smart-beginning-of-line)
