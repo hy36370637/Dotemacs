@@ -228,15 +228,46 @@ If ARG is non-nil, insert at the end of the current outline node."
   :custom
   (org-agenda-files (list my/f-tasks my/f-daily my/f-health))
   (org-startup-indented t)
+  (org-startup-with-inline-images nil)
   (org-startup-folded t)
+  (org-adapt-indentation nil)          ;indent의 실제 공백 nil 
+  (org-indent-indentation-per-level 2)
+  (org-edit-src-content-indentation 0)
+  (org-image-actual-width 400)
   (org-startup-with-drawer t)
   (org-log-done 'time)
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
+  (org-structure-template-alist
+          '(("c" . "center")
+            ("C" . "comment")
+            ("e" . "src emacs-lisp")
+	    ("s" . "src")
+            ("q" . "quote")
+	    ("v" . "verse")
+	    ("x" . "example")))
+  (org-export-with-drawers nil)
+  (org-export-with-smart-quotes t)           ; ""
+  (org-export-with-special-strings t)        ; - -- ---
+  (org-export-with-sub-superscripts '{})     ; _
+  (org-agenda-format-date "%Y-%m-%d (%a)")
+  (org-agenda-current-time-string "← now ─────────")
+  (org-agenda-restore-windows-after-quit t)
+  (org-agenda-window-setup 'current-window)
+  (org-agenda-inhibit-startup t)
+  (org-agenda-use-tag-inheritance nil)
+  (org-agenda-dim-blocked-tasks nil)
+  (org-fontify-whole-heading-line nil)
+  (org-fontify-done-headline t)
+  (org-fontify-quote-and-verse-blocks t)
   (org-habit-preceding-days 7)
   (org-habit-following-days 1)
+  (org-habit-show-habits-only-for-today t)   ;today일 경우만 아젠다 뷰 보임
+
   :config
-  (add-hook 'org-capture-after-finalize-hook #'my/org-capture-finish-bp-report)
   (add-to-list 'org-modules 'org-habit)
+  (add-hook 'org-capture-after-finalize-hook #'my/org-capture-finish-bp-report)
+
+  (setq org-agenda-skip-function-global '(org-agenda-skip-entry-if 'todo 'done))
   
   (setq org-capture-templates
         (let ((today (format-time-string "%Y-%m-%d")))
