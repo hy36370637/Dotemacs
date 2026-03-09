@@ -129,13 +129,12 @@
 ;;; MacOS keyboard
 ;; =======================================
 (when my-macOS-p
-  (setq mac-pass-command-to-system nil)
   ;; [왼쪽] Opt(Super) / Cmd(Meta)
   (setq ns-option-modifier 'super)
-  (setq ns-command-modifier 'meta)
+  (setq ns-command-modifier 'meta))
   ;; [오른쪽] Cmd(Meta) / Opt(Control)
-  (setq ns-right-command-modifier 'meta)    ;'meta
-  (setq ns-right-option-modifier 'control)) ;'control
+  ;; (setq ns-right-command-modifier 'meta)    ;'meta
+  ;; (setq ns-right-option-modifier 'control)) ;'control
 
 
 ;; =======================================
@@ -146,36 +145,50 @@
   (setq default-directory (expand-file-name "~/Dropbox/Docs/org")
         temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
 
-  :hook ((text-mode  . visual-line-mode)
-	 (focus-in   . my/deactivate-input-method))
+  :hook ((text-mode   . visual-line-mode)
+         (focus-in    . my/deactivate-input-method))
   
   :custom
-  ;; UI 및 상태 정보 관련
-  (use-short-answers t)               ; y/n으로 대답 단축
-  (column-number-mode t)              ; 열 번호 표시
-  (display-time-mode t)               ; 시간 표시
-  ;;시각 효과, 가독성
-  (line-spacing 0.2)                  ; 줄 간격 여백
-  (text-scale-mode-step 1.02)         ; 텍스트 크기 조절 단계
-  (frame-resize-pixelwise t)          ; pixcel 단위
+  ;; Win
+  (split-window-preferred-direction 'horizontal)
+  (window-combination-resize t)
+  (even-window-sizes 'height-only)
+  (window-sides-vertical nil)
+  (switch-to-buffer-in-dedicated-window 'pop)
+  (split-height-threshold 35)      ; 세로가 35줄 이하이면 세로 분할 안 함
+  (split-width-threshold 85)       ; 가로가 85자 이상이면 가로 분할 선호
+  (window-min-height 3)
+  (window-min-width 30)
+
+  ;; UI, 상태 정보
+  (use-short-answers t)
+  (column-number-mode t)
+  (display-time-mode t)
+  
+  ;; 시각 효과, 가독성
+  (line-spacing 0.2)
+  (text-scale-mode-step 1.02)
+  (frame-resize-pixelwise t)
+  
   ;; 스크롤, 탐색
-  (pixel-scroll-precision-mode t)             ; 정밀 스크롤 자체를 켬
-  (pixel-scroll-precision-use-momentum t)     ; 손을 떼도 부드럽게 밀리는 관성 추가
-  (pixel-scroll-precision-interpolate-page t) ; 페이지 단위 이동 시 툭 끊기지 않게 함
-  ;;마크, 히스토리 
-  (set-mark-command-repeat-pop t)     ; C-u C-SPC 이후 C-SPC만으로 계속 점프
-  (mark-ring-max 16)                  ; 버퍼 내 마크 저장 개수
-  (global-mark-ring-max 32)           ; 전체 버퍼 마크 저장 개수
+  (pixel-scroll-precision-mode t)
+  (pixel-scroll-precision-use-momentum t)
+  (pixel-scroll-precision-interpolate-page t)
+  
+  ;; 마크, 히스토리 
+  (set-mark-command-repeat-pop t)
+  (mark-ring-max 16)
+  (global-mark-ring-max 32)
+  
   ;; 편집 행동 관련
-  (kill-whole-line 1)                 ; 줄 전체 삭제 시 줄바꿈까지 삭제
-  (next-line-add-newlines nil)        ; 문서 끝에서 C-n 눌러도 새 줄 추가 안 함
-  (enable-recursive-minibuffers t)    ; 미니버퍼 내에서 다른 미니버퍼 호출 허용
+  (kill-whole-line 1)
+  (next-line-add-newlines nil)
+  (enable-recursive-minibuffers t)
   (create-lockfiles nil)
-  ;; (context-menu-mode 1)               ; 마우스 오른쪽 메뉴
 
   :config
   (global-font-lock-mode 1)
-  (minibuffer-depth-indicate-mode 1)  ; 미니버퍼 재귀 깊이
+  (minibuffer-depth-indicate-mode 1)
 
   :bind
   (("C-x z"     . nil)
@@ -183,8 +196,8 @@
    ("C-x <left>"  . tile-frame-left)
    ("C-x <right>" . tile-frame-right)
    ("C-x <down>"  . tile-frame-center)
-   ("C-x <up>"  . toggle-frame-maximized)
-   ("M-m"       . my-prefix-with-ime-deactivation)
+   ("C-x <up>"    . toggle-frame-maximized)
+   ("<f14>"     . my-prefix-with-ime-deactivation)
    ("M-;"       . comment-line)
    ("M-s u"     . my-search-unified)
    ("C-a"       . my-smart-beginning-of-line)
@@ -216,23 +229,6 @@
                         (auto-revert-buffers))))
   :config
   (global-auto-revert-mode t))
-
-
-;; ========================================================
-;; Window Management
-;; ========================================================
-(use-package emacs
-  :if my-Macbook-p
-  :custom
-  (split-window-preferred-direction 'horizontal)
-  (window-combination-resize t)
-  (even-window-sizes 'height-only)
-  (window-sides-vertical nil)
-  (switch-to-buffer-in-dedicated-window 'pop)
-  (split-height-threshold 35)    ; 세로가 35줄 이하이면 세로 분할 안함
-  (split-width-threshold 85)     ; 가로가 85자 이상이면 가로 분할 선호
-  (window-min-height 3)
-  (window-min-width 30))
 
 
 ;; =======================================
@@ -272,12 +268,14 @@
   :init
   (setenv "LANG" "ko_KR.UTF-8")
   (setenv "LC_COLLATE" "C")
+  ;; (set-locale-environment "UTF-8")
   (set-locale-environment "ko_KR.UTF-8")
   (prefer-coding-system 'utf-8)
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
   (set-selection-coding-system 'utf-8)
+  ;; (setq default-input-method "korean-hangul")
   :custom
   (default-input-method "korean-hangul")
   (input-method-verbose-flag nil)
