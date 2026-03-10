@@ -1,11 +1,6 @@
 ;;; early-init.el --- Early initialization -*- lexical-binding: t -*-
 
 ;; ======================================
-;;; Benchmaking
-;; ======================================
-;; (profiler-start 'cpu)
-
-;; ======================================
 ;;; GC 최적화
 ;; ======================================
 (setq gc-cons-threshold (* 100 1024 1024)  ; 100MB - 시작 시
@@ -54,6 +49,10 @@
 (push '(vertical-scroll-bars) default-frame-alist)
 (push '(left-fringe . 0) default-frame-alist)  ; 왼쪽 회색 여백 제거, 답답하면 1
 (push '(right-fringe . 0) default-frame-alist) ; 오른쪽 회색 여백 제거, 답답하면 1
+
+;; 프레임 크기 지정
+(push '(width . 120) default-frame-alist)
+(push '(height . 50) default-frame-alist)
 
 ;; ======================================
 ;;; Package 시스템
