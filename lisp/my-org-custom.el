@@ -197,6 +197,102 @@ If ARG is non-nil, insert at the end of the current outline node."
     (run-with-timer 0.5 nil #'my-bp-report)))
 
 
+(defun my/org-capture-finalize-blood-pressure-habit ()
+  "혈압(b) 캡처가 끝나면 '혈압 측정' Habit 항목을 찾아 완료 처리합니다."
+  (when (equal (org-capture-get :key) "b")
+    (save-excursion
+      ;; my/f-health 변수에 담긴 파일 경로를 사용합니다.
+      (let ((path (expand-file-name my/f-health)))
+        (with-current-buffer (find-file-noselect path)
+          (goto-char (point-min))
+          ;; 'TODO 혈압 측정' 항목을 정확히 찾습니다.
+          (when (re-search-forward "^\\*+ TODO 혈압 측정" nil t)
+            (org-todo "DONE")
+            (save-buffer)))))))
+
+(add-hook 'org-capture-prepare-finalize-hook #'my/org-capture-finalize-blood-pressure-habit)
+
+
+(defun my-show-bp-stats-by-tag ()
+  "데이터 무결성 검토 완료: 시간대별 정렬 및 하단 통합 통계 리포트."
+  (interactive)
+  (let ((stats-hash (make-hash-table :test 'equal))
+        (path (expand-file-name my/f-health))
+        (time-order '("새벽" "오전" "점심" "오후" "저녁" "밤"))
+        (total-sys 0.0) (total-dia 0.0) (total-pul 0.0) (total-count 0)
+        stats-list)
+    (with-current-buffer (find-file-noselect path)
+      (save-excursion
+        (goto-char (point-min))
+        ;; 정규식 검토: 수축기(1), 이완기(2), 맥박(3), 태그(4)
+        (while (re-search-forward "| \\[[^]]+\\] | +\\([0-9.]+\\) | +\\([0-9.]+\\) | +\\([0-9.]+\\) | \\(?:BP💊 [0-9]+D\\|BF\\): +\\([^ \t\n|]+\\)" nil t)
+          (let* ((sys (string-to-number (match-string 1)))
+                 (dia (string-to-number (match-string 2)))
+                 (pul (string-to-number (match-string 3)))
+                 (tag (match-string 4))
+                 (current-data (gethash tag stats-hash (list 0.0 0.0 0.0 0))))
+            ;; 태그별 누적 (실수 연산 보장)
+            (puthash tag 
+                     (list (+ (nth 0 current-data) sys)
+                           (+ (nth 1 current-data) dia)
+                           (+ (nth 2 current-data) pul)
+                           (1+ (nth 3 current-data)))
+                     stats-hash)
+            ;; 전체 누적
+            (setq total-sys (+ total-sys sys)
+                  total-dia (+ total-dia dia)
+                  total-pul (+ total-pul pul)
+                  total-count (1+ total-count))))))
+    
+    ;; 정렬을 위해 리스트 변환
+    (maphash (lambda (k v) (push (cons k v) stats-list)) stats-hash)
+    
+    ;; 정렬: 사용자 정의 시간 순서 적용
+    (setq stats-list
+          (sort stats-list
+                (lambda (a b)
+                  (let* ((tag-a (car a))
+                         (tag-b (car b))
+                         (prefix-a (car (split-string tag-a "/")))
+                         (prefix-b (car (split-string tag-b "/")))
+                         (idx-a (cl-position prefix-a time-order :test 'equal))
+                         (idx-b (cl-position prefix-b time-order :test 'equal)))
+                    (if (and idx-a idx-b (not (= idx-a idx-b)))
+                        (< idx-a idx-b)
+                      (string< tag-a tag-b))))))
+
+    ;; 결과 출력 버퍼 구성
+    (with-current-buffer (get-buffer-create "*Blood Pressure Stats*")
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (insert "=== 통합 혈압 분석 리포트 (BF & BP💊) ===\n")
+        (insert (format "분석 일시: %s\n\n" (format-time-string "%Y-%m-%d %H:%M")))
+        (insert (format "%-22s | %-8s | %-8s | %-5s\n" "상태 (시간대/상태)" "수축기" "이완기" "횟수"))
+        (insert "--------------------------------------------------------------\n")
+        (dolist (entry stats-list)
+          (let* ((tag (car entry))
+                 (data (cdr entry))
+                 (count (nth 3 data)))
+            (insert (format "%-22s | %-8.1f | %-8.1f | %-5d\n"
+                            tag 
+                            (/ (nth 0 data) (float count))
+                            (/ (nth 1 data) (float count))
+                            count))))
+        
+        ;; 하단 전체 평균 라인 (요청하신 형식)
+        (when (> total-count 0)
+          (insert "--------------------------------------------------------------\n")
+          (insert (format "전체 평균               | %-8.1f | %-8.1f | %-8.1f (총횟수 %d)\n"
+                          (/ total-sys total-count)
+                          (/ total-dia total-count)
+                          (/ total-pul total-count)
+                          total-count)))
+        
+        (special-mode)
+        (goto-char (point-min)))
+      (pop-to-buffer (current-buffer)))))
+
+
 ;; ======================================
 ;;; 4. Main Org Configuration
 ;; ======================================
@@ -220,6 +316,8 @@ If ARG is non-nil, insert at the end of the current outline node."
   (org-edit-src-content-indentation 0)
   (org-image-actual-width 400)
   (org-startup-with-drawer t)
+  (org-log-into-drawer t)                   ;상태 변경 기록 :LOGBOOK: 서랍 안
+  (org-log-repeat 'time)
   (org-log-done 'time)
   (org-todo-keywords '((sequence "TODO" "HOLD" "DONE")))
   (org-structure-template-alist

@@ -145,8 +145,8 @@
   (setq default-directory (expand-file-name "~/Dropbox/Docs/org")
         temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
 
-  :hook ((text-mode   . visual-line-mode)
-         (focus-in    . my/deactivate-input-method))
+  :hook ((text-mode     . visual-line-mode)
+         (focus-in-hook . my/deactivate-input-method))
   
   :custom
   ;; Win
@@ -410,7 +410,7 @@
 ;; =======================================
 ;;; Eshell
 ;; =======================================
-(use-package eshell
+   (use-package eshell
   :defer t
   :custom
   (eshell-destroy-buffer-when-process-dies t))
@@ -433,13 +433,23 @@
 (setq-default mode-line-format
               '("%e "
                 mode-line-front-space
-                (:eval
-                 (let* ((is-ko (equal current-input-method "korean-hangul"))
-                        (label (if is-ko "KO" "EN")))
-                   (propertize label
-                               'display (when mode-line-use-images-p 
-                                          (if is-ko ko-img en-img))
-                               'help-echo label)))
+		(:eval
+		 (let* (;; 1. 내장 입력기 상태 확인
+			(is-ko (and (boundp 'current-input-method) 
+				    (stringp current-input-method)
+				    (string-match-p "korean" current-input-method)))
+			(label (if is-ko "KO" "EN")))
+		   (propertize label
+			       'display (when mode-line-use-images-p 
+					  (if is-ko ko-img en-img))
+			       'help-echo label)))
+                ;; (:eval
+                ;;  (let* ((is-ko (equal current-input-method "korean-hangul"))
+                ;;         (label (if is-ko "KO" "EN")))
+                ;;    (propertize label
+                ;;                'display (when mode-line-use-images-p 
+                ;;                           (if is-ko ko-img en-img))
+                ;;                'help-echo label)))
                 "   "
                 "Ⓗ "
                 mode-line-buffer-identification
