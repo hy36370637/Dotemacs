@@ -120,7 +120,7 @@
 (require 'my-useful-custom)
 (require 'my-search)
 ;; (require 'my-todays-pop)
-(require 'my-radio-direct)
+;; (require 'my-radio-direct)
 (require 'my-app)
 (require 'my-keys)
 
@@ -191,8 +191,7 @@
   (minibuffer-depth-indicate-mode 1)
 
   :bind
-  (("C-x z"     . nil)
-   ("C-x f"     . toggle-frame-fullscreen)
+  (("C-x f"     . toggle-frame-fullscreen)
    ("C-x <left>"  . tile-frame-left)
    ("C-x <right>" . tile-frame-right)
    ("C-x <down>"  . tile-frame-center)
@@ -268,14 +267,12 @@
   :init
   (setenv "LANG" "ko_KR.UTF-8")
   (setenv "LC_COLLATE" "C")
-  ;; (set-locale-environment "UTF-8")
   (set-locale-environment "ko_KR.UTF-8")
   (prefer-coding-system 'utf-8)
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
   (set-selection-coding-system 'utf-8)
-  ;; (setq default-input-method "korean-hangul")
   :custom
   (default-input-method "korean-hangul")
   (input-method-verbose-flag nil)
@@ -352,15 +349,15 @@
 ;;; Icons
 ;; =======================================
 (use-package nerd-icons
-  ;; :if (display-graphic-p)
+  :if (display-graphic-p)
   :custom (nerd-icons-font-family "Symbols Nerd Font"))
 
 (use-package nerd-icons-dired
-  ;; :if (display-graphic-p)
+  :if (display-graphic-p)
   :hook (dired-mode . nerd-icons-dired-mode))
 
 (use-package nerd-icons-completion
-  ;; :if (display-graphic-p)
+  :if (display-graphic-p)
   :after (marginalia nerd-icons)
   :config  (nerd-icons-completion-mode 1))
 
