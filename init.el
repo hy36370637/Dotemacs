@@ -1,5 +1,8 @@
 ;; -*- lexical-binding: t -*-
 ;;  emacs for macOS
+;;  ver260314
+
+;; CODE
 
 ;;
 ;; =======================================
@@ -147,6 +150,7 @@
 
   :hook ((text-mode     . visual-line-mode)
          (focus-in-hook . my/deactivate-input-method))
+
   
   :custom
   ;; Win
@@ -196,7 +200,7 @@
    ("C-x <right>" . tile-frame-right)
    ("C-x <down>"  . tile-frame-center)
    ("C-x <up>"    . toggle-frame-maximized)
-   ("<f14>"     . my-prefix-with-ime-deactivation)
+   ("M-m"       . my-prefix-with-ime-deactivation)
    ("M-;"       . comment-line)
    ("M-s u"     . my-search-unified)
    ("C-a"       . my-smart-beginning-of-line)
@@ -278,7 +282,7 @@
   (input-method-verbose-flag nil)
   (input-method-highlight-flag nil))
 
-
+  
 ;; =======================================
 ;;; Fonts
 ;; =======================================  
@@ -327,7 +331,7 @@
   :config
   (setq modus-themes-mixed-fonts t
         modus-themes-italic-constructs t)
-  (modus-themes-load-theme 'ef-symbiosis))
+  (modus-themes-load-theme 'ef-frost))
 
 
 ;; =======================================

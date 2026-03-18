@@ -37,7 +37,8 @@
   :bind (("C-x b" . consult-buffer)
 	 ("C-x C-r" . consult-recent-file)
 	 ("C-c B" . consult-bookmark)
-	 ("M-y" . consult-yank-pop)
+	 ("M-y"   . consult-yank-pop)
+	 ("M-s f" . consult-fd)                     ;Non Hangul
 	 ("M-s g" . consult-ripgrep)
 	 ("M-s l" . consult-line)
 	 ("M-s m" . consult-imenu)

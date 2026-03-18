@@ -1,5 +1,5 @@
 ;;; my-org-custom.el --- Optimized Org-mode configuration -*- lexical-binding: t; -*-
-;;; 20260311 19:20
+;;; 20260313 07:20
 ;;; Commentary:
 ;; Personal Org-mode configuration with centralized file paths and health tracking.
 
@@ -20,6 +20,8 @@
 (defvar my/pngpaste-bin
   (or (executable-find "pngpaste") "/opt/homebrew/bin/pngpaste")
   "pngpaste executable path.")
+
+(defvar my/bp-start-date (encode-time 0 0 0 4 3 2026) "BP💊 start date.")
 
 
 ;; ======================================
@@ -96,7 +98,6 @@
 ;; ======================================
 ;;; 3. Health & Blood Pressure Logic
 ;; ======================================
-
 (defun my/bp-parse-table (&optional start-date end-date)
   "Parse Health.org BP table. Returns list of (sys dia pul) plists.
 Optionally filter rows between START-DATE and END-DATE (encoded times)."
@@ -133,6 +134,7 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
   "Overall BP averages from Health.org."
   (my/bp-averages))
 
+
 (defun my/get-recent-bp-stats (days-offset &optional period)
   "Avg systolic for PERIOD days ending DAYS-OFFSET days ago."
   (let* ((period (or period 7))
@@ -141,8 +143,6 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
          (rows  (my/bp-parse-table start end)))
     (when rows (/ (apply '+ (mapcar #'car rows)) (float (length rows))))))
 
-
-(defvar my/bp-start-date (encode-time 0 0 0 4 3 2026) "BP💊 start date.")
 
 (defun my/Bdays ()
   "Return string like 'BP💊 nD: 시간대/'."
@@ -267,8 +267,8 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
   (org-log-done                        'time)
   (org-todo-keywords                   '((sequence "TODO" "HOLD" "DONE")))
   (org-structure-template-alist
-   '(("c" . "center") ("C" . "comment") ("e" . "src emacs-lisp")
-     ("s" . "src")    ("q" . "quote")   ("v" . "verse") ("x" . "example")))
+   '(("c" . "center") ("C" . "comment") ("e" . "src emacs-lisp") ("m" . "myquote") ("r" . "ltxRight")
+     ("s" . "src")    ("q" . "quote")   ("v" . "verse") ("x" . "example") ("b" . "ltxBox")))
   (org-export-with-smart-quotes        t)
   (org-export-with-special-strings     t)
   (org-export-with-sub-superscripts    '{})
@@ -294,7 +294,8 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
            "* %?\n기록일: %U" :empty-lines-after 1)
 
           ("t" "Tasks" entry (file ,my/f-tasks)
-           "* TODO %?\nSCHEDULED: %t" :empty-lines-after 1)
+           "* TODO %?\n기록일: %U" :empty-lines-after 1)
+           ;; "* TODO %?\nSCHEDULED: %t" :empty-lines-after 1)
 
           ("b" "Blood Pressure" table-line (file+headline ,my/f-health "혈압 데이터")
            ,(concat "| %U | %^{수축기} | %^{이완기} | %^{맥박} | %(my/Bdays)"
@@ -323,6 +324,7 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
   :hook (org-mode . org-superstar-mode)
   :config (setq org-superstar-headline-bullets-list '("◉" "○" "●" "○" "▶" "▷" "►")))
 
+
 (use-package org-appear
   :ensure t
   :hook (org-mode . org-appear-mode)
@@ -332,6 +334,7 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
         org-appear-autolinks       t
         org-appear-autosubmarkers  t
         org-appear-delay           0.2))
+
 
 (use-package ox-latex
   :ensure nil
@@ -347,6 +350,7 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
   (add-to-list 'org-export-filter-quote-block-functions #'my/org-latex-filter-blocks)
   (add-to-list 'org-export-filter-verse-block-functions #'my/org-latex-filter-blocks))
 
+
 (use-package calendar
   :ensure nil
   :custom
@@ -356,6 +360,7 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
    ["1월" "2월" "3월" "4월" "5월" "6월"
     "7월" "8월" "9월" "10월" "11월" "12월"]))
 
+
 (use-package valign
   :hook (org-mode . valign-mode))
 
@@ -364,6 +369,7 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
 ;;; denote
 ;; ======================================
 (use-package denote
+  :defer t
   :bind (("C-c n n" . denote)
          ("C-c n i" . denote-link)
          ("C-c n b" . denote-show-backlinks-buffer)
@@ -372,7 +378,8 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
   (setq denote-directory (expand-file-name "denote" org-directory)
         denote-file-type nil)
   (unless (file-exists-p denote-directory)
-    (make-directory denote-directory t)))
+    (make-directory denote-directory t))
+  (denote-menu-bar-mode -1))
 
 
 (provide 'my-org-custom)
