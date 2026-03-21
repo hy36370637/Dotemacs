@@ -8,7 +8,7 @@
 ;; ======================================
 ;;; 1. Variables & File Paths
 ;; ======================================
-(defvar my/org-person-dir (expand-file-name "~/Dropbox/Docs/Person/")
+(defvar my/org-person-dir (dropbox/dir "Person/")
   "Directory for personal org files.")
 
 (defvar my/f-daily  (expand-file-name "Daily.org"    my/org-person-dir))
@@ -267,8 +267,8 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
   (org-log-done                        'time)
   (org-todo-keywords                   '((sequence "TODO" "HOLD" "DONE")))
   (org-structure-template-alist
-   '(("c" . "center") ("C" . "comment") ("e" . "src emacs-lisp") ("m" . "myquote") ("r" . "ltxRight")
-     ("s" . "src")    ("q" . "quote")   ("v" . "verse") ("x" . "example") ("b" . "ltxBox")))
+   '(("b" . "ltxBox")   ("c" . "center")  ("C" . "comment") ("e" . "src emacs-lisp") ("m" . "myquote")
+     ("q" . "quote")    ("r" . "ltxRight") ("s" . "src")    ("v" . "verse")          ("x" . "example")))
   (org-export-with-smart-quotes        t)
   (org-export-with-special-strings     t)
   (org-export-with-sub-superscripts    '{})
@@ -284,8 +284,8 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
   (org-habit-preceding-days            7)
   (org-habit-following-days            1)
   (org-habit-show-habits-only-for-today t)
-
   :config
+  (require 'org-tempo)                            ;; <s + TAB enable
   (add-to-list 'org-modules 'org-habit)
   (add-hook 'org-capture-after-finalize-hook #'my/org-capture-finalize-bp)
 
@@ -362,6 +362,8 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
 
 
 (use-package valign
+  :custom
+  (valign-fancy-bar t)           ;"May slow down with large tables"
   :hook (org-mode . valign-mode))
 
 
@@ -375,7 +377,7 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
          ("C-c n b" . denote-show-backlinks-buffer)
          ("C-c n r" . denote-rename-file))
   :config
-  (setq denote-directory (expand-file-name "denote" org-directory)
+  (setq denote-directory (dropbox/dir "org/denote")
         denote-file-type nil)
   (unless (file-exists-p denote-directory)
     (make-directory denote-directory t))

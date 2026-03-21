@@ -6,25 +6,34 @@
 
 ;;
 ;; =======================================
+;; Path helpers
+;; =======================================
+(defun emacs/dir (subdir)
+  "user-emacs-directory 기준 경로를 반환한다."
+  (expand-file-name subdir user-emacs-directory))
+
+(defun dropbox/dir (subdir)
+  "~/Dropbox/Docs 기준 경로를 반환한다."
+  (expand-file-name subdir "~/Dropbox/Docs/"))
+
+
+;; =======================================
 ;; Global variables
 ;; =======================================
-(defvar my/lisp-path (expand-file-name "lisp/" user-emacs-directory)
+(defvar my/lisp-path (emacs/dir "lisp/")
   "Path to the user's personal lisp directory.")
-
-;; (defvar my/org-person-dir "~/Dropbox/Docs/Person/"
-;;   "Directory for personal org files.")
 
 (defvar my-macOS-p (eq system-type 'darwin))
 
 (defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
 
-(setq org-directory (expand-file-name "~/Dropbox/Docs/org"))
+(setq org-directory (dropbox/dir "org"))
 
 
 ;; =======================================
 ;;; Custom file
 ;; =======================================
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(setq custom-file (emacs/dir "custom.el"))
 
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
@@ -145,8 +154,8 @@
 ;; =======================================
 (use-package emacs
   :init
-  (setq default-directory (expand-file-name "~/Dropbox/Docs/org")
-        temporary-file-directory (expand-file-name "tmp/" user-emacs-directory))
+  (setq default-directory (dropbox/dir "org")
+        temporary-file-directory (emacs/dir "tmp/"))
 
   :hook ((text-mode     . visual-line-mode)
          (focus-in-hook . my/deactivate-input-method))
@@ -212,7 +221,7 @@
   :ensure nil
   :custom
   (display-time-24hr-format t)      ; 24-hour system
-  (display-time-format "%y.%m.%d(%a)%H:%M")
+  (display-time-format "%m월 %d일(%a)%H:%M")
   ;; (display-time-format "%Y-%m-%d (%a) %H:%M")
   (display-time-day-and-date t)
   (display-time-load-average nil))  ; mode-line-misc-info average nil
@@ -242,7 +251,7 @@
   :custom
   (bookmark-save-flag 1)
   (bookmark-sort-flag nil)
-  (bookmark-default-file (expand-file-name "bookmarks" user-emacs-directory)))
+  (bookmark-default-file (emacs/dir "bookmarks")))
 
 
 ;; =======================================
@@ -253,12 +262,12 @@
   :config
   (let ((org-dir my/org-person-dir)
 	(conf-dir user-emacs-directory))
-    (set-register ?i `(file . ,(expand-file-name "init.el" conf-dir)))
-    (set-register ?l `(file . ,(expand-file-name "lisp/" conf-dir)))
+    (set-register ?i `(file . ,(emacs/dir "init.el")))
+    (set-register ?l `(file . ,(emacs/dir "lisp/")))
     (set-register ?r `(file . ,(concat org-dir "cReading.org")))
     (set-register ?d `(file . ,(concat org-dir "Daily.org")))
     (set-register ?n `(file . ,(concat org-dir "cNotes.org")))
-    (set-register ?p `(file . ,(expand-file-name "~/Dropbox/Docs/pdf"))))
+    (set-register ?p `(file . ,(dropbox/dir "pdf"))))
   (set-register ?o `(file . ,default-directory))
   :custom
   (register-preview-delay 0.5))
@@ -331,7 +340,7 @@
   :config
   (setq modus-themes-mixed-fonts t
         modus-themes-italic-constructs t)
-  (modus-themes-load-theme 'ef-frost))
+  (modus-themes-load-theme 'ef-eagle))
 
 
 ;; =======================================
@@ -420,8 +429,7 @@
 ;; =======================================
 ;;; Modeline
 ;; =======================================
-(defvar my/indicator-image-dir 
-  (expand-file-name "img-indicator/" user-emacs-directory))
+(defvar my/indicator-image-dir (emacs/dir "img-indicator/"))
 (defvar ko-img 
   (create-image (expand-file-name "han2.tiff" my/indicator-image-dir) 
                 'tiff nil :ascent 'center))
@@ -444,13 +452,6 @@
 			       'display (when mode-line-use-images-p 
 					  (if is-ko ko-img en-img))
 			       'help-echo label)))
-                ;; (:eval
-                ;;  (let* ((is-ko (equal current-input-method "korean-hangul"))
-                ;;         (label (if is-ko "KO" "EN")))
-                ;;    (propertize label
-                ;;                'display (when mode-line-use-images-p 
-                ;;                           (if is-ko ko-img en-img))
-                ;;                'help-echo label)))
                 "   "
                 "Ⓗ "
                 mode-line-buffer-identification
@@ -476,39 +477,6 @@
   (battery-mode-line-format "Ⓑ %p%% ")
   :init
   (display-battery-mode 1))
-
-
-;; =======================================
-;;; expand-region
-;; =======================================
-(use-package expand-region
-  :ensure nil
-  :bind (("C-="   . er/expand-region)
-         ("C-M-=" . er/contract-region)))
-
-
-;; =======================================
-;;; eldoc
-;; =======================================
-(use-package eldoc
-  :ensure nil
-  :diminish eldoc-mode
-  :hook (emacs-lisp-mode . eldoc-mode))
-
-
-;; =======================================
-;;; Helpful
-;; =======================================
-(use-package helpful
-  :bind
-  (("C-h f" . helpful-callable)   ; 함수, 매크로 등 호출 가능한 모든 것
-   ("C-h v" . helpful-variable)   ; 변수 설정 확인 시 유용
-   ("C-h k" . helpful-key)        ; 특정 키가 어떤 기능을 하는지 확인
-   ("C-h x" . helpful-command)    ; M-x 명령 확인
-   ("C-c C-d" . helpful-at-point) ; 현재 커서 아래의 심볼 바로 확인
-   ("C-h F" . helpful-function))  ; 호출 가능 여부와 상관없이 '함수'만 확인
-  :custom
-  (helpful-max-lines 50))
 
 
 ;; =======================================

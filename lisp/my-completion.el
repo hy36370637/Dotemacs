@@ -35,17 +35,16 @@
 (use-package consult
   :ensure t
   :bind (("C-x b" . consult-buffer)
-	 ("C-x C-r" . consult-recent-file)
-	 ("C-c B" . consult-bookmark)
-	 ("M-y"   . consult-yank-pop)
-	 ("M-s f" . consult-fd)                     ;Non Hangul
-	 ("M-s g" . consult-ripgrep)
-	 ("M-s l" . consult-line)
-	 ("M-s m" . consult-imenu)
+         ("C-x C-r" . consult-recent-file)
+         ("C-c B" . consult-bookmark)
+         ("M-y"   . consult-yank-pop)
+         ("M-s g" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ("M-s m" . consult-imenu)
          ("M-s o" . consult-outline)
-	 ("M-g M-g" . consult-goto-line))
+         ("M-g M-g" . consult-goto-line))
   :config
-  (setq consult-preview-key '(:debounce 0.5 any)))    ;default 'any
+  (setq consult-preview-key '(:debounce 0.5 any)))
 
 ;; =======================================
 ;;; wgrep
