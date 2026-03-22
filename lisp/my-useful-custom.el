@@ -264,7 +264,6 @@ excluding the Dock and Menu bar."
   (message "▣ center 2/3"))
 
 
-
 ;; (defun my/Bdays ()
 ;;   "Return the elapsed days of BP medication since 2024-12-31 as a string.
 ;; This is a helper function for Org-capture templates."
@@ -273,6 +272,29 @@ excluding the Dock and Menu bar."
 ;;          (diff-days (1+ (floor (/ (float-time (time-subtract (current-time) target-date)) 
 ;;                                   86400)))))
 ;;     (format "Day %d: BP 💊" diff-days)))
+
+
+;;;###autoload
+(defun caffeine-on ()
+  "Prevent macOS from sleeping for a selected duration.
+Prompts the user to choose between 30 minutes or 60 minutes.
+Uses macOS built-in caffeinate command with -d flag to keep display awake."
+  (interactive)
+  (let* ((choice (completing-read "Caffeine duration: " '("30 min" "60 min")))
+         (seconds (if (string= choice "30 min") 1800 3600)))
+    (start-process "caffeinate" nil "caffeinate" "-d" "-t" (number-to-string seconds))
+    (message "Caffeine ON for %s" choice)))
+
+
+;;;###autoload
+(defun caffeine-off ()
+  "Allow macOS to sleep normally by terminating the caffeinate process.
+Kills any running caffeinate process started by caffeine-on."
+  (interactive)
+  (shell-command "pkill caffeinate")
+  (message "Caffeine OFF"))
+
+
 
 
 

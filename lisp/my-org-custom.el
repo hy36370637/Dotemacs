@@ -150,8 +150,9 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
          (hour (string-to-number (format-time-string "%H")))
          (time-tag (cdr (seq-find (lambda (x) (< hour (car x)))
                                   '((6 . "새벽") (12 . "오전") (14 . "점심")
-                                    (18 . "오후") (20 . "저녁") (25 . "밤"))))))
-    (format "BP💊 %dD: %s/" diff-days time-tag)))
+                                    (18 . "오후") (21 . "저녁") (25 . "밤"))))))
+    (format "BP %dD: %s/" diff-days time-tag)))
+    ;; (format "BP💊 %dD: %s/" diff-days time-tag)))
 
 
 (defun my-bp-report ()

@@ -52,6 +52,8 @@
   ("w" "Weather"          #'my-search-weather))
 
 (my/defkeymap my-media-prefix-map "Media"
+  ("c" "Caffeine on"      #'caffeine-on)
+  ("C" "Caffeine off"     #'caffeine-off)
   ("P" "Play radio"       #'my-radio-play)
   ("S" "Stop radio"       #'my-radio-stop)
   ("w" "Bp week stats"    #'my-bp-report)
