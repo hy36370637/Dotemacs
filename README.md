@@ -34,7 +34,7 @@ Org-mode is the core of my workflow. I use it every day for:
 
 - `org-mode` — daily life management
 - `magit` — Git integration
-- `NaviIME` — Korean IME for Emacs
+- `NavilIME` — Korean IME for Emacs
 
 ---
 
