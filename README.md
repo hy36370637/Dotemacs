@@ -1,4 +1,4 @@
-# Dotemacs ⚙️
+# dotemacs ⚙️
 
 My personal Emacs configuration — built for a quiet rural life in Goheung, Korea 🌿
 
