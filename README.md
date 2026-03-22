@@ -26,7 +26,7 @@ Org-mode is the core of my workflow. I use it every day for:
 
 ## 🔤 Input Method
 
-- **NaviIME** — Korean input method configured specifically for Emacs
+- **NavilIME** — Korean input method configured specifically for Emacs
 
 ---
 
