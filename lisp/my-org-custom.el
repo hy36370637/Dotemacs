@@ -286,17 +286,27 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
   (org-habit-following-days            1)
   (org-habit-show-habits-only-for-today t)
   :config
-  (require 'org-tempo)                            ;; <s + TAB enable
+  ;; (require 'org-tempo)
   (add-to-list 'org-modules 'org-habit)
   (add-hook 'org-capture-after-finalize-hook #'my/org-capture-finalize-bp)
 
+  (defun my/org-capture-add-timestamp ()
+    "Automatically appends the recording date when saving Daily, Tasks, or Reading items."
+    (let ((key (plist-get org-capture-plist :key)))
+      (when (member key '("d" "t" "r"))
+        (save-excursion
+          (goto-char (point-max))
+          (unless (bolp) (insert "\n"))
+          (insert "기록일: " (format-time-string "[%Y-%m-%d %a %H:%M]"))))))
+
+  (add-hook 'org-capture-prepare-finalize-hook #'my/org-capture-add-timestamp)
+
   (setq org-capture-templates
         `(("d" "Daily" entry (file+datetree ,my/f-daily)
-           "* %?\n기록일: %U" :empty-lines-after 1)
+	   "* %?") ;; :empty-lines-after
 
           ("t" "Tasks" entry (file ,my/f-tasks)
-           "* TODO %?\n기록일: %U" :empty-lines-after 1)
-           ;; "* TODO %?\nSCHEDULED: %t" :empty-lines-after 1)
+	   "* TODO %?") ;; :empty-lines-after
 
           ("b" "Blood Pressure" table-line (file+headline ,my/f-health "혈압 데이터")
            ,(concat "| %U | %^{수축기} | %^{이완기} | %^{맥박} | %(my/Bdays)"
@@ -309,7 +319,7 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
            "* TODO 혈압 측정\nSCHEDULED: %t\n:PROPERTIES:\n:STYLE: habit\n:END:" :immediate-finish t)
 
           ("r" "Reading" entry (file ,my/f-read)
-           "* %?\n기록일: %U" :unnarrowed t :empty-lines-after 1)
+	   "* %?" :unnarrowed t) ;; :empty-lines-after
 
           ("m" "경조사" table-line (file ,my/f-money)
            ,(format "| %%^{구분} | %%^{일자|%s} | %%^{이름} | %%^{연락처} | %%^{관계} | %%^{종류} | %%^{금액} | %%^{메모} |"
@@ -363,8 +373,8 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
 
 
 (use-package valign
-  :custom
-  (valign-fancy-bar t)           ;"May slow down with large tables"
+  ;; :custom
+  ;; (valign-fancy-bar t)           ;"May slow down with large tables"
   :hook (org-mode . valign-mode))
 
 

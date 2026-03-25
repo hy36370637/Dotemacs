@@ -144,9 +144,6 @@
   ;; [왼쪽] Opt(Super) / Cmd(Meta)
   (setq ns-option-modifier 'super)
   (setq ns-command-modifier 'meta))
-  ;; [오른쪽] Cmd(Meta) / Opt(Control)
-  ;; (setq ns-right-command-modifier 'meta)    ;'meta
-  ;; (setq ns-right-option-modifier 'control)) ;'control
 
 
 ;; =======================================
@@ -221,7 +218,7 @@
   :ensure nil
   :custom
   (display-time-24hr-format t)      ; 24-hour system
-  (display-time-format "%m월%d일(%a)%H:%M")
+  (display-time-format "%m월 %d일(%a)%H:%M")
   ;; (display-time-format "%Y-%m-%d (%a) %H:%M")
   (display-time-day-and-date t)
   (display-time-load-average nil))  ; mode-line-misc-info average nil
