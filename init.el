@@ -131,10 +131,11 @@
 (require 'my-org-custom)
 (require 'my-useful-custom)
 (require 'my-search)
-;; (require 'my-todays-pop)
-;; (require 'my-radio-direct)
+(require 'my-todays-pop)
+(require 'my-radio-direct)
 (require 'my-app)
 (require 'my-keys)
+(require 'my-hangul)
 
 
 ;; =======================================
@@ -154,8 +155,8 @@
   (setq default-directory (dropbox/dir "org")
         temporary-file-directory (emacs/dir "tmp/"))
 
-  :hook ((text-mode     . visual-line-mode)
-         (focus-in-hook . my/deactivate-input-method))
+  :hook ((text-mode     . visual-line-mode))
+         ;; (focus-in-hook . my/deactivate-input-method))
 
   
   :custom
@@ -277,17 +278,20 @@
   :init
   (setenv "LANG" "ko_KR.UTF-8")
   (setenv "LC_COLLATE" "C")
-  (set-locale-environment "ko_KR.UTF-8")
+  ;; (set-locale-environment "ko_KR.UTF-8")
+  (set-locale-environment "en_US.UTF-8")
   (prefer-coding-system 'utf-8)
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
   (set-selection-coding-system 'utf-8)
   :custom
-  (default-input-method "korean-hangul")
+  (default-input-method "korean-my-hangul")
+  ;; (default-input-method "korean-hangul")
   (input-method-verbose-flag nil)
   (input-method-highlight-flag nil))
-
+  ;; :bind
+  ;; ("S-SPC" . toggle-input-method))
   
 ;; =======================================
 ;;; Fonts
