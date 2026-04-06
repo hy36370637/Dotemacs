@@ -289,9 +289,9 @@
   (default-input-method "korean-my-hangul")
   ;; (default-input-method "korean-hangul")
   (input-method-verbose-flag nil)
-  (input-method-highlight-flag nil))
-  ;; :bind
-  ;; ("S-SPC" . toggle-input-method))
+  (input-method-highlight-flag nil)
+  :bind
+  ("S-SPC" . toggle-input-method))
   
 ;; =======================================
 ;;; Fonts
