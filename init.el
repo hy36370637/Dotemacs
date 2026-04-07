@@ -1,6 +1,6 @@
 ;; -*- lexical-binding: t -*-
 ;;  emacs for macOS
-;;  ver260314
+;;  ver260407
 
 ;; CODE
 
@@ -278,16 +278,14 @@
   :init
   (setenv "LANG" "ko_KR.UTF-8")
   (setenv "LC_COLLATE" "C")
-  ;; (set-locale-environment "ko_KR.UTF-8")
   (set-locale-environment "en_US.UTF-8")
+  (setq system-time-locale "ko_KR.UTF-8")
   (prefer-coding-system 'utf-8)
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
-  (set-selection-coding-system 'utf-8)
   :custom
   (default-input-method "korean-my-hangul")
-  ;; (default-input-method "korean-hangul")
   (input-method-verbose-flag nil)
   (input-method-highlight-flag nil)
   :bind
