@@ -45,7 +45,7 @@
 ;; =======================================
 (require 'package)
 
-;; 저장소 목록 및 우선순위 설정
+;; 저장소 목록 / 우선순위 설정
 (setq package-archives
       '(("gnu-elpa" . "https://elpa.gnu.org/packages/")
         ("nongnu"   . "https://elpa.nongnu.org/nongnu/")
@@ -55,7 +55,7 @@
         ("gnu-elpa" . 10)
         ("melpa-stable" . 5)))
 
-;; 패키지 초기화 및 최적화
+;; 패키지 초기화 / 최적화
 (setq package-install-upgrade-built-in nil
       package-quickstart t
       use-package-always-ensure nil

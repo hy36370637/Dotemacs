@@ -295,10 +295,5 @@ Kills any running caffeinate process started by caffeine-on."
   (message "Caffeine OFF"))
 
 
-
-
-
-
-
 (provide 'my-useful-custom)
 ;;; my-useful-custom.el ends here

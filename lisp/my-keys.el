@@ -51,13 +51,20 @@
   ("m" "Imenu"            #'consult-imenu)
   ("w" "Weather"          #'my-search-weather))
 
+(my/defkeymap my-life-prefix-map "Life"
+  ("l" "Lunar date"       #'my-show-lunar-date)
+  ("p" "todays Pop"       #'my-todays-pop)
+  ("t" "Tide info"        #'my-show-tide-info)
+  ("q" "random Quote"     #'my-show-random-quote)
+  ("w" "weather"          #'my-show-weather)
+  ("W" "Bp week stats"    #'my-bp-report)
+  ("T" "Bp tag stats"     #'my-show-bp-stats-by-tag))
+  
 (my/defkeymap my-media-prefix-map "Media"
   ("c" "Caffeine on"      #'caffeine-on)
   ("C" "Caffeine off"     #'caffeine-off)
   ("P" "Play radio"       #'my-radio-play)
   ("S" "Stop radio"       #'my-radio-stop)
-  ("w" "Bp week stats"    #'my-bp-report)
-  ("t" "Bp tag stats"     #'my-show-bp-stats-by-tag)
   ("i" "Insert img"       #'my-org-insert-image)
   ("s" "Screenshot"       #'my-org-screenshot))
 
@@ -70,10 +77,10 @@
   
 (my/defkeymap my-emacs-prefix-map "Master"
   ("e" "Edit"             my-edit-prefix-map)
+  ("l" "Life"             my-life-prefix-map)
   ("m" "Media"            my-media-prefix-map)
   ("r" "Register"         #'jump-to-register)
   ("s" "Search"           my-search-prefix-map)
-  ("u" "Usearch"          #'my-search-unified)
   ("w" "Window"           my-window-prefix-map))
 
 
