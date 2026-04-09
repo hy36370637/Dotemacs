@@ -1,41 +1,46 @@
-# dotemacs ⚙️
+# Emacs configuration ⚙️
 
-My personal Emacs configuration — built for a quiet rural life in Goheung, Korea 🌿
+My personal Emacs configuration — tailored for digital archiving and a quiet rural life in Goheung, Korea 🌿
 
 ---
 
 ## 🖥️ Environment
 
-| | |
-|---|---|
+| Component | Details |
+| :--- | :--- |
 | **Emacs** | 30.2 (emacs-plus) |
 | **Devices** | MacBook Air (M1) / Mac Mini (M2) |
-| **OS** | macOS |
+| **OS** | macOS (Minimalist setup with Alfred & Dropbox) |
+
+---
+
+## 🔤 Input Method: The "Navil" Heritage
+
+I prioritize a seamless Korean typing experience. My setup bridges the gap between the system and Emacs:
+
+* **NavilIME**: My primary input method for macOS, optimized for system-wide stability.
+* **my-hangul (korean-hy-hangul.el)**: A custom Emacs-native port of NavilIME’s logic. It brings the same fluid "Navilera" typing experience directly into Emacs Lisp for better integration and speed.
 
 ---
 
 ## 📋 Org-mode — The Heart of Daily Life
 
-Org-mode is the core of my workflow. I use it every day for:
+Org-mode is the core of my workflow, capturing the rhythm of the countryside:
 
-- 📔 **Daily Journal** — logging thoughts and activities
-- 🩺 **Blood Pressure Tracking** — recording morning & evening readings
-- 📅 **Schedule Management** — keeping life organized
-
----
-
-## 🔤 Input Method
-
-- **NavilIME** — Korean input method configured specifically for Emacs
+* 📔 **Digital Archiving**: Proofreading and formatting East Asian classics (Mencius, The Analects) for PDF publication.
+* 🩺 **Health Log**: Tracking blood pressure and health metrics to maintain a balanced lifestyle.
+* 🎣 **Life in Goheung**: Managing tide schedules for saltwater fishing and logs for seasonal harvesting.
+* 📅 **Schedule Management**: Keeping track of daily journals and important family anniversaries.
 
 ---
 
 ## 📦 Key Packages
 
-- `org-mode` — daily life management
-- `magit` — Git integration
-- `NavilIME` — Korean IME for Emacs
+* **`org-mode`**: Personal knowledge management (PKM) and historical text archiving.
+* **`magit`**: Essential for managing this configuration and my development repositories.
+* **`my-hangul`**: The engine behind my Korean writing within Emacs.
+* **`consult`**, **`project.el`**, **`magit`**: My core stack for efficient navigation and workflow management.
 
 ---
 
-*Simple config for a simple life.*
+*Simple config for a productive and mindful life.*
