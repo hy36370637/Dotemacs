@@ -213,8 +213,8 @@ CURRENT: 키 문자열 리스트.
           (insert str)
           (setq my-hangul--preedit nchars)
           (unless (and my-hangul--overlay (overlay-buffer my-hangul--overlay))
-            (setq my-hangul--overlay (make-overlay (point) (point)))
-            (overlay-put my-hangul--overlay 'face 'underline))
+            (setq my-hangul--overlay (make-overlay (point) (point))))
+            ;; (overlay-put my-hangul--overlay 'face 'underline))
           (move-overlay my-hangul--overlay (- (point) nchars) (point))
           ;; hangul-to-hanja-conversion 이 quail-overlay 위치로 preedit 감지
           (when (overlayp quail-overlay)

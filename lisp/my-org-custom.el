@@ -27,18 +27,52 @@
 ;; ======================================
 ;;; 2. Helper Functions
 ;; ======================================
+(defvar my-org-last-inserted-image nil
+  "Last image file inserted by my-org-insert-image.")
+
 
 ;;; ###autoload
-(defun my-org-insert-image ()
-  "Insert an image. Select [inline] or [path] with arrow keys."
-  (interactive)
+(defun my-org-insert-image (&optional manual)
+  "Insert an image. If MANUAL, select manually ignoring history."
+  (interactive "P")
   (let* ((choice (completing-read "Insert type: " '("inline" "path") nil t))
          (base-dir (expand-file-name "img/" org-directory))
-         (file (read-file-name "Select image: " base-dir nil t)))
+         (prev-file (unless manual my-org-last-inserted-image))
+         (prev-ts (when prev-file
+                    (and (string-match "_\\([0-9]+\\)\\." (file-name-nondirectory prev-file))
+                         (match-string 1 (file-name-nondirectory prev-file)))))
+         (prev-dir (when prev-file (file-name-directory prev-file)))
+         (candidates (when prev-dir
+                       (seq-filter (lambda (f)
+                                     (and (not (file-directory-p f))
+                                          (string-match "_\\([0-9]+\\)\\." (file-name-nondirectory f))))
+                                   (directory-files prev-dir t))))
+         (auto-file (when (and prev-ts candidates)
+                      (seq-reduce
+                       (lambda (acc f)
+                         (let ((ts (and (string-match "_\\([0-9]+\\)\\." (file-name-nondirectory f))
+                                        (match-string 1 (file-name-nondirectory f)))))
+                           (if (and ts (string> ts prev-ts)
+                                    (or (null acc)
+                                        (string< ts (and (string-match "_\\([0-9]+\\)\\." (file-name-nondirectory acc))
+                                                         (match-string 1 (file-name-nondirectory acc))))))
+                               f acc)))
+                       candidates nil)))
+         (file (read-file-name "Select image: "
+                               (or prev-dir base-dir)
+                               nil t
+                               (when auto-file (file-name-nondirectory auto-file)))))
     (when (and file (not (file-directory-p file)))
+      (setq my-org-last-inserted-image file)
       (pcase choice
         ("inline" (insert (format "[[file:%s]]\n" file)) (org-display-inline-images))
         ("path"   (insert (concat "./" (file-relative-name file))))))))
+
+
+(defun my-org-insert-image-manual ()
+  "Insert image manually, ignoring history."
+  (interactive)
+  (my-org-insert-image t))
 
 
 ;;; ###autoload
