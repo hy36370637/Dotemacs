@@ -202,17 +202,17 @@
   (minibuffer-depth-indicate-mode 1)
 
   :bind
-  (("C-x f"     . toggle-frame-fullscreen)
+  (("C-x f"       . toggle-frame-fullscreen)
    ("C-x <left>"  . tile-frame-left)
    ("C-x <right>" . tile-frame-right)
    ("C-x <down>"  . tile-frame-center)
    ("C-x <up>"    . toggle-frame-maximized)
-   ("M-m"       . my-prefix-with-ime-deactivation)
-   ("M-;"       . comment-line)
-   ("M-s u"     . my-search-unified)
-   ("C-a"       . my-smart-beginning-of-line)
-   ("C-g"       . my-keyboard-quit-dwim)
-   ("<escape>"  . my-keyboard-quit-dwim)))
+   ("M-SPC"       . my-prefix-with-ime-deactivation)
+   ("M-;"         . comment-line)
+   ("M-s u"       . my-search-unified)
+   ("C-a"         . my-smart-beginning-of-line)
+   ("C-g"         . my-keyboard-quit-dwim)
+   ("<escape>"    . my-keyboard-quit-dwim)))
 
 
 (use-package time

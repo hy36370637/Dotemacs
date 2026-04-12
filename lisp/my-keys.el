@@ -1,4 +1,8 @@
 ;;; my-keys.el --- Optimized keybindings -*- lexical-binding: t; -*-
+;;
+;;
+;; CODE
+;; 
 
 ;; ======================================
 ;;; Helper Functions
@@ -17,20 +21,30 @@
                    (list (car binding) (cadr binding)))
                  bindings))))
 
-
 (defun my/deactivate-input-method (&rest _args)
   "Deactivate current input method."
   (when (and (boundp 'current-input-method) current-input-method)
     (deactivate-input-method)))
 
+(defun my-hangul-event-p (event)
+  "한글 유니코드 이벤트 여부 확인 (음절/자모/호환자모)."
+  (and (integerp event)
+       (or (and (>= event #xAC00) (<= event #xD7A3))   ; 한글 음절
+           (and (>= event #x1100) (<= event #x11FF))   ; 한글 자모
+           (and (>= event #x3130) (<= event #x318F))))) ; 호환 자모
 
 (defun my-prefix-with-ime-deactivation ()
   "Deactivate IME and show master keymap."
   (interactive)
   (my/deactivate-input-method)
   (which-key-show-keymap 'my-emacs-prefix-map my-emacs-prefix-map)
-  (set-transient-map my-emacs-prefix-map t))
-
+  (set-transient-map my-emacs-prefix-map
+                     (lambda ()
+                       ;; 한글 이벤트는 무시하고 transient-map 유지
+                       (when (my-hangul-event-p last-input-event)
+                         (message "한글 입력 중 — 영문으로 전환 후 단축키를 입력하세요")
+                         t))
+                     nil))
 
 ;; ======================================
 ;;; Keymap Definitions
@@ -59,7 +73,7 @@
   ("w" "weather"            #'my-show-weather)
   ("W" "Bp week stats"      #'my-bp-report)
   ("T" "Bp tag stats"       #'my-show-bp-stats-by-tag))
-  
+
 (my/defkeymap my-media-prefix-map "Media"
   ("c" "Caffeine on"        #'caffeine-on)
   ("C" "Caffeine off"       #'caffeine-off)
@@ -75,7 +89,7 @@
   ("k" "Pin/Unpin"          #'my-toggle-window-dedicated)
   ("l" "3-Win Layout"       #'my-layout-3-windows-center-focus)
   ("m" "Split 3-Column"     #'my-split-window-three-column))
-  
+
 (my/defkeymap my-emacs-prefix-map "Master"
   ("e" "Edit"               my-edit-prefix-map)
   ("l" "Life"               my-life-prefix-map)
@@ -83,7 +97,6 @@
   ("r" "Register"           #'jump-to-register)
   ("s" "Search"             my-search-prefix-map)
   ("w" "Window"             my-window-prefix-map))
-
 
 (provide 'my-keys)
 ;;; my-keys.el ends here

@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t -*-
 ;;  my-hangul.el — 두벌식 한글 입력기
 ;;  NavilIME Hangul.swift + Keyboard002.swift 직접 포팅
-;;  Ver1.0
+;;
 ;;  키 배치:
 ;;   q=ㅂ  w=ㅈ  e=ㄷ  r=ㄱ  t=ㅅ  y=ㅛ  u=ㅕ  i=ㅑ  o=ㅐ  p=ㅔ
 ;;   a=ㅁ  s=ㄴ  d=ㅇ  f=ㄹ  g=ㅎ  h=ㅗ  j=ㅓ  k=ㅏ  l=ㅣ
@@ -10,13 +10,10 @@
 ;;   연속: qq=ㅃ ww=ㅉ ee=ㄸ rr=ㄲ tt=ㅆ(초성) oo=ㅒ pp=ㅖ tt=ㅆ(종성)
 
 (require 'quail)
-;; hangul.el 은 leim/quail 디렉토리에 있음
-(add-to-list 'load-path
-             "/Applications/Emacs.app/Contents/Resources/lisp/leim/quail")
-(require 'hangul)
+(require 'hanja-util)
 
 ;;; ============================================================
-;;; 레이아웃 테이블
+;;; 레이아웃 테이블 (Keyboard002.swift 그대로)
 ;;; ============================================================
 
 (defconst my-hangul-cho-layout
@@ -237,6 +234,18 @@ CURRENT: 키 문자열 리스트.
     (move-overlay quail-overlay (point) (point))))
 
 ;;; ============================================================
+;;; 한자/기호 변환
+;;; ============================================================
+
+(defun my-hangul-to-hanja-conversion ()
+  "직전 한글 문자를 한자/기호로 변환."
+  (interactive)
+  (let ((hanja (hangul-to-hanja-char (preceding-char))))
+    (when hanja
+      (delete-char -1)
+      (insert (string hanja)))))
+
+;;; ============================================================
 ;;; Process / Flush / Backspace
 ;;; ============================================================
 
@@ -299,7 +308,7 @@ CURRENT: 키 문자열 리스트.
                  ;; f9 / Hangul_Hanja → 한자 변환
                  ((or (eq event 'f9) (eq event 'Hangul_Hanja))
                   (my-hangul--flush)
-                  (hangul-to-hanja-conversion))
+                  (my-hangul-to-hanja-conversion))
                  ;; 알파벳 → 계속 조합
                  ((and (integerp event) (my-hangul--alpha-p event))
                   (my-hangul--process (string event)))
@@ -330,7 +339,7 @@ CURRENT: 키 문자열 리스트.
 
 (register-input-method
  "korean-my-hangul" "Korean" #'my-hangul-activate "한2"
- "두벌식 한글입력기")
+ "두벌식 한글 입력기")
 
 (provide 'my-hangul)
 ;;; my-hangul.el ends here
