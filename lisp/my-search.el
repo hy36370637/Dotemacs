@@ -4,6 +4,7 @@
 (require 'dom)
 (require 'cl-lib)
 (require 'consult)
+(require 'ucs-normalize)
 
 ;; ======================================
 ;;; Configuration
@@ -14,7 +15,8 @@
     ("Naver" .  "https://search.naver.com/search.naver?query=%s")
     ("Naver Hanja" . "https://hanja.dict.naver.com/#/search?range=all&query=%s")
     ;; ("Namuwiki" .  "https://namu.wiki/w/%s")
-    ("Google" . "https://www.google.com/search?q=%s"))
+    ("Google" . "https://www.google.com/search?q=%s")
+    ("Filename Search" . filename))           ; ← fd 기반 파일명 검색 추가
   "List of web search engines (Name . URL/Type).")
 
 (defvar my-search-path-targets
@@ -44,6 +46,32 @@
   (if (string-prefix-p "dict://" url)
       (call-process "open" nil 0 nil url)
     (browse-url url)))
+
+(defun my-fd-filename-search (query)
+  "Search file names using fd (NFD-safe on macOS).
+QUERY: 검색어. 경로는 my-search-path-targets 에서 선택."
+  (let* ((path-choice (completing-read "Search in: "
+                                       (mapcar #'car my-search-path-targets)
+                                       nil t))
+         (search-dir  (expand-file-name
+                       (cdr (assoc path-choice my-search-path-targets))))
+         ;; Dropbox 파일명은 NFD로 저장되므로 검색어도 NFD로 변환
+         (query-nfd   (ucs-normalize-NFD-string query))
+         (results     (split-string
+                       (shell-command-to-string
+                        (format "fd --color=never %s %s"
+                                (shell-quote-argument query-nfd)
+                                (shell-quote-argument search-dir)))
+                       "\n" t)))
+    (if (null results)
+        (message "결과 없음: '%s'" query)
+      (let ((selected (completing-read
+                       (format "파일 선택 [%s]: " query)
+                       results nil t)))
+        (when selected
+          (if (string-match-p "\\.pdf\\'" selected)
+              (call-process "open" nil 0 nil selected)
+            (find-file selected)))))))
 
 (defun my-rga-skim-search (&optional query)
   "Search PDF contents using `rga` and open in Skim."
@@ -97,8 +125,7 @@ end tell" full-path page-num))
 Select between Web engines or Local paths for the given QUERY."
   (interactive 
    (list (read-string "Search query: " (thing-at-point 'symbol t))))
-  (let* (;; Use the provided query; if nil, fall back to the symbol at point.
-         (search-term (or query (thing-at-point 'symbol t)))
+  (let* ((search-term (or query (thing-at-point 'symbol t)))
          (web-options (mapcar #'car my-search-engines))
          (local-options (mapcar #'car my-search-path-targets))
          (all-options (append web-options local-options))
@@ -106,18 +133,22 @@ Select between Web engines or Local paths for the given QUERY."
          (web-config (assoc choice my-search-engines))
          (local-path (cdr (assoc choice my-search-path-targets))))
     (cond
-     ;; CASE 1: Web Engine Selection
+     ;; CASE 1: Filename Search (fd 기반 NFD-safe)
+     ((and web-config (eq (cdr web-config) 'filename))
+      (my-fd-filename-search search-term))
+
+     ;; CASE 2: Web Engine Selection
      (web-config
       (let ((url (my--get-search-url choice search-term)))
         (if (and url (not (string-empty-p url)))
             (my--open-url url)
           (message "Invalid URL configuration."))))
      
-     ;; CASE 2: Local PDF Path Selection
+     ;; CASE 3: Local PDF Path Selection
      ((and local-path (string-match-p "PDF" choice))
       (my-rga-skim-search search-term))
      
-     ;; CASE 3: Standard Local Path Selection
+     ;; CASE 4: Standard Local Path Selection
      (local-path
       (let ((default-directory (expand-file-name local-path)))
         (consult-ripgrep default-directory search-term)))

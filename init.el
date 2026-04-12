@@ -276,20 +276,22 @@
 ;; =======================================
 (use-package emacs
   :init
-  (setenv "LANG" "ko_KR.UTF-8")
+  (setenv "LANG" "ko_KR.UTF-8")                     ;외부 프로세스용
   (setenv "LC_COLLATE" "C")
-  (set-locale-environment "en_US.UTF-8")
-  (setq system-time-locale "ko_KR.UTF-8")
+  (set-locale-environment "ko_KR.UTF-8")            ;내부 프로세스용
+  ;; set-locale-environment가 "korean-hangul"을 심기 전에 테이블 교체
+  (set-language-info "Korean" 'input-method "korean-my-hangul")
+  ;; (setq default-input-method "korean-my-hangul") ; ← 이중 방어
   (prefer-coding-system 'utf-8)
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
   :custom
-  (default-input-method "korean-my-hangul")
   (input-method-verbose-flag nil)
   (input-method-highlight-flag nil)
   :bind
   ("S-SPC" . toggle-input-method))
+
   
 ;; =======================================
 ;;; Fonts
