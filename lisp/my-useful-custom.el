@@ -114,6 +114,16 @@ Handle 'keyboard-quit' based on the current context, such as an active region, o
 	 (call-interactively 'beginning-of-line))))
 
 
+;;; ###autoload
+(defun my-paste-with-parentheses ()
+  "Insert clipboard content enclosed in parentheses."
+  (interactive)
+  (let ((text (or (gui-get-selection 'CLIPBOARD 'STRING) (current-kill 0))))
+    (if (and text (not (string-empty-p text)))
+        (insert (format "(%s)" text))
+      (message "Clipboard is empty."))))
+
+
 ;;;###autoload
 (defun my-toggle-window-split-ratio ()
   "Toggle the current window's width between 1/3 and 2/3 of the frame.

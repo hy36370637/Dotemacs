@@ -1,8 +1,6 @@
 ;;; my-keys.el --- Optimized keybindings -*- lexical-binding: t; -*-
 ;;
 ;;
-;; CODE
-;; 
 
 ;; ======================================
 ;;; Helper Functions
@@ -25,13 +23,6 @@
   "Deactivate current input method."
   (when (and (boundp 'current-input-method) current-input-method)
     (deactivate-input-method)))
-
-(defun my-hangul-event-p (event)
-  "한글 유니코드 이벤트 여부 확인 (음절/자모/호환자모)."
-  (and (integerp event)
-       (or (and (>= event #xAC00) (<= event #xD7A3))   ; 한글 음절
-           (and (>= event #x1100) (<= event #x11FF))   ; 한글 자모
-           (and (>= event #x3130) (<= event #x318F))))) ; 호환 자모
 
 (defun my-prefix-with-ime-deactivation ()
   "Deactivate IME and show master keymap."

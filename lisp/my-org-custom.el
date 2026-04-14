@@ -76,23 +76,23 @@
 
 
 ;;; ###autoload
-(defun my-org-screenshot (chdir name)
-  "Insert a screenshot from clipboard. Requires: brew install pngpaste"
-  (interactive
-   (let* ((default-dir (file-name-concat org-directory "img/"))
-          (chosen-dir  (read-directory-name "Target directory: " default-dir default-dir t))
-          (default-name (format-time-string "%Y%m%d_%H%M%S"))
-          (file-name    (read-string (format "Enter filename (default %s, exclude extension): "
-                                             default-name) nil nil default-name)))
-     (list chosen-dir file-name)))
-  (let ((path (expand-file-name (concat name ".png") chdir)))
-    (make-directory chdir t)
-    (if (zerop (shell-command (format "%s %s" my/pngpaste-bin (shell-quote-argument path))))
-        (progn
-          (insert (format "\n#+ATTR_LATEX: :width 0.5\\textwidth\n#+CAPTION: %s\n[[file:%s]]\n" name path))
-          (org-display-inline-images)
-          (message "Image saved: %s" path))
-      (error "No image in clipboard or pngpaste failed"))))
+;; (defun my-org-screenshot (chdir name)
+;;   "Insert a screenshot from clipboard. Requires: brew install pngpaste"
+;;   (interactive
+;;    (let* ((default-dir (file-name-concat org-directory "img/"))
+;;           (chosen-dir  (read-directory-name "Target directory: " default-dir default-dir t))
+;;           (default-name (format-time-string "%Y%m%d_%H%M%S"))
+;;           (file-name    (read-string (format "Enter filename (default %s, exclude extension): "
+;;                                              default-name) nil nil default-name)))
+;;      (list chosen-dir file-name)))
+;;   (let ((path (expand-file-name (concat name ".png") chdir)))
+;;     (make-directory chdir t)
+;;     (if (zerop (shell-command (format "%s %s" my/pngpaste-bin (shell-quote-argument path))))
+;;         (progn
+;;           (insert (format "\n#+ATTR_LATEX: :width 0.5\\textwidth\n#+CAPTION: %s\n[[file:%s]]\n" name path))
+;;           (org-display-inline-images)
+;;           (message "Image saved: %s" path))
+;;       (error "No image in clipboard or pngpaste failed"))))
 
 
 ;;; ###autoload
@@ -104,16 +104,6 @@
         (completing-read "Drawer name: "
                          '("PROPERTIES" "LOGBOOK" "MEMO" "NOTE" "CONTEXT" "DETAIL" "SOLUTION")
                          nil nil))))
-
-
-;;; ###autoload
-(defun my-paste-with-parentheses ()
-  "Insert clipboard content enclosed in parentheses."
-  (interactive)
-  (let ((text (or (gui-get-selection 'CLIPBOARD 'STRING) (current-kill 0))))
-    (if (and text (not (string-empty-p text)))
-        (insert (format "(%s)" text))
-      (message "Clipboard is empty."))))
 
 
 (defun my/org-latex-filter-blocks (text backend info)

@@ -25,7 +25,7 @@
 
 (defvar my-macOS-p (eq system-type 'darwin))
 
-(defvar my-Macbook-p (string-equal system-name "MacBookAir.local"))
+(defvar my-Macbook-p (string-prefix-p "MacBookAir" (system-name)))
 
 (setq org-directory (dropbox/dir "org"))
 
@@ -131,11 +131,11 @@
 (require 'my-org-custom)
 (require 'my-useful-custom)
 (require 'my-search)
+(require 'my-app)
+(require 'my-hangul)
+(require 'my-keys)
 (require 'my-todays-pop)
 (require 'my-radio-direct)
-(require 'my-app)
-(require 'my-keys)
-(require 'my-hangul)
 
 
 ;; =======================================
@@ -207,7 +207,7 @@
    ("C-x <right>" . tile-frame-right)
    ("C-x <down>"  . tile-frame-center)
    ("C-x <up>"    . toggle-frame-maximized)
-   ("M-SPC"       . my-prefix-with-ime-deactivation)
+   ("M-m"         . my-prefix-with-ime-deactivation)
    ("M-;"         . comment-line)
    ("M-s u"       . my-search-unified)
    ("C-a"         . my-smart-beginning-of-line)
@@ -281,7 +281,7 @@
   (set-locale-environment "ko_KR.UTF-8")            ;내부 프로세스용
   ;; set-locale-environment가 "korean-hangul"을 심기 전에 테이블 교체
   (set-language-info "Korean" 'input-method "korean-my-hangul")
-  ;; (setq default-input-method "korean-my-hangul") ; ← 이중 방어
+  (setq default-input-method "korean-my-hangul") ; ← 이중 방어
   (prefer-coding-system 'utf-8)
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
