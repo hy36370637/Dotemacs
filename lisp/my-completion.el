@@ -12,6 +12,7 @@
   (vertico-cycle t)
   (vertico-count 15))
 
+
 ;; ======================================
 ;;; marginalia
 ;; ======================================
@@ -21,6 +22,7 @@
   (marginalia-align 'right)
   (marginalia-align-offset 0))
 
+
 ;; ======================================
 ;;; orderless
 ;; ======================================
@@ -28,6 +30,7 @@
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
+
 
 ;; ======================================
 ;;; consult
@@ -46,6 +49,7 @@
   :config
   (setq consult-preview-key '(:debounce 0.5 any)))
 
+
 ;; =======================================
 ;;; wgrep
 ;; =======================================
@@ -54,6 +58,7 @@
   :config
   (setq wgrep-auto-save-buffer t)
   (setq wgrep-change-readonly-file t))
+
 
 ;; =======================================
 ;;; embark
@@ -73,6 +78,7 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+
 ;; =======================================
 ;;; pair-pair-wrap
 ;; =======================================
@@ -89,6 +95,7 @@
     (?\( :description " () "          :pair (?\( . ?\)))
     (?\[ :description " [] "          :pair (?\[ . ?\]))
     (?{  :description " {} "          :pair (?{ . ?}))
+    (?,  :description "<>"            :pair (?< . ?>))
     (?<  :description "「」"          :pair ("「" . "」"))
     (?>  :description "『』"          :pair ("『" . "』"))
     (?M  :description "《》"          :pair ("《" . "》")))
@@ -96,45 +103,213 @@
   :group 'editing
   :type '(alist :key-type character :value-type (plist)))
 
-;; (defun my--enable-tab-escape ()
-;;   "Enable a temporary TAB binding to jump out of brackets or emphasis markers"
-;;   (set-transient-map
-;;    (let ((map (make-sparse-keymap)))
-;;      (define-key map (kbd "TAB")
-;;                  (lambda () (interactive) (forward-char 1)))
-;;      map)
-;;    t))
+(defcustom my-pair-pairs
+  '((?* :description "Bold"           :pair ?*)
+    (?/ :description "Italic"         :pair ?/)
+    (?= :description "Verbatim"       :pair ?=)
+    (?~ :description "Code"           :pair ?~)
+    (?+ :description "Strike"         :pair ?+)
+    (?_ :description "Under Line"     :pair ?_)
+    (?\" :description "Double Quotes" :pair ?\")
+    (?\' :description "Single Quotes" :pair ?\')
+    (?\( :description " () "          :pair (?\( . ?\)))
+    (?\[ :description " [] "          :pair (?\[ . ?\]))
+    (?{  :description " {} "          :pair (?{ . ?}))
+    (?,  :description "<>"            :pair (?< . ?>))
+    (?<  :description "「」"          :pair ("「" . "」"))
+    (?>  :description "『』"          :pair ("『" . "』"))
+    (?M  :description "《》"          :pair ("《" . "》")))
+  "List of Org-mode emphasis markers and special bracket pairs."
+  :group 'editing
+  :type '(alist :key-type character :value-type (plist)))
 
 (defun my-pair-pairs-wrap (char &optional _target)
-  "Enclose the active region or the word at point with a pair of CHARs."
+  "Enclose the active region or the word at point with a pair of CHARs.
+Detects existing open/close delimiters in the region and replaces or inserts accordingly."
   (interactive "c기호 입력 (*, /, =, (, <...): ")
   (let* ((entry (assoc char my-pair-pairs))
          (pair-data (plist-get (cdr entry) :pair))
-         (open (if (consp pair-data) (car pair-data) pair-data))
-         (close (if (consp pair-data) (cdr pair-data) pair-data))
-         (bounds (if (use-region-p)
-                     (cons (region-beginning) (region-end))
-                   (or (bounds-of-thing-at-point 'symbol)
-                       (cons (point) (point)))))
-         (start (car bounds))
-         (end (cdr bounds)))
-
+         (open      (if (consp pair-data) (car pair-data) pair-data))
+         (close     (if (consp pair-data) (cdr pair-data) pair-data))
+         (open-str  (if (characterp open)  (char-to-string open)  open))
+         (close-str (if (characterp close) (char-to-string close) close)))
     (if (not pair-data)
         (message "Undefined symbol: %c" char)
-      (save-excursion
-        (goto-char end)              ;뒤쪽 닫는 기호 삽입
-        (insert (if (characterp close) (char-to-string close) close))
-        (goto-char start)            ;앞쪽 여는 기호 삽입
-        (insert (if (characterp open) (char-to-string open) open)))
-
-      ;; (my--enable-tab-escape)
-      (message "'%s' 완료" (plist-get (cdr entry) :description)))))
+      (if (not (use-region-p))
+          ;; region 없음: word at point 감싸기
+          (let* ((bounds (or (bounds-of-thing-at-point 'symbol)
+                             (cons (point) (point))))
+                 (start (car bounds))
+                 (end   (cdr bounds)))
+            (save-excursion
+              (goto-char end)   (insert close-str)
+              (goto-char start) (insert open-str)))
+        ;; region 있음
+        (let* ((rbeg (region-beginning))
+               (rend (region-end))
+               (all-pairs
+                (apply #'append
+                       (mapcar (lambda (e)
+                                 (let* ((key (car e))
+                                        (pd  (plist-get (cdr e) :pair)))
+                                   (when (consp pd)
+                                     (let* ((os  (if (characterp (car pd))
+                                                     (char-to-string (car pd))
+                                                   (car pd)))
+                                            (cs  (if (characterp (cdr pd))
+                                                     (char-to-string (cdr pd))
+                                                   (cdr pd)))
+                                            (key-str (char-to-string key)))
+                                       (list (cons os       cs)
+                                             (cons key-str  cs)
+                                             (cons os       key-str)
+                                             (cons key-str  key-str))))))
+                               my-pair-pairs)))
+               (existing-open
+                (cl-some (lambda (p)
+                           (let ((os (car p)))
+                             (when (string= os (buffer-substring-no-properties
+                                                rbeg
+                                                (min (+ rbeg (length os)) rend)))
+                               os)))
+                         all-pairs))
+               (existing-close
+                (cl-some (lambda (p)
+                           (let ((cs (cdr p)))
+                             (when (string= cs (buffer-substring-no-properties
+                                                (max (- rend (length cs)) rbeg)
+                                                rend))
+                               cs)))
+                         all-pairs))
+               (open-len  (length (or existing-open  "")))
+               (close-len (length (or existing-close ""))))
+          (save-excursion
+            ;; 뒤쪽 먼저
+            (if existing-close
+                (progn (goto-char (- rend close-len))
+                       (delete-char close-len)
+                       (insert close-str))
+              (goto-char rend)
+              (insert close-str))
+            ;; 앞쪽
+            (if existing-open
+                (progn (goto-char rbeg)
+                       (delete-char open-len)
+                       (insert open-str))
+              (goto-char rbeg)
+              (insert open-str)))
+          (message "'%s' 완료" (plist-get (cdr entry) :description)))))))
 
 (with-eval-after-load 'embark
   (dolist (map (list embark-symbol-map
                      embark-region-map
                      embark-general-map))
     (define-key map (kbd "w") #'my-pair-pairs-wrap)))
+
+(defcustom my-pair-pairs
+  '((?* :description "Bold"           :pair ?*)
+    (?/ :description "Italic"         :pair ?/)
+    (?= :description "Verbatim"       :pair ?=)
+    (?~ :description "Code"           :pair ?~)
+    (?+ :description "Strike"         :pair ?+)
+    (?_ :description "Under Line"     :pair ?_)
+    (?\" :description "Double Quotes" :pair ?\")
+    (?\' :description "Single Quotes" :pair ?\')
+    (?\( :description " () "          :pair (?\( . ?\)))
+    (?\[ :description " [] "          :pair (?\[ . ?\]))
+    (?{  :description " {} "          :pair (?{ . ?}))
+    (?,  :description " <> "          :pair (?< . ?>))
+    (?<  :description " 「」 "           :pair ("「" . "」"))
+    (?>  :description " 『』 "           :pair ("『" . "』"))
+    (?M  :description " 《》 "           :pair ("《" . "》")))
+  "List of Org-mode emphasis markers and special bracket pairs."
+  :group 'editing
+  :type '(alist :key-type character :value-type (plist)))
+
+
+(defun my-pair-pairs-wrap (char &optional _target)
+  "Enclose the active region or the word at point with a pair of CHARs.
+Detects existing open/close delimiters in the region and replaces or inserts accordingly."
+  (interactive "c기호 입력 (*, /, =, (, <...): ")
+  (let* ((entry (assoc char my-pair-pairs))
+         (pair-data (plist-get (cdr entry) :pair))
+         (open      (if (consp pair-data) (car pair-data) pair-data))
+         (close     (if (consp pair-data) (cdr pair-data) pair-data))
+         (open-str  (if (characterp open)  (char-to-string open)  open))
+         (close-str (if (characterp close) (char-to-string close) close)))
+    (if (not pair-data)
+        (message "Undefined symbol: %c" char)
+      (if (not (use-region-p))
+          ;; region 없음: word at point 감싸기
+          (let* ((bounds (or (bounds-of-thing-at-point 'symbol)
+                             (cons (point) (point))))
+                 (start (car bounds))
+                 (end   (cdr bounds)))
+            (save-excursion
+              (goto-char end)   (insert close-str)
+              (goto-char start) (insert open-str)))
+        ;; region 있음
+        (let* ((rbeg (region-beginning))
+               (rend (region-end))
+               (all-pairs
+                (apply #'append
+                       (mapcar (lambda (e)
+                                 (let* ((key (car e))
+                                        (pd  (plist-get (cdr e) :pair)))
+                                   (when (consp pd)
+                                     (let* ((os  (if (characterp (car pd))
+                                                     (char-to-string (car pd))
+                                                   (car pd)))
+                                            (cs  (if (characterp (cdr pd))
+                                                     (char-to-string (cdr pd))
+                                                   (cdr pd)))
+                                            (key-str (char-to-string key)))
+                                       (list (cons os       cs)
+                                             (cons key-str  cs)
+                                             (cons os       key-str)
+                                             (cons key-str  key-str))))))
+                               my-pair-pairs)))
+               (existing-open
+                (cl-some (lambda (p)
+                           (let ((os (car p)))
+                             (when (string= os (buffer-substring-no-properties
+                                                rbeg
+                                                (min (+ rbeg (length os)) rend)))
+                               os)))
+                         all-pairs))
+               (existing-close
+                (cl-some (lambda (p)
+                           (let ((cs (cdr p)))
+                             (when (string= cs (buffer-substring-no-properties
+                                                (max (- rend (length cs)) rbeg)
+                                                rend))
+                               cs)))
+                         all-pairs))
+               (open-len  (length (or existing-open  "")))
+               (close-len (length (or existing-close ""))))
+          (save-excursion
+            ;; 뒤쪽 먼저
+            (if existing-close
+                (progn (goto-char (- rend close-len))
+                       (delete-char close-len)
+                       (insert close-str))
+              (goto-char rend)
+              (insert close-str))
+            ;; 앞쪽
+            (if existing-open
+                (progn (goto-char rbeg)
+                       (delete-char open-len)
+                       (insert open-str))
+              (goto-char rbeg)
+              (insert open-str)))
+          (message "'%s' 완료" (plist-get (cdr entry) :description)))))))
+
+(with-eval-after-load 'embark
+  (dolist (map (list embark-symbol-map
+                     embark-region-map
+                     embark-general-map))
+    (define-key map (kbd "w") #'my-pair-pairs-wrap)))
+
 
 ;; =======================================
 ;;; Hunspell 설정
@@ -158,6 +333,7 @@
 ;;   (setq flyspell-issue-message-flag nil)
 ;;   (setq flyspell-use-meta-tab nil))
 
+
 ;; =======================================
 ;;; completion-preview
 ;; =======================================
@@ -166,6 +342,22 @@
   :init (global-completion-preview-mode)
   :config
   (push 'org-self-insert-command completion-preview-commands))
+
+
+;; =======================================
+;;; corfu
+;; =======================================
+(use-package corfu
+  :ensure t
+  :hook (emacs-lisp-mode . corfu-mode)
+  :bind (:map corfu-map
+         ("TAB" . corfu-insert)
+         ("RET" . nil))
+  :config
+  (setq corfu-auto t)
+  (setq corfu-auto-delay 0.3)
+  (setq corfu-auto-prefix 2))
+
 
 ;; =======================================
 ;;; abbrev
@@ -202,6 +394,7 @@
                ("Doimg"   "#+ATTR_LATEX: :width 0.7\\textwidth \n")
                ("Doimgc"  "#+ATTR_LATEX: :width 0.7\\textwidth\n#+CAPTION: \n")
                ("Right"   "#+BEGIN_EXPORT latex\n\\begin{flushright}\n\n\\end{flushright}\n#+END_EXPORT")
+	       ("Wfig" "#+begin_export latex\n\\begin{wrapfigure}{r}{0.3\\textwidth}\n  \\begin{center}\n    \\includegraphics[width=0.28\\textwidth]{./img/PATH}\n  \\end{center}\n  \\caption{}\n\\end{wrapfigure}\n#+end_export")
                ("Bskip"   "#+LATEX: \\bigskip")
                ;; ("Mskip"   "#+LATEX: \\medskip")
                ("Nskip"   "#+LATEX: \\vspace{\\baselineskip}")))
@@ -213,6 +406,7 @@
       "Notoc"
       "#+LATEX: \\addcontentsline{toc}{section}{}"
       (lambda () (backward-char 1)))
+    
     ;; Cover (titlepage 삽입용)
     (define-abbrev
       org-mode-abbrev-table
@@ -225,6 +419,7 @@
        \"\\\\includegraphics[width=14.7cm]{./img/PATH}\n\"
        \"\\\\end{titlepage}\n\"))
 #+end_src")
+
     ;; 코딩식 자동 즉시 변환
     (defun my-org-auto-symbol-replace ()
       (when (and (not (org-in-src-block-p))
@@ -253,8 +448,6 @@
                 (add-hook 'post-self-insert-hook
                           #'my-org-auto-symbol-replace
                           nil t)))))
-
-
 
 ;; end here
 (provide 'my-completion)

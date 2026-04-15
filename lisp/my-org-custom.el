@@ -278,7 +278,8 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
          :map org-mode-map
          ("C-M-y"     . my-paste-with-parentheses)
          ("M-,"       . org-insert-structure-template)
-         ("C-c C-x d" . my-org-insert-drawer-custom))
+         ("C-c C-x d" . my-org-insert-drawer-custom)
+	 ("C-c C-x C-f" . my-pair-pairs-wrap))          ;alternate org-emphasize
   :custom
   (org-agenda-files                    (list my/f-tasks my/f-daily my/f-health))
   (org-startup-indented                t)
@@ -313,7 +314,7 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
   ;; (require 'org-tempo)
   (add-to-list 'org-modules 'org-habit)
   (add-hook 'org-capture-after-finalize-hook #'my/org-capture-finalize-bp)
-
+  
   (defun my/org-capture-add-timestamp ()
     "Automatically appends the recording date when saving Daily, Tasks, or Reading items."
     (let ((key (plist-get org-capture-plist :key)))
