@@ -203,16 +203,16 @@
 
   :bind
   (("C-x f"       . toggle-frame-fullscreen)
-   ("C-x <left>"  . tile-frame-left)
-   ("C-x <right>" . tile-frame-right)
-   ("C-x <down>"  . tile-frame-center)
+   ("C-x <left>"  . my/tile-frame-left)
+   ("C-x <right>" . my/tile-frame-right)
+   ("C-x <down>"  . my/tile-frame-center)
    ("C-x <up>"    . toggle-frame-maximized)
-   ("M-m"         . my-prefix-with-ime-deactivation)
+   ("C-z"         . my/prefix-with-ime-deactivation)
    ("M-;"         . comment-line)
-   ("M-s u"       . my-search-unified)
-   ("C-a"         . my-smart-beginning-of-line)
-   ("C-g"         . my-keyboard-quit-dwim)
-   ("<escape>"    . my-keyboard-quit-dwim)))
+   ("M-s u"       . my/search-unified)
+   ("C-a"         . my/smart-beginning-of-line)
+   ("C-g"         . my/keyboard-quit-dwim)
+   ("<escape>"    . my/keyboard-quit-dwim)))
 
 
 (use-package time
@@ -288,9 +288,7 @@
   (set-keyboard-coding-system 'utf-8)
   :custom
   (input-method-verbose-flag nil)
-  (input-method-highlight-flag nil)
-  :bind
-  ("S-SPC" . toggle-input-method))
+  (input-method-highlight-flag nil))
 
 
 ;; =======================================

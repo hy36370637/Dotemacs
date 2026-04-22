@@ -10,7 +10,7 @@
 ;; ======================================
 ;;; Core Functions
 ;; ======================================
-(defun my-radio-stop ()
+(defun my/radio-stop ()
   "Stop the currently running radio (mpv) process."
   (interactive)
   (if (get-process my-radio-process-name)
@@ -21,7 +21,7 @@
 
 
 ;;; ###autoload
-(defun my-radio-play ()
+(defun my/radio-play ()
   "Select a channel from mmslist and play it directly using mpv."
   (interactive)
   (if (not (file-exists-p my-radio-mmslist))
@@ -42,7 +42,7 @@
            (selected (completing-read "📻 Select Radio Station: " (mapcar #'car channels) nil t))
            (url (cdr (assoc selected channels))))
       (when url
-        (my-radio-stop) ; Stop existing process if any
+        (my/radio-stop) ; Stop existing process if any
         ;; Start mpv with specified volume and hidden UI
         (start-process my-radio-process-name nil "mpv" 
                        "--no-video" 
@@ -55,17 +55,17 @@
 ;; ======================================
 ;;; Volume Control Functions
 ;; ======================================
-;; (defun my-radio-volume-up ()
+;; (defun my/radio-volume-up ()
 ;;   "Increase volume by 5%."
 ;;   (interactive)
-;;   (my-radio-send-command "add volume 5"))
+;;   (my/radio-send-command "add volume 5"))
 
-;; (defun my-radio-volume-down ()
+;; (defun my/radio-volume-down ()
 ;;   "Decrease volume by 5%."
 ;;   (interactive)
-;;   (my-radio-send-command "add volume -5"))
+;;   (my/radio-send-command "add volume -5"))
 
-;; (defun my-radio-send-command (command)
+;; (defun my/radio-send-command (command)
 ;;   "Send a command string directly to the mpv process."
 ;;   (let ((proc (get-process my-radio-process-name)))
 ;;     (if (and proc (process-live-p proc))

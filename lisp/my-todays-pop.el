@@ -37,20 +37,20 @@ Format placeholders:
   4th %s = comparison with yesterday (e.g., '3° 높아요')")
 
 ;; OPTIMIZED: 캐시 변수들 추가
-(defvar my--weather-cache nil
+(defvar my/--weather-cache nil
   "Cache for weather data: (timestamp . weather-string)")
 
-(defvar my--lunar-cache nil
+(defvar my/--lunar-cache nil
   "Cache for lunar data: ((date . lunar-info) ...)")
 
-(defvar my--tide-cache nil
+(defvar my/--tide-cache nil
   "Cache for tide data: ((date . tide-times) ...)")
 
 ;; ======================================
 ;;; Helper Functions
 ;; ======================================
 ;; OPTIMIZED: URL 요청 통합 함수 추가 (타임아웃 단축 및 에러 핸들링 강화)
-(defun my--fetch-url-with-timeout (url &optional timeout)
+(defun my/--fetch-url-with-timeout (url &optional timeout)
   "Fetch URL with TIMEOUT (default 2 seconds) and error handling.
 Returns buffer or nil on failure."
   (condition-case err
@@ -89,9 +89,9 @@ Returns buffer or nil on failure."
   (unless kasi-api-key (kasi-load-api-key))
   (let ((cache-key (format "%s-%s-%s" year month day)))
     ;; 캐시에서 먼저 확인
-    (or (alist-get cache-key my--lunar-cache nil nil #'string=)
+    (or (alist-get cache-key my/--lunar-cache nil nil #'string=)
         ;; 캐시 미스 시 API 호출 (타임아웃 3초로 단축)
-        (when-let ((buffer (my--fetch-url-with-timeout
+        (when-let ((buffer (my/--fetch-url-with-timeout
                             (format "http://apis.data.go.kr/B090041/openapi/service/LrsrCldInfoService/getLunCalInfo?solYear=%s&solMonth=%s&solDay=%s&ServiceKey=%s"
                                     year month day kasi-api-key)
                             3)))
@@ -109,15 +109,15 @@ Returns buffer or nil on failure."
                                            :day (kasi-get-xml-text item 'lunDay)
                                            :leap (kasi-get-xml-text item 'lunLeapmonth))))
                     ;; 결과 캐싱 (최근 7일만 유지)
-                    (push (cons cache-key result) my--lunar-cache)
-                    (when (> (length my--lunar-cache) 7)
-                      (setq my--lunar-cache (seq-take my--lunar-cache 7)))
+                    (push (cons cache-key result) my/--lunar-cache)
+                    (when (> (length my/--lunar-cache) 7)
+                      (setq my/--lunar-cache (seq-take my/--lunar-cache 7)))
                     result)))
             ;; OPTIMIZED: 버퍼 존재 확인 후 킬
             (when (buffer-live-p buffer)
               (kill-buffer buffer)))))))
 
-(defun my-calculate-muldae (lunar-day)
+(defun my/calculate-muldae (lunar-day)
   "Calculate tide cycle position from LUNAR-DAY (8-cycle system for Nokdong)."
   (let ((day (string-to-number lunar-day)))
     (cond
@@ -129,7 +129,7 @@ Returns buffer or nil on failure."
      ((<= 24 day 30) (- day 23))
      (t 1))))
 
-(defun my-lunar-date-string ()
+(defun my/lunar-date-string ()
   "Return today's lunar date string in format: (음) YYYY-MM-DD."
   (let* ((now (decode-time))
          (year (format "%04d" (nth 5 now)))
@@ -185,9 +185,9 @@ Returns buffer or nil on failure."
 (defun nokdong-tide-fetch-tide-times (date-str)
   "Fetch tide times for DATE-STR and return (HIGH-TIMES . LOW-TIMES) with caching."
   ;; 캐시에서 먼저 확인
-  (or (alist-get date-str my--tide-cache nil nil #'string=)
+  (or (alist-get date-str my/--tide-cache nil nil #'string=)
       ;; 캐시 미스 시 API 호출 (타임아웃 3초로 단축)
-      (when-let ((buffer (my--fetch-url-with-timeout
+      (when-let ((buffer (my/--fetch-url-with-timeout
                           (format "https://apis.data.go.kr/1192136/tideFcstHghLw/GetTideFcstHghLwApiService?serviceKey=%s&obsCode=%s&reqDate=%s&type=json&numOfRows=5"
                                   kasi-api-key nokdong-tide-obs-code date-str)
                           3)))
@@ -201,15 +201,15 @@ Returns buffer or nil on failure."
                             (tide-data (plist-get parsed :data))
                             (result (nokdong-tide-format-tide-times tide-data date-str)))
                   ;; 결과 캐싱 (최근 7일만 유지)
-                  (push (cons date-str result) my--tide-cache)
-                  (when (> (length my--tide-cache) 7)
-                    (setq my--tide-cache (seq-take my--tide-cache 7)))
+                  (push (cons date-str result) my/--tide-cache)
+                  (when (> (length my/--tide-cache) 7)
+                    (setq my/--tide-cache (seq-take my/--tide-cache 7)))
                   result)))
           ;; OPTIMIZED: 버퍼 존재 확인 후 킬
           (when (buffer-live-p buffer)
             (kill-buffer buffer))))))
 
-(defun my-format-tide-info (&optional days-offset)
+(defun my/format-tide-info (&optional days-offset)
   "음력(물때)과 조석 시각을 각각 독립적으로 시도하여 결과를 반환합니다."
   (let* ((offset (or days-offset 0))
          (target-time (time-add (current-time) (days-to-time offset)))
@@ -227,7 +227,7 @@ Returns buffer or nil on failure."
 
     ;; 물때 계산 (음력이 있을 때만)
     (when lunar
-      (let ((muldae (my-calculate-muldae (plist-get lunar :day))))
+      (let ((muldae (my/calculate-muldae (plist-get lunar :day))))
         (setq muldae-str (format " (%s)" (if (zerop muldae) "조금" (format "%d물" muldae))))))
     
     ;; 조석 시각 포맷팅 (조석 정보가 있을 때만)
@@ -241,13 +241,12 @@ Returns buffer or nil on failure."
 ;; ======================================
 ;;; Weather Functions
 ;; ======================================
-(defun my--format-weather-inline (dom)
+(defun my/--format-weather-inline (dom)
   "Extract and format weather for inline display in date line."
   (when-let* ((weekly-forecast (dom-by-class dom "week_item"))
               (day (car weekly-forecast))
               (weather-elem (car (dom-by-class day "weather")))
               (weather-raw (dom-texts weather-elem))
-              ;; OPTIMIZED: 정규식 최적화 (\s 사용)
               (weather-normalized (string-trim (replace-regexp-in-string "\\s+" " " weather-raw)))
               (lowest-elem (car (dom-by-class day "lowest")))
               (highest-elem (car (dom-by-class day "highest")))
@@ -268,13 +267,12 @@ Returns buffer or nil on failure."
                         (t "어제와 같아요"))))
       (format my-weather-format-template weather-normalized lowest highest comparison))))
 
-(defun my--format-weekly-weather (dom)
+(defun my/--format-weekly-weather (dom)
   "Extract and format weekly weather forecast from DOM."
   (when-let* ((weekly-forecast (dom-by-class dom "week_item"))
               (weekly-data (mapcar 
                             (lambda (day)
                               (let* ((date (string-trim (dom-texts (dom-by-class day "date"))))
-                                     ;; OPTIMIZED: 정규식 최적화
                                      (weather-raw (string-trim (dom-texts (dom-by-class day "weather"))))
                                      (weather (replace-regexp-in-string "\\s+" " " weather-raw))
                                      (lowest (string-trim (string-replace "최저기온" "" 
@@ -282,18 +280,17 @@ Returns buffer or nil on failure."
                                      (highest (string-trim (string-replace "최고기온" "" 
                                                                            (dom-texts (dom-by-class day "highest"))))))
                                 (format "- %s: %s, 최저/최고 %s/%s" date weather lowest highest)))
-                            (seq-take (cdr weekly-forecast) 4))))  ; Skip today, take next 4 days
+                            (seq-take (cdr weekly-forecast) 4))))
     (string-join weekly-data "\n")))
 
-;; OPTIMIZED: 타임아웃 단축 (5초 -> 3초)
-(defun my--get-weather-info-sync ()
+(defun my/--get-weather-info-sync ()
   "Get weather info synchronously with caching (5-minute cache).
 Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
   (let ((current-time (float-time)))
-    (if (and my--weather-cache
-             (< (- current-time (car my--weather-cache)) 300))
-        (cdr my--weather-cache)
-      (when-let ((buffer (my--fetch-url-with-timeout
+    (if (and my/--weather-cache
+             (< (- current-time (car my/--weather-cache)) 300))
+        (cdr my/--weather-cache)
+      (when-let ((buffer (my/--fetch-url-with-timeout
                           (format "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%s%%20날씨"
                                   (url-hexify-string my-weather-location))
                           3)))
@@ -302,20 +299,18 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
               (goto-char (point-min))
               (when (re-search-forward "^$" nil t)
                 (let* ((dom (libxml-parse-html-region (point) (point-max)))
-                       (today-str (my--format-weather-inline dom))
-                       (weekly-str (my--format-weekly-weather dom))
+                       (today-str (my/--format-weather-inline dom))
+                       (weekly-str (my/--format-weekly-weather dom))
                        (result (cons today-str weekly-str)))
                   (when (and today-str weekly-str)
-                    (setq my--weather-cache (cons current-time result))
+                    (setq my/--weather-cache (cons current-time result))
                     result))))
-          ;; OPTIMIZED: 버퍼 존재 확인 후 킬
           (when (buffer-live-p buffer)
             (kill-buffer buffer)))))))
 
 ;; ======================================
 ;;; Helper Functions
 ;; ======================================
-;; OPTIMIZED: 파일 존재 확인 추가 및 정규식 최적화
 (defun get-random-quote-from-creading ()
   "Extract a random quote from cReading.org file."
   (unless (file-exists-p my/f-read)
@@ -339,37 +334,32 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
             (string-trim-right raw-result "[ \t\n*]+"))
         "No quotes found in cReading.org"))))
 
-
-(defun my-format-agenda-string ()
+(defun my/format-agenda-string ()
   "Get formatted 3-day agenda with bullets, removing trailing empty lines."
   (with-temp-buffer
     (org-agenda-list 5)
     (goto-char (point-min))
-    (forward-line 1) ; 첫 줄(헤더) 제외
+    (forward-line 1)
+    (beginning-of-line)
     (let ((content (buffer-substring-no-properties (point) (point-max))))
-      ;; 마지막 개행 및 공백 제거 후 각 줄 처음에 "- " 추가
       (replace-regexp-in-string "^" "- " (string-trim-right content)))))
 
 ;; ======================================
 ;;; Main Function
 ;; ======================================
-;; OPTIMIZED: 성능 측정 추가
-(defun my-todays-pop ()
+(defun my/todays-pop ()
   "Display today's and tomorrow's info in a popup buffer."
   (interactive)
-  (let* ((start-time (current-time))  ; 성능 측정 시작
+  (let* ((start-time (current-time))
          (buffer (get-buffer-create "*Today info*"))
          (current-date (format-time-string "● 오늘: %Y-%m-%d (%a) /"))
-         (lunar-date (my-lunar-date-string))
-         (weather-data (my--get-weather-info-sync))
+         (lunar-date (my/lunar-date-string))
+         (weather-data (my/--get-weather-info-sync))
          (today-weather (when weather-data (car weather-data)))
          (weekly-weather (when weather-data (cdr weather-data)))
-         
-         ;; 오늘 및 내일 조석 정보 가져오기
-         (tide-today (my-format-tide-info 0))
-         (tide-tomorrow (my-format-tide-info 1))
-         
-         (agenda (my-format-agenda-string))
+         (tide-today (my/format-tide-info 0))
+         (tide-tomorrow (my/format-tide-info 1))
+         (agenda (my/format-agenda-string))
          (quote (get-random-quote-from-creading))
          (indent-4 "    ")
          (indent-8 "        "))
@@ -428,7 +418,6 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
             (lambda () (interactive) (kill-this-buffer)))
           (use-local-map map))))
 
-    ;; OPTIMIZED: 성능 측정 결과 출력
     (message "Today's info loaded in %.2f seconds"
              (float-time (time-subtract (current-time) start-time)))
     
@@ -438,20 +427,20 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
 ;; ======================================
 ;;; Standalone Commands
 ;; ======================================
-(defun my-show-lunar-date ()
+(defun my/show-lunar-date ()
   "음력 날짜와 물때를 미니버퍼에 표시합니다."
   (interactive)
-  (let* ((tide-info (my-format-tide-info 0))
-         (lunar-str (my-lunar-date-string))
+  (let* ((tide-info (my/format-tide-info 0))
+         (lunar-str (my/lunar-date-string))
          (muldae-str (cdr tide-info)))
     (message "%s %s" lunar-str muldae-str)))
 
 
-(defun my-show-tide-info ()
+(defun my/show-tide-info ()
   "오늘과 내일의 조석 정보를 별도 버퍼에 표시합니다."
   (interactive)
-  (let* ((tide-today (my-format-tide-info 0))
-         (tide-tomorrow (my-format-tide-info 1))
+  (let* ((tide-today (my/format-tide-info 0))
+         (tide-tomorrow (my/format-tide-info 1))
          (buffer (get-buffer-create "*Tide Info*")))
     (with-current-buffer buffer
       (let ((inhibit-read-only t))
@@ -468,7 +457,7 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
     (switch-to-buffer buffer)))
 
 
-(defun my-show-random-quote ()
+(defun my/show-random-quote ()
   "글말(cReading.org)에서 무작위 인용문을 별도 버퍼에 표시합니다."
   (interactive)
   (let* ((quote (get-random-quote-from-creading))
@@ -493,15 +482,15 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
           (define-key map (kbd "q")
             (lambda () (interactive) (kill-this-buffer)))
           (define-key map (kbd "r")
-            (lambda () (interactive) (my-show-random-quote)))
+            (lambda () (interactive) (my/show-random-quote)))
           (use-local-map map))))
     (switch-to-buffer buffer)))
 
 
-(defun my-show-weather ()
+(defun my/show-weather ()
   "날씨 정보를 별도 버퍼에 표시합니다."
   (interactive)
-  (let* ((weather-data (my--get-weather-info-sync))
+  (let* ((weather-data (my/--get-weather-info-sync))
          (buffer (get-buffer-create "*Weather Info*")))
     (if (not weather-data)
         (message "날씨 정보를 가져오지 못했습니다.")
@@ -519,8 +508,8 @@ Returns (TODAY-WEATHER . WEEKLY-WEATHER) cons cell."
               (lambda () (interactive) (kill-this-buffer)))
             (define-key map (kbd "r")
               (lambda () (interactive)
-                (setq my--weather-cache nil)
-                (my-show-weather)))
+                (setq my/--weather-cache nil)
+                (my/show-weather)))
             (use-local-map map))))
       (switch-to-buffer buffer))))
 

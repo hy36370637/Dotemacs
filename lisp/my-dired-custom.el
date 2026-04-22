@@ -9,7 +9,7 @@
   :group 'dired)
 
 
-(defun my-dired-open-dwim ()
+(defun my/dired-open-dwim ()
   "Open file in Emacs or via macOS 'open' command based on its extension."
   (interactive)
   (let* ((file (dired-get-file-for-visit))
@@ -25,7 +25,7 @@
         (find-file file)))))
 
 
-(defun my-dired-move-to-pdf-folder-safe ()
+(defun my/dired-move-to-pdf-folder-safe ()
   "Move marked files to '/pdf' safely."
   (interactive)
   (let* ((target-dir "../pdf/")
@@ -57,9 +57,9 @@
   (dired-free-space nil)
   :bind
   (:map dired-mode-map
-   ("RET" . my-dired-open-dwim)
+   ("RET" . my/dired-open-dwim)
    ("C-<return>" . dired-do-open)
-   ("M" . my-dired-move-to-pdf-folder-safe)
+   ("M" . my/dired-move-to-pdf-folder-safe)
    ("/" . consult-line)))
 
 

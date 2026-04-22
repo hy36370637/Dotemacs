@@ -20,7 +20,7 @@
 
 
 ;;; ###autoload
-(defun my-select-current-line ()
+(defun my/select-current-line ()
  "Select the entire current line as an active region."
   (interactive)
   (beginning-of-line)
@@ -29,7 +29,7 @@
 
 
 ;;; ###autoload
-(defun my-duplicate-dwim ()
+(defun my/duplicate-dwim ()
   "Duplicate the current region if active, otherwise duplicate the current line."
   (interactive)
   (let ((use-region (use-region-p)))
@@ -45,7 +45,7 @@
 
 
 ;;; ###autoload
-(defun my-query-replace-regexp-dwim (arg)
+(defun my/query-replace-regexp-dwim (arg)
   "Replace in region if active, else in whole buffer."
   (interactive "P")
   (let ((start (if (use-region-p) (region-beginning) (point-min)))
@@ -55,10 +55,10 @@
       (call-interactively #'query-replace-regexp))))
 
 
-(defun my/deactivate-input-method (&rest _args)
-  "Deactivate current input method."
-  (when (and (boundp 'current-input-method) current-input-method)
-    (deactivate-input-method)))
+;; (defun my/deactivate-input-method (&rest _args)
+;;   "Deactivate current input method."
+;;   (when (and (boundp 'current-input-method) current-input-method)
+;;     (deactivate-input-method)))
 
 
 ;;; ###autoload
@@ -70,7 +70,7 @@
 
 ;;https://github.com/protesilaos/dotfiles
 ;;;###autoload
-(defun my-simple-indent-dwim ()
+(defun my/simple-indent-dwim ()
   "Indent the current defun in `prog-mode' or paragraph in `text-mode'."
   (interactive)
   (save-excursion
@@ -89,22 +89,22 @@
           (format-time-string "%Y")))
 
 
-(defun my-keyboard-quit-dwim ()
+(defun my/keyboard-quit-dwim ()
   "Do-what-I-mean quit behavior.
 Handle 'keyboard-quit' based on the current context, such as an active region, open minibuffer, or the Completions buffer."
   (interactive)
   (cond
-   ((region-active-p) ; 1. 블록이 잡혀있으면 블록 해제
+   ((region-active-p)                      ; 1. 블록이 잡혀있으면 블록 해제
     (keyboard-quit))
    ((derived-mode-p 'completion-list-mode) ; 2. 완성 목록창이 떠 있으면 닫기
     (delete-completion-window))
-   ((> (minibuffer-depth) 0) ; 3. 미니버퍼가 열려있으면 (포커스 상관없이) 닫기
+   ((> (minibuffer-depth) 0)               ; 3. 미니버퍼가 열려있으면 (포커스 상관없이) 닫기
     (abort-recursive-edit))
-   (t ; 4. 그 외에는 일반적인 Quit
+   (t                                      ; 4. 그 외에는 일반적인 Quit
     (keyboard-quit))))
 
 
-(defun my-smart-beginning-of-line ()
+(defun my/smart-beginning-of-line ()
   "Move point to first non-whitespace character or `beginning-of-line'."
   (interactive)
   (let ((oldpos (point)))
@@ -115,7 +115,7 @@ Handle 'keyboard-quit' based on the current context, such as an active region, o
 
 
 ;;; ###autoload
-(defun my-paste-with-parentheses ()
+(defun my/paste-with-parentheses ()
   "Insert clipboard content enclosed in parentheses."
   (interactive)
   (let ((text (or (gui-get-selection 'CLIPBOARD 'STRING) (current-kill 0))))
@@ -125,7 +125,7 @@ Handle 'keyboard-quit' based on the current context, such as an active region, o
 
 
 ;;;###autoload
-(defun my-toggle-window-split-ratio ()
+(defun my/toggle-window-split-ratio ()
   "Toggle the current window's width between 1/3 and 2/3 of the frame.
 Does not include 1/2 ratio; use `balance-windows' (C-x +) for equal splits.
 Preserves all buffer contents during the resize."
@@ -142,7 +142,7 @@ Preserves all buffer contents during the resize."
 
 
 ;;;###autoload
-(defun my-toggle-window-height-ratio ()
+(defun my/toggle-window-height-ratio ()
   "Toggle the current window's height between 1/3 and 2/3 of the frame.
 This function preserves all buffer contents and works regardless of 
 the number of open windows. It only adjusts the window's boundary."
@@ -164,7 +164,7 @@ the number of open windows. It only adjusts the window's boundary."
 
 
 ;;;###autoload
-(defun my-toggle-window-dedicated ()
+(defun my/toggle-window-dedicated ()
   "Toggle whether the current window is dedicated to its current buffer.
 A dedicated window will not be used by Emacs to display other buffers."
   (interactive)
@@ -174,7 +174,7 @@ A dedicated window will not be used by Emacs to display other buffers."
 
 
 ;;;###autoload
-(defun my-layout-3-windows-center-focus ()
+(defun my/layout-3-windows-center-focus ()
   "Set a 25% | 50% | 25% layout for 3 windows, regardless of cursor position.
 Windows are sorted by their horizontal position on the frame."
   (interactive)
@@ -203,7 +203,7 @@ Windows are sorted by their horizontal position on the frame."
 
 
 ;;;###autoload
-(defun my-split-window-three-column ()
+(defun my/split-window-three-column ()
   "Split the current window into three columns with 25:50:25 ratio.
 If more than one window exists, it will first delete other windows."
   (interactive)
@@ -212,7 +212,7 @@ If more than one window exists, it will first delete other windows."
   (split-window-right)
   (split-window-right)
   ;; 2. 이전에 만든 25:50:25 레이아웃 함수 호출
-  (my-layout-3-windows-center-focus)
+  (my/layout-3-windows-center-focus)
   (message "Three-column layout initialized."))
 
 
@@ -229,7 +229,7 @@ excluding the Dock and Menu bar."
 
 
 ;;;###autoload
-(defun tile-frame-left ()
+(defun my/tile-frame-left ()
   "Snap the Emacs frame to the Left half of the screen."
   (interactive)
   (let* ((area (my/get-display-workarea))
@@ -244,7 +244,7 @@ excluding the Dock and Menu bar."
 
 
 ;;;###autoload
-(defun tile-frame-right ()
+(defun my/tile-frame-right ()
   "Snap the Emacs frame to the Right half of the screen."
   (interactive)
   (let* ((area (my/get-display-workarea))
@@ -259,7 +259,7 @@ excluding the Dock and Menu bar."
 
 
 ;;;###autoload
-(defun tile-frame-center ()
+(defun my/tile-frame-center ()
   "Snap the Emacs frame to the center 2/3 of the screen."
   (interactive)
   (let* ((area   (my/get-display-workarea))
@@ -285,7 +285,7 @@ excluding the Dock and Menu bar."
 
 
 ;;;###autoload
-(defun caffeine-on ()
+(defun my/caffeine-on ()
   "Prevent macOS from sleeping for a selected duration.
 Prompts the user to choose between 30 minutes or 60 minutes.
 Uses macOS built-in caffeinate command with -d flag to keep display awake."
@@ -297,7 +297,7 @@ Uses macOS built-in caffeinate command with -d flag to keep display awake."
 
 
 ;;;###autoload
-(defun caffeine-off ()
+(defun my/caffeine-off ()
   "Allow macOS to sleep normally by terminating the caffeinate process.
 Kills any running caffeinate process started by caffeine-on."
   (interactive)

@@ -1,5 +1,5 @@
 ;;; my-org-custom.el --- Optimized Org-mode configuration -*- lexical-binding: t; -*-
-;;; 20260313 07:20
+;;; 20260417
 ;;; Commentary:
 ;; Personal Org-mode configuration with centralized file paths and health tracking.
 
@@ -27,17 +27,17 @@
 ;; ======================================
 ;;; 2. Helper Functions
 ;; ======================================
-(defvar my-org-last-inserted-image nil
-  "Last image file inserted by my-org-insert-image.")
+(defvar my/org-last-inserted-image nil
+  "Last image file inserted by my/org-insert-image.")
 
 
 ;;; ###autoload
-(defun my-org-insert-image (&optional manual)
+(defun my/org-insert-image (&optional manual)
   "Insert an image. If MANUAL, select manually ignoring history."
   (interactive "P")
   (let* ((choice (completing-read "Insert type: " '("inline" "path") nil t))
          (base-dir (expand-file-name "img/" org-directory))
-         (prev-file (unless manual my-org-last-inserted-image))
+         (prev-file (unless manual my/org-last-inserted-image))
          (prev-ts (when prev-file
                     (and (string-match "_\\([0-9]+\\)\\." (file-name-nondirectory prev-file))
                          (match-string 1 (file-name-nondirectory prev-file)))))
@@ -63,20 +63,20 @@
                                nil t
                                (when auto-file (file-name-nondirectory auto-file)))))
     (when (and file (not (file-directory-p file)))
-      (setq my-org-last-inserted-image file)
+      (setq my/org-last-inserted-image file)
       (pcase choice
         ("inline" (insert (format "[[file:%s]]\n" file)) (org-display-inline-images))
         ("path"   (insert (concat "./" (file-relative-name file))))))))
 
 
-(defun my-org-insert-image-manual ()
+(defun my/org-insert-image-manual ()
   "Insert image manually, ignoring history."
   (interactive)
-  (my-org-insert-image t))
+  (my/org-insert-image t))
 
 
 ;;; ###autoload
-;; (defun my-org-screenshot (chdir name)
+;; (defun my/org-screenshot (chdir name)
 ;;   "Insert a screenshot from clipboard. Requires: brew install pngpaste"
 ;;   (interactive
 ;;    (let* ((default-dir (file-name-concat org-directory "img/"))
@@ -96,7 +96,7 @@
 
 
 ;;; ###autoload
-(defun my-org-insert-drawer-custom (&optional arg drawer)
+(defun my/org-insert-drawer-custom (&optional arg drawer)
   "Prompt and insert a drawer from an expanded list."
   (interactive "P")
   (org-insert-drawer arg
@@ -119,6 +119,43 @@
       (if template (format template text) text))))
 
 
+;;; ###autoload
+(defun my/org-wrap-with-symbol-smart (char)
+  "선택 영역을 기호 쌍으로 감쌉니다.
+- 'm' 또는 '-' 입력 시: [기호][공백][영역][공백][기호]
+- '\"' 또는 '`' 입력 시: [여는 따옴표][영역][닫는 따옴표]"
+  (interactive "c기호 입력 (', \", -, m:):—")
+  (let* ((start (region-beginning))
+         (end (region-end))
+         (prefix "")
+         (suffix ""))
+    (cond
+     ;; 1. 쌍따옴표 처리
+     ((equal char ?\")
+      (setq prefix """ suffix """))
+     ;; 2. 홑따옴표 처리
+     ((equal char ?')
+      (setq prefix "'" suffix "'"))
+     ;; 3. 대시(Em-dash) 처리
+     ((equal char ?m)
+      (setq prefix "— " suffix " —"))
+     ;; 4. 하이픈 처리
+     ((equal char ?-)
+      (setq prefix "- " suffix " -"))
+     ;; 5. 그 외 기호는 앞뒤 동일하게
+     (t
+      (let ((s (char-to-string char)))
+        (setq prefix s suffix s))))
+    
+    (save-excursion
+      (goto-char end)
+      (insert suffix)
+      (goto-char start)
+      (insert prefix))))
+
+
+
+
 ;; ======================================
 ;;; 3. Health & Blood Pressure Logic
 ;; ======================================
@@ -127,21 +164,44 @@
 Optionally filter rows between START-DATE and END-DATE (encoded times)."
   (when (file-exists-p my/f-health)
     (with-current-buffer (find-file-noselect my/f-health)
-      (org-with-wide-buffer
-       (goto-char (point-min))
-       (let (rows)
-         (while (re-search-forward
-                 "^|\\s-*\\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)" nil t)
-           (let* ((row-date (date-to-time (match-string 1)))
-                  (cols (org-split-string (thing-at-point 'line) "|"))
-                  (sys (and (> (length cols) 1) (string-to-number (string-trim (nth 1 cols)))))
-                  (dia (and (> (length cols) 2) (string-to-number (string-trim (nth 2 cols)))))
-                  (pul (and (> (length cols) 3) (string-to-number (string-trim (nth 3 cols))))))
-             (when (and sys (> sys 0)
-                        (or (not start-date) (time-less-p start-date row-date))
-                        (or (not end-date)   (time-less-p row-date end-date)))
-               (push (list sys dia pul) rows))))
-         rows)))))
+      (save-excursion
+        (save-restriction
+          (widen)
+          (goto-char (point-min))
+          (let (rows)
+            (while (re-search-forward
+                    "^|\\s-*\\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)" nil t)
+              (let* ((row-date (date-to-time (match-string 1)))
+                     (cols (org-split-string (thing-at-point 'line) "|"))
+                     (sys (and (> (length cols) 1) (string-to-number (string-trim (nth 1 cols)))))
+                     (dia (and (> (length cols) 2) (string-to-number (string-trim (nth 2 cols)))))
+                     (pul (and (> (length cols) 3) (string-to-number (string-trim (nth 3 cols))))))
+                (when (and sys (> sys 0)
+                           (or (not start-date) (time-less-p start-date row-date))
+                           (or (not end-date)   (time-less-p row-date end-date)))
+                  (push (list sys dia pul) rows))))
+            rows))))))
+
+;; (defun my/bp-parse-table (&optional start-date end-date)
+;;   "Parse Health.org BP table. Returns list of (sys dia pul) plists.
+;; Optionally filter rows between START-DATE and END-DATE (encoded times)."
+;;   (when (file-exists-p my/f-health)
+;;     (with-current-buffer (find-file-noselect my/f-health)
+;;       (org-with-wide-buffer
+;;        (goto-char (point-min))
+;;        (let (rows)
+;;          (while (re-search-forward
+;;                  "^|\\s-*\\[\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)" nil t)
+;;            (let* ((row-date (date-to-time (match-string 1)))
+;;                   (cols (org-split-string (thing-at-point 'line) "|"))
+;;                   (sys (and (> (length cols) 1) (string-to-number (string-trim (nth 1 cols)))))
+;;                   (dia (and (> (length cols) 2) (string-to-number (string-trim (nth 2 cols)))))
+;;                   (pul (and (> (length cols) 3) (string-to-number (string-trim (nth 3 cols))))))
+;;              (when (and sys (> sys 0)
+;;                         (or (not start-date) (time-less-p start-date row-date))
+;;                         (or (not end-date)   (time-less-p row-date end-date)))
+;;                (push (list sys dia pul) rows))))
+;;          rows)))))
 
 (defun my/bp-averages (&optional start-date end-date)
   "Return (avg-sys avg-dia avg-pul count) for BP rows in optional date range."
@@ -179,7 +239,7 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
     ;; (format "BP💊 %dD: %s/" diff-days time-tag)))
 
 
-(defun my-bp-report ()
+(defun my/bp-report ()
   "Display weekly BP report in echo area."
   (interactive)
   (let* ((this-week (my/get-recent-bp-stats 0))
@@ -210,11 +270,11 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
                 (org-todo "DONE")
                 (save-buffer)))))))
 
-    (run-with-timer 0.5 nil #'my-bp-report)))
+    (run-with-timer 0.5 nil #'my/bp-report)))
 
 
 ;;; ###autoload
-(defun my-show-bp-stats-by-tag ()
+(defun my/show-bp-stats-by-tag ()
   "Generate BP report aggregated by Time/Status patterns."
   (interactive)
   (let ((stats-hash  (make-hash-table :test 'equal))
@@ -276,10 +336,11 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
          :map org-mode-map
-         ("C-M-y"     . my-paste-with-parentheses)
+         ("C-M-y"     . my/paste-with-parentheses)
          ("M-,"       . org-insert-structure-template)
-         ("C-c C-x d" . my-org-insert-drawer-custom)
-	 ("C-c C-x C-f" . my-pair-pairs-wrap))          ;alternate org-emphasize
+         ("C-,"       . my/org-wrap-with-symbol-smart)
+         ("C-c C-x d" . my/org-insert-drawer-custom)
+	 ("C-c C-x C-f" . my/pair-pairs-wrap))          ;alternate org-emphasize
   :custom
   (org-agenda-files                    (list my/f-tasks my/f-daily my/f-health))
   (org-startup-indented                t)
@@ -323,7 +384,6 @@ Optionally filter rows between START-DATE and END-DATE (encoded times)."
           (goto-char (point-max))
           (unless (bolp) (insert "\n"))
           (insert "기록일: " (format-time-string "[%Y-%m-%d %a %H:%M]"))))))
-
   (add-hook 'org-capture-prepare-finalize-hook #'my/org-capture-add-timestamp)
 
   (setq org-capture-templates
