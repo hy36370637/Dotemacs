@@ -102,11 +102,17 @@ Handles active region, minibuffer, or completion list."
 
 ;;; ###autoload
 (defun hy/paste-with-parentheses ()
-  "Insert clipboard content enclosed in parentheses."
+ "Insert clipboard content enclosed in parentheses."
   (interactive)
-  (let ((text (or (gui-get-selection 'CLIPBOARD 'STRING) (current-kill 0))))
+  (let ((text (or (gui-get-selection 'CLIPBOARD 'STRING)
+                  (current-kill 0))))
     (if (and text (not (string-empty-p text)))
-        (insert (format "(%s)" text))
+        (let* ((trimmed (string-trim text))
+               ;; 맨 앞의 열린 괄호((, （) 제거
+               (clean-start (replace-regexp-in-string "^[(（]+" "" trimmed))
+               ;; 맨 뒤의 닫힌 괄호(), ）) 제거
+               (clean-text  (replace-regexp-in-string "[)）]+$" "" clean-start)))
+          (insert (format "(%s)" clean-text)))
       (message "Clipboard is empty."))))
 
 
@@ -196,12 +202,19 @@ Requires pandoc and xelatex to be installed."
 ;;;###autoload
 (defun hy/tidy-whitespace-dwim (beg end &optional general-clean)
   "본문 또는 블록 내 공백을 컨텍스트에 맞춰 정돈.
+영역(Region) 미지정 시 confirmation을 거쳐 전체 버퍼 대상으로 실행.
 기본 실행: 특수기호(, . : ; ” ' ?) 뒤 공백 삽입을 원 포인트로 수행 (연속 기호 대응).
 C-u 접두사 입력: 행끝 공백, 이중 공백, 과도한 빈 줄 청소."
   (interactive
-   (let ((r-beg (if (use-region-p) (region-beginning) (point-min)))
-         (r-end (if (use-region-p) (region-end) (point-max))))
-     (list r-beg r-end current-prefix-arg)))
+   (let ((region-p (use-region-p)))
+     ;; 선택 영역이 없는 경우 사용자에게 전체 버퍼 실행 여부를 확인
+     (if (or region-p
+             (y-or-n-p "선택 영역이 없습니다. 전체 버퍼(buffer) 대상으로 실행하시겠습니까? "))
+         (let ((r-beg (if region-p (region-beginning) (point-min)))
+               (r-end (if region-p (region-end) (point-max))))
+           (list r-beg r-end current-prefix-arg))
+       ;; 취소 시 user-error 발생시켜 실행 중단
+       (user-error "작업이 취소되었습니다"))))
   (let ((count 0)
         (end-marker (copy-marker end)))
     (save-excursion
@@ -212,7 +225,7 @@ C-u 접두사 입력: 행끝 공백, 이중 공백, 과도한 빈 줄 청소."
             ;; 행끝 공백 제거
             (while (re-search-forward "[ \t]+$" end-marker t)
               (replace-match "") (setq count (1+ count)))
-            ;; 本문 속 이중 공백 제거 (들여쓰기 보호)
+            ;; 본문 속 이중 공백 제거 (들여쓰기 보호)
             (goto-char beg)
             (while (re-search-forward "\\([^ \t\n]\\)[ ]\\{2,\\}" end-marker t)
               (replace-match "\\1 ") (setq count (1+ count)))
@@ -220,13 +233,12 @@ C-u 접두사 입력: 행끝 공백, 이중 공백, 과도한 빈 줄 청소."
             (goto-char beg)
             (while (re-search-forward "\n\\{3,\\}" end-marker t)
               (replace-match "\n\n") (setq count (1+ count))))
-        
+
         ;; 2. 기본 실행 시: 특수기호 뒤 공백 정밀 타격 (연속 기호 완벽 대응)
-        ;; 대상 기호군에 작은따옴표(')도 안전하게 포함했습니다.
         (while (re-search-forward "\\([,\\.:;\\”'?]+\\)\\([^[:space:]\n]\\)" end-marker t)
           (replace-match "\\1 \\2")
           (setq count (1+ count)))))
-    
+
     (set-marker end-marker nil)
     (when (use-region-p)
       (setq deactivate-mark nil))

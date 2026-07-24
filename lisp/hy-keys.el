@@ -47,7 +47,8 @@
   ("s" "Spell check"          #'hy/org-korean-spellcheck-region)
   ("q" "normalize Quotes"     #'hy/normalize-quotes)
   ("p" "Pairs wrap"           #'hy/pair-pairs-wrap)
-  ("P" "Pairs Manage"         #'hy/pair-manage))
+  ("P" "Pairs Manage"         #'hy/pair-manage)
+  ("w" "whitespace-dwim"      #'hy/tidy-whitespace-dwim))
 
 (hy/defkeymap hy-org-prefix-map "ORG"
   ("d" "insert-Drawer"        #'hy/org-insert-drawer-custom)
@@ -55,8 +56,7 @@
   ("i" "insert Img"           #'hy/org-insert-image)
   ("I" "insert Img manual"    #'hy/org-insert-image-manual)
   ("l" "insert-Link-dwim"     #'hy/org-insert-link-dwim)
-  ("m" "Mark-current-body"    #'hy/org-mark-current-body-only)
-  ("w" "whitespace-dwim"      #'hy/tidy-whitespace-dwim))
+  ("m" "Mark-current-body"    #'hy/org-mark-current-body-only))
   
 (hy/defkeymap hy-search-prefix-map "Search"
   ("g" "Grep"                 #'consult-grep)

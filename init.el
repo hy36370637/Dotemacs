@@ -221,14 +221,8 @@
    ("C-c s"    . hy/search-dwim)
    ("M-;"      . comment-line)
    ("C-a"      . hy/smart-beginning-of-line)
-   ("C-g"      . hy/keyboard-quit-dwim)
-   (;; Ctrl 조합을 '단어 단위 이동'으로 전격 전환
-   ("C-f"      . forward-word)
-   ("C-b"      . backward-word)
-   ;; 원래의 '한 글자 미세 이동' M-f / M-b 자리에 백업
-   ("M-f"      . forward-char)
-   ("M-b"      . backward-char))))
-  
+   ("C-g"      . hy/keyboard-quit-dwim)))
+   
 
 (use-package time
   :ensure nil
@@ -276,14 +270,13 @@
 (use-package register
   :ensure nil
   :config
-  (let ((conf-dir user-emacs-directory))
     (set-register ?i `(file . ,(emacs/dir "init.el")))
     (set-register ?l `(file . ,(emacs/dir "lisp/")))
     ;; (set-register ?r `(file . ,(concat org-dir "cReading.org")))
     ;; (set-register ?d `(file . ,(concat org-dir "Daily.org")))
     ;; (set-register ?n `(file . ,(concat org-dir "cNotes.org")))
     (set-register ?p `(file . ,(dropbox/dir "pdf")))
-    (set-register ?P `(file . ,(dropbox/dir "Person"))))
+    (set-register ?P `(file . ,(dropbox/dir "Person")))
   (set-register ?o `(file . ,default-directory))
   :custom
   (register-preview-delay 0.5))

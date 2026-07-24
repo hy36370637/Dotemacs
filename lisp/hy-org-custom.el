@@ -277,7 +277,7 @@
          ("M-,"       . org-insert-structure-template)
          ("C-c C-l"   . hy/org-insert-link-dwim)
          ("C-c C-x d" . hy/org-insert-drawer-custom)
-         ("C-c C-x m"   . hy/org-mark-current-body-only)
+         ("C-c C-x m"   . hy/pair-manage)
          ("C-c C-x C-f" . hy/pair-wrap)
 	 ("S-<return>"  . hy/new-or-join-line))
   
