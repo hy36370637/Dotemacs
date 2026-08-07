@@ -105,42 +105,49 @@
   ;; npm install -g hanspell
   (interactive "r")
   (let* ((hanspell-path "/opt/homebrew/bin/hanspell-cli")
-         (cmd (if (executable-find "hanspell-cli") "hanspell-cli" hanspell-path))
+         (cmd (or (executable-find "hanspell-cli")
+                  (and (file-executable-p hanspell-path) hanspell-path)))
          (buf-name "*Korean Spell Check*")
          (text (buffer-substring-no-properties beg end))
          raw-output)
-    (if (not (file-executable-p hanspell-path))
-        (user-error "터미널에서 'npm install -g hanspell'이 정상 설치되지 않았습니다.")
+    
+    (unless cmd
+      (user-error "hanspell-cli를 찾을 수 없습니다. 'npm install -g hanspell' 설치 상태를 확인하세요."))
+    
+    ;; 1. hanspell 결과 가져오기
+    (setq raw-output (shell-command-to-string 
+                      (format "echo %s | %s -n" (shell-quote-argument text) cmd)))
+    
+    ;; 결과물에 교정 기호(->)가 없거나 비어있다면 오타가 없는 것임
+    (if (or (string-empty-p (string-trim raw-output))
+            (not (string-match-p "->" raw-output)))
+        (message "✨ 맞춤법이 완벽합니다! 교정할 내용이 없습니다.")
       
-      ;; 1. hanspell 결과 가져오기
-      (setq raw-output (shell-command-to-string 
-                        (format "echo %s | %s -n" (shell-quote-argument text) cmd)))
+      ;; 2. 오타가 있을 때만 가독성 개선 및 팝업창 생성
+      (setq raw-output (replace-regexp-in-string "오류입니다\\." "오류입니다. 🚨\n" raw-output))
+      (setq raw-output (replace-regexp-in-string "추천입니다\\." "추천입니다. 💡\n" raw-output))
       
-      ;; 결과물에 교정 기호(->)가 없거나 비어있다면 오타가 없는 것임
-      (if (or (string-empty-p (string-trim raw-output))
-              (not (string-match-p "->" raw-output)))
-          (message "✨ 맞춤법이 완벽합니다! 교정할 내용이 없습니다.")
-        
-        ;; 2. 오타가 있을 때만 가독성 개선 및 팝업창 생성
-        (setq raw-output (replace-regexp-in-string "오류입니다\\." "오류입니다. 🚨\n" raw-output))
-        (setq raw-output (replace-regexp-in-string "추천입니다\\." "추천입니다. 💡\n" raw-output))
-        
-        (with-current-buffer (get-buffer-create buf-name)
-          (read-only-mode -1)
-          (erase-buffer)
-          (org-mode)
+      (with-current-buffer (get-buffer-create buf-name)
+        (read-only-mode -1)
+        (erase-buffer)
+        ;; org-mode 적용 후 q 키 바인딩 설정
+        (special-mode) ; q로 닫기 편리하고 안전한 기본 모드 사용 (필요시 org-mode 유지 가능)
+        (let ((inhibit-read-only t))
           (insert raw-output)
-          (goto-char (point-min))
-          (read-only-mode 1)
-          
-          (local-set-key (kbd "q") (lambda () 
-                                     (interactive)
-                                     (let ((win (get-buffer-window (current-buffer))))
-                                       (when win (delete-window win))
-                                       (kill-buffer (current-buffer))))))
+          (goto-char (point-min)))
         
-        (display-buffer buf-name)
-        (message "맞춤법 검사 완료! 검토 후 'q'를 눌러 닫으세요.")))))
+        ;; q를 누르면 리포트 창을 안전하게 닫고 원래 버퍼/창으로 복귀
+        (local-set-key (kbd "q") 
+                       (lambda () 
+                         (interactive)
+                         (let ((buf (current-buffer)))
+                           (quit-restore-window nil 'kill)
+                           (when (buffer-live-p buf)
+                             (kill-buffer buf))))))
+      
+      ;; 팝업 창 출력
+      (pop-to-buffer buf-name)
+      (message "맞춤법 검사 완료! 검토 후 'q'를 눌러 닫으세요."))))
 
 
 ;; =======================================

@@ -19,7 +19,7 @@ My personal Emacs configuration — tailored for digital archiving and a quiet r
 I prioritize a seamless Korean typing experience. My setup bridges the gap between the system and Emacs:
 
 * **hy-hangulforMac**: My primary input method for macOS, optimized for system-wide stability.
-* **hy-hangul (korean-hy-hangul.el)**: A custom Emacs-native port of NavilIME’s logic. It brings the same fluid "Navilera" typing experience directly into Emacs Lisp for better integration and speed.
+* **hy-hangul (korean-hy-hangul)**: A custom Emacs-native port of NavilIME’s logic. It brings the same fluid "Navilera" typing experience directly into Emacs Lisp for better integration and speed.
 
 ---
 

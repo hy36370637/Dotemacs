@@ -221,8 +221,12 @@
    ("C-c s"    . hy/search-dwim)
    ("M-;"      . comment-line)
    ("C-a"      . hy/smart-beginning-of-line)
-   ("C-g"      . hy/keyboard-quit-dwim)))
-   
+   ("C-g"      . hy/keyboard-quit-dwim)
+   ;; Ctrl + 마우스 휠/스크롤 & 트랙패드 핀치(확대/축소) 비활성화
+   ("<C-wheel-up>"   . ignore)
+   ("<C-wheel-down>" . ignore)
+   ([pinch]          . ignore)))
+
 
 (use-package time
   :ensure nil
@@ -474,7 +478,7 @@
                 mode-line-frame-identification
                 "  "
                 mode-line-format-right-align
-                mode-line-position
+                ;;mode-line-position
                 " Ⓨ "
                 mode-line-misc-info))
 
