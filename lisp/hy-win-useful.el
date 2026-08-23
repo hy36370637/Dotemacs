@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t; -*-
 ;; .emacs.d/lisp/hy-win-useful.el
 ;;
-;;; ver 20260708
+;;; ver 20260811
 ;;
 ;;
 
@@ -183,6 +183,17 @@ Else THING is a frame if frames are more than one."
     (delete-frame))
    (t
     (user-error "Nothing to delete"))))
+
+
+;;;###autoload
+;; Protesilaos Stavrou
+(defun hy/window-swap-way ()
+  "현재 창의 버퍼를 다음 창의 버퍼와 맞바꾼다."
+  (interactive)
+  (let ((this (selected-window))
+        (next (next-window)))
+    (unless (eq this next)
+      (window-swap-states this next))))
 
 
 

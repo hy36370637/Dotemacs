@@ -144,49 +144,49 @@ Handles active region, minibuffer, or completion list."
 
 
 ;;;###autoload
-(defun hy/buffer-to-pdf-pandoc ()
-  "Convert the current buffer to PDF using Pandoc.
-Code files (.el, .py, .sh, etc.) are wrapped in a Markdown code block
-and converted via a temporary .md file, which is deleted after conversion.
-Other formats (.org, .md, etc.) are passed directly to Pandoc.
-Requires pandoc and xelatex to be installed."
-  (interactive)
-  (let* ((input (buffer-file-name))
-         (ext (and input (file-name-extension input)))
-         (output (and input (concat (file-name-sans-extension input) ".pdf")))
-         (code-exts '("el" "py" "sh" "js" "ts" "rb" "c" "h" "swift"))
-         (pandoc-cmd
-          (lambda (src)
-            (format (concat "pandoc %s -o %s"
-                            " --pdf-engine=xelatex"
-                            " --highlight-style=tango"
-                            " -V mainfont='KoPubWorldBatang'"
-                            " -V sansfont='KoPubWorldDotum'"
-                            " -V monofont='D2Coding'"
-                            " -V geometry:margin=1.5cm"
-			    " -V linestretch=1.4")
-                    src output))))
-    (cond
-     ((null input)
-      (message "Buffer is not associated with a file."))
-     ((member ext code-exts)
-      (let ((tmp-md (make-temp-file "emacs-print-" nil ".md")))
-        (with-temp-file tmp-md
-          (insert (format "# %s\n\n```%s\n"
-                          (file-name-nondirectory input)
-                          (cond ((string= ext "el") "scheme")
-                                (t ext))))
-          (insert-file-contents input)
-          (goto-char (point-max))
-          (insert "\n```\n"))
-        (unwind-protect
-            (call-process-shell-command (funcall pandoc-cmd tmp-md) nil nil nil)
-          (delete-file tmp-md))))
-     (t
-      (call-process-shell-command (funcall pandoc-cmd input) nil nil nil)))
-    (when output
-      (shell-command (format "open %s" (shell-quote-argument output)))
-      (message "PDF saved: %s" output))))
+;; (defun hy/buffer-to-pdf-pandoc ()
+;;   "Convert the current buffer to PDF using Pandoc.
+;; Code files (.el, .py, .sh, etc.) are wrapped in a Markdown code block
+;; and converted via a temporary .md file, which is deleted after conversion.
+;; Other formats (.org, .md, etc.) are passed directly to Pandoc.
+;; Requires pandoc and xelatex to be installed."
+;;   (interactive)
+;;   (let* ((input (buffer-file-name))
+;;          (ext (and input (file-name-extension input)))
+;;          (output (and input (concat (file-name-sans-extension input) ".pdf")))
+;;          (code-exts '("el" "py" "sh" "js" "ts" "rb" "c" "h" "swift"))
+;;          (pandoc-cmd
+;;           (lambda (src)
+;;             (format (concat "pandoc %s -o %s"
+;;                             " --pdf-engine=xelatex"
+;;                             " --highlight-style=tango"
+;;                             " -V mainfont='KoPubWorldBatang'"
+;;                             " -V sansfont='KoPubWorldDotum'"
+;;                             " -V monofont='D2Coding'"
+;;                             " -V geometry:margin=1.5cm"
+;; 			    " -V linestretch=1.4")
+;;                     src output))))
+;;     (cond
+;;      ((null input)
+;;       (message "Buffer is not associated with a file."))
+;;      ((member ext code-exts)
+;;       (let ((tmp-md (make-temp-file "emacs-print-" nil ".md")))
+;;         (with-temp-file tmp-md
+;;           (insert (format "# %s\n\n```%s\n"
+;;                           (file-name-nondirectory input)
+;;                           (cond ((string= ext "el") "scheme")
+;;                                 (t ext))))
+;;           (insert-file-contents input)
+;;           (goto-char (point-max))
+;;           (insert "\n```\n"))
+;;         (unwind-protect
+;;             (call-process-shell-command (funcall pandoc-cmd tmp-md) nil nil nil)
+;;           (delete-file tmp-md))))
+;;      (t
+;;       (call-process-shell-command (funcall pandoc-cmd input) nil nil nil)))
+;;     (when output
+;;       (shell-command (format "open %s" (shell-quote-argument output)))
+;;       (message "PDF saved: %s" output))))
 
 
 ;;;###autoload
@@ -291,19 +291,6 @@ Automatically skips Org-mode src blocks to prevent code syntax errors."
     (when (use-region-p)
       (setq deactivate-mark nil))
     (message "%s 따옴표 %d개 변환 완료" (if reverse "곧은" "둥근") count)))
-
-
-;;  =============================================
-;;; hy/repeat-last-mx-command(Excel F4)
-;;  =============================================
-;; (defun hy/repeat-last-mx-command ()
-;;   "M-x 기록(vertico 상위)의 최신 명령을 영역 지정에 구애받지 않고 재실행."
-;;   (interactive)
-;;   (if (and (boundp 'extended-command-history) extended-command-history)
-;;       (let ((last-cmd (intern (car extended-command-history))))
-;;         (message "재실행 명령: M-x %s" last-cmd)
-;;         (command-execute last-cmd))
-;;     (message "안내: 아직 실행한 M-x 명령 기록이 없습니다.")))
 
   
   

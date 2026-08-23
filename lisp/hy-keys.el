@@ -39,12 +39,12 @@
   ("r" "Regexp replace"       #'hy/query-replace-regexp-dwim)
   ("l" "current Line"         #'hy/select-current-line)
   ("n" "New or join line"     #'hy/new-or-join-line)
-  ("p" "buffer2PDF"           #'hy/buffer-to-pdf-pandoc)
+  ;; ("p" "buffer2PDF"           #'hy/buffer-to-pdf-pandoc)
   ("u" "Unfill paragraph"     #'hy/unfill-paragraph)
   ("%" "Replace"              #'query-replace))
 
 (hy/defkeymap hy-finishing-prefix-map "Finishing"
-  ("s" "Spell check"          #'hy/org-korean-spellcheck-region)
+  ("c" "Spell check"          #'hy/org-korean-spellcheck-region)
   ("q" "normalize Quotes"     #'hy/normalize-quotes)
   ("p" "Pairs wrap"           #'hy/pair-pairs-wrap)
   ("P" "Pairs Manage"         #'hy/pair-manage)
@@ -82,7 +82,8 @@
   ("c" "Caffeine on"          #'hy/caffeine-on)
   ("C" "Caffeine off"         #'hy/caffeine-off)
   ("s" "Sidebar layout-20"    #'hy/toggle-sidebar-layout-20)
-  ("r" "window Resize"        #'hy/interactive-window-resize-all))
+  ("r" "window Resize"        #'hy/interactive-window-resize-all)
+  ("w" "window sWap"          #'hy/window-swap-way))
 
 (hy/defkeymap hy-emacs-prefix-map "Master"
   ("b" "Buffer"               hy-buffer-prefix-map)
@@ -112,32 +113,6 @@
   :keymap hy-overrides-mode-map)
 
 (define-key hy-overrides-mode-map (kbd "M-o") #'hy/prefix-with-ime-deactivation)
-
-;; ;; =====================================================================
-;; ;;; C-c 계통 개별 서브 메뉴 직통 단축키 설정
-;; ;; =====================================================================
-;; (defun hy/invoke-sub-prefix-map (map-sym)
-;;   "Show the given MAP-SYM keymap immediately and set it as a transient map."
-;;   (let ((map (symbol-value map-sym)))
-;;     (which-key-show-keymap map-sym map)
-;;     (set-transient-map map nil nil)))
-
-;; (let ((bindings '(("C-c b" "Buffer"    . hy-buffer-prefix-map)
-;;                   ("C-c e" "Edit"      . hy-edit-prefix-map)
-;;                   ("C-c f" "Finishing" . hy-finishing-prefix-map)
-;;                   ("C-c l" "Life"      . hy-life-prefix-map)
-;;                   ("C-c m" "Media"     . hy-media-prefix-map)
-;;                   ("C-c o" "ORG"       . hy-org-prefix-map)
-;;                   ("C-c s" "Search"    . hy-search-prefix-map)
-;;                   ("C-c w" "Window"    . hy-window-prefix-map))))
-;;   (pcase-dolist (`(,key ,label . ,map) bindings)
-;;     (define-key hy-overrides-mode-map (kbd key)
-;;                 (lambda () 
-;;                   (interactive) 
-;;                   (hy/invoke-sub-prefix-map map)))
-;;     (which-key-add-keymap-based-replacements hy-overrides-mode-map key label)))
-
-;; (define-key hy-overrides-mode-map (kbd "C-c r") #'jump-to-register)
 
 (hy-overrides-mode 1)
 

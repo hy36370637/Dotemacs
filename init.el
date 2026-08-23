@@ -222,6 +222,7 @@
    ("M-;"      . comment-line)
    ("C-a"      . hy/smart-beginning-of-line)
    ("C-g"      . hy/keyboard-quit-dwim)
+   ("C-z"      . hy/select-current-line)
    ;; Ctrl + 마우스 휠/스크롤 & 트랙패드 핀치(확대/축소) 비활성화
    ("<C-wheel-up>"   . ignore)
    ("<C-wheel-down>" . ignore)
@@ -411,12 +412,6 @@
 ;;; windmove
 ;; =======================================
  (use-package windmove)
-  ;; :ensure nil
-  ;; :bind
-  ;; (("S-M-<left>"  . windmove-left)
-  ;;  ("S-M-<right>" . windmove-right)
-  ;;  ("S-M-<up>"    . windmove-up)
-  ;;  ("S-M-<down>"  . windmove-down)))
 
 
 ;; =======================================
@@ -432,8 +427,10 @@
 ;;; recentF
 ;; =======================================
 (use-package recentf
+  :ensure nil
   :init (recentf-mode 1)
   :custom
+  (recentf-auto-cleanup 'never)
   (recentf-max-menu-items 15)
   (recentf-max-saved-items 15))
 

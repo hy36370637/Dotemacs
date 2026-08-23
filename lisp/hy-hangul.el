@@ -327,7 +327,6 @@
   (when (eq (selected-window) (minibuffer-window))
     (add-hook 'minibuffer-exit-hook #'quail-exit-from-minibuffer))
   (setq-local input-method-function #'hy/hangul-input-method)
-  (setq-local input-method-function #'hy/hangul-input-method)
   (local-set-key (kbd "<f9>")       #'hy/hangul-to-hanja-at-point))
   ;; (global-set-key (kbd "<f9>") #'hy/hangul-to-hanja-at-point)
 

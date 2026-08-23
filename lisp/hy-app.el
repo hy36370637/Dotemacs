@@ -111,6 +111,5 @@
   (denote-menu-bar-mode -1))
 
 
-
 (provide 'hy-app)
 ;;; hy-app.el ends here

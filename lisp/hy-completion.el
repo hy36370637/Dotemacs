@@ -50,7 +50,7 @@
   :ensure t
   :bind (("C-x b" . consult-buffer)
          ("C-x C-r" . consult-recent-file)
-         ("C-c B" . consult-bookmark)
+         ("C-x B" . consult-bookmark)
          ("M-y"   . consult-yank-pop)
 	 ("M-s f" . hy/fd-filename-search)
          ("M-s g" . consult-ripgrep)
@@ -243,8 +243,8 @@
                  (not (org-at-table-p))
                  (not (org-in-verbatim-emphasis)))
         (let ((pairs '(("->"  . "→") ("<-"  . "←") ("+="  . "·")
-                       ("=>"  . "⇒") ("<="  . "⇐")
-                       ("^-"  . "↑") ("-^"  . "↓")
+                       ("=>"  . "⇒") ("<="  . "⇐") ("---" . "―")
+                       ("^-"  . "↑") ("-^"  . "↓") ("'''" . "…")
                        ("<<"  . "《") (">>"  . "》")
                        ("~="  . "≈") ("+-"  . "±"))))
           (catch 'done
